@@ -15,14 +15,10 @@ export default new Vuetify({
   theme: {
     themes: {
       light: {
-        // primary: '#F60689',
-        primary: '#FE008A',
-        secondary: '#3F2040',
-        light_primary: '#FDC0FF',
-        success: '#6edaa8',
-        blue: '#63d0d5',
-        green: '#6edaa8',
-        yellow: '#EFC457'
+        primary: '#C400A5',
+      },
+      dark: {
+        primary: '#C400A5',
       }
     }
   }

@@ -1,7 +1,7 @@
 import { queryServicesById } from './services'
 import { queryLabsById } from './labs'
-import { queryDnaSamples } from './geneticTesting'
-import { ethAddressByAccountId } from './userProfile'
+import { queryDnaSamples } from './genetic-testing'
+import { ethAddressByAccountId } from './user-profile'
 
 export async function getOrdersDetail(api, orderId){
   let orderDetail = await getOrdersData(api, orderId)

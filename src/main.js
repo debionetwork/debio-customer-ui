@@ -50,7 +50,6 @@ async function setupAppDependencies() {
 
 setupAppDependencies()
   .then(() => {
-
     new Vue({
       vuetify,
       router,
