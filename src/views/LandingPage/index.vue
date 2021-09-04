@@ -1,5 +1,5 @@
 <style scoped lang="scss">
-.main{
+.pop-up-main{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,7 +9,7 @@
         margin-bottom: 20px;
     }
 }
-.title{
+.pop-up-title{
     width: 462px;
     height: 76px;
 
@@ -36,11 +36,10 @@
 </style>
 
 <template lang="pug">
-    LandingPagePopUp
-        div.main
-            div.title The Privacy-First Platform for Personal Genetic Testing
-            v-btn(elevation='0', color='#C400A5', dark) Sign In
-            v-btn(elevation='0', outlined, color='#C400A5') Generate Account
+    LandingPagePopUp: template(v-slot:main): div.pop-up-main
+        div.pop-up-title The Privacy-First Platform for Personal Genetic Testing
+        v-btn(elevation='0', color='primary', dark) Sign In
+        v-btn(elevation='0', outlined, color='primary') Generate Account
 </template>
 
 <script>

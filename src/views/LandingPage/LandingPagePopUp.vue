@@ -16,7 +16,9 @@
 </style>
 
 <template lang="pug">
-    div.landing-page-pop-up: slot
+    div.landing-page-pop-up
+        header: slot(name="header")
+        main: slot(name="main")
 </template>
 
 <script>

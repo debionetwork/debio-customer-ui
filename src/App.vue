@@ -1,8 +1,9 @@
-<template>
-  <div id="app">
-    <div v-if="isLoadingSubstrateApi">Loading..</div>
-    <router-view v-else />
-  </div>
+<template lang="pug">
+  div#app: v-app
+    div(v-if="isLoadingSubstrateApi") Loading...
+    router-view(v-else)
+</template>
+  
 </template>
 
 <script>
