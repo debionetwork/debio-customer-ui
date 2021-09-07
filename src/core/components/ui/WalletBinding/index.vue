@@ -36,20 +36,19 @@
             ) Connect
               
         div(class="mt-10 mb-10 ml-10 mr-10" v-if="putAccount")
-        div
           div(class="align-center mb-5") Your address
           div.address( class="dg-card pb-2 pt-2", style="background: #eeeeee", elevation="0")
-            div(class="ml-3 p4") {{accountList[0].address}}
-              v-btn(icon @click="copyToClipboard(accountList[0].address)")
+            div(class="ml-3 p4") {{ethAccount[0].address}}
+              v-btn(icon @click="copyToClipboard(ethAccount[0].address)")
                 v-icon mdi-vector-arrange-below
             
           v-row(class="mt-5")
             v-col DAI Balance
-            v-col(cols="auto") {{accountList[0].balance}} ETH
+            v-col(cols="auto") {{ethAccount[0].balance}} ETH
               
           v-row
             v-col
-            v-col(cols="auto") ({{accountList[0].balance}} USD)
+            v-col(cols="auto") ({{ethAccount[0].balance}} USD)
           
           v-btn(
             class="mt-5 align-center"
@@ -62,9 +61,9 @@
 </template>
 
 <script>
+
 import { mapState, mapMutations } from "vuex";
-import { startApp } from "@/common/lib/metamask";
-import { getBalanceETH } from "@/common/lib/metamask/wallet.js";
+import { handleSetWallet } from "@/common/lib/metamask";
 import { setEthAddress } from "@/common/lib/polkadotProvider/command/userProfile";
 import { getEthFromFaucet, getDaicFromFaucet } from "@/common/lib/faucet";
 
@@ -111,68 +110,37 @@ export default {
       }
     },
   },
-  mounted() {},
   methods: {
     ...mapMutations({
       setMetamaskAddress: "metamask/SET_WALLET_ADDRESS",
     }),
+
     async getMunnyFromFaucet(address) {
       await getEthFromFaucet(address);
       await getDaicFromFaucet(address);
     },
-    async setWalllet(walletName) {
-      this.error = "";
-      this.loading = true;
-      switch (walletName) {
-        case "metamask":
-          this.ethAccount = await startApp();
-          if (this.ethAccount.currentAccount == "no_install") {
-            this.error = "Please install MetaMask!";
-          } else {
-            this.accountList = [];
-            for (let i = 0; i < this.ethAccount.accountList.length; i++) {
-              const balance = await getBalanceETH(
-                this.ethAccount.accountList[i]
-              );
-              var lastAddr = this.ethAccount.accountList[i].substr(
-                this.ethAccount.accountList[i].length - 4
-              );
-              let isActive = false;
-              if (
-                this.metamaskWalletAddress == this.ethAccount.accountList[i]
-              ) {
-                isActive = true;
-              }
-              this.accountList.push({
-                address: this.ethAccount.accountList[i],
-                lastAddr: lastAddr,
-                name: "Account " + (i + 1),
-                balance: parseFloat(balance).toFixed(2),
-                active: isActive,
-              });
 
-              try {
-                await setEthAddress(this.api, this.wallet, this.ethAccount.currentAccount);
-                this.setMetamaskAddress(this.ethAccount.currentAccount);
-                this.$emit("status-wallet", {
-                  status: true,
-                  img: "metamask-account-connected.png",
-                });
-                await this.getMunnyFromFaucet(this.ethAccount.currentAccount);
-                this.isLoading = false;
-              } catch (err) {
-                console.log(err.message);
-                this.isLoading = false;
-                this.error = err.message;
-              }
-            }
-            this.putWallet = false;
-            this.putAccount = true;
-          }
-          break;
+    async setWallet(walletName) {
+      this.loading = true;
+      this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
+      try {
+        await setEthAddress(this.api, this.wallet, this.ethAccount[0].address);
+        this.setMetamaskAddress(this.ethAccount[0].address);
+        this.$emit("status-wallet", {
+          status: true,
+        });
+        await this.getMunnyFromFaucet(this.ethAccount[0].address);
+        this.isLoading = false;
+      } catch (err) {
+        console.log(err.message);
+        this.isLoading = false;
+        this.error = err.message;
       }
+      this.putWallet = false;
+      this.putAccount = true;
       this.loading = false;
     },
+
     closeDialog() {
       this._show = false;
       this.error = "";
@@ -180,12 +148,10 @@ export default {
       this.putWallet = true;
       this.inputPassword = false;
     },
+    
     async copyToClipboard(text) {
       await navigator.clipboard.writeText(text)
     }
   },
 };
 </script>
-
-<style
-</style>
