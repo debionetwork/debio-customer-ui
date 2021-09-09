@@ -5,7 +5,7 @@ import App from './App.vue'
 import vuetify from './common/plugins/vuetify';
 import { fmtSpecimenNumber } from './common/lib/string-format'
 import { format, fromUnixTime } from 'date-fns'
-import "./globalUiComponents"
+import "@/common/components/globalUiComponents"
 // import localStorage from './lib/local-storage'
 
 

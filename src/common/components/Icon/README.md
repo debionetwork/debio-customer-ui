@@ -13,10 +13,10 @@ eg `<span>` and `<ui-debio-icon>` but in pug `span` and `ui-debio-icon`
 
 ### How to use
 
-NOTE: To fill the icon prop `icon` you need to import an icon from `@/core/icons`
+NOTE: To fill the icon prop `icon` you need to import an icon from `@/common/icons`
 
 ```js
-import {  metamaskFoxIcon } from "@/core/icons"
+import {  metamaskFoxIcon } from "@/common/icons"
 
 // Then you add/register the metamaskFoxIcon to data properties like so
 export default {

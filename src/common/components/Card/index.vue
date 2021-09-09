@@ -1,5 +1,5 @@
 <script>
-import { defaultIcon } from "@/core/icons"
+import { defaultIcon } from "@/common/icons"
 
 export default {
   name: "UiDebioCard",
@@ -34,7 +34,7 @@ export default {
         "ui-debio-card",
         this.computeContentType,
         { [`elevation-${this.elevation}`]: this.elevation },
-        { "ui-debio-card--centered": this.centeredContent }
+        { "ui-debio-card--centered": this.centeredContent && this.tinyCard }
       ]
     },
 
@@ -151,8 +151,9 @@ export default {
     color: #757274
   
   &--centered
-    display: flex
-    flex-direction: column
-    align-items: center
-    text-align: center
+    .ui-debio-card__content
+      display: flex
+      flex-direction: column
+      align-items: center
+      text-align: center
 </style>
