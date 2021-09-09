@@ -60,7 +60,7 @@ ui-debio-card(
 )
   ui-debio-icon(slot="icon" icon="someIcon")
 ```
-_How to use `ui-debio-icon` please check debio icon documentation [here](test.com)_
+_How to use `ui-debio-icon` please check debio icon documentation `src\core\components\ui\Icon\README.md`_
 
 #### - Tiny card with custom title and subtitle
 ```pug
