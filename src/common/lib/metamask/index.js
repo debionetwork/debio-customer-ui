@@ -83,30 +83,31 @@ export async function getTransactionReceiptMined(txHash, interval) {
   }
 }
 
-export async function handleSetWallet(walletName, metamaskWalletAddress) {
-  if (walletName == 'metamask') {
-    const ethAccount = await startApp()
-    if (ethAccount.currentAccount == "no_install") {
-      throw "Please install MetaMask!";
-    } else {
-      let accountList = []
-      for (let i = 0; i < ethAccount.accountList.length; i++) {
-        const balance = await getBalanceETH(
-          ethAccount.accountList[i]
-        )
-        let isActive = false
-        if (metamaskWalletAddress == ethAccount.accountList[i]) {
-          isActive = true
-        }
-        
-        accountList.push({
-          address: ethAccount.accountList[i],
-          name: "Account " + (i + 1),
-          balance: parseFloat(balance).toFixed(2),
-          active: isActive,
-        })
-        return accountList     
-      } 
+export async function setMetamaskWallet(address) {
+  const ethAccount = await startApp()
+
+  if (ethAccount.currentAccount == "no_install") {
+    throw "Please install MetaMask!";
+  } 
+
+  let accountList = []
+  
+  for (let i = 0; i < ethAccount.accountList.length; i++) {
+    const balance = await getBalanceETH(
+      ethAccount.accountList[i]
+    )
+
+    let isActive = false
+    if (address == ethAccount.accountList[i]) {
+      isActive = true
     }
+
+    accountList.push({
+      address: ethAccount.accountList[i],
+      name: "Account " + (i + 1),
+      balance: parseFloat(balance).toFixed(2),
+      active: isActive,
+    })
+    return accountList     
   }
 }
