@@ -35,7 +35,7 @@ div {
 <template lang='pug'>
     div
       div(
-        class='d-flex justify-space-between'
+        class='d-flex align-items-start justify-space-between'
         :key='i'
         v-for='(mnemonics, i) in chunkedMnemonic'
       )

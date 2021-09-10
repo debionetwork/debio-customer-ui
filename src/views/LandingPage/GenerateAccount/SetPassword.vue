@@ -1,100 +1,7 @@
 <style scoped lang="scss">
-@import "@/common/styles/variables.scss";
-
-.pop-up-header{
-    display: flex;
-    align-items: center;
-    grid-area: header;
-
-    margin-left: 33px;
-
-    cursor: pointer;
-
-    .pop-up-title{
-        display: block;
-
-        color: $color-primary;
-        font-family: Roboto;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 25px;
-        line-height: 150%;
-
-        margin-left: 26px;
-    }
-}
 .pop-up-main{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    grid-area: main;
-
-    & > * {
-        margin-bottom: 20px;
-    }
-    h3 {
-        width: 504px;
-        height: 60px;
-
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20px;
-        line-height: 150%;
-        /* or 30px */
-
-        display: flex;
-        align-items: center;
-    }
     p {
-        width: 504px;
-        height: 63px;
-
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 18px;
-        line-height: 150%;
-
-        display: flex;
-        align-items: center;
-
         margin-bottom: 28px;
-    }
-    .v-input--checkbox {
-        width: 437px;
-        height: 53px;
-
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 18px;
-        line-height: 150%;
-
-        display: flex;
-        align-items: center;
-
-        #checkboxLabel {
-            font-size: 18px;
-            line-height: 150%;
-            margin-left: 20px;
-        }
-    }
-    .v-btn {
-        width: 506px;
-        height: 53px !important;
-        
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20px !important;
-        line-height: 30px;
-        text-transform: none;
-        margin-bottom: 20px;
-    }
-    // Override default Vuetify CSS
-    .theme--light.v-btn.v-btn--disabled{
-        color: white !important;
     }
     & > .password-field {
         width: 504px;
@@ -103,10 +10,8 @@
 </style>
 
 <template lang="pug">
-    LandingPagePopUp
-        template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
-            img(height='22px' src='@/assets/chevron.png')
-            h2.pop-up-title Set Your Password
+     LandingPagePopUp(:previous='previous')
+        template(v-slot:header) Set Your Password
         template(v-slot:main): div.pop-up-main
             p You will need to input this password later when making transactions with this account.
             v-text-field(

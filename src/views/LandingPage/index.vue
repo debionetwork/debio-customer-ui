@@ -32,6 +32,10 @@
         line-height: 30px;
         text-transform: none;
     }
+    // Override default Vuetify CSS
+    .theme--light.v-btn.v-btn--disabled{
+        color: white !important;
+    }
 }
 </style>
 

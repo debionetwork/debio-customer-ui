@@ -1,37 +1,5 @@
 <style scoped lang="scss">
-@import "@/common/styles/variables.scss";
-
-.pop-up-header{
-    display: flex;
-    align-items: center;
-    grid-area: header;
-
-    margin-left: 33px;
-
-    cursor: pointer;
-
-    .pop-up-title{
-        display: block;
-
-        color: $color-primary;
-        font-family: Roboto;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 25px;
-        line-height: 150%;
-
-        margin-left: 26px;
-    }
-}
 .pop-up-main{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    grid-area: main;
-
-    & > * {
-        margin-bottom: 20px;
-    }
     img {
         width: 152px;
         height: 152px;
@@ -46,18 +14,6 @@
         line-height: 150%;
         
         text-align: center;
-    }
-    .v-btn {
-        width: 506px;
-        height: 53px !important;
-        
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20px !important;
-        line-height: 30px;
-        text-transform: none;
-        margin-bottom: 20px;
     }
 }
 </style>

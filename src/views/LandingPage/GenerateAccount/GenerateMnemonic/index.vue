@@ -1,100 +1,7 @@
 <style scoped lang="scss">
 @import "@/common/styles/variables.scss";
 
-.pop-up-header{
-    display: flex;
-    align-items: center;
-    grid-area: header;
-
-    margin-left: 33px;
-
-    cursor: pointer;
-
-    .pop-up-title{
-        display: block;
-
-        color: $color-primary;
-        font-family: Roboto;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 25px;
-        line-height: 150%;
-
-        margin-left: 26px;
-    }
-}
 .pop-up-main{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    grid-area: main;
-
-    & > * {
-        margin-bottom: 20px;
-    }
-    h3 {
-        width: 504px;
-        height: 60px;
-
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20px;
-        line-height: 150%;
-        /* or 30px */
-
-        display: flex;
-        align-items: center;
-    }
-    p {
-        width: 504px;
-        height: 63px;
-
-        /* body-text-1 */
-
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 18px;
-        line-height: 150%;
-        /* or 27px */
-
-        display: flex;
-        align-items: center;
-
-        margin-bottom: 50px;
-    }
-    .v-input--checkbox {
-        width: 437px;
-        height: 53px;
-
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 18px;
-        line-height: 150%;
-
-        display: flex;
-        align-items: center;
-
-        #checkboxLabel {
-            font-size: 18px;
-            line-height: 150%;
-            margin-left: 20px;
-        }
-    }
-    .v-btn {
-        width: 506px;
-        height: 53px !important;
-        
-        font-family: Raleway;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20px !important;
-        line-height: 30px;
-        text-transform: none;
-        margin-bottom: 20px;
-    }
     & > div.copy-text {
         width: 504px;
         height: 51px;
@@ -124,11 +31,9 @@
 </style>
 
 <template lang="pug">
-    LandingPagePopUp
-        template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
-            img(height='22px' src='@/assets/chevron.png')
-            h2.pop-up-title Your Secret Backup Phrase
-        template(v-slot:main): div.pop-up-main
+     LandingPagePopUp(:previous='previous')
+        template(v-slot:header) Your Secret Backup Phrase
+        template(v-slot:main)
             h3 Write down or copy these words in the right order and save them safely.
             MnemonicList(:mnemonicCollection="mnemonicCollection")
             div.copy-text 
