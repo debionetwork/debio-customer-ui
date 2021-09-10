@@ -38,23 +38,28 @@
                 @keyup.enter="onPasswordSet"
                 outlined
             )
-            vue-recaptcha(
-                @verify="onVerifyRecaptcha"
-                :sitekey="sitekey"
+            Recaptcha(
+                :verify="onVerifyRecaptcha"
             )
-            v-btn(class='white--text' elevation='0' color='primary' @click="registrationSuccess") Continue
+            v-btn(
+                :disabled="!buttonDisabled"
+                class='white--text' 
+                elevation='0' 
+                color='primary' 
+                @click="registrationSuccess"
+            ) Continue
 </template>
 
 <script>
 import axios from "axios"
-import VueRecaptcha from "vue-recaptcha"
+import Recaptcha from "@/common/components/Recaptcha.vue"
 import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
 export default {
     name: 'SetPassword',
     components: {
         LandingPagePopUp,
-        VueRecaptcha,
+        Recaptcha,
     },
     data: () => ({
         passwordsValid: false,
@@ -66,12 +71,19 @@ export default {
         isLoading: false,
     }),
     computed: {
-        sitekey() {
-            return process.env.VUE_APP_RECAPTCHA_SITE_KEY;
+        buttonDisabled(){
+            return this.recaptchaVerified && this.isPasswordConfirmed
+        },
+
+        isPasswordConfirmed() {
+            if(!!this.password && this.password == this.passwordConfirm) {
+                return true
+            }
+            return false
         },
 
         passwordConfirmRule() {
-            if(!!this.password && this.password == this.passwordConfirm) {
+            if(this.isPasswordConfirmed) {
                 return true
             }
             return 'Passwords must match.'

@@ -10,7 +10,8 @@
         font-size: 35px;
         line-height: 41px;
         color: #363636;
-
+        
+        margin-top: 20px;
         margin-bottom: 50px;
     }
     .v-btn {

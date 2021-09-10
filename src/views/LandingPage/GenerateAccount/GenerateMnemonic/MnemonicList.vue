@@ -1,7 +1,7 @@
 <style scoped lang="scss">
 .mnemonic-list-item{
   width: 110px;
-  height: 26px;
+  height: 26px !important;
 
   display: inline-block;
 
@@ -10,6 +10,8 @@
   font-family: Raleway;
   font-style: normal;
   font-weight: 500;
+  font-size: 12px;
+
   line-height: 150%;
   text-transform: none;
 
@@ -25,6 +27,7 @@
 
   box-shadow: 0px -3px 80px rgba(0, 0, 0, 0.07), 0px -0.904412px 24.1177px rgba(0, 0, 0, 0.0456112), 0px -0.375647px 10.0172px rgba(0, 0, 0, 0.035), 0px -0.135864px 3.62304px rgba(0, 0, 0, 0.0243888);
 }
+
 div {
   & > div.set-width {
     width: 504px;
@@ -35,7 +38,7 @@ div {
 <template lang='pug'>
     div
       div(
-        class='d-flex align-items-center justify-content-center'
+        class='d-flex'
         :key='i'
         v-for='(mnemonics, i) in chunkedMnemonic'
       )

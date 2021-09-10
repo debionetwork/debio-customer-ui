@@ -33,7 +33,7 @@
     box-shadow: 0px 2px 10px 0px #0000001A;
 
     display: grid;
-    grid-template-rows: 145px 415px;
+    grid-template-rows: 125px 435px;
     grid-template-areas: 
         "header"
         "main";
@@ -102,7 +102,7 @@
 
         margin-bottom: 50px;
     }
-    .v-btn {
+    .v-btn:not(.mnemonic-list-item) {
         width: 506px;
         height: 53px !important;
         

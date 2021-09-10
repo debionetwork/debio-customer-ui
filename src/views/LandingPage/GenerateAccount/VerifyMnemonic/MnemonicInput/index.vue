@@ -14,9 +14,9 @@
     justify-content: space-evenly;
   }
 
-  .mnemonic-list-item {
+  & > div > .mnemonic-list-item {
     width: 75px;
-    height: 28px;
+    height: 28px !important;
 
     display: inline-block;
 
@@ -58,6 +58,7 @@
             v-for='(mnemonic, y) in mnemonics'
             :key='y'
             outlined
+            @click="() => remove(mnemonic)"
           ) {{ mnemonic }}
     MnemonicKeypad(
       :mnemonicCollection="mnemonicCollection",
@@ -88,6 +89,15 @@ export default {
   methods: {
     input(mnemonic) {
       this.mnemonicInput.push(mnemonic)
+      this.$emit('click', this.mnemonicInput)
+    },
+
+    remove(mnemonic) {
+      const index = this.mnemonicInput.indexOf(mnemonic)
+      if (index !== -1) {
+        this.mnemonicInput.splice(index, 1);
+      }
+      this.mnemonicCollection.push(mnemonic)
       this.$emit('click', this.mnemonicInput)
     }
   }
