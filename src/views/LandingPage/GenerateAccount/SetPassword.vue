@@ -105,7 +105,7 @@
 <template lang="pug">
     LandingPagePopUp
         template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
-            img(height='22px', src='@/assets/chevron.png')
+            img(height='22px' src='@/assets/chevron.png')
             h2.pop-up-title Set Your Password
         template(v-slot:main): div.pop-up-main
             p You will need to input this password later when making transactions with this account.
@@ -137,7 +137,7 @@
                 @verify="onVerifyRecaptcha"
                 :sitekey="sitekey"
             )
-            v-btn(class='white--text', elevation='0', color='primary', @click="registrationSuccess") Continue
+            v-btn(class='white--text' elevation='0' color='primary' @click="registrationSuccess") Continue
 </template>
 
 <script>

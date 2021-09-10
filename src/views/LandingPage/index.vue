@@ -38,8 +38,8 @@
 <template lang="pug">
     LandingPagePopUp: template(v-slot:main): div.pop-up-main
         div.pop-up-title The Privacy-First Platform for Personal Genetic Testing
-        v-btn(class='white--text' elevation='0', color='primary') Sign In
-        v-btn(elevation='0', outlined, color='primary', @click="generateAccount") Generate Account
+        v-btn(class='white--text' elevation='0' color='primary') Sign In
+        v-btn(elevation='0' outlined color='primary' @click="generateAccount") Generate Account
 </template>
 
 <script>

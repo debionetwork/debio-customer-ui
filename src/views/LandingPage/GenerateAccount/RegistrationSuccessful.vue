@@ -70,12 +70,12 @@
 <template lang="pug">
     LandingPagePopUp
         template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
-            img(height='22px', src='@/assets/chevron.png')
+            img(height='22px' src='@/assets/chevron.png')
             h2.pop-up-title Your Account is ready!
         template(v-slot:main): div.pop-up-main
             img(src='@/assets/check-circle.png')
             h2 Your account has been successfully created.
-            v-btn(class='white--text', elevation='0', color='primary', @click="signIn") Sign In
+            v-btn(class='white--text' elevation='0' color='primary' @click="signIn") Sign In
 </template>
 
 <script>

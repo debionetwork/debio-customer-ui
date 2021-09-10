@@ -125,20 +125,20 @@
 
 <template lang="pug">
     LandingPagePopUp
-        template(v-slot:header): div(class='pop-up-header', v-on:click='previous')
-            img(height='22px', src='@/assets/chevron.png')
+        template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
+            img(height='22px' src='@/assets/chevron.png')
             h2.pop-up-title Your Secret Backup Phrase
         template(v-slot:main): div.pop-up-main
             h3 Write down or copy these words in the right order and save them safely.
             MnemonicList(:mnemonicCollection="mnemonicCollection")
             div.copy-text 
-                img(src='@/assets/copy.png', v-on:click="copyText")
+                img(src='@/assets/copy.png' v-on:click="copyText")
                 div(v-on:click="copyText") Copy this Secret Backup Phrase to clipboard
-            v-btn(class='white--text', elevation='0', color='primary', @click="verifyMnemonic") Continue
+            v-btn(class='white--text' elevation='0' color='primary' @click="verifyMnemonic") Continue
             v-snackbar(
-                v-model="snackbar",
-                :timeout="timeout",
-                right,
+                v-model="snackbar"
+                :timeout="timeout"
+                right
                 bottom
             ) Copied mnemonic!
 </template>

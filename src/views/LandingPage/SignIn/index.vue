@@ -85,7 +85,7 @@
 <template lang="pug">
     LandingPagePopUp
         template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
-            img(height='22px', src='@/assets/chevron.png')
+            img(height='22px' src='@/assets/chevron.png')
             h2.pop-up-title Choose Your Account
         template(v-slot:main): div.pop-up-main
             div

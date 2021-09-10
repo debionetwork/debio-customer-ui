@@ -104,13 +104,13 @@
 
 <template lang="pug">
     LandingPagePopUp
-        template(v-slot:header): div(class='pop-up-header', v-on:click='previous')
-            img(height='22px', src='@/assets/chevron.png')
+        template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
+            img(height='22px' src='@/assets/chevron.png')
             h2.pop-up-title Verify Recovery Phrase
         template(v-slot:main): div.pop-up-main
             h3 Tap the words to pull them next to each other in the correct order.
-            MnemonicInput(:mnemonicCollection="mnemonicInputs", @click="(inputs) => validate(inputs)")
-            v-btn(class='white--text', elevation='0', color='primary', @click="verifyMnemonic") Continue
+            MnemonicInput(:mnemonicCollection="mnemonicInputs" @click="(inputs) => validate(inputs)")
+            v-btn(class='white--text' elevation='0' color='primary' @click="verifyMnemonic") Continue
 </template>
 
 <script>

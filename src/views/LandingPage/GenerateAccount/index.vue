@@ -105,13 +105,13 @@
 <template lang="pug">
     LandingPagePopUp
         template(v-slot:header): div(class='pop-up-header' v-on:click='previous')
-            img(height='22px', src='@/assets/chevron.png')
+            img(height='22px' src='@/assets/chevron.png')
             h2.pop-up-title Backup your account
         template(v-slot:main): div.pop-up-main
             h3 We will give you 12 words that allows you to recover an account
             p You need to carefully save the  words. Copy-paste it, screenshot it, write it down, and keep it safe. If you lose it, we won't be able to help you recover it.
             v-checkbox(v-model="agreeConditions"): template(v-slot:label): div#checkboxLabel I understand that if I lose my recovery words, I will not be able  to access my account
-            v-btn(class='white--text', elevation='0', color='primary', :disabled="!agreeConditions", @click="generateMnemonic") Continue
+            v-btn(class='white--text' elevation='0' color='primary' :disabled="!agreeConditions" @click="generateMnemonic") Continue
 </template>
 
 <script>
