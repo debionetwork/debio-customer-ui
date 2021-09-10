@@ -5,7 +5,7 @@
         ui-debio-input(v-model="searchQuery" placeholder="Search..." width="443")
           ui-debio-icon(:icon="searchIcon" slot="icon-append" color="#000" stroke size="20")
 
-      .navbar__user-menu(:class="{ 'navbar__user-menu--settings': !!getActiveMenu && getActiveMenu.type === 'settings' }")
+      .navbar__user-menu(ref="menu" :class="{ 'navbar__user-menu--settings': !!getActiveMenu && getActiveMenu.type === 'settings' }")
         template(v-for="(menu, idx) in menus")
           ui-debio-icon(
             :key="menu.id"
@@ -26,6 +26,7 @@
             :option="!loginStatus"
             option-text="Connect"
             rounded
+            :active="menu.active"
             rounded-type="circle"
             border-size="2"
             border-color="#5640A5"
@@ -43,7 +44,7 @@
         transition(name="fade" mode="out-in")
           .navbar__dropdown(v-if="!!getActiveMenu")
             .navbar__triangle
-              .navbar__triangle-object
+              .navbar__triangle-object(:class="{ 'navbar__triangle-object--active': !!getActiveMenu }" :style="{'--arrow-position': arrowPosition}")
 
             ui-debio-card(:width="getActiveMenu.type === 'settings' ? '225' : '368'")
               template(slot="header" v-if="getActiveMenu.title")
@@ -52,7 +53,8 @@
               template
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'notification'")
                   .navbar__notification
-                    .notification-item(role="button" v-for="t in 20" class="pt-16")
+                    //- TODO: Change this to real notification lists when available
+                    .notification-item(role="button" v-for="t in 20")
                       .notification-item__wrapper
                         .notification-item__title(aria-label="Congrats! You got 5 DBIO!") Congrats! You got 5 DBIO!
                         .notification-item__description(aria-label="Congrats! You got 5 DBIO!") 2 hour ago
@@ -86,12 +88,16 @@
                     )
                   .navbar__balance
                     .navbar__balance-wrapper
-                      span.navbar__balance-type {{ getActiveMenu.currency }} Balance
-                      span.navbar__balance-amount 100
-                    .navbar__balance-usd (100 USD)
+                      .navbar__balance-type {{ getActiveMenu.currency }} Balance
+                      .navbar__balance-amount
+                        ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? debioIcon : daiIcon" size="10")
+                        span 100
+                    .navbar__balance-desc(v-if="getActiveMenu.type === 'metamask'")
+                      | If you want to view DBIO current price, go to this <a href="#">link</a>
+                    .navbar__balance-usd(v-else) (100 USD)
 
               template(slot="footer" v-if="getActiveMenu.action")
-                v-btn.navbar__footer-button(block color="primary" outlined) {{ getActiveMenu.action }}
+                v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
 </template>
 
 <script>
@@ -100,12 +106,14 @@ import {
   bellIcon,
   settingIcon,
   userIcon,
+  daiIcon,
+  debioIcon,
   usersIcon,
   logoutIcon,
   polkadotIcon,
   metamaskFoxIcon,
   copyIcon
-} from "@/core/icons"
+} from "@/common/icons"
 
 export default {
   name: "Navbar",
@@ -114,6 +122,8 @@ export default {
     bellIcon,
     settingIcon,
     userIcon,
+    daiIcon,
+    debioIcon,
     usersIcon,
     logoutIcon,
     polkadotIcon,
@@ -124,6 +134,7 @@ export default {
     searchQuery: "",
     contentHover: false,
     loginStatus: false,
+    arrowPosition: "",
     menus: [
       {
         id: 1,
@@ -144,17 +155,17 @@ export default {
         type: "polkadot",
         title: "Polkadot Wallet",
         currency: "DBIO",
-        active: false,
-        action: "Download Keystore"
+        action: "Download Keystore",
+        active: false
       },
       {
         id: 4,
         type: "metamask",
         title: "Metamask Wallet",
         currency: "DAI",
-        active: false,
         isAvatar: true,
-        action: "Disconnect Wallet"
+        action: "Disconnect Wallet",
+        active: false,
       }
     ]
   }),
@@ -180,27 +191,29 @@ export default {
       this.handleHideDropdown(this.computeMouseLeave)
     },
 
-    handleHover(e, idx) {      
+    handleHover(e, idx) {
       this.menus.forEach(menu => menu.active = false)
       const selectedMenu = this.menus[idx]
 
       if (selectedMenu.type === "metamask" && !this.loginStatus) return
 
       selectedMenu.active = true
-      console.log(e);
 
-      const triangle = document.querySelector(".navbar__triangle-object")
-      const dropdownWidth = document.querySelector(".navbar__dropdown").getBoundingClientRect().width
+      const checkSmallDropdown = selectedMenu.type === "settings"
 
-      triangle.style.right = `${((e.x - dropdownWidth) + (90/100))}px`
+      const calculateFinalPosition = checkSmallDropdown
+        ? 37
+        : this.$refs.menu.getBoundingClientRect().width - 7
+
+      this.arrowPosition = `${
+        e.target.getBoundingClientRect().left -
+        this.$refs.menu.offsetLeft +
+        calculateFinalPosition
+      }px`
     },
 
     handleHideDropdown(idx) {
       if (idx === null) return
-
-      const triangle = document.querySelector(".navbar__triangle-object")
-
-      triangle.style.right = `0px`
 
       this.menus[idx].active = false
     },
@@ -208,6 +221,23 @@ export default {
     connectToMetamask() {
       this.loginStatus = true
       // TODO: Should handle connect to metamsk
+    },
+
+    disconnectWallet() {
+      this.loginStatus = false
+
+      this.menus.find(menu => menu.type === "metamask").active = false
+      // TODO: Should handle disconect metamask wallet
+    },
+
+    downloadKeystore() {
+      // TODO: Should handle download polkadot keystore
+    },
+
+    handleDropdownAction(type) {
+      if (type === "metamask") this.disconnectWallet()
+      else this.downloadKeystore()
+      // TODO: Should handle polkadot and metamask actions
     }
   }
 }
@@ -216,19 +246,27 @@ export default {
 <style lang="sass">
   .navbar
     padding: 3rem
+    width: 100%
 
     &__triangle
-      height: 20px
-      position: relative
+      height: 1.25rem
+      overflow: hidden
 
-      &-object
-        position: absolute
-        width: 30px
-        height: 30px
-        background: #FFFFFF
-        transform: rotate(45deg)
-        top: 10px
-        box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1)
+    &__triangle-object
+      position: absolute
+      top: -0.313rem
+      z-index: -1
+      border-style: solid
+      border-width: 0 0.875rem 1.875rem 0.875rem
+      border-color: transparent transparent #FFFFFF transparent
+      border-radius: 5.625rem
+      opacity: 0
+      transform: translateX(var(--arrow-position))
+      filter: drop-shadow(0 0.125rem 0.625rem rgba(0, 0, 0, 0.15))
+      transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+
+      &--active
+        opacity: 1
 
     &__wrapper
       display: flex
@@ -285,9 +323,19 @@ export default {
       align-items: center
       justify-content: space-between
 
+    &__balance-amount
+      display: flex
+      align-items: center
+      gap: 0.375rem
+
     &__balance-usd
       display: inherit
       justify-content: flex-end
+
+    &__balance-desc
+      font-size: 0.625rem
+      font-weight: 400
+      line-height: 0.938rem
 
     &__footer-button
       margin-bottom: 0.938rem

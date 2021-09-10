@@ -4,7 +4,7 @@
     :class="classes"
     :to="to"
     :style="computeStyle"
-    @mouseover.prevent="handleMouseOver"
+    @mouseenter.prevent="handleMouseOver"
     @mouseleave.prevent="handleMouseLeave"
   )
     .ui-debio-avatar__initial(
@@ -63,6 +63,7 @@ export default {
       validator: (type) => allowedRoundedType.test(type)
     },
     option: Boolean,
+    active: Boolean,
     rounded: Boolean
   },
 
@@ -109,7 +110,7 @@ export default {
         ? this.borderColor
         : "#C400A5"
       
-      return { border: `solid ${this.borderSize}px ${borderColor}` } 
+      return { border: `solid ${this.borderSize}px ${this.active ? "#C400A5" : borderColor}` }
     },
 
     computeOptionStyle() {

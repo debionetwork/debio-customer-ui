@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { creditCardIcon, layersIcon, labIllustration } from '@/core/icons'
+import { creditCardIcon, layersIcon, labIllustration } from "@/common/icons"
 
 export default {
   name: "Banner",
@@ -41,41 +41,41 @@ export default {
 
       .ui-debio-card__body
         background: #5640A5
-        padding: 35px 32px 40px
-        border-radius: 4px
+        padding: 2.188rem 2rem 2.5rem
+        border-radius: 0.25rem
 
     &__content
       display: flex
       justify-content: space-between
 
     &__content-description
-      margin-left: 212px
+      margin-left: 13.25rem
 
     &__illustrations
       display: flex
       align-items: center
-      gap: 0 30px
+      gap: 0 1.875rem
 
     &__illustration
       position: absolute
-      top: -10px
+      top: -0.625rem
 
     &__title
-      font-size: 30px
+      font-size: 1.875rem
       font-weight: 600
-      line-height: 45px
+      line-height: 2.813rem
       color: #FFFFFF
 
     &__subtitle
-      max-width: 277px
-      font-size: 15px
+      max-width: 17.313rem
+      font-size: 0.938rem
       font-weight: 700
-      line-height: 23px
+      line-height: 1.438rem
       color: #FFFFFF
 
     &__cta
       display: flex
-      gap: 20px
+      gap: 1.25rem
 
     @media screen and (max-width: 959px)
       &__content,
@@ -84,7 +84,7 @@ export default {
         flex-direction: column
 
       &__content
-        gap: 20px
+        gap: 1.25rem
         
       &__content-description
         margin-left: unset

@@ -8,6 +8,8 @@ import searchIcon from "./search"
 import bellIcon from "./bell"
 import settingIcon from "./setting"
 import polkadotIcon from "./polkadot"
+import daiIcon from "./dai"
+import debioIcon from "./debio"
 import userIcon from "./user"
 import usersIcon from "./users"
 import labIllustration from "./labIllustration"
@@ -27,6 +29,8 @@ export {
   bellIcon,
   settingIcon,
   polkadotIcon,
+  daiIcon,
+  debioIcon,
   eyeIcon,
   eyeOffIcon,
   userIcon,
