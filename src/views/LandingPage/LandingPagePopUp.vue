@@ -44,10 +44,15 @@
     }
 }
 .pop-up-main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-area: main;
+
     & > * {
         margin-bottom: 20px;
     }
-    & > .password-field a {
+    & > .password-field {
         width: 504px;
 
         font-family: Raleway;
@@ -108,6 +113,10 @@
         line-height: 30px;
         text-transform: none;
         margin-bottom: 20px;
+    }
+    // Override default Vuetify CSS
+    .theme--light.v-btn.v-btn--disabled{
+        color: white !important;
     }
 }
 </style>

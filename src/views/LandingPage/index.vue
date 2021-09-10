@@ -1,13 +1,5 @@
 <style scoped lang="scss">
 .pop-up-main{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    grid-area: main;
-
-    * {
-        margin-bottom: 20px;
-    }
     .pop-up-title{
         width: 462px;
         height: 76px;
@@ -31,10 +23,6 @@
         font-size: 20px !important;
         line-height: 30px;
         text-transform: none;
-    }
-    // Override default Vuetify CSS
-    .theme--light.v-btn.v-btn--disabled{
-        color: white !important;
     }
 }
 </style>
