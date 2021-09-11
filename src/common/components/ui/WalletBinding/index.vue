@@ -8,22 +8,22 @@
               v-icon mdi-close
             
       div(v-if="loading")
-        div(class="mt-10 mb-10" align="center")
+        div.mt-10.mb-10(align="center")
           v-progress-circular(indeterminate, color="primary")
 
       div(v-if="!loading")
         div(v-if="putWallet")
 
           div(align="center") Connect to your Metamask!
-            v-img(class= "mt-5 mb-3" src="@/assets/metamask-icon.png" max-width="80")
-            span(class="grey--text") Metamask
+            v-img.mt-5.mb-3(src="@/assets/metamask-icon.png" max-width="80")
+            span.grey--text") Metamask
 
           div(align="center" class="mt-5 grey--text") Haven't got a metamask wallet yet ?
           br
           a(href="https://docs.debio.network/getting-started")
             u Learn How to Connect ?
 
-          div(class="mb-5 ml-8 mr-8 mt-8")
+          div.mb-5.ml-8.mr-8.mt-8
             v-btn(
               dark
               class="mt-5 align-center"
@@ -35,14 +35,14 @@
               @click="setWalllet('metamask')"
             ) Connect
               
-        div(class="mt-10 mb-10 ml-10 mr-10" v-if="putAccount")
-          div(class="align-center mb-5") Your address
-          div.address( class="dg-card pb-2 pt-2", style="background: #eeeeee", elevation="0")
-            div(class="ml-3 p4") {{ethAccount[0].address}}
+        div.mt-10.mb-10.ml-10.mr-10 v-if="putAccount")
+          div.align-center.mb-5 Your address
+          div.address.dg-card.pb-2.pt-2 style="background: #eeeeee" elevation="0")
+            div.ml-3.p4 {{ethAccount[0].address}}
               v-btn(icon @click="copyToClipboard(ethAccount[0].address)")
                 v-icon mdi-vector-arrange-below
             
-          v-row(class="mt-5")
+          v-row.mt-5
             v-col DAI Balance
             v-col(cols="auto") {{ethAccount[0].balance}} ETH
               
