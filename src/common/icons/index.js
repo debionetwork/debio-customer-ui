@@ -22,6 +22,7 @@ import customerIcon from "./customer"
 import labIcon from "./lab"
 import doctorIcon from "./doctor"
 import hospitalIcon from "./hospital"
+import checkCircleIcon from "./checkCircle"
 
 export {
   creditCardIcon,
@@ -48,4 +49,5 @@ export {
   labIcon,
   doctorIcon,
   hospitalIcon,
+  checkCircleIcon
 }
