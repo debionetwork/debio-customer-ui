@@ -1,5 +1,6 @@
 import store from '../../store'
 import detectEthereumProvider from '@metamask/detect-provider'
+import { getBalanceETH } from './wallet';
 
 export async function handleAccountsChanged(accounts, currentAccount) {
   if (accounts.length === 0) {
@@ -79,5 +80,34 @@ export async function getTransactionReceiptMined(txHash, interval) {
     return new Promise(transactionReceiptAsync)
   } else {
     throw new Error("Invalid Type: " + txHash)
+  }
+}
+
+export async function setMetamaskWallet(address) {
+  const ethAccount = await startApp()
+
+  if (ethAccount.currentAccount == "no_install") {
+    throw "Please install MetaMask!";
+  } 
+
+  let accountList = []
+  
+  for (let i = 0; i < ethAccount.accountList.length; i++) {
+    const balance = await getBalanceETH(
+      ethAccount.accountList[i]
+    )
+
+    let isActive = false
+    if (address == ethAccount.accountList[i]) {
+      isActive = true
+    }
+
+    accountList.push({
+      address: ethAccount.accountList[i],
+      name: "Account " + (i + 1),
+      balance: parseFloat(balance).toFixed(2),
+      active: isActive,
+    })
+    return accountList     
   }
 }
