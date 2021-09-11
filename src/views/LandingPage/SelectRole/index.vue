@@ -29,13 +29,14 @@
 
 <template lang="pug">
      LandingPagePopUp
-        template(v-slot:main): div.pop-up-main: div(class='role-list')
+        template(v-slot:main): div.pop-up-main: div.role-list
             div
                 img(src='')
 </template>
 
 <script>
 import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+// import { metamaskFoxIcon } from "@/common/icons"
 
 export default {
     name: 'InputPassword',

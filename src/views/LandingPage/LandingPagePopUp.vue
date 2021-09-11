@@ -125,7 +125,7 @@
     div.landing-page-pop-up
         header
             div(v-if="hasHeaderSlot")
-                div(class='pop-up-header' v-on:click='previous')
+                div.pop-up-header(v-on:click='previous')
                     img(height='22px' src='@/assets/chevron.png')
                     h2.pop-up-title: slot(name="header")
         div.pop-up-main: slot(name="main")

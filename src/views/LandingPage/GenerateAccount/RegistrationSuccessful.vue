@@ -29,7 +29,7 @@
         template(v-slot:main): div.pop-up-main
             img(src='@/assets/check-circle.png')
             h2 Your account has been successfully created.
-            v-btn(class='white--text' elevation='0' color='primary' @click="signIn") Sign In
+            v-btn.white--text(elevation='0' color='primary' @click="signIn") Sign In
 </template>
 
 <script>

@@ -19,7 +19,7 @@
             div
                 p Please type in your Mnemonic Phrase
                 v-textarea(no-resize outlined)
-            div: v-btn(class='white--text' elevation='0' color='primary' @click='changePassword') Continue
+            div: v-btn.white--text(elevation='0' color='primary' @click='changePassword') Continue
 </template>
 
 <script>

@@ -52,7 +52,7 @@
                     outlined
                 )
                 div.forgot-password-text: div(v-on:click="forgotPassword") Forgot your password?
-            div: v-btn(class='white--text' elevation='0' color='primary' @click='selectRole') Continue
+            div: v-btn.white--text(elevation='0' color='primary' @click='selectRole') Continue
 </template>
 
 <script>

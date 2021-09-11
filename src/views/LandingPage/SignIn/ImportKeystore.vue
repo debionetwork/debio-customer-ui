@@ -20,7 +20,7 @@
                 p Choose your JSON Keystore File
                 v-file-input(label='Select File' truncate-length='15')
             div
-                v-btn(class='white--text' elevation='0' color='primary' @click='changePassword') Continue
+                v-btn.white--text(elevation='0' color='primary' @click='changePassword') Continue
 </template>
 
 <script>

@@ -24,7 +24,7 @@
         template(v-slot:main): div.pop-up-main
             img(src='@/assets/lock.png')
             h2 Restore your password using mnemonic phrase or keystore
-            v-btn(class='white--text' elevation='0' color='primary' @click='inputMnemonic') Mnemonic Phrase
+            v-btn.white--text(elevation='0' color='primary' @click='inputMnemonic') Mnemonic Phrase
             v-btn(elevation='0' color='primary' outlined @click='importKeystore') Import Keystore
 </template>
 

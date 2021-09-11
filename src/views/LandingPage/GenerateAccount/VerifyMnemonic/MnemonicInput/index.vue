@@ -49,7 +49,7 @@
 
 <template lang='pug'>
   div
-    div(class='mnemonic-textbox')
+    div.mnemonic-textbox
         div(:key='i' v-for='(mnemonics, i) in chunkedMnemonic')
           v-btn(
             color="secondary"
