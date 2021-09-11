@@ -65,6 +65,7 @@ export default {
         snackbar: false,
         timeout: 2000,
     }),
+    
     mounted(){
         this.mnemonic = mnemonicGenerate()
         
@@ -73,6 +74,7 @@ export default {
             this.mnemonicCollection.push(mnemonicCollection[i-1])
         }
     },
+
     methods: {
         previous() {
             this.$router.push({name: 'generate-account'});
