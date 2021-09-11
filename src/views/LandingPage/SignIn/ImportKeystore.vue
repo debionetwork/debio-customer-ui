@@ -18,7 +18,7 @@
         template(v-slot:main): div.pop-up-main
             div
                 p Choose your JSON Keystore File
-                v-file-input(label='Select File' truncate-length='15')
+                v-file-input(label='Select File' truncate-length='15' @change='setKeystoreFileInputListener')
             div
                 v-btn.white--text(elevation='0' color='primary' @click='changePassword') Continue
 </template>
@@ -28,9 +28,16 @@ import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
 export default {
     name: 'SelectFile',
+
+    data: () => ({
+        keystore: "",
+        password: "",
+    }),
+
     components: {
         LandingPagePopUp,
     },
+
     methods: {
         previous() {
             this.$router.push({name: 'forgot-password'});
@@ -38,6 +45,18 @@ export default {
 
         changePassword() {
             this.$router.push({name: 'change-password'});
+        },
+
+        setKeystoreFileInputListener(files) {
+            const file = files[0];
+            this.fileName = file.name;
+
+            const fr = new FileReader();
+            fr.onload = async function () {
+                // TODO: Validate if valid keystore
+                this.keystore = fr.result;
+            };
+            fr.readAsText(file);
         },
     },
 }

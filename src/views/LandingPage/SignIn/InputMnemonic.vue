@@ -18,30 +18,63 @@
         template(v-slot:main): div.pop-up-main
             div
                 p Please type in your Mnemonic Phrase
-                v-textarea(no-resize outlined)
-            div: v-btn.white--text(elevation='0' color='primary' @click='changePassword') Continue
+                v-textarea(
+                    v-model='mnemonic'
+                    :rules='[mnemonicRule]'
+                    no-resize
+                    outlined
+                )
+            div: v-btn.white--text(
+                :disabled='!checkIfValid'
+                elevation='0' 
+                color='primary' 
+                @click='changePassword'
+            ) Continue
 </template>
 
 <script>
+import { mnemonicValidate } from '@polkadot/util-crypto'
 import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
 export default {
     name: 'InputMnemonic',
+
     components: {
         LandingPagePopUp,
     },
+
     data: () => ({
-        password: "",
-        showPassword: false,
-        isLoading: false,
+        mnemonic: "",
     }),
+    
+    computed: {
+        mnemonicRule() {
+            if(!this.mnemonic) {
+                return 'Mnemonic cannot be empty.'
+            }
+            if(!mnemonicValidate(this.mnemonic)) {
+                return 'Mnemonic invalid.'
+            }
+            return true
+        },
+
+        checkIfValid(){
+            return this.mnemonicRule === true
+        }
+    },
+
     methods: {
         previous() {
-            this.$router.push({name: 'forgot-password'});
+            this.$router.push({name: 'forgot-password'})
         },
 
         changePassword() {
-            this.$router.push({name: 'change-password'});
+            this.$router.push({
+                name: 'change-password',
+                params: { 
+                    mnemonic: this.mnemonic,
+                }
+            })
         },
     },
 }

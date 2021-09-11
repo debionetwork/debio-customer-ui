@@ -24,6 +24,11 @@ const signInRoutes = [
     name: 'change-password',
     component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn/ChangePassword'),
   },
+  {
+    path: '/sign-in',
+    name: 'change-password-successful',
+    component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn/ChangePasswordSuccessful'),
+  },
 ]
 
 export default signInRoutes

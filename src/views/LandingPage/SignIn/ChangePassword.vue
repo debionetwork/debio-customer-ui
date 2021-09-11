@@ -48,12 +48,13 @@
                 class='white--text' 
                 elevation='0' 
                 color='primary' 
-                @click="registrationSuccess"
+                @click="register"
             ) Continue
 </template>
 
 <script>
 import axios from "axios"
+import { mapActions, mapState, mapMutations } from "vuex"
 import Recaptcha from "@/common/components/Recaptcha.vue"
 import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
@@ -70,7 +71,6 @@ export default {
         showPassword: false,
         showPasswordConfirm: false,
         recaptchaVerified: false,
-        isLoading: false,
     }),
     computed: {
         buttonDisabled(){
@@ -90,14 +90,39 @@ export default {
             }
             return 'Passwords must match.'
         },
+        
+        ...mapState({
+            substrateApi: (state) => state.substrate.api,
+            isLoading: (state) => state.substrate.isLoadingWallet,
+        }),
     },
     methods: {
+        ...mapActions({
+            registerMnemonic: "substrate/registerMnemonic",
+        }),
+
+        ...mapMutations({
+            setIsLoading: "substrate/SET_LOADING_WALLET",
+        }),
+
         previous() {
             this.$router.push({name: 'forgot-password'});
         },
 
-        registrationSuccess() {
-            this.$router.push({name: 'registration-success'});
+        async register() {
+            try {
+                const result = await this.registerMnemonic({
+                    mnemonic: this.$route.params.mnemonic,
+                    password: this.password,
+                });
+                if (!result.success) {
+                    throw('Mnemonic registration failed!')
+                }
+                this.$router.push({name: 'registration-successful'});
+            } 
+            catch (err) {
+                console.error(err);
+            }
         },
         
         async onVerifyRecaptcha(response) {
