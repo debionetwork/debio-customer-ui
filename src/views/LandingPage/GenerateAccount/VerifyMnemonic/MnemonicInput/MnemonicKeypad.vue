@@ -53,7 +53,7 @@ div {
 </template>
 
 <script>
-import { chunk, shuffle } from '@/common/lib/arrays'
+import { chunk } from '@/common/lib/arrays'
 
 export default {
   name: 'MnemonicKeypad',
@@ -61,12 +61,8 @@ export default {
     mnemonicCollection: Array,
   },
   computed: {
-    mnemonicKeys(){
-      return shuffle(this.mnemonicCollection)
-    },
-
     chunkedMnemonic() {
-      return chunk(this.mnemonicKeys, 6)
+      return chunk(this.mnemonicCollection, 6)
     }
   },
   methods: {
