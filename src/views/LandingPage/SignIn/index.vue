@@ -1,7 +1,28 @@
 <style scoped lang="scss">
+@import "@/common/styles/variables.scss";
+
 .pop-up-main{
     justify-content: space-between;
     height: 100%;
+    
+    & > div > div.forgot-password-text {
+        width: 100%;
+        height: 51px;
+
+        font-family: Raleway;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 15px;
+        line-height: 150%;
+        color: $color-primary;
+
+        display: flex;
+        justify-content: flex-end;
+
+        & > * {
+            cursor: pointer;
+        }
+    }
 
     p {
         height: 27px;
@@ -14,11 +35,24 @@
 
 <template lang="pug">
      LandingPagePopUp(:previous='previous')
-        template(v-slot:header) Choose Your Account
+        template(v-slot:header) Sign In
         template(v-slot:main): div.pop-up-main
-            div
-                div 074Dx780...06DF
-                div Last login: Customer Account
+            div.d-flex.flex-column
+                p Please input your password
+                v-text-field(
+                    label="Type in your password"
+                    v-model="password"
+                    class="password-field"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :type="showPassword ? 'text' : 'password'"
+                    :rules="[val => !!val || 'Password is required']"
+                    :disabled="isLoading"
+                    @click:append="showPassword = !showPassword"
+                    @keyup.enter="onPasswordSet"
+                    outlined
+                )
+                div.forgot-password-text: div(v-on:click="forgotPassword") Forgot your password?
+            div: v-btn(class='white--text' elevation='0' color='primary' @click='selectRole') Continue
 </template>
 
 <script>
@@ -39,8 +73,12 @@ export default {
             this.$router.push({name: 'landing-page'});
         },
 
-        signIn() {
-            this.$router.push({name: 'sign-in'});
+        selectRole() {
+            this.$router.push({name: 'select-role'});
+        },
+
+        forgotPassword() {
+            this.$router.push({name: 'forgot-password'});
         },
     },
 }

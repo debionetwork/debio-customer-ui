@@ -1,48 +1,52 @@
 <style scoped lang="scss">
 .pop-up-main{
-    justify-content: space-between;
-    height: 100%;
-
-    p {
-        height: 27px;
+    img {
+        width: 152px;
+        height: 152px;
     }
-    .v-btn {
-        margin-bottom: 58px;
+    h2 {
+        width: 492px;
+
+        font-family: Raleway;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 18px;
+        line-height: 150%;
+        
+        text-align: center;
     }
 }
 </style>
 
 <template lang="pug">
-     LandingPagePopUp(:previous='previous')
-        template(v-slot:header) Input Mnemonic Phrase
+    LandingPagePopUp(:previous='previous')
+        template(v-slot:header) Forgot Password
         template(v-slot:main): div.pop-up-main
-            div
-                p Please type in your Mnemonic Phrase
-                v-textarea(no-resize outlined)
-            div
-                v-btn(class='white--text' elevation='0' color='primary') Continue
+            img(src='@/assets/lock.png')
+            h2 Restore your password using mnemonic phrase or keystore
+            v-btn(class='white--text' elevation='0' color='primary' @click='inputMnemonic') Mnemonic Phrase
+            v-btn(elevation='0' color='primary' outlined @click='importKeystore') Import Keystore
 </template>
 
 <script>
 import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
 export default {
-    name: 'InputPassword',
+    name: 'ForgotPassword',
     components: {
         LandingPagePopUp,
     },
-    data: () => ({
-        password: "",
-        showPassword: false,
-        isLoading: false,
-    }),
     methods: {
         previous() {
-            this.$router.push({name: 'landing-page'});
+            this.$router.push({name: 'sign-in'});
         },
 
-        signIn() {
-            this.$router.push({name: 'sign-in'});
+        inputMnemonic() {
+            this.$router.push({name: 'input-mnemonic'});
+        },
+
+        importKeystore() {
+            this.$router.push({name: 'import-keystore'});
         },
     },
 }

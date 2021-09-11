@@ -1,4 +1,4 @@
-<style scoped lang="scss">
+<style scoped lang='scss'>
 .pop-up-main{
     .pop-up-title{
         width: 462px;
@@ -28,11 +28,11 @@
 }
 </style>
 
-<template lang="pug">
+<template lang='pug'>
     LandingPagePopUp: template(v-slot:main): div.pop-up-main
         div.pop-up-title The Privacy-First Platform for Personal Genetic Testing
-        v-btn(class='white--text' elevation='0' color='primary') Sign In
-        v-btn(elevation='0' outlined color='primary' @click="generateAccount") Generate Account
+        v-btn(class='white--text' elevation='0' color='primary' @click='signIn') Sign In
+        v-btn(elevation='0' outlined color='primary' @click='generateAccount') Generate Account
 </template>
 
 <script>
@@ -40,10 +40,16 @@ import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
 export default {
     name: 'MainPage',
+
     components: {
         LandingPagePopUp,
     },
+
     methods: {
+        signIn() {
+            this.$router.push({name: 'sign-in'});
+        },
+
         generateAccount() {
             this.$router.push({name: 'generate-account'});
         }

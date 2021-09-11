@@ -30,10 +30,9 @@ export default {
         mnemonicValid: false,
     }),
     mounted(){
-        this.mnemonicCollection.push(
-            shuffle(...this.$route.params.mnemonicCollection)
-        )
-        this.mnemonicInputs.push(...this.mnemonicCollection)
+        this.mnemonicCollection.push(...this.$route.params.mnemonicCollection)
+        const mnemonicCollection = shuffle(this.$route.params.mnemonicCollection)
+        this.mnemonicInputs.push(...mnemonicCollection)
     },
     methods: {
         previous() {

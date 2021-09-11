@@ -2,7 +2,7 @@
 .pop-up-main{
     p {
         width: 504px;
-        height: 54px;
+        height: 27px;
         margin-bottom: 28px;
     }
     & > .password-field {
@@ -13,9 +13,9 @@
 
 <template lang="pug">
      LandingPagePopUp(:previous='previous')
-        template(v-slot:header) Set Your Password
+        template(v-slot:header) Change Password
         template(v-slot:main): div.pop-up-main
-            p You will need to input this password later when making transactions with this account.
+            p Type and confirm a secure new password for your account.
             v-text-field(
                 label="Type in your password"
                 v-model="password"
@@ -58,7 +58,7 @@ import Recaptcha from "@/common/components/Recaptcha.vue"
 import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
 export default {
-    name: 'SetPassword',
+    name: 'ChangePassword',
     components: {
         LandingPagePopUp,
         Recaptcha,
@@ -93,7 +93,7 @@ export default {
     },
     methods: {
         previous() {
-            this.$router.push({name: 'generate-mnemonic'});
+            this.$router.push({name: 'forgot-password'});
         },
 
         registrationSuccess() {

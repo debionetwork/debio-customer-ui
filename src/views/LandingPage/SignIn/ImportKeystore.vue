@@ -18,9 +18,9 @@
         template(v-slot:main): div.pop-up-main
             div
                 p Choose your JSON Keystore File
-                v-file-input(label='Select File', truncate-length='15')
+                v-file-input(label='Select File' truncate-length='15')
             div
-                v-btn(class='white--text', elevation='0', color='primary') Continue
+                v-btn(class='white--text' elevation='0' color='primary' @click='changePassword') Continue
 </template>
 
 <script>
@@ -33,11 +33,11 @@ export default {
     },
     methods: {
         previous() {
-            this.$router.push({name: 'no-account'});
+            this.$router.push({name: 'forgot-password'});
         },
 
-        signIn() {
-            this.$router.push({name: 'sign-in'});
+        changePassword() {
+            this.$router.push({name: 'change-password'});
         },
     },
 }
