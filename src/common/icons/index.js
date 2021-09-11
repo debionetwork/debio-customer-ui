@@ -18,6 +18,10 @@ import eyeOffIcon from "./eyeOff"
 import logoutIcon from "./logout"
 import copyIcon from "./copy"
 import labIllustrationIcon from "./labIllustration"
+import customerIcon from "./customer"
+import labIcon from "./lab"
+import doctorIcon from "./doctor"
+import hospitalIcon from "./hospital"
 
 export {
   creditCardIcon,
@@ -39,5 +43,9 @@ export {
   logoutIcon,
   copyIcon,
   labIllustrationIcon,
-  defaultIcon
+  defaultIcon,
+  customerIcon,
+  labIcon,
+  doctorIcon,
+  hospitalIcon,
 }
