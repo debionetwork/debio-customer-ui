@@ -65,7 +65,7 @@ export default {
         snackbar: false,
         timeout: 2000,
     }),
-    
+
     mounted(){
         this.mnemonic = mnemonicGenerate()
         
@@ -84,7 +84,8 @@ export default {
             this.$router.push({
                 name: 'verify-mnemonic',
                 params: { 
-                    mnemonicCollection: this.mnemonicCollection
+                    mnemonic: this.mnemonic,
+                    mnemonicCollection: this.mnemonicCollection,
                 }
             });
         },

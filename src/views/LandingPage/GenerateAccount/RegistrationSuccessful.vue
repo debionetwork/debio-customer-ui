@@ -24,8 +24,7 @@
 </style>
 
 <template lang="pug">
-     LandingPagePopUp(:previous='previous')
-        template(v-slot:header) Your Account is ready!
+     LandingPagePopUp
         template(v-slot:main): div.pop-up-main
             img(src='@/assets/check-circle.png')
             h2 Your account has been successfully created.
@@ -41,10 +40,6 @@ export default {
         LandingPagePopUp,
     },
     methods: {
-        previous() {
-            this.$router.push({name: 'set-password'});
-        },
-
         signIn() {
             this.$router.push({name: 'sign-in'});
         },

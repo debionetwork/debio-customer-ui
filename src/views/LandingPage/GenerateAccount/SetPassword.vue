@@ -48,21 +48,25 @@
                 class='white--text' 
                 elevation='0' 
                 color='primary' 
-                @click="registrationSuccess"
+                :loading='isLoading'
+                @click="register"
             ) Continue
 </template>
 
 <script>
 import axios from "axios"
+import { mapActions, mapState, mapMutations } from "vuex"
 import Recaptcha from "@/common/components/Recaptcha.vue"
 import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
 
 export default {
     name: 'SetPassword',
+
     components: {
         LandingPagePopUp,
         Recaptcha,
     },
+
     data: () => ({
         passwordsValid: false,
         password: "",
@@ -70,8 +74,8 @@ export default {
         showPassword: false,
         showPasswordConfirm: false,
         recaptchaVerified: false,
-        isLoading: false,
     }),
+    
     computed: {
         buttonDisabled(){
             return this.recaptchaVerified && this.isPasswordConfirmed
@@ -90,14 +94,40 @@ export default {
             }
             return 'Passwords must match.'
         },
+        
+        ...mapState({
+            substrateApi: (state) => state.substrate.api,
+            isLoading: (state) => state.substrate.isLoadingWallet,
+        }),
     },
+
     methods: {
+        ...mapActions({
+            registerMnemonic: "substrate/registerMnemonic",
+        }),
+
+        ...mapMutations({
+            setIsLoading: "substrate/SET_LOADING_WALLET",
+        }),
+
         previous() {
             this.$router.push({name: 'generate-mnemonic'});
         },
 
-        registrationSuccess() {
-            this.$router.push({name: 'registration-success'});
+        async register() {
+            try {
+                const result = await this.registerMnemonic({
+                    mnemonic: this.$route.params.mnemonic,
+                    password: this.password,
+                });
+                if (!result.success) {
+                    throw('Mnemonic registration failed!')
+                }
+                this.$router.push({name: 'registration-successful'});
+            } 
+            catch (err) {
+                console.error(err);
+            }
         },
         
         async onVerifyRecaptcha(response) {

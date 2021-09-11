@@ -9,7 +9,7 @@
                 class='white--text' 
                 elevation='0' 
                 color='primary' 
-                @click="verifyMnemonic"
+                @click="setPassword"
             ) Continue
 </template>
 
@@ -39,13 +39,13 @@ export default {
             this.$router.push({name: 'generate-mnemonic'});
         },
 
-        verifyMnemonic() {
-            this.$router.push({name: 'set-password'});
-        },
-        
-        copyText(){
-            navigator.clipboard.writeText(this.mnemonic);
-            this.snackbar = true;
+        setPassword() {
+            this.$router.push({
+                name: 'set-password',
+                params: { 
+                    mnemonic: this.$route.params.mnemonic,
+                }
+            });
         },
 
         validate(inputs){
