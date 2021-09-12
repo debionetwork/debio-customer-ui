@@ -110,7 +110,7 @@ steps:
       script:
         - docker stop debio_frontend_revamp_dev || true && docker rm debio_frontend_revamp_dev || true
         - docker rmi hub.debio.network/debio_frontend_revamp_dev:latest && docker pull hub.debio.network/debio_frontend_revamp_dev:latest
-        - docker run -d --name=debio_frontend_revamp_dev --env=debioenv=development -v /etc/localtime:/etc/localtime:ro -p 0.0.0.0:8080:80 --restart=always hub.debio.network/debio_frontend_revamp_dev:latest
+        - docker run -d --name=debio_frontend_revamp_dev --env=debioenv=development -v /etc/localtime:/etc/localtime:ro -p 0.0.0.0:8085:80 --restart=always hub.debio.network/debio_frontend_revamp_dev:latest
     when:
       branch:
         - development
