@@ -1,7 +1,10 @@
+import { checkIsLoggedIn } from '@/common/lib/route-guard'
+
 const generateAccountRoutes = [
   {
     path: '/generate',
     name: 'generate-account',
+    beforeEnter: checkIsLoggedIn,
     component: () => import(/* webpackChunkName */ '../../views/LandingPage/GenerateAccount'),
   },
   {

@@ -1,7 +1,10 @@
+import { checkIsLoggedIn } from '@/common/lib/route-guard'
+
 const signInRoutes = [
   {
     path: '/sign-in',
     name: 'sign-in',
+    beforeEnter: checkIsLoggedIn,
     component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn'),
   },
   {

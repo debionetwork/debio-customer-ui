@@ -16,12 +16,11 @@
 
           div(align="center") Connect to your Metamask!
             v-img.mt-5.mb-3(src="@/assets/metamask-icon.png" max-width="80")
-            span.grey--text") Metamask
+            span.grey--text Metamask
 
           div(align="center" class="mt-5 grey--text") Haven't got a metamask wallet yet ?
-          br
-          a(href="https://docs.debio.network/getting-started")
-            u Learn How to Connect ?
+          div(align="center" class="mt-5")
+            a(href="https://docs.debio.network/getting-started"): u Learn How to Connect ?
 
           div.mb-5.ml-8.mr-8.mt-8
             v-btn(
@@ -31,49 +30,52 @@
               width="100%"
               large
               elevation="2"
-              color="secondary"
-              @click="setWalllet('metamask')"
+              color="secondary" 
+              @click="setWallet('metamask')"
             ) Connect
               
-        div.mt-10.mb-10.ml-10.mr-10 v-if="putAccount")
-          div.align-center.mb-5 Your address
-          div.address.dg-card.pb-2.pt-2 style="background: #eeeeee" elevation="0")
-            div.ml-3.p4 {{ethAccount[0].address}}
-              v-btn(icon @click="copyToClipboard(ethAccount[0].address)")
-                v-icon mdi-vector-arrange-below
+        //- div.mt-10.mb-10.ml-10.mr-10 v-if="putAccount")
+        //-   div.align-center.mb-5 Your address
+        //-   div.address.dg-card.pb-2.pt-2 style="background: #eeeeee" elevation="0")
+        //-     div.ml-3.p4 {{ethAccount[0].address}}
+        //-       v-btn(icon @click="copyToClipboard(ethAccount[0].address)")
+        //-         v-icon mdi-vector-arrange-below
             
-          v-row.mt-5
-            v-col DAI Balance
-            v-col(cols="auto") {{ethAccount[0].balance}} ETH
+        //-   v-row.mt-5
+        //-     v-col DAI Balance
+        //-     v-col(cols="auto") {{ethAccount[0].balance}} ETH
               
-          v-row
-            v-col
-            v-col(cols="auto") ({{ethAccount[0].balance}} USD)
+        //-   v-row
+        //-     v-col
+        //-     v-col(cols="auto") ({{ethAccount[0].balance}} USD)
           
-          v-btn(
-            class="mt-5 align-center"
-            outlined
-            color="secondary"
-            width="100%"
-            large
-            light
-          ) Disconnect Wallet            
+        //-   v-btn(
+        //-     class="mt-5 align-center"
+        //-     outlined
+        //-     color="secondary"
+        //-     width="100%"
+        //-     large
+        //-     light
+        //-   ) Disconnect Wallet            
 </template>
 
 <script>
 
 import { mapState, mapMutations } from "vuex";
-import { handleSetWallet } from "@/common/lib/metamask";
-import { setEthAddress } from "@/common/lib/polkadotProvider/command/userProfile";
+import { handleSetWallet } from "@/common/lib/wallet";
+import { setEthAddress, serviceHandlerMixin } from "@/common/lib/polkadot-provider";
 import { getEthFromFaucet, getDaicFromFaucet } from "@/common/lib/faucet";
 
 export default {
   name: "WalletBinding",
+
   props: {
     show: Boolean,
   },
+
+  mixins: [serviceHandlerMixin],
+
   data: () => ({
-    isLoading: false,
     error: "",
     putWallet: true,
     putAccount: false,
@@ -83,6 +85,7 @@ export default {
     inputPassword: false,
     selectAccount: null,
   }),
+
   computed: {
     _show: {
       get() {
@@ -92,12 +95,14 @@ export default {
         this.$emit("toggle", val);
       },
     },
+
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
     }),
   },
+
   watch: {
     show() {
       if (this.show) {
@@ -110,6 +115,7 @@ export default {
       }
     },
   },
+
   methods: {
     ...mapMutations({
       setMetamaskAddress: "metamask/SET_WALLET_ADDRESS",
@@ -123,15 +129,25 @@ export default {
     async setWallet(walletName) {
       this.loading = true;
       this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
+
+      console.log(this.api)
+      console.log('asd')
       try {
-        await setEthAddress(this.api, this.wallet, this.ethAccount[0].address);
-        this.setMetamaskAddress(this.ethAccount[0].address);
-        this.$emit("status-wallet", {
-          status: true,
-        });
-        await this.getMunnyFromFaucet(this.ethAccount[0].address);
-        this.isLoading = false;
-      } catch (err) {
+        await this.dispatch(
+          setEthAddress, 
+          this.api, 
+          this.wallet, 
+          this.ethAccount[0].address,
+          async () => {
+            this.setMetamaskAddress(this.ethAccount[0].address);
+            this.$emit("status-wallet", {
+              status: true,
+            });
+            await this.getMunnyFromFaucet(this.ethAccount[0].address);
+          }
+        )
+      } 
+      catch (err) {
         console.log(err.message);
         this.isLoading = false;
         this.error = err.message;

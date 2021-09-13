@@ -1,4 +1,4 @@
-import store from '../../store'
+import store from '@/store'
 // import appConfig from '@/common/lib/app-config'
 import BigNumber from 'bignumber.js'
 

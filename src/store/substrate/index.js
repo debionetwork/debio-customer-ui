@@ -214,7 +214,7 @@ export default {
         return { success: false, error: err.message }
       }
     },
-    async getAkun({ commit, state }, { address }) {
+    async getAccount({ commit, state }, { address }) {
       try {
         commit('SET_LOADING_WALLET', true)
         const pair = keyring.getPair(address);
