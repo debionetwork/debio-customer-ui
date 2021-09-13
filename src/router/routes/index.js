@@ -21,4 +21,9 @@ const indexRoutes = [{
   },
 ]
   
-export default indexRoutes
+import customerRoutes from './customer'
+
+export {
+  indexRoutes,
+  customerRoutes,
+}

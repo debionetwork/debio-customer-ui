@@ -1,11 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import indexRoutes from './routes'
+import {
+  indexRoutes,
+  customerRoutes,
+ } from './routes'
 
 Vue.use(VueRouter)
 
 const routes = [
   ...indexRoutes,
+  ...customerRoutes,
 ]
 
 const router = new VueRouter({
