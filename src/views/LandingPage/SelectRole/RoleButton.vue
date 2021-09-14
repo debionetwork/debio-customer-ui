@@ -24,14 +24,20 @@ export default {
     computeRoleCapitalCase(){
       return `${this.computeRoleLowerCase.charAt(0).toUpperCase()}${this.computeRoleLowerCase.slice(1)}`
     },
-  }
+  },
+
+  methods: {
+    dashboard(){
+      this.$router.push(`/${this.computeRoleLowerCase}`)
+    }
+  },
 }
 </script>
 
 <template lang="pug">
   //- TODO: Change to SVG later
   div.svg-container
-    div.role-svg
+    div.role-svg(v-on:click='dashboard')
       img(v-if='computeRoleLowerCase == "customer"' src="@/assets/customer-icon.png")
       img(v-else-if='computeRoleLowerCase == "lab"' src="@/assets/lab-icon.png")
       img(v-else-if='computeRoleLowerCase == "doctor"' src="@/assets/doctor-icon.png")

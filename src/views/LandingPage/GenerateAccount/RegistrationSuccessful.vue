@@ -28,7 +28,7 @@
         template(v-slot:main): div.pop-up-main
             img(src='@/assets/check-circle.png')
             h2 Your account has been successfully created.
-            v-btn.white--text(elevation='0' color='primary' @click="signIn") Sign In
+            v-btn.white--text(elevation='0' color='primary' @click="selectRole") Select Role
 </template>
 
 <script>
@@ -40,8 +40,8 @@ export default {
         LandingPagePopUp,
     },
     methods: {
-        signIn() {
-            this.$router.push({name: 'sign-in'});
+        selectRole() {
+            this.$router.push({name: 'select-role'});
         },
     },
 }

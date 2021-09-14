@@ -23,10 +23,10 @@ export async function checkIsLoggedIn(to, from, next) {
   const keystore = localStorage.getAddress()
   const isLoggedIn = !!keystore;
 
-  if (to.path == '/login') {
+  if (to.path == '/sign-in' || to.path == '/generate') {
     if (isLoggedIn) {
       await dispatchGetAccount(wallet, address, () => {
-        next('/')
+        next('/select-role')
       })
       return address
     } 
@@ -42,6 +42,6 @@ export async function checkIsLoggedIn(to, from, next) {
     return address
   }
 
-  next('/login')
+  next('/sign-in')
   return ""
 }
