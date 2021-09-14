@@ -34,29 +34,29 @@
               @click="setWallet('metamask')"
             ) Connect
               
-        //- div.mt-10.mb-10.ml-10.mr-10 v-if="putAccount")
-        //-   div.align-center.mb-5 Your address
-        //-   div.address.dg-card.pb-2.pt-2 style="background: #eeeeee" elevation="0")
-        //-     div.ml-3.p4 {{ethAccount[0].address}}
-        //-       v-btn(icon @click="copyToClipboard(ethAccount[0].address)")
-        //-         v-icon mdi-vector-arrange-below
+        div.mt-10.mb-10.ml-10.mr-10(v-else-if='putAccount')
+          div.align-center.mb-5 Your address
+          div.address.dg-card.pb-2.pt-2 style="background: #eeeeee" elevation="0")
+            div.ml-3.p4 {{ethAccount[0].address}}
+              v-btn(icon @click="copyToClipboard(ethAccount[0].address)")
+                v-icon mdi-vector-arrange-below
             
-        //-   v-row.mt-5
-        //-     v-col DAI Balance
-        //-     v-col(cols="auto") {{ethAccount[0].balance}} ETH
+          v-row.mt-5
+            v-col DAI Balance
+            v-col(cols="auto") {{ethAccount[0].balance}} ETH
               
-        //-   v-row
-        //-     v-col
-        //-     v-col(cols="auto") ({{ethAccount[0].balance}} USD)
+          v-row
+            v-col
+            v-col(cols="auto") ({{ethAccount[0].balance}} USD)
           
-        //-   v-btn(
-        //-     class="mt-5 align-center"
-        //-     outlined
-        //-     color="secondary"
-        //-     width="100%"
-        //-     large
-        //-     light
-        //-   ) Disconnect Wallet            
+          v-btn(
+            class="mt-5 align-center"
+            outlined
+            color="secondary"
+            width="100%"
+            large
+            light
+          ) Disconnect Wallet            
 </template>
 
 <script>
@@ -130,8 +130,6 @@ export default {
       this.loading = true;
       this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
 
-      console.log(this.api)
-      console.log('asd')
       try {
         await this.dispatch(
           setEthAddress, 
@@ -146,15 +144,16 @@ export default {
             await this.getMunnyFromFaucet(this.ethAccount[0].address);
           }
         )
+
+        this.putWallet = false;
+        this.putAccount = true;
+        this.loading = false;
       } 
       catch (err) {
         console.log(err.message);
         this.isLoading = false;
         this.error = err.message;
       }
-      this.putWallet = false;
-      this.putAccount = true;
-      this.loading = false;
     },
 
     closeDialog() {

@@ -32,6 +32,11 @@
         padding: 20px !important;
         grid-area: main;
     }
+
+    &__sidebar {
+        padding: 20px !important;
+        grid-area: sidebar;
+    }
 }
 </style>
 
@@ -44,6 +49,8 @@
 
         Navbar.layout-dashboard__navbar
         Banner.layout-dashboard__banner
+
+        div.layout-dashboard__sidebar Sidebar
         
         // Main
         div.layout-dashboard__main: router-view
