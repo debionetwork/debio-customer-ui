@@ -36,13 +36,15 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from './LandingPagePopUp.vue'
+import Button from '@/common/components/Button'
 
 export default {
     name: 'MainPage',
 
     components: {
         LandingPagePopUp,
+        Button
     },
 
     methods: {
