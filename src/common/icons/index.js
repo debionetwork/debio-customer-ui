@@ -24,6 +24,7 @@ import doctorIcon from "./doctor"
 import hospitalIcon from "./hospital"
 import checkCircleIcon from "./checkCircle"
 import lockIcon from "./lock"
+import trashIcon from "./trash"
 
 export {
   creditCardIcon,
@@ -52,4 +53,5 @@ export {
   hospitalIcon,
   checkCircleIcon,
   lockIcon,
+  trashIcon
 }
