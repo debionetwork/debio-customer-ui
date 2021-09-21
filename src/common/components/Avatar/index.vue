@@ -79,7 +79,7 @@ export default {
     },
 
     showInitial() {
-      return this.initial && !this.src && !this.$slots['icon']
+      return this.initial && !this.src && !this.$slots["icon"]
     },
 
     classes() {

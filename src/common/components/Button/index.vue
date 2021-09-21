@@ -13,27 +13,23 @@
 
 <script>
 export default {
-  name: 'Button',
+  name: "Button",
   props: {
-    color: { type: String, default: 'white'},
+    color: { type: String, default: "white"},
     // dark: { type: Boolean, default: false },
     // disabled: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },
     width: { type: [String, Number], default: "203px" },
     outlined: { type: Boolean, default: false },
-    height: String,
+    height: String
   },
   mounted() {
     this.changeStyle()
   },
   methods: {
     onClick() {
-      this.$emit('click')
-    },
+      this.$emit("click")
+    }
   }
 }
 </script>
-
-<style>
-
-</style>

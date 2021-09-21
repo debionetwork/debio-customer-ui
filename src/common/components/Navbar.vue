@@ -116,14 +116,12 @@ import {
   copyIcon
 } from "@/common/icons"
 
-import WalletBinding from './WalletBinding.vue'
+import WalletBinding from "./WalletBinding.vue"
 
 export default {
   name: "Navbar",
 
-  components: {
-    WalletBinding,
-  },
+  components: { WalletBinding },
 
   data: () => ({
     bellIcon,
@@ -172,7 +170,7 @@ export default {
         currency: "DAI",
         isAvatar: true,
         action: "Disconnect Wallet",
-        active: false,
+        active: false
       }
     ]
   }),
