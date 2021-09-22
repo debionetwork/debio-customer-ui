@@ -10,6 +10,7 @@ import settingIcon from "./setting"
 import polkadotIcon from "./polkadot"
 import daiIcon from "./dai"
 import debioIcon from "./debio"
+import alertIcon from "./alert"
 import userIcon from "./user"
 import usersIcon from "./users"
 import labIllustration from "./labIllustration"
@@ -17,8 +18,9 @@ import eyeIcon from "./eye"
 import eyeOffIcon from "./eyeOff"
 import logoutIcon from "./logout"
 import copyIcon from "./copy"
-import labIllustrationIcon from "./labIllustration"
+import noteIllustration from "./noteIllustration"
 import customerIcon from "./customer"
+import fileTextIcon from "./fileText"
 import labIcon from "./lab"
 import doctorIcon from "./doctor"
 import hospitalIcon from "./hospital"
@@ -29,6 +31,7 @@ import trashIcon from "./trash"
 export {
   creditCardIcon,
   layersIcon,
+  alertIcon,
   downloadIcon,
   arrowTopRightIcon,
   metamaskFoxIcon,
@@ -42,10 +45,11 @@ export {
   eyeOffIcon,
   userIcon,
   usersIcon,
+  fileTextIcon,
   labIllustration,
   logoutIcon,
   copyIcon,
-  labIllustrationIcon,
+  noteIllustration,
   defaultIcon,
   customerIcon,
   labIcon,

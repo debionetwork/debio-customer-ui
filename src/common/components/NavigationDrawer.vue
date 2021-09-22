@@ -4,9 +4,6 @@
   letter-spacing: 0 !important;
   font-size: 13pt !important;
 }
-.dg-raleway-font{
-  font-family: 'Raleway', sans-serif;
-}
 .btn-drawer{
   align-items: center;
   text-align: left;
@@ -29,7 +26,6 @@
 .footerDrawer a {
   font-size: 13px;
   color: grey;
-  font-family: 'Raleway', sans-serif;
 }
 
 .footer{
@@ -164,45 +160,35 @@
 
 <script>
 
-import Button from '@/common/components/Button'
+import Button from "@/common/components/Button"
 
 export default {
-  name: 'NavigationDrawer',
+  name: "NavigationDrawer",
   components: {
     Button
   },
   props: {
-    width: String,
+    width: String
   },
   data: () => ({
-    // width: "1000px",
-    // color: "black",
     style: "background-image: linear-gradient(to right, #C400A5 1%, white 10%)"
   }),
 
-  mounted() {
-    console.log(this.drawerButtons, 'drawerBUtton')
-  },
-
   methods: {
     goLink(route){
-      console.log('go to route ' + route)
-      return
-      // if(route != undefined && route.name != this.$route.name){
-      //   this.$router.push(route)
-      // } //open if other page is done
+      this.$router.push(route)
     },
 
     goToRequestTestPage() {
-      console.log('go to request test page') //should be function go to request test
+      // TODO: should be function go to request test
     },
 
     goToUploadEMR() {
-      console.log('upload EMR') //should be function go to upload emr page
+      // TODO: should be function go to upload emr page
     },
 
     openHref(href){
-      window.open(href, '_blank').focus();
+      window.open(href, "_blank").focus()
     }
   },
 

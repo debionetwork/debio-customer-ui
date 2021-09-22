@@ -7,6 +7,7 @@
     :disabled="disabled"
     :loading="loading"
     :outlined="outlined"
+    :block="block"
     :height="height")
     slot
 </template>
@@ -17,7 +18,8 @@ export default {
   props: {
     color: { type: String, default: "white"},
     // dark: { type: Boolean, default: false },
-    // disabled: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
+    block: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },
     width: { type: [String, Number], default: "203px" },
     outlined: { type: Boolean, default: false },
@@ -29,6 +31,10 @@ export default {
   methods: {
     onClick() {
       this.$emit("click")
+    },
+
+    changeStyle() {
+      // TODO: Do something
     }
   }
 }

@@ -1,7 +1,6 @@
 <template lang="pug">
     v-app
-      NavigationDrawer
-      router-view
+    //- TODO: REMOVE THIS FILE
 </template>
 
 <script>

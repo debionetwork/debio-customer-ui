@@ -52,7 +52,7 @@ export default {
     &__items
       display: flex
       gap: 0 11.25rem
-      max-width: fit-content
+      min-width: fit-content
       padding: 0 !important
 
     &__item

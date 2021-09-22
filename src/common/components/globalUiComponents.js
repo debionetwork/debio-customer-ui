@@ -7,3 +7,6 @@ Vue.component("ui-debio-stepper", () => import("@/common/components/Stepper"))
 
 // Forms
 Vue.component("ui-debio-input", () => import("@/common/components/Input"))
+Vue.component("ui-debio-textarea", () => import("@/common/components/Textarea"))
+Vue.component("ui-debio-file", () => import("@/common/components/File"))
+Vue.component("ui-debio-dropdown", () => import("@/common/components/Dropdown"))

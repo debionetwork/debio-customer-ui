@@ -8,34 +8,39 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions } from "vuex"
 
 export default {
   name: "App",
-  components: {},
+
+  data: () => ({
+    address: ""
+  }),
+
   computed: {
     ...mapState({
       substrateApi: (state) => state.substrate.api,
       isLoadingSubstrateApi: (state) => state.substrate.isLoadingApi,
-      web3: (state) => state.metamask.web3,
-    }),
+      web3: (state) => state.metamask.web3
+    })
   },
-  data: () => ({
-    address: "",
-  }),
-  async mounted() {
-  },
+
   methods: {
     ...mapActions({
       initWeb3: "metamask/initWeb3",
-      initContracts: "metamask/contracts/initContracts",
-    }),
-  },
-};
+      initContracts: "metamask/contracts/initContracts"
+    })
+  }
+}
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 @import "@/common/styles/variables.scss";
+
+* {
+  font-family: "Raleway", sans-serif;
+}
 
 @media screen and (min-width: 1904px) {
   .container {

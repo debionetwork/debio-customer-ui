@@ -5,38 +5,29 @@
         template
           .banner__content
             .banner__illustrations
-              ui-debio-icon.banner__illustration(:icon="labIllustration" :size="cardBlock ? 250 : 180" view-box="0 0 100 100" fill)
+              .banner__illustration
+                slot(name="illustration")
               .banner__content-description
-                .banner__title Welcome to Debio!
-                .banner__subtitle The Privacy-First Platform for Personal Biomedical Testing
+                .banner__title {{ title }}
+                .banner__subtitle {{ subtitle }}
               
             .banner__cta
-              ui-debio-card(to="/" tiny-card with-icon width="250" title="Request a Test" :block="cardBlock" sub-title="Get your biological sample tested")
-                ui-debio-icon(:icon="creditCardIcon" slot="icon" size="34" color="#C400A5" fill)
-              ui-debio-card(to="/" tiny-card with-icon width="250" title="Upload your EMR" :block="cardBlock" sub-title="Upload your Electronic Medical Record")
-                ui-debio-icon(:icon="layersIcon" slot="icon" size="34" color="#C400A5" stroke)
+              slot(name="cta")
 </template>
 
 <script>
-import { creditCardIcon, layersIcon, labIllustration } from "@/common/icons"
 
 export default {
   name: "Banner",
-
-  data: () => ({ creditCardIcon, layersIcon, labIllustration, cardBlock: false }),
-
-  mounted() {
-    window.addEventListener("resize", () => {
-      if (window.innerWidth <= 959) this.cardBlock = true
-      else this.cardBlock = false
-    })
+  props: {
+    title: { type: String, default: "Default title" },
+    subtitle: { type: String, default: "Default subtitle" }
   }
 }
 </script>
 
 <style lang="sass">
   .banner
-    padding: 3rem
     &__card
 
       .ui-debio-card__body
@@ -58,7 +49,6 @@ export default {
 
     &__illustration
       position: absolute
-      top: -0.625rem
 
     &__title
       font-size: 1.875rem

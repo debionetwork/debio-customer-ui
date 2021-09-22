@@ -1,14 +1,11 @@
 <template lang="pug">
-  .ui-debio-input(:class="classes" :style="computeStyle")
-    .ui-debio-input__label(for="ui-debio-input" v-if="label" :aria-label="label")
+  .ui-debio-textarea(:class="classes" :style="computeStyle")
+    .ui-debio-textarea__label(for="ui-debio-textarea" v-if="label" :aria-label="label")
       span {{ label }}
       ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
 
-    .ui-debio-input__wrapper
-      .ui-debio-input__icon.ui-debio-input__icon--prepend(v-if="$slots['icon-prepend']")
-        slot(name="icon-prepend")
-
-      input.ui-debio-input__input(
+    .ui-debio-textarea__wrapper
+      textarea.ui-debio-textarea__input(
         v-bind="$attrs"
         v-on="listeners"
         :autocomplete="autocomplete"
@@ -16,22 +13,19 @@
         :disabled="disabled"
         @click="focus = true"
         @blur="handleBlur"
-        id="ui-debio-input"
+        id="ui-debio-textarea"
         ref="input"
         :readOnly="readOnly"
       )
 
-      .ui-debio-input__icon.ui-debio-input__icon--append(v-if="$slots['icon-append']")
-        slot(name="icon-append")
-      
-    .ui-debio-input__error-message {{ computeErrorMessage }}
+    .ui-debio-textarea__error-message {{ computeErrorMessage }}
 </template>
 
 <script>
 import { alertIcon } from "@/common/icons"
 
 export default {
-  name: "UiDebioInput",
+  name: "UiDebioTextArea",
   inheritAttrs: false,
 
   props: {
@@ -53,18 +47,14 @@ export default {
   computed: {
     classes() {
       return [
-        { "ui-debio-input--disabled": this.disabled },
-        { "ui-debio-input--outlined": this.outlined },
-        { "ui-debio-input--errored": this.isError && this.isError?.length },
-        { "ui-debio-input--default": this.variant === "default" },
-        { "ui-debio-input--small": this.variant === "small" },
-        { "ui-debio-input--large": this.variant === "large" },
-        { "ui-debio-input--read-only": this.readOnly },
-        { "ui-debio-input--active": this.focus },
-        { "ui-debio-input--prepend-icon":
-          (this.$attrs.value && this.$slots["icon-prepend"]) || this.$slots["icon-prepend"] },
-        { "ui-debio-input--append-icon":
-          (this.$attrs.value && this.$slots["icon-append"]) || this.$slots["icon-append"] }
+        { "ui-debio-textarea--disabled": this.disabled },
+        { "ui-debio-textarea--outlined": this.outlined },
+        { "ui-debio-textarea--errored": this.isError && this.isError?.length },
+        { "ui-debio-textarea--default": this.variant === "default" },
+        { "ui-debio-textarea--small": this.variant === "small" },
+        { "ui-debio-textarea--large": this.variant === "large" },
+        { "ui-debio-textarea--read-only": this.readOnly },
+        { "ui-debio-textarea--active": this.focus }
       ]
     },
 
@@ -118,7 +108,7 @@ export default {
 
 <style lang="sass">
 @import "@/common/styles/mixins.sass"
-.ui-debio-input
+.ui-debio-textarea
   transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
   
   &__label
@@ -129,7 +119,6 @@ export default {
     justify-content: space-between
 
   &__wrapper
-    height: 40px
     background: #FFFFFF
     position: relative
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1)
@@ -146,6 +135,7 @@ export default {
     padding: 0.875rem 1.125rem
     font-size: 1rem
     color: black
+    resize: none
     @include body-text-medium-3
 
     &:focus
@@ -156,7 +146,7 @@ export default {
     margin-top: 0.5rem
 
   &--disabled
-    .ui-debio-input__wrapper
+    .ui-debio-textarea__wrapper
       overflow: hidden
       background: #F5F5F5
 
@@ -165,69 +155,58 @@ export default {
         color: #757274
 
   &--read-only
-    .ui-debio-input__input
+    .ui-debio-textarea__input
       cursor: default
 
-  &--prepend-icon
-    .ui-debio-input__input
-      margin-left: 1.375rem
-
-  &--append-icon
-    .ui-debio-input__input
-      margin-right: 1.375rem
-
   &--outlined
-    .ui-debio-input__wrapper
+    .ui-debio-textarea__wrapper
       border-color: #757274
       box-shadow: unset
 
   &--default
-    .ui-debio-input__label
+    .ui-debio-textarea__label
       @include body-text-2
 
-    .ui-debio-input__wrapper
-      height: 47px
+    .ui-debio-textarea__wrapper
+      min-height: 6.25rem
 
-    .ui-debio-input__input
+    .ui-debio-textarea__input
       @include body-text-medium-2
 
-    .ui-debio-input__error-message
+    .ui-debio-textarea__error-message
       @include body-text-2
 
   &--small
-    .ui-debio-input__label
+    .ui-debio-textarea__label
       @include body-text-4
 
-    .ui-debio-input__wrapper
-      height: 40px
+    .ui-debio-textarea__wrapper
+      min-height: 4.688rem
 
-    .ui-debio-input__input
+    .ui-debio-textarea__input
       @include body-text-medium-3
 
-    .ui-debio-input__error-message
+    .ui-debio-textarea__error-message
       @include body-text-4
 
   &--large
-    .ui-debio-input__label
+    .ui-debio-textarea__label
       @include body-text-1
 
-    .ui-debio-input__wrapper
-      height: 59px
+    .ui-debio-textarea__wrapper
+      min-height: 9.375rem
 
-    .ui-debio-input__input
+    .ui-debio-textarea__input
       @include body-text-medium-1
 
-    .ui-debio-input__error-message
+    .ui-debio-textarea__error-message
       @include body-text-1
 
   &--active
-    .ui-debio-input__wrapper
+    .ui-debio-textarea__wrapper
       border-color: #5640A5 !important
 
-    .ui-debio-input__label
-      color: #5640A5 !important
-
-    .ui-debio-input__icon > svg
+    .ui-debio-textarea__label
       color: #5640A5 !important
 
   &--errored
@@ -235,42 +214,19 @@ export default {
 
     @keyframes shake
       0%
-        transform: translate(-4px, 0)
+        transform: translate(-0.25rem, 0)
       50%
-        transform: translate(0px, 0)
+        transform: translate(0, 0)
       75%
-        transform: translate(-4px, 0)
+        transform: translate(-0.25rem, 0)
       90%
-        transform: translate(0px, 0)
+        transform: translate(0, 0)
       100%
-        transform: translate(-4px, 0)
+        transform: translate(-0.25rem, 0)
     
-    .ui-debio-input__wrapper
+    .ui-debio-textarea__wrapper
       border-color: #C400A5 !important
 
-    .ui-debio-input__label
+    .ui-debio-textarea__label
       color: #C400A5 !important
-
-    .ui-debio-input__icon > svg
-      color: #C400A5 !important
-
-  &__icon
-    width: 2.5rem
-    height: 100%
-    display: flex
-    align-items: center
-    justify-content: center
-    position: absolute
-    top: 0
-
-    > .ui-debio-icon
-      transition: color .200s ease-out
-
-    &--prepend
-      left: 0
-      border-radius: 0.25rem 0 0 0.25rem
-
-    &--append
-      right: 0
-      border-radius: 0 0.25rem 0.25rem 0
 </style>
