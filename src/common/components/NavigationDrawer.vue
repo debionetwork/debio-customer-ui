@@ -194,7 +194,7 @@ export default {
     },
 
     goToRequestTestPage() {
-      console.log('go to request test page') //should be function go to request test
+      this.$router.push({name: 'request-test'})
     },
 
     goToUploadEMR() {

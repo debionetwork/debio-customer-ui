@@ -29,11 +29,11 @@ export default {
   actions: {
     async setCountryCity ({commit}, data) {
       commit('SET_COUNTRY', data.country)
-      commit('SET_CITY', data.city)
+      commit('SET_CITY', data.city.state_code)
     },
     async getLabByCategory({ commit, state }, category) {
       const baseUrl = process.env.VUE_APP_DEV_DEGENICS_BACKEND_URL
-      const labs = await axios.get(`${baseUrl}/labs/${state.country}/${state.city}/${category}`);
+      const labs = await axios.get(`${baseUrl}/labs/${state.country}/${state.country}-${state.city}/${category}`)
       commit('SET_LABS', labs.data.body.hits.hits)
       commit('SET_CATEGORY', category)
     },
