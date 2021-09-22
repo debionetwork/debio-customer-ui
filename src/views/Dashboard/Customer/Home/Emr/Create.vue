@@ -107,7 +107,7 @@ export default {
     },
 
     handleSelected(val) {
-      if (val) this.selectedCategory = val.name
+      this.selectedCategory = val?.name || null
     },
 
     handleContinue() {

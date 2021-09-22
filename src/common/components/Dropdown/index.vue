@@ -4,7 +4,7 @@
     .ui-debio-dropdown__wrapper(@click="openOptions")
       .ui-debio-dropdown__label-value
         span(aria-label="Vaccinations") {{ selectedOption }}
-        v-icon mdi-chevron-down
+        v-icon(:class="{ 'ui-debio-dropdown__chevron--active': active }") mdi-chevron-down
 
       .ui-debio-dropdown__selects(:class="{ 'ui-debio-dropdown__selects--show': active }" role="listbox")
         .ui-debio-dropdown__item(
@@ -142,6 +142,13 @@ export default {
       justify-content: space-between
       align-items: center
       width: 100%
+
+    &__chevron
+      transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+
+      &--active
+        color: #5640A5 !important
+        transform: rotate(180deg)
 
     &__selects
       position: absolute
