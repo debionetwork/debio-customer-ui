@@ -98,12 +98,11 @@ export default {
     },
 
     async submitServiceRequestStaking() {
-      console.log("SUBMIT")
-      this.ethAccount = await startApp();
+      this.ethAccount = await startApp()
       if (this.ethAccount.currentAccount == "no_install") {
-        this.isLoading = false;
-        this.password = "";
-        this.error = "Please install MetaMask!";
+        this.isLoading = false
+        this.password = ""
+        this.error = "Please install MetaMask!"
         return
       }
 
@@ -131,19 +130,19 @@ export default {
         )
         await getTransactionReceiptMined(txHash)
 
-        await this.$store.dispatch("lab/setStakingAmount", stakingAmount);
+        await this.$store.dispatch("lab/setStakingAmount", stakingAmount)
 
-        const address = localStorage.getAddress();
-        const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + "customer";
-        const listNotificationJson = localStorage.getLocalStorageByName(storageName);
+        const address = localStorage.getAddress()
+        const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + "customer"
+        const listNotificationJson = localStorage.getLocalStorageByName(storageName)
 
-        let listNotification = [];
+        let listNotification = []
         if (listNotificationJson != null && listNotificationJson != "") {
-          listNotification = JSON.parse(listNotificationJson);
+          listNotification = JSON.parse(listNotificationJson)
         }
 
-        const dateSet = new Date();
-        const timestamp = dateSet.getTime().toString();
+        const dateSet = new Date()
+        const timestamp = dateSet.getTime().toString()
         const notifDate = dateSet.toLocaleString("en-US", {
           weekday: "short",
           day: "numeric", 
@@ -151,7 +150,7 @@ export default {
           month: "long", 
           hour: "numeric",
           minute: "numeric",
-        });
+        })
 
         const notification = {
           message: "Your request has been submitted",
@@ -164,12 +163,12 @@ export default {
         }
           
         listNotification.push(notification)
-        localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification));
-        listNotification.reverse();
+        localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification))
+        listNotification.reverse()
 
         this.isLoading = false
         this.dialogAlert = true
-            this.$emit('click')
+          this.$emit('click')
 
       } catch (err) {
         console.log(err)
