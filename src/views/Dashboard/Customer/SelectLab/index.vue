@@ -10,7 +10,7 @@
     template
       div.title Select your preferred Laboratory
     
-    template
+    template(v-if="!showNoLab")
       v-row.mt-10
         v-col(
           cols="12"
@@ -29,6 +29,41 @@
             :service-image="getServiceImage(lab._source.services)"
             @click="selectLab(lab, lab._source.services)"
           )
+
+    template(v-if="showNoLab")
+      v-card.no-lab-card
+        div.card-title Oops!
+        div.card-sub-title There are no available labs provide this service in your area.
+        div.card-body 
+          div 1. You can request a lab to register to DeBio by clicking the "Request a service" button.
+          div 2. Additionally, you can stake an amount of tokens or regular currency (USD), which will be given as an incentive to labs registering in your location.
+          div 3. Labs will use the result of this form, filled-in by you and other DeBio users, to evaluate the demand in the area you designated. 
+      v-row(class="d-flex justify-center mt-16")
+        v-col(cols="5")
+          Button.mt-5.mb-10(
+            color="secondary" 
+            width="560"
+            height="38"
+            @click="showingAgreementDialog"
+            ) Request a service
+
+      template
+        AgreementDialog(
+          :show="showAgreement"
+          @close="closingDialog"
+          @click="onClickDialogButton"
+        )
+
+      template
+        Dialog(
+          :show="showSuccessDialog"
+          :width="289"
+          message="Your request has been submitted"
+          imgPath="check-circle.png"
+          btn-message="Back to Dashboard"
+          @close="closingDialog"
+          @click="toHomePage"
+          )
   
 </template>
 
@@ -37,12 +72,19 @@
 import { mapState, mapMutations } from "vuex"
 import Stepper from '@/common/components/Stepper'
 import MenuCard from '@/common/components/MenuCard'
+import Button from '@/common/components/Button'
+import Dialog from '@/common/components/Dialog'
+import AgreementDialog from '@/common/components/Dialog/AgreementDialog.vue'
+
 
 export default {
   name: "SelectLab",
     components: {
     Stepper,
     MenuCard,
+    Button,
+    Dialog,
+    AgreementDialog,
   },
 
   data: () => ({
@@ -52,6 +94,9 @@ export default {
       { number: 3, title: 'Checkout', active: false },
       { number: 4, title: 'Payment', active: false },
     ],
+    showNoLab: false,
+    showAgreement: false,
+    showSuccessDialog: false
   }),
 
   computed: {
@@ -61,6 +106,12 @@ export default {
       category: (state) => state.lab.category,
       labs: (state) => state.lab.labs
     }),
+  },
+
+  async mounted () {
+    if (!this.labs.length) {
+      this.showNoLab = true
+    }
   },
 
   methods : {
@@ -107,14 +158,31 @@ export default {
       for (let i = 0; i < services.length; i++) {
         if (services[i].info.category == this.category) {
           selectedProduct = services[i]
-          console.log("di dalam", selectedProduct )
-
         }
       }
       
       this.setProductsToRequest(selectedProduct)
       this.setLabToRequest(lab)
       this.$router.push({ name: 'request-test-checkout' })
+    },
+
+    showingAgreementDialog () {
+      console.log("showingg...")
+      this.showAgreement = true
+    },
+
+    closingDialog() {
+      this.showAgreement = false
+    },
+
+    onClickDialogButton() {
+      console.log("kesini ?")
+      this.showAgreement = false
+      this.showSuccessDialog = true
+    },
+
+    toHomePage () {
+      this.$router.push({ name: 'customer-dashboard' })
     }
   }
 }
@@ -128,12 +196,45 @@ export default {
 }
 
 .title {
-  font-family: Raleway;
+  font-family: 'Raleway';
   margin-top: 5%;
   font-size: 20px;
   line-height: 150%;
   display: flex;
   justify-content: center;
+}
+
+.card-title {
+  font-family: 'Raleway';
+  font-size: 20px;
+  margin-left: 3%;
+  margin-right: 3%;
+  padding-top: 2%;
+}
+
+.card-sub-title {
+  font-family: 'Raleway';
+  font-size: 14px;
+  margin-top: 2%;
+  margin-left: 3%;
+  margin-right: 3%;
+  margin-bottom: 3%;
+  color:#F92020;
+}
+
+.card-body {
+  font-family: 'Raleway';
+  font-size: 14px;
+  margin-left: 3%;
+  margin-right: 3%;
+}
+
+.no-lab-card {
+  padding: 5%;
+  margin-top: 5%;
+  margin-left: 5%;
+  margin-right: 5%;
+  border-radius: 4px;
 }
 
 .card-test {

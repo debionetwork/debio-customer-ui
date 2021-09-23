@@ -49,12 +49,7 @@ export default {
 
     onSubmit() {
       this.$emit('click')
-
     }
   },
-
-  async mounted () {
-    console.log()
-  }
 }
 </script>

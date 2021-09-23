@@ -73,7 +73,7 @@
             color="secondary" 
             width="560"
             height="38"
-            @click= "toSelectLab"
+            @click= "onSubmit"
             ) Continue
               
 </template>
@@ -119,9 +119,6 @@ export default {
       wallet: (state) => state.substrate.wallet,
       configApp: (state) => state.auth.configApp,
     }),
-
-    
-
   },
   
   async mounted() {
@@ -155,10 +152,9 @@ export default {
 
     async onCategoryChange(selectedCategory) {
       this.category = selectedCategory
-      console.log(this.category)
     },
 
-    async toSelectLab() {
+    async onSubmit() {
       const country = this.country
       const city = this.city
       const category = this.category

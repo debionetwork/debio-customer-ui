@@ -139,10 +139,6 @@ export default {
     }),
   },
 
-  async mounted () {
-    console.log(this.labAccount)
-  },
-
   methods : {
     ...mapMutations({
       setLabToRequest: "testRequest/SET_LAB",
@@ -221,7 +217,7 @@ export default {
         }
 
         if(this.ethAccount.currentAccount != null ) {
-          const setEth = await this.dispatch(
+          await this.dispatch(
             setEthAddress, 
             this.api, 
             this.wallet, 
@@ -231,11 +227,9 @@ export default {
               this.$emit("status-wallet", {
                 status: true,
               })
-              const getMunnyFromFaucet = await this.getMunnyFromFaucet(this.ethAccount.currentAccount)
-              console.log("getMunnyFromFaucet", getMunnyFromFaucet)
+              await this.getMunnyFromFaucet(this.ethAccount.currentAccount)
             }
           )
-          console.log("set eth address", setEth)
         }
 
         const balance = await getBalanceETH(this.metamaskWalletAddress)
