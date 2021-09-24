@@ -339,15 +339,15 @@ export default {
 
       @keyframes shake
         0%
-          transform: translate(-4px, 0)
+          transform: translate(-0.25rem, 0)
         50%
-          transform: translate(0px, 0)
+          transform: translate(0, 0)
         75%
-          transform: translate(-4px, 0)
+          transform: translate(-0.25rem, 0)
         90%
-          transform: translate(0px, 0)
+          transform: translate(0, 0)
         100%
-          transform: translate(-4px, 0)
+          transform: translate(-0.25rem, 0)
 
       .ui-debio-dropdown__wrapper
         border-color: #C400A5 !important

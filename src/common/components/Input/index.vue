@@ -125,7 +125,7 @@ export default {
     justify-content: space-between
 
   &__wrapper
-    height: 40px
+    height: 2.5rem
     background: #FFFFFF
     position: relative
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1)
@@ -182,7 +182,7 @@ export default {
       @include body-text-2
 
     .ui-debio-input__wrapper
-      height: 47px
+      height: 2.938rem
 
     .ui-debio-input__input
       @include body-text-medium-2
@@ -195,7 +195,7 @@ export default {
       @include body-text-4
 
     .ui-debio-input__wrapper
-      height: 40px
+      height: 2.5rem
 
     .ui-debio-input__input
       @include body-text-medium-3
@@ -208,7 +208,7 @@ export default {
       @include body-text-1
 
     .ui-debio-input__wrapper
-      height: 59px
+      height: 3.688rem
 
     .ui-debio-input__input
       @include body-text-medium-1
@@ -231,15 +231,15 @@ export default {
 
     @keyframes shake
       0%
-        transform: translate(-4px, 0)
+        transform: translate(-0.25rem, 0)
       50%
-        transform: translate(0px, 0)
+        transform: translate(0, 0)
       75%
-        transform: translate(-4px, 0)
+        transform: translate(-0.25rem, 0)
       90%
-        transform: translate(0px, 0)
+        transform: translate(0, 0)
       100%
-        transform: translate(-4px, 0)
+        transform: translate(-0.25rem, 0)
     
     .ui-debio-input__wrapper
       border-color: #C400A5 !important

@@ -120,7 +120,7 @@ export default {
         @include body-text-2
 
       .ui-debio-file__button
-        height: 47px !important
+        height: 2.938rem !important
 
       .ui-debio-file__input
         @include body-text-medium-2
@@ -133,7 +133,7 @@ export default {
         @include body-text-4
 
       .ui-debio-file__button
-        height: 40px !important
+        height: 2.5rem !important
 
       .ui-debio-file__input
         @include body-text-medium-3
@@ -146,7 +146,7 @@ export default {
         @include body-text-1
 
       .ui-debio-file__button
-        height: 59px !important
+        height: 3.688rem !important
 
       .ui-debio-file__input
         @include body-text-medium-1
@@ -165,13 +165,13 @@ export default {
 
       @keyframes shake
         0%
-          transform: translate(-4px, 0)
+          transform: translate(-0.25rem, 0)
         50%
-          transform: translate(0px, 0)
+          transform: translate(0, 0)
         75%
-          transform: translate(-4px, 0)
+          transform: translate(-0.25rem, 0)
         90%
-          transform: translate(0px, 0)
+          transform: translate(0, 0)
         100%
-          transform: translate(-4px, 0)
+          transform: translate(-0.25rem, 0)
 </style>
