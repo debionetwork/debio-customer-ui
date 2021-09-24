@@ -22,15 +22,22 @@ export default {
   data: () => ({
     navs: [
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", img: "@/assets/grid.png" },
-      { text: "My Test", disabled: false, active: false, route: "", img: "@/assets/box.png" },
+      { text: "My Test", disabled: false, active: false, route: "customer-test", img: "@/assets/box.png" },
       { text: "My EMR", disabled: false, active: false, route: "customer-emr", img: "@/assets/file-text.png" },
-      { text: "Order History", disabled: false, active: false, route: "", img: "@/assets/credit-card.png" }
+      { text: "Order History", disabled: false, active: false, route: "customer-order-history", img: "@/assets/credit-card.png" }
     ]
   }),
 
   computed: {
     computeNavs() {
-      return this.navs.map(nav => ({ ...nav, active: this.$route.name === nav.route }))
+      const setActive = name => {
+        return (
+          this.$route.name === name ||
+          this.$route.meta.parent === name
+        )
+      }
+
+      return this.navs.map(nav => ({ ...nav, active: setActive(nav.route) }))
     }
   }
 }

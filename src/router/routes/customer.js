@@ -18,9 +18,9 @@ const customerRoutes = [{
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr")
     },
     {
-      path: "emr/create",
+      path: "create",
       name: "customer-emr-create",
-      meta: { pageHeader: "Emr" },
+      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Create")
     }
   ]
