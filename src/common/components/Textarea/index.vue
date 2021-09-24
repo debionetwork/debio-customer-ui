@@ -18,14 +18,17 @@
         :readOnly="readOnly"
       )
 
-    .ui-debio-textarea__error-message {{ computeErrorMessage }}
+    .ui-debio-textarea__error-message(v-if="computeErrorMessage") {{ computeErrorMessage }}
 </template>
 
 <script>
 import { alertIcon } from "@/common/icons"
+import { validateInput } from "@/common/mixins"
 
 export default {
   name: "UiDebioTextArea",
+  mixins: [validateInput],
+
   inheritAttrs: false,
 
   props: {
@@ -34,7 +37,6 @@ export default {
     label: { type: String, default: null },
     width: { type: [Number, String], default: 200 },
     variant: { type: String, default: "default" },
-    rules: { type: Array, default: () => [] },
 
     outlined: Boolean,
     disabled: Boolean,
@@ -42,7 +44,7 @@ export default {
     block: Boolean
   },
 
-  data: () => ({ focus: false, isError: null, alertIcon }),
+  data: () => ({ focus: false, alertIcon }),
 
   computed: {
     classes() {
@@ -71,12 +73,6 @@ export default {
           this.$emit("input", event.target.value)
         }
       }
-    },
-
-    computeErrorMessage() {
-      const message = this.isError
-
-      return message && message[0]?.message ? message[0]?.message : ""
     }
   },
 
@@ -91,7 +87,7 @@ export default {
           return filtered
         }, [])
   
-        this.$emit("isError", Boolean(error.length))
+        this.$emit("isError", this.uuid, Boolean(error.length))
   
         this.isError = error   
       }

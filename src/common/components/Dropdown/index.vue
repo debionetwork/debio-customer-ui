@@ -1,6 +1,8 @@
 <template lang="pug">
   .ui-debio-dropdown(:class="classes" :style="computeStyle" v-click-outside="handleBlur")
-    .ui-debio-dropdown__label(aria-label="File Category") {{ label }}
+    .ui-debio-dropdown__label(:aria-label="label")
+      span {{ label }}
+      ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
     .ui-debio-dropdown__wrapper(@click="openOptions")
       .ui-debio-dropdown__label-value
         span(aria-label="Vaccinations") {{ selectedOption }}
@@ -18,11 +20,17 @@
         )
           slot(name="item" v-if="$slots.item || $scopedSlots.item" :item="item" :index="idx")
           span(v-else) {{ item[itemText] }}
+    .ui-debio-input__error-message(v-if="computeErrorMessage") {{ computeErrorMessage }}
 </template>
 
 <script>
+import { alertIcon } from "@/common/icons"
+import { validateInput } from "@/common/mixins"
+
 export default {
   name: "UiDebioDropdown",
+  mixins: [validateInput],
+
   props: {
     items: { type: Array, default: () => [] },
     itemValue: { type: String, default: "" },
@@ -40,9 +48,7 @@ export default {
     block: Boolean
   },
 
-  data: () => ({
-    active: false
-  }),
+  data: () => ({ active: false, alertIcon }),
 
   computed: {
     classes() {
@@ -51,7 +57,8 @@ export default {
         { "ui-debio-dropdown--small": this.variant === "small" },
         { "ui-debio-dropdown--large": this.variant === "large" },
         { "ui-debio-dropdown--outlined": this.outlined },
-        { "ui-debio-dropdown--active": this.active }
+        { "ui-debio-dropdown--active": this.active },
+        { "ui-debio-dropdown--errored": this.isError && this.isError?.length }
       ]
     },
 
@@ -71,6 +78,23 @@ export default {
           ? this.customLabelResult
           : this.value
         : this.placeholder
+    }
+  },
+
+  watch: {
+    selectedOption(val) {
+      let value = val
+      if (value === this.placeholder) value = null
+      const error = this.rules.reduce((filtered, rule) => {
+        const isError = rule.call(this, value)
+
+        if (typeof isError !== "boolean") filtered.push({ message: isError })
+
+        return filtered
+      }, [])
+      this.$emit("isError", this.uuid, Boolean(error.length))
+
+      this.isError = error
     }
   },
 
@@ -120,6 +144,9 @@ export default {
       display: inline-block
       margin-bottom: 0.75rem
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+      display: flex
+      align-items: center
+      justify-content: space-between
     
     &__wrapper
       background: #FFFFFF
@@ -272,6 +299,9 @@ export default {
       .ui-debio-dropdown__label-value
         @include body-text-medium-2
 
+      .ui-debio-input__error-message
+        @include body-text-2
+
     &--small
       .ui-debio-dropdown__label
         @include body-text-4
@@ -285,6 +315,9 @@ export default {
       .ui-debio-dropdown__label-value
         @include body-text-medium-3
 
+      .ui-debio-input__error-message
+        @include body-text-4
+
     &--large
       .ui-debio-dropdown__label
         @include body-text-1
@@ -297,4 +330,30 @@ export default {
 
       .ui-debio-dropdown__label-value
         @include body-text-medium-1
+
+      .ui-debio-input__error-message
+        @include body-text-1
+
+    &--errored
+      animation: shake .10s cubic-bezier(.7, -0.04, .61, 1.14)
+
+      @keyframes shake
+        0%
+          transform: translate(-4px, 0)
+        50%
+          transform: translate(0px, 0)
+        75%
+          transform: translate(-4px, 0)
+        90%
+          transform: translate(0px, 0)
+        100%
+          transform: translate(-4px, 0)
+
+      .ui-debio-dropdown__wrapper
+        border-color: #C400A5 !important
+
+      .ui-debio-dropdown__label,
+      .ui-debio-dropdown__label-value,
+      .ui-debio-dropdown__label-value i
+        color: #C400A5 !important
 </style>

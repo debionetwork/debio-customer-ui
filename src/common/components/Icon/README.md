@@ -28,10 +28,10 @@ export default {
 
 #### - fill
 ```pug
-ui-debio-icon(:icon="nameIcon" size="20" slot="icon-prepend" fill)
+ui-debio-icon(:icon="nameIcon" size="20" fill)
 ```
 
 #### - stroke
 ```pug
-ui-debio-icon(:icon="nameIcon" size="20" slot="icon-prepend" stroke)
+ui-debio-icon(:icon="nameIcon" size="20" stroke)
 ```

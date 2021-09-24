@@ -9,10 +9,21 @@
         .customer-create-emr__stepper
           ui-debio-stepper(:items="stepper")
 
-        .customer-create-emr__forms
-          ui-debio-input(v-model="documentTitle" validateOnBlur variant="small" label="Document Title" placeholder="Add Document Title" block outlined :rules="computeRules" @isError="handleError")
+        .customer-create-emr__forms(:errors="formErrors")
+          ui-debio-input(
+            :rules="computeDocumentRules"
+            v-model="documentTitle"
+            variant="small"
+            label="Document Title"
+            placeholder="Add Document Title"
+            @isError="handleError"
+            block
+            outlined
+            validate-on-blur
+          )
           ui-debio-dropdown(
             :value="selectedCategory"
+            :rules="computeCategoryRules"
             variant="small"
             label="File Category"
             return-object
@@ -22,28 +33,45 @@
             :items="categories"
             item-text="name"
             item-value="name"
+            @isError="handleError"
             outlined
             block
             @input="handleSelected"
           )
             template(v-slot:item="{ item }")
               span {{ item.icon }} {{ item.name }}
-          ui-debio-textarea(v-model="documentDescription" variant="small" label="Description" placeholder="Add Description" :rules="computeTextAreaRules" block outlined)
-          ui-debio-file(variant="small" accept=".pdf" label="Document Title" block outlined)
-          Button(block :disabled="hasError" height="40" color="secondary" @click="handleContinue") Continue
+          ui-debio-textarea(
+            :rules="computeTextAreaRules"
+            v-model="documentDescription"
+            variant="small"
+            label="Description"
+            placeholder="Add Description"
+            block
+            @isError="handleError"
+            outlined
+          )
+          ui-debio-file(
+            :rules="computeFileRules"
+            variant="small"
+            accept=".pdf"
+            label="File input"
+            @isError="handleError"
+          )
+          Button(block :disabled="computeError" height="40" color="secondary" @click="handleContinue") Continue
 
 </template>
 
 <script>
 import Button from "@/common/components/Button"
+import { validateForms } from "@/common/mixins"
 
 export default {
   name: "CustomerEmrCreate",
+  mixins: [validateForms],
 
   components: { Button },
 
   data: () => ({
-    hasError: false,
     documentTitle: "",
     documentDescription: "",
     selectedCategory: null,
@@ -88,9 +116,22 @@ export default {
   }),
 
   computed: {
-    computeRules() {
+    computeDocumentRules() {
       return [
         val => !!val || "Document title required!"
+      ]
+    },
+
+    computeFileRules() {
+      return [
+        val => !!val || "File required!",
+        val => (val && val.size < 30000) || "Maximum file size 30MB!"
+      ]
+    },
+
+    computeCategoryRules() {
+      return [
+        val => !!val || "Category required!"
       ]
     },
 
@@ -112,10 +153,6 @@ export default {
 
     handleContinue() {
       // TODO: Should continue to next step
-    },
-
-    handleError(val) {
-      this.hasError = val
     },
 
     customLabel({ icon, name }) {
