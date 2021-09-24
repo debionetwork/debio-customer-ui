@@ -108,7 +108,7 @@
     v-flex
       v-container(
         class="ml-5 pt-2 pb-2 dg-raleway-font"
-        v-for="(item, key) in drawerButtons" :key="key")
+        v-for="(item, key) in items" :key="key")
           Button.btn-drawer(
             :class="item.active ? 'font-weight-bold sidebar-text primary--text' : 'font-weight-bold sidebar-text'"
             text
@@ -146,16 +146,7 @@
             :color="'#FF56E0'") Upload EMR
 
         v-spacer
-        div.footerDrawer
-          a(
-            href="#"
-            target="_blank"
-            style="text-decoration: none"
-          )
-            div 
-              span Help and
-            div
-              span Documentation
+        slot
 </template>
 
 <script>
@@ -164,19 +155,21 @@ import Button from "@/common/components/Button"
 
 export default {
   name: "NavigationDrawer",
-  components: {
-    Button
-  },
+  components: { Button },
+
   props: {
+    items: { type: Array, default: () => [] },
+
     width: String
   },
+
   data: () => ({
     style: "background-image: linear-gradient(to right, #C400A5 1%, white 10%)"
   }),
 
   methods: {
     goLink(route){
-      this.$router.push(route)
+      this.$router.push({ name: route })
     },
 
     goToRequestTestPage() {
@@ -189,15 +182,6 @@ export default {
 
     openHref(href){
       window.open(href, "_blank").focus()
-    }
-  },
-
-  computed: {
-    drawerButtons() {
-      if (this.$route.meta && this.$route.meta.drawerButtons) {
-        return this.$route.meta.drawerButtons
-      }
-      return []
     }
   }
 }
