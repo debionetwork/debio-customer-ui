@@ -5,8 +5,6 @@
     router-view(v-else)
 </template>
   
-</template>
-
 <script>
 import { mapState, mapActions } from "vuex"
 
@@ -40,6 +38,16 @@ export default {
 
 * {
   font-family: "Raleway", sans-serif;
+}
+
+::-moz-selection { /* Code for Firefox */
+  background: #5640A5;
+  color: #FFFFFF;
+}
+
+::selection {
+  background: #5640A5;
+  color: #FFFFFF;
 }
 
 @media screen and (min-width: 1904px) {

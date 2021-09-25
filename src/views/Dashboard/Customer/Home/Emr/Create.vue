@@ -2,79 +2,47 @@
   .customer-create-emr
     .customer-create-emr__wrapper
       .customer-create-emr__nav
-        .customer-create-emr__nav-button(@click="handleBack()")
+        .customer-create-emr__nav-button(v-if="currentStep === 1" @click="handleBack()")
           v-icon.customer-create-emr__nav-icon mdi-chevron-left
           span Back to My EMR
       .customer-create-emr__main
         .customer-create-emr__stepper
-          ui-debio-stepper(:items="stepper")
+          ui-debio-stepper(:items="stepper" with-line-indicator)
 
-        .customer-create-emr__forms(:errors="formErrors")
-          ui-debio-input(
-            :rules="computeDocumentRules"
-            v-model="documentTitle"
-            variant="small"
-            label="Document Title"
-            placeholder="Add Document Title"
-            @isError="handleError"
-            block
-            outlined
-            validate-on-blur
-          )
-          ui-debio-dropdown(
-            :value="selectedCategory"
-            :rules="computeCategoryRules"
-            variant="small"
-            label="File Category"
-            return-object
-            placeholder="Choose Category"
-            close-on-select
-            :custom-label="customLabel"
-            :items="categories"
-            item-text="name"
-            item-value="name"
-            @isError="handleError"
-            outlined
-            block
-            @input="handleSelected"
-          )
-            template(v-slot:item="{ item }")
-              span {{ item.icon }} {{ item.name }}
-          ui-debio-textarea(
-            :rules="computeTextAreaRules"
-            v-model="documentDescription"
-            variant="small"
-            label="Description"
-            placeholder="Add Description"
-            block
-            @isError="handleError"
-            outlined
-          )
-          ui-debio-file(
-            :rules="computeFileRules"
-            variant="small"
-            accept=".pdf"
-            label="File input"
-            @isError="handleError"
-          )
-          Button(block :disabled="computeError" height="40" color="secondary" @click="handleContinue") Continue
-
+        .customer-create-emr__forms
+          transition(name="transition-slide-x" mode="out-in")
+            keep-alive
+              Upload(
+                v-if="currentStep === 1"
+                @uploadFormError="error = $event"
+                @uploadFulfilled="handleUploadPayload"
+              )
+              Confirm(
+                v-if="currentStep === 2"
+                :payload="dataForConfirm"
+                :showModal="showModal"
+                @confirmFormError="error = $event"
+                @confirmFulfilled="handleConfirmPayload"
+                @showModal="showModal = $event"
+              )
+          Button(block :disabled="error" height="40" color="secondary" @click="handleContinue") Continue
 </template>
 
 <script>
 import Button from "@/common/components/Button"
-import { validateForms } from "@/common/mixins"
+import Upload from "./Upload"
+import Confirm from "./Confirm"
 
 export default {
   name: "CustomerEmrCreate",
-  mixins: [validateForms],
 
-  components: { Button },
+  components: { Button, Upload, Confirm },
 
   data: () => ({
-    documentTitle: "",
-    documentDescription: "",
-    selectedCategory: null,
+    error: false,
+    showModal: false,
+    currentStep: 1,
+    dataForConfirm: null,
     stepper: [
       {
         number: 1,
@@ -86,60 +54,11 @@ export default {
         title: "Upload",
         active: false
       }
-    ],
-    categories: [
-      {
-        name: "Allergies and adverse drug reactions",
-        icon: "💊"
-      },
-      {
-        name: "Chronic diseases",
-        icon: "❤️"
-      },
-      {
-        name: "Imaging Reports (e.g. X-ray)",
-        icon: "📷"
-      },
-      {
-        name: "Vaccinations",
-        icon: "💉"
-      },
-      {
-        name: "Observations of daily living (ODLs)",
-        icon: "🩺"
-      },
-      {
-        name: "Others",
-        icon: "🛡️"
-      }
     ]
   }),
 
-  computed: {
-    computeDocumentRules() {
-      return [
-        val => !!val || "Document title required!"
-      ]
-    },
-
-    computeFileRules() {
-      return [
-        val => !!val || "File required!",
-        val => (val && val.size < 30000) || "Maximum file size 30MB!"
-      ]
-    },
-
-    computeCategoryRules() {
-      return [
-        val => !!val || "Category required!"
-      ]
-    },
-
-    computeTextAreaRules() {
-      return [
-        val => (val && val.length >= 20) || "Document description min 20 character!"
-      ]
-    }
+  created() {
+    if (!this.dataForConfirm) this.currentStep = 1
   },
 
   methods: {
@@ -147,16 +66,18 @@ export default {
       this.$router.push({ name: "customer-emr" })
     },
 
-    handleSelected(val) {
-      this.selectedCategory = val?.name || null
-    },
-
     handleContinue() {
-      // TODO: Should continue to next step
+      this.currentStep < 2 ? this.currentStep++ : this.showModal = true
+
+      this.stepper = this.stepper.map(step => ({ ...step, active: step.number <= this.currentStep }))
     },
 
-    customLabel({ icon, name }) {
-      return `${icon} ${name}`
+    handleUploadPayload(payload) {
+      this.dataForConfirm = payload
+    },
+
+    handleConfirmPayload(payload) {
+      console.log("handleConfirmPayload ==> ", payload)
     }
   }
 }
@@ -208,4 +129,22 @@ export default {
       margin-top: 3.25rem
       width: 39.188rem
 
+    &__upload
+      width: 100%
+
+    &__confirm
+      width: 100%
+
+    .transition-slide-x
+      &-enter-active,
+      &-leave-active
+        transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+
+      &-enter
+        opacity: 0
+        transform: translateX(1.563rem)
+
+      &-leave-to
+        opacity: 0
+        transform: translateX(-12.813rem)
 </style>

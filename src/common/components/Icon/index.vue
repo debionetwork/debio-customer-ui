@@ -7,7 +7,7 @@ export default {
     size: { type: [String, Number], default: 40 },
     viewBox: { type: String, default: "0 0 40 40" },
     strokeWidth: { type: [String, Number], default: "2" },
-    color: { type: String, default: "#FA587B" },
+    color: { type: String, default: "#C400A5" },
     fill: Boolean,
     stroke: Boolean
   },

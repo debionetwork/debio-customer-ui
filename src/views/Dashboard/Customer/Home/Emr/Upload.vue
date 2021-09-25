@@ -1,0 +1,142 @@
+<template lang="pug">
+  .customer-create-emr__upload
+    .emr-upload
+      ui-debio-dropdown(
+        :value="document.category"
+        :rules="computeCategoryRules"
+        variant="small"
+        label="Select Category"
+        return-object
+        placeholder="Select Category"
+        close-on-select
+        :items="categories"
+        item-text="name"
+        item-value="name"
+        @isError="handleError"
+        outlined
+        block
+        @input="handleSelected"
+      )
+        template(v-slot:item="{ item }")
+          span {{ item.icon }} {{ item.name }}
+      ui-debio-input(
+        :rules="computeDocumentRules"
+        v-model="document.title"
+        variant="small"
+        label="Title"
+        placeholder="Add Document Title"
+        @isError="handleError"
+        block
+        outlined
+        validate-on-blur
+      )
+      ui-debio-textarea(
+        :rules="computeTextAreaRules"
+        v-model="document.description"
+        variant="small"
+        label="Description"
+        placeholder="Add Description"
+        block
+        @isError="handleError"
+        outlined
+      )
+      ui-debio-file(
+        v-model="document.file"
+        :rules="computeFileRules"
+        variant="small"
+        accept=".pdf"
+        label="File input"
+        @isError="handleError"
+      )
+</template>
+
+<script>
+import { validateForms } from "@/common/mixins"
+
+export default {
+  name: "CustomerEmrUpload",
+  mixins: [validateForms],
+
+  data: () => ({
+    document: {
+      title: "",
+      description: "",
+      category: null,
+      file: null
+    },
+    categories: [
+      { name: "Allergies and adverse drug reactions" },
+      { name: "Chronic diseases" },
+      { name: "Family medical history" },
+      { name: "Illnesses and hospitalizations" },
+      { name: "Imaging reports (e.g. X-ray)" },
+      { name: "Laboratory test results" },
+      { name: "Medications and dosing" },
+      { name: "Prescription record" },
+      { name: "Surgeries and other procedures" },
+      { name: "Vaccinations" },
+      { name: "Observations of daily living (ODLs)" },
+      { name: "Others" }
+    ]
+  }),
+
+  computed: {
+    computeDocumentRules() {
+      return [
+        val => !!val || "Document title required!"
+      ]
+    },
+
+    computeFileRules() {
+      return [
+        val => !!val || "File required!",
+        val => (val && val.size < 30000) || "Maximum file size 30MB!"
+      ]
+    },
+
+    computeCategoryRules() {
+      return [
+        val => !!val || "Category required!"
+      ]
+    },
+
+    computeTextAreaRules() {
+      return [
+        val => (val && val.length >= 20) || "Document description min 20 character!"
+      ]
+    }
+  },
+
+  watch: {
+    computeError(state) {
+      const payload = state ? null : this.document
+
+      this.$emit("uploadFulfilled", payload)
+      this.$emit("uploadFormError", state)
+    },
+
+    document: {
+      deep: true,
+      immediate: true,
+      handler(payload) {
+        if (this.computeError) this.$emit("uploadFulfilled", payload)
+      }
+    }
+  },
+
+  methods: {
+    handleSelected(val) {
+      this.document.category = val?.name || null
+    }
+  }
+}
+</script>
+
+<style lang="sass">
+  .emr-upload
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    gap: 2.063rem
+</style>
