@@ -190,12 +190,12 @@ export default {
       opacity: 0
       visibility: hidden
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+      overflow-y: auto
 
       &--show
         opacity: 1
         visibility: visible
         transform: translateY(0)
-        overflow-y: auto
 
       &::-webkit-scrollbar-track
         background-color: #FFFFFF
