@@ -76,8 +76,8 @@ export default {
       this.dataForConfirm = payload
     },
 
-    handleConfirmPayload(payload) {
-      console.log("handleConfirmPayload ==> ", payload)
+    handleConfirmPayload() {
+      // TODO: Do something with these payload
     }
   }
 }
