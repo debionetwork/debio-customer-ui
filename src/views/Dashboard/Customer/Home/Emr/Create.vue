@@ -2,9 +2,9 @@
   .customer-create-emr
     .customer-create-emr__wrapper
       .customer-create-emr__nav
-        .customer-create-emr__nav-button(v-if="currentStep === 1" @click="handleBack()")
+        .customer-create-emr__nav-button(@click="handleBack")
           v-icon.customer-create-emr__nav-icon mdi-chevron-left
-          span Back to My EMR
+          span {{ computeBackWord }}
       .customer-create-emr__main
         .customer-create-emr__stepper
           ui-debio-stepper(:items="stepper" with-line-indicator)
@@ -25,7 +25,7 @@
                 @confirmFulfilled="handleConfirmPayload"
                 @showModal="showModal = $event"
               )
-          Button(block :disabled="error" height="40" color="secondary" @click="handleContinue") Continue
+          Button(block :disabled="computeDisabled" height="40" color="secondary" @click="handleContinue") Continue
 </template>
 
 <script>
@@ -39,7 +39,7 @@ export default {
   components: { Button, Upload, Confirm },
 
   data: () => ({
-    error: false,
+    error: null,
     showModal: false,
     currentStep: 1,
     dataForConfirm: null,
@@ -57,13 +57,25 @@ export default {
     ]
   }),
 
+  computed: {
+    computeBackWord() {
+      return this.currentStep === 1 ? "Back to My EMR" : "Back to Create EMR"
+    },
+
+    computeDisabled() {
+      return this.error?.step === this.currentStep && this.error?.status
+    }
+  },
+
   created() {
     if (!this.dataForConfirm) this.currentStep = 1
   },
 
   methods: {
     handleBack() {
-      this.$router.push({ name: "customer-emr" })
+      this.currentStep < 2 ? this.$router.push({ name: "customer-emr" }) : this.currentStep--
+
+      this.stepper = this.stepper.map(step => ({ ...step, active: step.number <= this.currentStep }))
     },
 
     handleContinue() {

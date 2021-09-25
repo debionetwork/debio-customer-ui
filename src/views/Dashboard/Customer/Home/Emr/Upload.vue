@@ -112,7 +112,7 @@ export default {
       const payload = state ? null : this.document
 
       this.$emit("uploadFulfilled", payload)
-      this.$emit("uploadFormError", state)
+      this.$emit("uploadFormError", { step: 1, status: state })
     },
 
     document: {

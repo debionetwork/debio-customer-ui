@@ -74,7 +74,7 @@ export default {
       const payload = state ? null : this.password
 
       this.$emit("confirmFulfilled", payload)
-      this.$emit("confirmFormError", state)
+      this.$emit("confirmFormError", { step: 2, status: state })
     },
 
     password(password) {
