@@ -88,6 +88,7 @@ export default {
     },
 
     backToEmr() {
+      this.$emit("showModal", false)
       this.$router.push({ name: "customer-emr" })
     }
   }
