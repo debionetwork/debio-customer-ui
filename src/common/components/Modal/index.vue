@@ -1,0 +1,140 @@
+<template lang="pug">
+  .ui-debio-modal(:class="classes")
+    .ui-debio-modal__wrapper
+      .ui-debio-modal__card(v-click-outside="{ handler: handleClickOutside, closeConditional }")
+        ui-debio-icon.ui-debio-modal__card-close(
+          :icon="closeIcon"
+          role="button"
+          size="13"
+          color="#757274"
+          stroke
+          @click="$emit('onClose', false)"
+        )
+        .ui-debio-modal__card-title {{ title }}
+        slot(name="title")
+        ui-debio-icon.ui-debio-modal__card-icon(:icon="icon" :view-box="iconViewBox" size="80" stroke)
+        slot(name="icon")
+        Button.ui-debio-modal__card-cta(outlined block color="secondary" @click="handleCtaAction") {{ ctaTitle }}
+        slot(name="cta")
+</template>
+
+<script>
+import { closeIcon } from "@/common/icons"
+import Button from "@/common/components/Button"
+
+const allowedType = /^(alert|form)$/
+
+export default {
+  name: "UiDebioModal",
+  components: { Button },
+  
+  props: {
+    show: { type: Boolean, default: false },
+    disabledIconAnimate: { type: Boolean, default: false },
+    title: { type: String, default: "Default title" },
+    type: { type: String, default: "alert", validation: val => allowedType.test(val) },
+    icon: { type: String, default: null },
+    iconViewBox: { type: String, default: "0 0 40 40" },
+    ctaTitle: { type: String, default: "Default button" },
+    ctaAction: { type: Function, default: () => {} }
+  },
+
+  data: () => ({ closeIcon }),
+
+  computed: {
+    classes() {
+      return [
+        { "ui-debio-modal--active": this.show },
+        { "ui-debio-modal--disabled-icon-animate": this.disabledIconAnimate }
+      ]
+    }
+  },
+
+  watch: {
+    show: {
+      immediate: true,
+      handler(val) {
+        if (!val) document.querySelector("html").style.overflowY = "auto"
+        else document.querySelector("html").style.overflowY = "hidden"
+      }
+    }
+  },
+
+  methods: {
+    handleCtaAction() { this.ctaAction() },
+
+    handleClickOutside() { if (this.show) this.$emit("onClose", false) },
+
+    closeConditional() { return this.show }
+  }
+}
+</script>
+
+<style lang="sass">
+  @import "@/common/styles/mixins.sass"
+
+  .ui-debio-modal
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 100
+    opacity: 0
+    visibility: hidden
+    transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+
+    &__wrapper
+      min-width: 100vw
+      min-height: 100vh
+      display: flex
+      align-items: center
+      justify-content: center
+      background: rgba(255, 255, 255, .7)
+
+    &__card
+      min-height: 17.25rem
+      min-width: 18.063rem
+      padding: 2.25rem
+      position: relative
+      display: flex
+      flex-direction: column
+      align-items: center
+      gap: 1.875rem
+      background: #FFFFFF
+      border-radius: 0.25rem
+      box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1)
+      transform: translateY(-100vh)
+      transition: all cubic-bezier(.7, -0.04, .61, 1.14) .25s
+
+    &__card-close
+      position: absolute !important
+      top: 1.25rem
+      right: 1.25rem
+
+    &__card-title
+      @include body-text-2
+
+    &--active
+      opacity: 1
+      visibility: visible
+
+      .ui-debio-modal__card
+        transform: translateY(0)
+
+      .ui-debio-modal__card-icon
+        stroke-dasharray: 1500
+        stroke-dashoffset: 1500
+        animation: dash linear 5s forwards
+        animation-delay: .25s
+
+    &--disabled-icon-animate
+
+      .ui-debio-modal__card-icon
+        stroke-dasharray: unset
+        stroke-dashoffset: unset
+        animation: unset
+        animation-delay: unset
+
+    @keyframes dash
+      to
+        stroke-dashoffset: 0
+</style>
