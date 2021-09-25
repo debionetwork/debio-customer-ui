@@ -17,6 +17,7 @@ import labIllustration from "./labIllustration"
 import eyeIcon from "./eye"
 import eyeOffIcon from "./eyeOff"
 import logoutIcon from "./logout"
+import closeIcon from "./close"
 import copyIcon from "./copy"
 import noteIllustration from "./noteIllustration"
 import customerIcon from "./customer"
@@ -36,6 +37,7 @@ export {
   arrowTopRightIcon,
   metamaskFoxIcon,
   searchIcon,
+  closeIcon,
   bellIcon,
   settingIcon,
   polkadotIcon,
