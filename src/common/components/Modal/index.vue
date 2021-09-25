@@ -54,14 +54,17 @@ export default {
     show: {
       immediate: true,
       handler(val) {
-        if (!val) document.querySelector("html").style.overflowY = "auto"
+        if (!val) document.querySelector("html").style.overflowY = null
         else document.querySelector("html").style.overflowY = "hidden"
       }
     }
   },
 
   methods: {
-    handleCtaAction() { this.ctaAction() },
+    handleCtaAction() {
+      document.querySelector("html").style.overflowY = null
+      this.ctaAction()
+    },
 
     handleClickOutside() { if (this.show) this.$emit("onClose", false) },
 
