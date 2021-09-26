@@ -56,89 +56,92 @@
 import axios from "axios"
 import { mapActions, mapState, mapMutations } from "vuex"
 import Recaptcha from "@/common/components/Recaptcha.vue"
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'ChangePassword',
-    components: {
-        LandingPagePopUp,
-        Recaptcha,
+  name: "ChangePassword",
+  components: {
+    LandingPagePopUp,
+    Recaptcha
+  },
+
+  data: () => ({
+    passwordsValid: false,
+    password: "",
+    passwordConfirm: "",
+    showPassword: false,
+    showPasswordConfirm: false,
+    recaptchaVerified: false
+  }),
+
+  computed: {
+    buttonDisabled(){
+      return this.recaptchaVerified && this.isPasswordConfirmed
     },
-    data: () => ({
-        passwordsValid: false,
-        password: "",
-        passwordConfirm: "",
-        showPassword: false,
-        showPasswordConfirm: false,
-        recaptchaVerified: false,
+
+    isPasswordConfirmed() {
+      if(!!this.password && this.password == this.passwordConfirm) {
+        return true
+      }
+      return false
+    },
+
+    passwordConfirmRule() {
+      if(this.isPasswordConfirmed) {
+        return true
+      }
+      return "Passwords must match."
+    },
+    
+    ...mapState({
+      substrateApi: (state) => state.substrate.api,
+      isLoading: (state) => state.substrate.isLoadingWallet
+    })
+  },
+
+  methods: {
+    ...mapActions({
+      registerMnemonic: "substrate/registerMnemonic"
     }),
-    computed: {
-        buttonDisabled(){
-            return this.recaptchaVerified && this.isPasswordConfirmed
-        },
 
-        isPasswordConfirmed() {
-            if(!!this.password && this.password == this.passwordConfirm) {
-                return true
-            }
-            return false
-        },
+    ...mapMutations({
+      setIsLoading: "substrate/SET_LOADING_WALLET"
+    }),
 
-        passwordConfirmRule() {
-            if(this.isPasswordConfirmed) {
-                return true
-            }
-            return 'Passwords must match.'
-        },
-        
-        ...mapState({
-            substrateApi: (state) => state.substrate.api,
-            isLoading: (state) => state.substrate.isLoadingWallet,
-        }),
+    previous() {
+      this.$router.push({name: "forgot-password"})
     },
-    methods: {
-        ...mapActions({
-            registerMnemonic: "substrate/registerMnemonic",
-        }),
 
-        ...mapMutations({
-            setIsLoading: "substrate/SET_LOADING_WALLET",
-        }),
-
-        previous() {
-            this.$router.push({name: 'forgot-password'});
-        },
-
-        async register() {
-            try {
-                const result = await this.registerMnemonic({
-                    mnemonic: this.$route.params.mnemonic,
-                    password: this.password,
-                });
-                if (!result.success) {
-                    throw('Mnemonic registration failed!')
-                }
-                this.$router.push({name: 'registration-successful'});
-            } 
-            catch (err) {
-                console.error(err);
-            }
-        },
-        
-        async onVerifyRecaptcha(response) {
-            let recaptchaBackendUrl = ''
-            if (process.env.NODE_ENV == 'demo') {
-                recaptchaBackendUrl = `${process.env.VUE_APP_DEGENICS_BACKEND_URL}/recaptcha`;
-            } 
-            else {
-                recaptchaBackendUrl = `${process.env.VUE_APP_DEV_DEGENICS_BACKEND_URL}/recaptcha`;
-            }
-            const result = await axios.post(recaptchaBackendUrl, { response });
-
-            if (result.data.success) {
-                this.recaptchaVerified = true;
-            }
-        },
+    async register() {
+      try {
+        const result = await this.registerMnemonic({
+          mnemonic: this.$route.params.mnemonic,
+          password: this.password
+        })
+        if (!result.success) {
+          throw("Mnemonic registration failed!")
+        }
+        this.$router.push({name: "registration-successful"})
+      } 
+      catch (err) {
+        console.error(err)
+      }
     },
+    
+    async onVerifyRecaptcha(response) {
+      let recaptchaBackendUrl = ""
+      if (process.env.NODE_ENV == "demo") {
+        recaptchaBackendUrl = `${process.env.VUE_APP_DEBIO_BACKEND_URL}/recaptcha`
+      } 
+      else {
+        recaptchaBackendUrl = `${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/recaptcha`
+      }
+      const result = await axios.post(recaptchaBackendUrl, { response })
+
+      if (result.data.success) {
+        this.recaptchaVerified = true
+      }
+    }
+  }
 }
 </script>
