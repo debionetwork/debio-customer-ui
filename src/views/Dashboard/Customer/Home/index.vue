@@ -19,7 +19,7 @@
       )
         ui-debio-icon(:icon="creditCardIcon" slot="icon" size="34" color="#C400A5" fill)
       ui-debio-card(
-        to="/"
+        :to="{ name: 'customer-emr-create' }"
         title="Upload your EMR"
         sub-title="Upload your Electronic Medical Record"
         tiny-card
