@@ -8,7 +8,9 @@
     :loading="loading"
     :outlined="outlined"
     :block="block"
-    :height="height")
+    :height="height"
+    :dark="dark"
+  )
     slot
 </template>
 
@@ -17,7 +19,7 @@ export default {
   name: "Button",
   props: {
     color: { type: String, default: "white"},
-    // dark: { type: Boolean, default: false },
+    dark: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     block: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },

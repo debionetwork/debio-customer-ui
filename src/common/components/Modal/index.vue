@@ -10,12 +10,15 @@
           stroke
           @click="$emit('onClose', false)"
         )
-        .ui-debio-modal__card-title {{ title }}
-        slot(name="title")
+        .ui-debio-modal__card-title
+          slot(name="title" v-if="$slots['title'] || $scopedSlots['title']")
+          span(v-else) {{ title }}
+
         ui-debio-icon.ui-debio-modal__card-icon(:icon="icon" :view-box="iconViewBox" size="80" stroke)
-        slot(name="icon")
-        Button.ui-debio-modal__card-cta(outlined block color="secondary" @click="handleCtaAction") {{ ctaTitle }}
-        slot(name="cta")
+
+        .ui-debio-modal__card-cta
+          slot(name="cta" v-if="$slots['cta'] || $scopedSlots['cta']")
+          Button(v-else outlined block color="secondary" @click="handleCtaAction") {{ ctaTitle }}
 </template>
 
 <script>
