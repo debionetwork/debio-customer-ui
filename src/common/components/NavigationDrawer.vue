@@ -1,4 +1,13 @@
 <style lang="scss">
+.drawer{
+  background: #f5f7f9 !important;
+  border: unset !important;
+}
+
+.v-navigation-drawer__content {
+  overflow: unset !important;
+}
+
 .sidebar-text{
   text-transform: none !important;
   letter-spacing: 0 !important;
@@ -9,6 +18,7 @@
   text-align: left;
   padding-left: 0%;
   justify-content: left;
+  background-color: unset !important;
   // align-content: flex-start;
 }
 .lineDivider{
@@ -34,8 +44,8 @@
   text-align: left;
 }
 .dbioLogo {
-  margin-left: 30px;
-  margin-bottom: 100px;
+  margin: 0 32px;
+  margin-bottom: 72px;
 }
 .iconLogo {
   height: 125px;
@@ -70,7 +80,8 @@
     fixed
     permanent
     :width="width"
-    class="mr-10 pt-10 dg-raleway-font"
+    stateless
+    class="mr-10 pt-10 drawer dg-raleway-fontindigo darken-1"
   )
     div.dbioLogo
       a(
@@ -106,47 +117,29 @@
                   width="9"
                 )
     v-flex
-      v-container(
-        class="ml-5 pt-2 pb-2 dg-raleway-font"
-        v-for="(item, key) in items" :key="key")
-          Button.btn-drawer(
-            :class="item.active ? 'font-weight-bold sidebar-text primary--text' : 'font-weight-bold sidebar-text'"
-            text
-            :style="item.active ? style: ''"
-            @click="goLink(item.route)"
-            :width="width"
-            :height="'50px'"
+      .mx-8.pt-2.pb-2.dg-raleway-font(v-for="(item, key) in items" :key="key")
+        Button.btn-drawer(
+          :class="item.active ? 'font-weight-bold sidebar-text primary--text' : 'font-weight-bold sidebar-text'"
+          text
+          @click="goLink(item.route)"
+          block
+          :height="'50px'"
+        )
+          v-img(
+            class="mr-2 ml-2 shrink"
+            apend
+            center
+            contain
+            :src="item.img"
+            width="24px"
+            height="24px"
           )
-            v-img(
-              class="mr-2 ml-2 shrink"
-              apend
-              center
-              contain
-              :src="item.img"
-              width="24px"
-              height="24px"
-            )
-            span(class="text=left") {{ item.text }}
+          span(class="text=left") {{ item.text }}
       
       v-divider.lineDivider
-      v-container(class="ml-5 pt-2 pb-2")
-        div
-          Button(
-            outlined
-            :height="'35px'"
-            @click="goToRequestTestPage"
-            class="font-weight-bold sidebar-text primary--text mt-4 dg-raleway-font"
-            :color="'#FF56E0'") Request a Test
-          
-          Button(
-            outlined
-            :height="'35px'"
-            @click="goToUploadEMR"
-            class="font-weight-bold sidebar-text primary--text mt-4 dg-raleway-font"
-            :color="'#FF56E0'") Upload EMR
-
-        v-spacer
+      .d-flex.flex-column.mx-8
         slot
+        v-spacer
 </template>
 
 <script>
@@ -160,7 +153,7 @@ export default {
   props: {
     items: { type: Array, default: () => [] },
 
-    width: String
+    width: { type: String, default: "auto" }
   },
 
   data: () => ({
@@ -170,14 +163,6 @@ export default {
   methods: {
     goLink(route){
       this.$router.push({ name: route })
-    },
-
-    goToRequestTestPage() {
-      // TODO: should be function go to request test
-    },
-
-    goToUploadEMR() {
-      // TODO: should be function go to upload emr page
     },
 
     openHref(href){

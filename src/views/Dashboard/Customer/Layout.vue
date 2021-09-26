@@ -1,10 +1,21 @@
 <template lang="pug">
   div.layout-dashboard
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
-      .footerDrawer
-        a.footerDrawer__link(href="#" target="_blank" style="text-decoration: none")
-          span Help and
-          span Documentation
+      Button(
+        outlined
+        height="35px"
+        @click="goToRequestTestPage"
+        class="font-weight-bold sidebar-text primary--text mt-4 dg-raleway-font"
+        color="#FF56E0"
+      ) Request a Test
+
+      Button(
+        outlined
+        height="35px"
+        @click="goToUploadEMR"
+        class="font-weight-bold sidebar-text primary--text mt-4 dg-raleway-font"
+        color="#FF56E0"
+      ) Upload EMR
 
     Navbar.layout-dashboard__navbar
     .layout-dashboard__main
@@ -15,9 +26,11 @@
 <script>
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
+import Button from "@/common/components/Button"
+
 export default {
   name: "MainPage",
-  components: { NavigationDrawer, Navbar },
+  components: { NavigationDrawer, Navbar, Button },
 
   data: () => ({
     navs: [
@@ -38,6 +51,16 @@ export default {
       }
 
       return this.navs.map(nav => ({ ...nav, active: setActive(nav.route) }))
+    }
+  },
+
+  methods: {
+    goToRequestTestPage() {
+      // TODO: should be function go to request test
+    },
+
+    goToUploadEMR() {
+      this.$router.push({ name: "customer-emr-create" })
     }
   }
 }
