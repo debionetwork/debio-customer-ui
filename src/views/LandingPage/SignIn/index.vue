@@ -69,53 +69,53 @@
 
 <script>
 import { mapGetters } from "vuex"
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'InputPassword',
+  name: "InputPassword",
 
-    components: {
-        LandingPagePopUp,
+  components: {
+    LandingPagePopUp
+  },
+
+  data: () => ({
+    password: "",
+    showPassword: false,
+    isLoading: false,
+    snackbar: false,
+    timeout: 2000,
+    errorMessage: ""
+  }),
+
+  computed: {
+    ...mapGetters({
+      api: "substrate/getAPI",
+      pair: "substrate/wallet"
+    })
+  },
+
+  methods: {
+    previous() {
+      this.$router.push({name: "landing-page"})
     },
 
-    data: () => ({
-        password: "",
-        showPassword: false,
-        isLoading: false,
-        snackbar: false,
-        timeout: 2000,
-        errorMessage: '',
-    }),
-
-    computed: {
-        ...mapGetters({
-            api: 'substrate/getAPI',
-            pair: 'substrate/wallet',
-        }),
+    forgotPassword() {
+      this.$router.push({name: "forgot-password"})
     },
 
-    methods: {
-        previous() {
-            this.$router.push({name: 'landing-page'})
-        },
-
-        forgotPassword() {
-            this.$router.push({name: 'forgot-password'})
-        },
-
-        decryptWallet() {
-            try {
-                this.errorMessage = ''
-                this.pair.unlock(this.password)
-            }
-            catch (err) {
-                console.error(err)
-                this.snackbar = true
-                this.errorMessage = err.message
-                return
-            }
-            this.$router.push({name: 'select-role'})
-        },
-    },
+    decryptWallet() {
+      try {
+        this.errorMessage = ""
+        this.pair.unlock(this.password)
+      }
+      catch (err) {
+        console.error(err)
+        this.snackbar = true
+        this.errorMessage = err.message
+        return
+      }
+      this.$router.push({name: "select-role"})
+    }
+  }
 }
 </script>

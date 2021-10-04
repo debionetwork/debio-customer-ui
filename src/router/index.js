@@ -1,19 +1,19 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue"
+import VueRouter from "vue-router"
 import {
   indexRoutes,
-  customerRoutes,
- } from './routes'
+  customerRoutes
+} from "./routes"
 
 Vue.use(VueRouter)
 
 const routes = [
   ...indexRoutes,
-  ...customerRoutes,
+  ...customerRoutes
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
   routes,
   scrollBehavior() {

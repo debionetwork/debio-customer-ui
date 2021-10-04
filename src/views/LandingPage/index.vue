@@ -36,25 +36,25 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
-import Button from '@/common/components/Button'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
+import Button from "@/common/components/Button"
 
 export default {
-    name: 'MainPage',
+  name: "MainPage",
 
-    components: {
-        LandingPagePopUp,
-        Button
+  components: {
+    LandingPagePopUp,
+    Button
+  },
+
+  methods: {
+    signIn() {
+      this.$router.push({name: "sign-in"})
     },
 
-    methods: {
-        signIn() {
-            this.$router.push({name: 'sign-in'});
-        },
-
-        generateAccount() {
-            this.$router.push({name: 'generate-account'});
-        }
-    },
+    generateAccount() {
+      this.$router.push({name: "generate-account"})
+    }
+  }
 }
 </script>

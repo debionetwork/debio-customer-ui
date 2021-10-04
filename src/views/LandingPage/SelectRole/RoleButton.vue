@@ -1,11 +1,11 @@
 <script>
 export default {
-  name: 'RoleButton',
+  name: "RoleButton",
 
   props: {
     color: { type: String, default: "#FA587B" },
     fill: Boolean,
-    role: String,
+    role: String
   },
 
   computed: {
@@ -23,14 +23,14 @@ export default {
 
     computeRoleCapitalCase(){
       return `${this.computeRoleLowerCase.charAt(0).toUpperCase()}${this.computeRoleLowerCase.slice(1)}`
-    },
+    }
   },
 
   methods: {
     dashboard(){
       this.$router.push(`/${this.computeRoleLowerCase}`)
     }
-  },
+  }
 }
 </script>
 

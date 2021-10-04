@@ -1,17 +1,17 @@
 import { shallowMount } from "@vue/test-utils"
-import Vuetify from 'vuetify'
+import Vuetify from "vuetify"
 import VerifyMnemonic from "@/views/LandingPage/GenerateAccount/VerifyMnemonic"
 
 describe("Verify Mnemonic Component", () => {
   let localVue = null
 
   beforeEach(() => {
-      localVue = require('vue');
-      localVue.use(Vuetify);
+    localVue = require("vue")
+    localVue.use(Vuetify)
   })
 
   afterEach(() => {
-      localVue = null;
+    localVue = null
   })
 
   it("Should render", () => {
@@ -20,7 +20,7 @@ describe("Verify Mnemonic Component", () => {
       mocks: {
         $route: {
           params: {
-            mnemonicCollection: ['a', 'b', 'c']
+            mnemonicCollection: ["a", "b", "c"]
           }
         }
       },

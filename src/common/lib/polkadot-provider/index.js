@@ -23,7 +23,7 @@ const serviceHandlerMixin = {
     addCallback(args){
       // Add callback if doesn't exist
       if(!(args[args.length - 1] instanceof Function)){
-        args.push(()=>{
+        args.push(() => {
           this.isLoading = false
         })
         return args
@@ -64,8 +64,8 @@ const serviceHandlerMixin = {
 }
 
 export {
-	setEthAddress,
-	queryBalance,
-	toFormatDebioCoin,
-	serviceHandlerMixin,
+  setEthAddress,
+  queryBalance,
+  toFormatDebioCoin,
+  serviceHandlerMixin
 }

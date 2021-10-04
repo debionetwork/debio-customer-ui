@@ -13,12 +13,12 @@ import { queryEntireDoctorDataById } from "@/common/lib/polkadot-provider/query/
 import { queryEntireHospitalDataById } from "@/common/lib/polkadot-provider/query/hospitals"
 
 const {
-  cryptoWaitReady,
-} = require('@polkadot/util-crypto');
+  cryptoWaitReady
+} = require("@polkadot/util-crypto")
 
 cryptoWaitReady().then(() => {
-  keyring.loadAll({ ss58Format: 42, type: 'sr25519' });
-});
+  keyring.loadAll({ ss58Format: 42, type: "sr25519" })
+})
 
 const defaultState = {
   api: null,
@@ -26,7 +26,7 @@ const defaultState = {
   isLoadingWallet: false,
   wallet: null,
   walletBalance: null,
-  walletPublicKey: '',
+  walletPublicKey: "",
   labAccount: null,
   isLabAccountExist: false,
   doctorAccount: null,
@@ -36,7 +36,7 @@ const defaultState = {
   lastEventData: null,
   localListNotification: [],
   configEvent: null,
-  mnemonicData: null,
+  mnemonicData: null
 }
 
 export default {
@@ -99,13 +99,13 @@ export default {
     },
     SET_MNEMONIC_DATA(state, event) {
       state.mnemonicData = event
-    },
+    }
   },
   actions: {
     async connect({ commit }) {
       try {
-        commit('SET_LOADING_API', true)
-        const PROVIDER_SOCKET = store.getters['auth/getConfig'].substrateWs;
+        commit("SET_LOADING_API", true)
+        const PROVIDER_SOCKET = store.getters["auth/getConfig"].substrateWs
         const wsProvider = new WsProvider(PROVIDER_SOCKET)
         const api = await ApiPromise.create({
           provider: wsProvider,
@@ -114,91 +114,91 @@ export default {
 
         // Example of how to subscribe to events via storage
         api.query.system.events((events) => {
-          console.log(`\nReceived ${events.length} events:`);
+          console.log(`\nReceived ${events.length} events:`)
           events.forEach((record) => {
-            const { event, phase } = record;
+            const { event, phase } = record
             if (event.section == "orders" || event.section == "geneticTesting" || event.section == "balances" || event.section == "electronicMedicalRecord") {
-              console.log("Method :" + event.method);
+              console.log("Method :" + event.method)
               if (event.method === "OrderPaid") localStorage.removeLocalStorageByName("lastOrderStatus")
               console.log(`Phase: ${phase.toString()}`)
-              commit('SET_LAST_EVENT', event);
+              commit("SET_LAST_EVENT", event)
             }
             else {
-              console.log("event no mapping");
+              console.log("event no mapping")
             }
           })
         })
 
         await api.isReady
-        commit('SET_API', api)
+        commit("SET_API", api)
 
-        commit('SET_LOADING_API', false)
+        commit("SET_LOADING_API", false)
       } catch (err) {
         console.log(err)
-        commit('SET_LOADING_API', false)
+        commit("SET_LOADING_API", false)
       }
     },
     async registerMnemonic({ commit }, { mnemonic, password }) {
       try {
-        commit('SET_LOADING_WALLET', true)
-        commit('CLEAR_WALLET')
+        commit("SET_LOADING_WALLET", true)
+        commit("CLEAR_WALLET")
 
-        const { pair, json } = keyring.addUri(mnemonic, password, { name: 'accountName' })
+        const { pair, json } = keyring.addUri(mnemonic, password, { name: "accountName" })
         pair.unlock(password)
         localStorage.setKeystore(JSON.stringify(json))
         localStorage.setAddress(pair.address)
-        commit('SET_WALLET_PUBLIC_KEY', u8aToHex(pair.publicKey))
-        console.log('Is pair locked?', pair.isLocked)
-        commit('SET_WALLET', pair) // FIXME: simpen untuk dev
-        commit('SET_LOADING_WALLET', false)
+        commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
+        console.log("Is pair locked?", pair.isLocked)
+        commit("SET_WALLET", pair) // FIXME: simpen untuk dev
+        commit("SET_LOADING_WALLET", false)
 
-        const identity = await Kilt.Identity.buildFromMnemonic(mnemonic);
+        const identity = await Kilt.Identity.buildFromMnemonic(mnemonic)
 
         const dataMnemonic = {
           privateKey: u8aToHex(identity.boxKeyPair.secretKey),
           publicKey: u8aToHex(identity.boxKeyPair.publicKey),
-          mnemonic: mnemonic,
-        };
+          mnemonic: mnemonic
+        }
 
-        localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(dataMnemonic));
-        commit('SET_MNEMONIC_DATA', dataMnemonic)
+        localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(dataMnemonic))
+        commit("SET_MNEMONIC_DATA", dataMnemonic)
         return { success: true }
       } catch (err) {
         console.log(err)
-        commit('CLEAR_WALLET')
-        commit('SET_LOADING_WALLET', false)
+        commit("CLEAR_WALLET")
+        commit("SET_LOADING_WALLET", false)
         return { success: false, error: err.message }
       }
     },
     async restoreAccountKeystore({ commit }, { file, password }) {
       try {
         if (Array.isArray(file)) {
-          console.log("mnemonic exist");
-          commit('SET_LOADING_WALLET', true)
-          const pair = keyring.restoreAccount(file[0], password);
+          console.log("mnemonic exist")
+          commit("SET_LOADING_WALLET", true)
+          const pair = keyring.restoreAccount(file[0], password)
           pair.unlock(password)
           localStorage.setKeystore(JSON.stringify(file[0]))
           localStorage.setAddress(pair.address)
-          commit('SET_WALLET_PUBLIC_KEY', u8aToHex(pair.publicKey))
-          console.log('Is pair locked?', pair.isLocked)
-          commit('SET_WALLET', pair)
+          commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
+          console.log("Is pair locked?", pair.isLocked)
+          commit("SET_WALLET", pair)
 
-          localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(file[1]));
-          commit('SET_MNEMONIC_DATA', file[1])
-          commit('SET_LOADING_WALLET', false)
+          localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(file[1]))
+          commit("SET_MNEMONIC_DATA", file[1])
+          commit("SET_LOADING_WALLET", false)
 
           return { success: true }
         } else {
           // FIXME: Ini belum ada mnemonic nya
-          console.log("mnemonic no exist");
-          commit('SET_LOADING_WALLET', true)
-          const pair = keyring.restoreAccount(file, password);
+          console.log("mnemonic no exist")
+          commit("SET_LOADING_WALLET", true)
+          const pair = keyring.restoreAccount(file, password)
           pair.unlock(password)
           localStorage.setKeystore(JSON.stringify(file))
           localStorage.setAddress(pair.address)
-          commit('SET_WALLET_PUBLIC_KEY', u8aToHex(pair.publicKey))
-          console.log('Is pair locked?', pair.isLocked)
-          commit('SET_WALLET', pair)
+          commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
+          console.log("Is pair locked?", pair.isLocked)
+          commit("SET_WALLET", pair)
 
           return { success: true }
           /*
@@ -209,65 +209,65 @@ export default {
         }
 
       } catch (err) {
-        commit('CLEAR_WALLET')
-        commit('SET_LOADING_WALLET', false)
+        commit("CLEAR_WALLET")
+        commit("SET_LOADING_WALLET", false)
         return { success: false, error: err.message }
       }
     },
     async getAccount({ commit, state }, { address }) {
       try {
-        commit('SET_LOADING_WALLET', true)
-        const pair = keyring.getPair(address);
-        commit('SET_WALLET_PUBLIC_KEY', u8aToHex(pair.publicKey))
-        commit('SET_WALLET', pair)
-        commit('SET_LOADING_WALLET', false)
+        commit("SET_LOADING_WALLET", true)
+        const pair = keyring.getPair(address)
+        commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
+        commit("SET_WALLET", pair)
+        commit("SET_LOADING_WALLET", false)
 
-        const dataMnemonicJson = localStorage.getLocalStorageByName("mnemonic_data");
+        const dataMnemonicJson = localStorage.getLocalStorageByName("mnemonic_data")
         if (dataMnemonicJson != null && dataMnemonicJson != "") {
-          const dataMnemonic = JSON.parse(dataMnemonicJson);
-          commit('SET_MNEMONIC_DATA', dataMnemonic);
+          const dataMnemonic = JSON.parse(dataMnemonicJson)
+          commit("SET_MNEMONIC_DATA", dataMnemonic)
         }
 
-        commit('SET_LAB_ACCOUNT', null)
-        commit('SET_IS_LAB_ACCOUNT_EXIST', false)
+        commit("SET_LAB_ACCOUNT", null)
+        commit("SET_IS_LAB_ACCOUNT_EXIST", false)
         const labAccount = await queryEntireLabDataById(state.api, address)
         if (labAccount) {
-          commit('SET_LAB_ACCOUNT', labAccount)
-          commit('SET_IS_LAB_ACCOUNT_EXIST', true)
+          commit("SET_LAB_ACCOUNT", labAccount)
+          commit("SET_IS_LAB_ACCOUNT_EXIST", true)
         }
 
-        commit('SET_DOCTOR_ACCOUNT', null)
-        commit('SET_IS_DOCTOR_ACCOUNT_EXIST', false)
+        commit("SET_DOCTOR_ACCOUNT", null)
+        commit("SET_IS_DOCTOR_ACCOUNT_EXIST", false)
         const doctorAccount = await queryEntireDoctorDataById(state.api, address)
         if (doctorAccount) {
-          commit('SET_DOCTOR_ACCOUNT', doctorAccount)
-          commit('SET_IS_DOCTOR_ACCOUNT_EXIST', true)
+          commit("SET_DOCTOR_ACCOUNT", doctorAccount)
+          commit("SET_IS_DOCTOR_ACCOUNT_EXIST", true)
         }
 
-        commit('SET_HOSPITAL_ACCOUNT', null)
-        commit('SET_IS_HOSPITAL_ACCOUNT_EXIST', false)
+        commit("SET_HOSPITAL_ACCOUNT", null)
+        commit("SET_IS_HOSPITAL_ACCOUNT_EXIST", false)
         const hospitalAccount = await queryEntireHospitalDataById(state.api, address)
         if (hospitalAccount) {
-          commit('SET_HOSPITAL_ACCOUNT', hospitalAccount)
-          commit('SET_IS_HOSPITAL_ACCOUNT_EXIST', true)
+          commit("SET_HOSPITAL_ACCOUNT", hospitalAccount)
+          commit("SET_IS_HOSPITAL_ACCOUNT_EXIST", true)
         }
 
         return { success: true }
       } catch (err) {
         console.log(err)
-        commit('CLEAR_WALLET')
-        commit('SET_LOADING_WALLET', false)
+        commit("CLEAR_WALLET")
+        commit("SET_LOADING_WALLET", false)
         return { success: false, error: err.message }
       }
     },
     async getLabAccount({ commit, state }) {
       try {
-        commit('SET_LAB_ACCOUNT', null)
-        commit('SET_IS_LAB_ACCOUNT_EXIST', false)
+        commit("SET_LAB_ACCOUNT", null)
+        commit("SET_IS_LAB_ACCOUNT_EXIST", false)
         const labAccount = await queryEntireLabDataById(state.api, state.wallet.address)
         if (labAccount) {
-          commit('SET_LAB_ACCOUNT', labAccount)
-          commit('SET_IS_LAB_ACCOUNT_EXIST', true)
+          commit("SET_LAB_ACCOUNT", labAccount)
+          commit("SET_IS_LAB_ACCOUNT_EXIST", true)
         }
 
         return { success: true }
@@ -278,12 +278,12 @@ export default {
     },
     async getDoctorAccount({ commit, state }) {
       try {
-        commit('SET_DOCTOR_ACCOUNT', null)
-        commit('SET_IS_DOCTOR_ACCOUNT_EXIST', false)
+        commit("SET_DOCTOR_ACCOUNT", null)
+        commit("SET_IS_DOCTOR_ACCOUNT_EXIST", false)
         const doctorAccount = await queryEntireDoctorDataById(state.api, state.wallet.address)
         if (doctorAccount) {
-          commit('SET_DOCTOR_ACCOUNT', doctorAccount)
-          commit('SET_IS_DOCTOR_ACCOUNT_EXIST', true)
+          commit("SET_DOCTOR_ACCOUNT", doctorAccount)
+          commit("SET_IS_DOCTOR_ACCOUNT_EXIST", true)
         }
 
         return { success: true }
@@ -294,12 +294,12 @@ export default {
     },
     async getHospitalAccount({ commit, state }) {
       try {
-        commit('SET_HOSPITAL_ACCOUNT', null)
-        commit('SET_IS_HOSPITAL_ACCOUNT_EXIST', false)
+        commit("SET_HOSPITAL_ACCOUNT", null)
+        commit("SET_IS_HOSPITAL_ACCOUNT_EXIST", false)
         const hospitalAccount = await queryEntireHospitalDataById(state.api, state.wallet.address)
         if (hospitalAccount) {
-          commit('SET_HOSPITAL_ACCOUNT', hospitalAccount)
-          commit('SET_IS_HOSPITAL_ACCOUNT_EXIST', true)
+          commit("SET_HOSPITAL_ACCOUNT", hospitalAccount)
+          commit("SET_IS_HOSPITAL_ACCOUNT_EXIST", true)
         }
 
         return { success: true }
@@ -310,12 +310,12 @@ export default {
     },
     async checkMnemonicSomeAddress({ commit }, { mnemonic, accountAddress }) {
       try {
-        const keyringX = new Keyring({ type: 'ed25519', ss58Format: 42 });
-        const pair = keyringX.addFromUri(mnemonic, { name: 'first pair' }, 'ed25519');
-        commit('SET_LOADING_WALLET', false)
+        const keyringX = new Keyring({ type: "ed25519", ss58Format: 42 })
+        const pair = keyringX.addFromUri(mnemonic, { name: "first pair" }, "ed25519")
+        commit("SET_LOADING_WALLET", false)
         if (accountAddress == pair.address) {
-          console.log(accountAddress);
-          console.log(pair.address);
+          console.log(accountAddress)
+          console.log(pair.address)
           return { success: true }
         } else {
           return { success: false }
@@ -328,43 +328,43 @@ export default {
     async getListNotification({ commit }, { address, role }) {
       try {
         //localStorage.removeLocalStorageByName("LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role, null);
-        commit('SET_CONFIG_EVENT', masterConfigEvent);
-        const listNotificationJson = localStorage.getLocalStorageByName("LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role);
-        let listNotification = [];
+        commit("SET_CONFIG_EVENT", masterConfigEvent)
+        const listNotificationJson = localStorage.getLocalStorageByName("LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role)
+        let listNotification = []
         if (listNotificationJson != null && listNotificationJson != "") {
-          listNotification = JSON.parse(listNotificationJson);
-          listNotification.reverse();
+          listNotification = JSON.parse(listNotificationJson)
+          listNotification.reverse()
           //console.log(listNotification);
         }
-        commit('SET_LIST_NOTIFICATION', listNotification);
+        commit("SET_LIST_NOTIFICATION", listNotification)
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
     async addListNotification({ commit, state }, { address, event, role }) {
       try {
-        const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role;
-        const listNotificationJson = localStorage.getLocalStorageByName(storageName);
+        const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role
+        const listNotificationJson = localStorage.getLocalStorageByName(storageName)
 
-        let listNotification = [];
+        let listNotification = []
         if (listNotificationJson != null && listNotificationJson != "") {
-          listNotification = JSON.parse(listNotificationJson);
+          listNotification = JSON.parse(listNotificationJson)
         }
 
         // If event section defined then process event
         if (state.configEvent["role"][role][event.section] && state.configEvent["role"][role][event.section][event.method]) {
           const { statusAdd, message, data, params } = await processEvent(state, address, event, role)
-          const route = state.configEvent["role"][role][event.section][event.method].route;
-          const dateSet = new Date();
-          const timestamp = dateSet.getTime().toString();
+          const route = state.configEvent["role"][role][event.section][event.method].route
+          const dateSet = new Date()
+          const timestamp = dateSet.getTime().toString()
           const notifDate = dateSet.toLocaleString("en-US", {
             weekday: "short", // long, short, narrow
             day: "numeric", // numeric, 2-digit
             year: "numeric", // numeric, 2-digit
             month: "long", // numeric, 2-digit, long, short, narrow
             hour: "numeric", // numeric, 2-digit
-            minute: "numeric",
-          });
+            minute: "numeric"
+          })
           if (statusAdd) {
             listNotification.push({
               message: message,
@@ -373,51 +373,51 @@ export default {
               route: route,
               params: params,
               read: false,
-              notifDate: notifDate,
-            });
+              notifDate: notifDate
+            })
           }
         }
 
-        localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification));
-        listNotification.reverse();
-        commit('SET_LIST_NOTIFICATION', listNotification);
+        localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification))
+        listNotification.reverse()
+        commit("SET_LIST_NOTIFICATION", listNotification)
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
     async updateDataListNotification({ commit }, { address, data, role }) {
       try {
         if (data != null && data != "") {
-          data.reverse();
-          localStorage.setLocalStorageByName("LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role, JSON.stringify(data));
-          data.reverse();
-          commit('SET_LIST_NOTIFICATION', data);
+          data.reverse()
+          localStorage.setLocalStorageByName("LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role, JSON.stringify(data))
+          data.reverse()
+          commit("SET_LIST_NOTIFICATION", data)
         }
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
     async addAnyNotification({ commit }, { address, dataAdd, role }) {
       try {
-        const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role;
-        const listNotificationJson = localStorage.getLocalStorageByName(storageName);
+        const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role
+        const listNotificationJson = localStorage.getLocalStorageByName(storageName)
 
-        let listNotification = [];
+        let listNotification = []
         if (listNotificationJson != null && listNotificationJson != "") {
-          listNotification = JSON.parse(listNotificationJson);
+          listNotification = JSON.parse(listNotificationJson)
         }
 
         if (dataAdd != null) {
-          const dateSet = new Date();
-          const timestamp = dateSet.getTime().toString();
+          const dateSet = new Date()
+          const timestamp = dateSet.getTime().toString()
           const notifDate = dateSet.toLocaleString("en-US", {
             weekday: "short", // long, short, narrow
             day: "numeric", // numeric, 2-digit
             year: "numeric", // numeric, 2-digit
             month: "long", // numeric, 2-digit, long, short, narrow
             hour: "numeric", // numeric, 2-digit
-            minute: "numeric",
-          });
+            minute: "numeric"
+          })
           listNotification.push({
             message: dataAdd.message,
             timestamp: timestamp,
@@ -425,17 +425,17 @@ export default {
             route: dataAdd.route,
             params: dataAdd.params,
             read: false,
-            notifDate: notifDate,
-          });
+            notifDate: notifDate
+          })
         }
 
-        localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification));
-        listNotification.reverse();
-        commit('SET_LIST_NOTIFICATION', listNotification);
+        localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification))
+        listNotification.reverse()
+        commit("SET_LIST_NOTIFICATION", listNotification)
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
-    },
+    }
   },
   getters: {
     wallet(state) {

@@ -67,19 +67,19 @@
 </template>
 
 <script>
-import { chunk } from '@/common/lib/arrays'
-import MnemonicKeypad from './MnemonicKeypad.vue'
+import { chunk } from "@/common/lib/arrays"
+import MnemonicKeypad from "./MnemonicKeypad.vue"
 
 export default {
-  name: 'MnemonicInput',
+  name: "MnemonicInput",
   components: {
-    MnemonicKeypad,
+    MnemonicKeypad
   },
   props: {
-    mnemonicCollection: Array,
+    mnemonicCollection: Array
   },
   data: () => ({
-    mnemonicInput: [],
+    mnemonicInput: []
   }),
   computed: {
     chunkedMnemonic() {
@@ -89,16 +89,16 @@ export default {
   methods: {
     input(mnemonic) {
       this.mnemonicInput.push(mnemonic)
-      this.$emit('click', this.mnemonicInput)
+      this.$emit("click", this.mnemonicInput)
     },
 
     remove(mnemonic) {
       const index = this.mnemonicInput.indexOf(mnemonic)
       if (index !== -1) {
-        this.mnemonicInput.splice(index, 1);
+        this.mnemonicInput.splice(index, 1)
       }
       this.mnemonicCollection.push(mnemonic)
-      this.$emit('click', this.mnemonicInput)
+      this.$emit("click", this.mnemonicInput)
     }
   }
 }

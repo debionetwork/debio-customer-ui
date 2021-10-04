@@ -29,25 +29,25 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'ForgotPassword',
-    components: {
-        LandingPagePopUp,
+  name: "ForgotPassword",
+  components: {
+    LandingPagePopUp
+  },
+  methods: {
+    previous() {
+      this.$router.push({name: "sign-in"})
     },
-    methods: {
-        previous() {
-            this.$router.push({name: 'sign-in'});
-        },
 
-        inputMnemonic() {
-            this.$router.push({name: 'input-mnemonic'});
-        },
-
-        importKeystore() {
-            this.$router.push({name: 'import-keystore'});
-        },
+    inputMnemonic() {
+      this.$router.push({name: "input-mnemonic"})
     },
+
+    importKeystore() {
+      this.$router.push({name: "import-keystore"})
+    }
+  }
 }
 </script>

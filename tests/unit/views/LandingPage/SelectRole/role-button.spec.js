@@ -4,7 +4,7 @@ import RoleButton from "@/views/LandingPage/SelectRole/RoleButton"
 describe("Select Role Input", () => {
   it("Should render", () => {
     mount(RoleButton, {
-      propsData: { role: 'Customer' }
+      propsData: { role: "Customer" }
     })
   })
 })

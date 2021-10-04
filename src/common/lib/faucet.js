@@ -1,13 +1,13 @@
-import axios from 'axios'
-import store from '@/store/index'
+import axios from "axios"
+import store from "@/store/index"
 
 /**
  * 
  * @param {String} walletAddress 
  */
 export async function getEthFromFaucet(walletAddress) {
-  console.log('getting eth from faucet')
-  const faucetEndpoint = store.getters['auth/getConfig'].urlFaucet;
+  console.log("getting eth from faucet")
+  const faucetEndpoint = store.getters["auth/getConfig"].urlFaucet
   const request = `${faucetEndpoint}?address=${walletAddress}`
   try {
     const resp = await axios.get(request)
@@ -19,8 +19,8 @@ export async function getEthFromFaucet(walletAddress) {
 }
 
 export async function getDaicFromFaucet(walletAddress) {
-  console.log('getting daic from faucet')
-  const faucetEndpoint = store.getters['auth/getConfig'].urlFaucet;
+  console.log("getting daic from faucet")
+  const faucetEndpoint = store.getters["auth/getConfig"].urlFaucet
   const request = `${faucetEndpoint}?address=${walletAddress}&daic=true`
   try {
     const resp = await axios.get(request)
@@ -32,7 +32,7 @@ export async function getDaicFromFaucet(walletAddress) {
 }
 
 export async function getDbioFromFaucet(walletAddress) {
-  const faucetEndpoint = store.getters['auth/getConfig'].urlFaucet;
+  const faucetEndpoint = store.getters["auth/getConfig"].urlFaucet
   const request = `${faucetEndpoint}?address=${walletAddress}`
   try {
     const resp = await axios.get(request)

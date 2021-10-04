@@ -32,17 +32,17 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'RegistrationSuccessful',
-    components: {
-        LandingPagePopUp,
-    },
-    methods: {
-        selectRole() {
-            this.$router.push({name: 'select-role'});
-        },
-    },
+  name: "RegistrationSuccessful",
+  components: {
+    LandingPagePopUp
+  },
+  methods: {
+    selectRole() {
+      this.$router.push({name: "select-role"})
+    }
+  }
 }
 </script>

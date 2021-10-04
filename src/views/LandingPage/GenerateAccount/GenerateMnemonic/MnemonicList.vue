@@ -52,20 +52,20 @@ div {
 </template>
 
 <script>
-import { chunk } from '@/common/lib/arrays'
+import { chunk } from "@/common/lib/arrays"
 
 export default {
-  name: 'MnemonicList',
+  name: "MnemonicList",
   props: {
-    mnemonicCollection: Array,
+    mnemonicCollection: Array
   },
   data: () => ({
-    chuckLength: 4,
+    chuckLength: 4
   }),
   computed: {
     chunkedMnemonic() {
       return chunk(this.mnemonicCollection, this.chuckLength)
     }
-  },
+  }
 }
 </script>

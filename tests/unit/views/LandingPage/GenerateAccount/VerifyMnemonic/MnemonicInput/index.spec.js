@@ -1,17 +1,17 @@
 import { shallowMount } from "@vue/test-utils"
-import Vuetify from 'vuetify'
+import Vuetify from "vuetify"
 import MnemonicInput from "@/views/LandingPage/GenerateAccount/VerifyMnemonic/MnemonicInput"
 
 describe("Mnemonic List", () => {
   let localVue = null
 
   beforeEach(() => {
-      localVue = require('vue');
-      localVue.use(Vuetify);
+    localVue = require("vue")
+    localVue.use(Vuetify)
   })
 
   afterEach(() => {
-      localVue = null;
+    localVue = null
   })
 
   it("Should render", () => {

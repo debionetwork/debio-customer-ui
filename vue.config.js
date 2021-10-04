@@ -1,23 +1,18 @@
-const WorkerPlugin = require('worker-plugin')
+const WorkerPlugin = require("worker-plugin")
 
 module.exports = {
   chainWebpack: config => {
     config.module
-      .rule('mjs$')
+      .rule("mjs$")
       .test(/\.mjs$/)
       .include
       .add(/node_modules/)
       .end()
-      .type('javascript/auto');
-  },
-  configureWebpack: {
-    resolve: {
-      extensions: ['*', '.mjs', '.js', '.vue', '.json']
-    }
+      .type("javascript/auto")
   },
   "transpileDependencies": [
     "vuetify",
-    "eslint-loader",
+    "eslint-loader"
   ],
   configureWebpack: {
     output: {
@@ -27,16 +22,16 @@ module.exports = {
       new WorkerPlugin()
     ],
     resolve: {
-      extensions: ['*', '.mjs', '.js', '.vue', '.json', '.gql', '.graphql']
+      extensions: ["*", ".mjs", ".js", ".vue", ".json", ".mjs", ".js", ".vue", ".json", ".gql", ".graphql"]
     },
     module: {
       rules: [
         {
           test: /\.mjs$/,
           include: /node_modules/,
-          type: 'javascript/auto'
+          type: "javascript/auto"
         }
       ]
     }
-  },
+  }
 }

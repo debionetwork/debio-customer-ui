@@ -53,12 +53,12 @@ div {
 </template>
 
 <script>
-import { chunk } from '@/common/lib/arrays'
+import { chunk } from "@/common/lib/arrays"
 
 export default {
-  name: 'MnemonicKeypad',
+  name: "MnemonicKeypad",
   props: {
-    mnemonicCollection: Array,
+    mnemonicCollection: Array
   },
   computed: {
     chunkedMnemonic() {
@@ -72,8 +72,8 @@ export default {
       this.mnemonicCollection
         .splice(index, 1)
 
-      this.$emit('click', mnemonic)
+      this.$emit("click", mnemonic)
     }
-  },
+  }
 }
 </script>

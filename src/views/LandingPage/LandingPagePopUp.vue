@@ -133,16 +133,16 @@
 
 <script>
 export default {
-    name: 'LandingPagePopUp',
+  name: "LandingPagePopUp",
     
-    props: {
-        previous: Function,
-    },
+  props: {
+    previous: Function
+  },
 
-    computed: {
-        hasHeaderSlot() {
-            return !!this.previous
-        }
-    },
+  computed: {
+    hasHeaderSlot() {
+      return !!this.previous
+    }
+  }
 }
 </script>

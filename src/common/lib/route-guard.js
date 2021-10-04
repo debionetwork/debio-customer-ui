@@ -1,10 +1,10 @@
-import localStorage from './local-storage'
-import store from '@/store/index'
+import localStorage from "./local-storage"
+import store from "@/store/index"
 
 async function dispatchGetAccount(wallet, address, func){
   if (wallet == null) {
     if (address != "") {
-      await store.dispatch('substrate/getAccount', {
+      await store.dispatch("substrate/getAccount", {
         address: address
       })
     }
@@ -13,20 +13,20 @@ async function dispatchGetAccount(wallet, address, func){
 }
 
 export async function checkIsLoggedIn(to, from, next) {
-  const address = localStorage.getAddress();
-  let api = store.getters['substrate/getAPI'];
+  const address = localStorage.getAddress()
+  let api = store.getters["substrate/getAPI"]
   if (api == null) {
-    await store.dispatch('substrate/connect', address);
+    await store.dispatch("substrate/connect", address)
   }
 
-  let wallet = store.getters['substrate/wallet'];
+  let wallet = store.getters["substrate/wallet"]
   const keystore = localStorage.getAddress()
-  const isLoggedIn = !!keystore;
+  const isLoggedIn = !!keystore
 
-  if (to.path == '/sign-in' || to.path == '/generate') {
+  if (to.path == "/sign-in" || to.path == "/generate") {
     if (isLoggedIn) {
       await dispatchGetAccount(wallet, address, () => {
-        next('/select-role')
+        next("/select-role")
       })
       return address
     } 
@@ -42,6 +42,6 @@ export async function checkIsLoggedIn(to, from, next) {
     return address
   }
 
-  next('/sign-in')
+  next("/sign-in")
   return ""
 }

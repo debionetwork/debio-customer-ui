@@ -33,49 +33,49 @@
 </template>
 
 <script>
-import { mnemonicValidate } from '@polkadot/util-crypto'
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import { mnemonicValidate } from "@polkadot/util-crypto"
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'InputMnemonic',
+  name: "InputMnemonic",
 
-    components: {
-        LandingPagePopUp,
-    },
+  components: {
+    LandingPagePopUp
+  },
 
-    data: () => ({
-        mnemonic: "",
-    }),
+  data: () => ({
+    mnemonic: ""
+  }),
     
-    computed: {
-        mnemonicRule() {
-            if(!this.mnemonic) {
-                return 'Mnemonic cannot be empty.'
-            }
-            if(!mnemonicValidate(this.mnemonic)) {
-                return 'Mnemonic invalid.'
-            }
-            return true
-        },
+  computed: {
+    mnemonicRule() {
+      if(!this.mnemonic) {
+        return "Mnemonic cannot be empty."
+      }
+      if(!mnemonicValidate(this.mnemonic)) {
+        return "Mnemonic invalid."
+      }
+      return true
+    },
 
-        checkIfValid(){
-            return this.mnemonicRule === true
+    checkIfValid(){
+      return this.mnemonicRule === true
+    }
+  },
+
+  methods: {
+    previous() {
+      this.$router.push({name: "forgot-password"})
+    },
+
+    changePassword() {
+      this.$router.push({
+        name: "change-password",
+        params: { 
+          mnemonic: this.mnemonic
         }
-    },
-
-    methods: {
-        previous() {
-            this.$router.push({name: 'forgot-password'})
-        },
-
-        changePassword() {
-            this.$router.push({
-                name: 'change-password',
-                params: { 
-                    mnemonic: this.mnemonic,
-                }
-            })
-        },
-    },
+      })
+    }
+  }
 }
 </script>

@@ -33,23 +33,23 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'GenerateAccount',
-    components: {
-        LandingPagePopUp,
+  name: "GenerateAccount",
+  components: {
+    LandingPagePopUp
+  },
+  data: () => ({
+    agreeConditions: false
+  }),
+  methods: {
+    previous() {
+      this.$router.push({name: "landing-page"})
     },
-    data: () => ({
-        agreeConditions: false,
-    }),
-    methods: {
-        previous() {
-            this.$router.push({name: 'landing-page'});
-        },
-        generateMnemonic() {
-            this.$router.push({name: 'generate-mnemonic'});
-        },
-    },
+    generateMnemonic() {
+      this.$router.push({name: "generate-mnemonic"})
+    }
+  }
 }
 </script>

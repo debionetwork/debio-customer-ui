@@ -24,40 +24,40 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'SelectFile',
+  name: "SelectFile",
 
-    data: () => ({
-        keystore: "",
-        password: "",
-    }),
+  data: () => ({
+    keystore: "",
+    password: ""
+  }),
 
-    components: {
-        LandingPagePopUp,
+  components: {
+    LandingPagePopUp
+  },
+
+  methods: {
+    previous() {
+      this.$router.push({name: "forgot-password"})
     },
 
-    methods: {
-        previous() {
-            this.$router.push({name: 'forgot-password'});
-        },
-
-        changePassword() {
-            this.$router.push({name: 'change-password'});
-        },
-
-        setKeystoreFileInputListener(files) {
-            const file = files[0];
-            this.fileName = file.name;
-
-            const fr = new FileReader();
-            fr.onload = async function () {
-                // TODO: Validate if valid keystore
-                this.keystore = fr.result;
-            };
-            fr.readAsText(file);
-        },
+    changePassword() {
+      this.$router.push({name: "change-password"})
     },
+
+    setKeystoreFileInputListener(files) {
+      const file = files[0]
+      this.fileName = file.name
+
+      const fr = new FileReader()
+      fr.onload = async function () {
+        // TODO: Validate if valid keystore
+        this.keystore = fr.result
+      }
+      fr.readAsText(file)
+    }
+  }
 }
 </script>

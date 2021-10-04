@@ -1,12 +1,12 @@
-const contractInfo = require('./contract.json')
-const Escrow20 = require('./abi/ERC20.json')
-const Escrow20Basic = require('./abi/ERC20Basic.json')
-const SingleEscrow = require('./abi/SingleEscrow.json')
-const EscrowFactory = require('./abi/EscrowFactory.json')
-const ERC20Interface = require('./abi/ERC20Interface.json')
-const SimpleEscrow = require('./abi/SimpleEscrow.json')
-const ServiceRequest = require('./abi/ServiceRequest.json')
-import store from '@/store/index'
+const contractInfo = require("./contract.json")
+const Escrow20 = require("./abi/ERC20.json")
+const Escrow20Basic = require("./abi/ERC20Basic.json")
+const SingleEscrow = require("./abi/SingleEscrow.json")
+const EscrowFactory = require("./abi/EscrowFactory.json")
+const ERC20Interface = require("./abi/ERC20Interface.json")
+const SimpleEscrow = require("./abi/SimpleEscrow.json")
+const ServiceRequest = require("./abi/ServiceRequest.json")
+import store from "@/store/index"
 
 const defaultState = {
   contractEscrow20: null,
@@ -15,13 +15,13 @@ const defaultState = {
   abiSingleEscrow: null,
   contractEscrowFactory: null,
   contractERC20Interface: null,
-  contractSimpleEscrow: null,
+  contractSimpleEscrow: null
 }
 
 export default {
   namespaced: true,
   state: {
-    ...defaultState,
+    ...defaultState
   },
   mutations: {
     SET_CONTRACT_Escrow20(state, contractEscrow20) {
@@ -59,33 +59,33 @@ export default {
       const SimpleEscrowContract = new web3.eth.Contract(SimpleEscrow, contractInfo.SimpleEscrow.address)
       const ServiceRequestContract = new web3.eth.Contract(ServiceRequest.abi, contractInfo.ServiceRequest.address)
 
-      let ERC20InterfaceContract;
-      const coinName = store.getters['auth/getConfig'].tokenName;
-      let contractAddress = "";
+      let ERC20InterfaceContract
+      const coinName = store.getters["auth/getConfig"].tokenName
+      let contractAddress = ""
       switch (coinName) {
-        case "DAIC":
-          contractAddress = contractInfo.DAICToken.address;
-          break;
-        case "USDT":
-          contractAddress = contractInfo.ERC20Interface.address;
-          break;
-        case "DAI":
-          contractAddress = contractInfo.DAIToken.address;
-          break;
-        default:
-          contractAddress = contractInfo.ERC20Interface.address;
-          break;
+      case "DAIC":
+        contractAddress = contractInfo.DAICToken.address
+        break
+      case "USDT":
+        contractAddress = contractInfo.ERC20Interface.address
+        break
+      case "DAI":
+        contractAddress = contractInfo.DAIToken.address
+        break
+      default:
+        contractAddress = contractInfo.ERC20Interface.address
+        break
       }
-      ERC20InterfaceContract = new web3.eth.Contract(ERC20Interface, contractAddress);
+      ERC20InterfaceContract = new web3.eth.Contract(ERC20Interface, contractAddress)
 
-      commit('SET_CONTRACT_Escrow20', Escrow20Contract)
-      commit('SET_CONTRACT_Escrow20Basic', Escrow20BasicContract)
-      commit('SET_CONTRACT_SingleEscrow', SingleEscrowContract)
-      commit('SET_ABI_SingleEscrow', SingleEscrow)
-      commit('SET_CONTRACT_EscrowFactory', EscrowFactoryContract)
-      commit('SET_CONTRACT_ERC20Interface', ERC20InterfaceContract)
-      commit('SET_CONTRACT_SimpleEscrow', SimpleEscrowContract)
-      commit('SET_CONTRACT_ServiceRequest', ServiceRequestContract)
+      commit("SET_CONTRACT_Escrow20", Escrow20Contract)
+      commit("SET_CONTRACT_Escrow20Basic", Escrow20BasicContract)
+      commit("SET_CONTRACT_SingleEscrow", SingleEscrowContract)
+      commit("SET_ABI_SingleEscrow", SingleEscrow)
+      commit("SET_CONTRACT_EscrowFactory", EscrowFactoryContract)
+      commit("SET_CONTRACT_ERC20Interface", ERC20InterfaceContract)
+      commit("SET_CONTRACT_SimpleEscrow", SimpleEscrowContract)
+      commit("SET_CONTRACT_ServiceRequest", ServiceRequestContract)
     }
   },
   getters: {

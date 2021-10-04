@@ -1,6 +1,6 @@
-import store from '../../store'
-import contractInfo from '@/store/metamask/contracts/contract.json'
-import { sendTransaction } from './wallet'
+import store from "../../store"
+import contractInfo from "@/store/metamask/contracts/contract.json"
+import { sendTransaction } from "./wallet"
 
 
 /**
@@ -14,12 +14,12 @@ import { sendTransaction } from './wallet'
  * @param {string | number} stakingAmount
  */
 export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
-  const contractERC20Interface = store.getters['metamask/contracts/getERC20InterfaceContract'];
-  const web3 = store.getters['metamask/getWeb3']
+  const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
+  const web3 = store.getters["metamask/getWeb3"]
 
   const txData = contractERC20Interface.methods.approve(
     contractInfo.ServiceRequest.address,
-    web3.utils.toWei(String(stakingAmount), 'ether') // Convert to 18 decimal places
+    web3.utils.toWei(String(stakingAmount), "ether") // Convert to 18 decimal places
   ).encodeABI()
 
   const txHash = await sendTransaction(
@@ -40,14 +40,14 @@ export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
  * @returns string
  */
 export async function checkAllowance(userAddress) {
-  const contractERC20Interface = store.getters['metamask/contracts/getERC20InterfaceContract'];
+  const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
 
   let balance = await contractERC20Interface.methods
     .allowance(userAddress, contractInfo.ServiceRequest.address).call()
   
-  const web3 = store.getters['metamask/getWeb3']
+  const web3 = store.getters["metamask/getWeb3"]
 
-  return web3.utils.fromWei(balance, 'ether')
+  return web3.utils.fromWei(balance, "ether")
 }
 
 /**
@@ -63,15 +63,15 @@ export async function checkAllowance(userAddress) {
  * @returns 
  */
 export async function sendServiceRequestStaking(stakerAddress, country, city, serviceCategory, stakingAmount) {
-  const contractServiceRequestInterface = store.getters['metamask/contracts/getServiceRequestContract']
-  const web3 = store.getters['metamask/getWeb3']
+  const contractServiceRequestInterface = store.getters["metamask/contracts/getServiceRequestContract"]
+  const web3 = store.getters["metamask/getWeb3"]
 
   const txData = contractServiceRequestInterface.methods
     .createRequest(
       country,
       city,
       serviceCategory,
-      web3.utils.toWei(String(stakingAmount), 'ether') // Convert to 18 decimal places
+      web3.utils.toWei(String(stakingAmount), "ether") // Convert to 18 decimal places
     )
     .encodeABI()
 

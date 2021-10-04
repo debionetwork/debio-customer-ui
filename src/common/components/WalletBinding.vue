@@ -61,16 +61,16 @@
 
 <script>
 
-import { mapState, mapMutations } from "vuex";
-import { handleSetWallet } from "@/common/lib/wallet";
-import { setEthAddress, serviceHandlerMixin } from "@/common/lib/polkadot-provider";
-import { getEthFromFaucet, getDaicFromFaucet } from "@/common/lib/faucet";
+import { mapState, mapMutations } from "vuex"
+import { handleSetWallet } from "@/common/lib/wallet"
+import { setEthAddress, serviceHandlerMixin } from "@/common/lib/polkadot-provider"
+import { getEthFromFaucet, getDaicFromFaucet } from "@/common/lib/faucet"
 
 export default {
   name: "WalletBinding",
 
   props: {
-    show: Boolean,
+    show: Boolean
   },
 
   mixins: [serviceHandlerMixin],
@@ -83,51 +83,51 @@ export default {
     ethAccount: null,
     accountList: [],
     inputPassword: false,
-    selectAccount: null,
+    selectAccount: null
   }),
 
   computed: {
     _show: {
       get() {
-        return this.show;
+        return this.show
       },
       set(val) {
-        this.$emit("toggle", val);
-      },
+        this.$emit("toggle", val)
+      }
     },
 
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
-      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
-    }),
+      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress
+    })
   },
 
   watch: {
     show() {
       if (this.show) {
-        this.error = "";
-        this.loading = false;
-        this.putAccount = false;
-        this.putWallet = true;
-        this.inputPassword = false;
-        this.isLoading = false;
+        this.error = ""
+        this.loading = false
+        this.putAccount = false
+        this.putWallet = true
+        this.inputPassword = false
+        this.isLoading = false
       }
-    },
+    }
   },
 
   methods: {
     ...mapMutations({
-      setMetamaskAddress: "metamask/SET_WALLET_ADDRESS",
+      setMetamaskAddress: "metamask/SET_WALLET_ADDRESS"
     }),
 
     async getMunnyFromFaucet(address) {
-      await getEthFromFaucet(address);
-      await getDaicFromFaucet(address);
+      await getEthFromFaucet(address)
+      await getDaicFromFaucet(address)
     },
 
     async setWallet(walletName) {
-      this.loading = true;
+      this.loading = true
       this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
 
       try {
@@ -137,36 +137,36 @@ export default {
           this.wallet, 
           this.ethAccount[0].address,
           async () => {
-            this.setMetamaskAddress(this.ethAccount[0].address);
+            this.setMetamaskAddress(this.ethAccount[0].address)
             this.$emit("status-wallet", {
-              status: true,
-            });
-            await this.getMunnyFromFaucet(this.ethAccount[0].address);
+              status: true
+            })
+            await this.getMunnyFromFaucet(this.ethAccount[0].address)
           }
         )
 
-        this.putWallet = false;
-        this.putAccount = true;
-        this.loading = false;
+        this.putWallet = false
+        this.putAccount = true
+        this.loading = false
       } 
       catch (err) {
-        console.log(err.message);
-        this.isLoading = false;
-        this.error = err.message;
+        console.log(err.message)
+        this.isLoading = false
+        this.error = err.message
       }
     },
 
     closeDialog() {
-      this._show = false;
-      this.error = "";
-      this.loading = false;
-      this.putWallet = true;
-      this.inputPassword = false;
+      this._show = false
+      this.error = ""
+      this.loading = false
+      this.putWallet = true
+      this.inputPassword = false
     },
     
     async copyToClipboard(text) {
       await navigator.clipboard.writeText(text)
     }
-  },
-};
+  }
+}
 </script>

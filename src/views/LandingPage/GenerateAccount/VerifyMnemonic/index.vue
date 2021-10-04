@@ -14,51 +14,51 @@
 </template>
 
 <script>
-import { shuffle } from '@/common/lib/arrays'
-import MnemonicInput from './MnemonicInput'
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import { shuffle } from "@/common/lib/arrays"
+import MnemonicInput from "./MnemonicInput"
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'GenerateAccount',
-    components: {
-        LandingPagePopUp,
-        MnemonicInput,
+  name: "GenerateAccount",
+  components: {
+    LandingPagePopUp,
+    MnemonicInput
+  },
+  data: () => ({
+    mnemonicCollection: [],
+    mnemonicInputs: [],
+    mnemonicValid: false
+  }),
+  mounted(){
+    this.mnemonicCollection.push(...this.$route.params.mnemonicCollection)
+    const mnemonicCollection = shuffle(this.$route.params.mnemonicCollection)
+    this.mnemonicInputs.push(...mnemonicCollection)
+  },
+  methods: {
+    previous() {
+      this.$router.push({name: "generate-mnemonic"})
     },
-    data: ()=>({
-        mnemonicCollection: [],
-        mnemonicInputs: [],
-        mnemonicValid: false,
-    }),
-    mounted(){
-        this.mnemonicCollection.push(...this.$route.params.mnemonicCollection)
-        const mnemonicCollection = shuffle(this.$route.params.mnemonicCollection)
-        this.mnemonicInputs.push(...mnemonicCollection)
-    },
-    methods: {
-        previous() {
-            this.$router.push({name: 'generate-mnemonic'});
-        },
 
-        setPassword() {
-            this.$router.push({
-                name: 'set-password',
-                params: { 
-                    mnemonic: this.$route.params.mnemonic,
-                }
-            });
-        },
-
-        validate(inputs){
-            this.mnemonicValid = false
-            if(inputs.length < this.mnemonicCollection.length) return
-
-            for(let i = 0; i < inputs.length; i++){
-                if(inputs[i] != this.mnemonicCollection[i]) {
-                    return
-                }
-            }
-            this.mnemonicValid = true
+    setPassword() {
+      this.$router.push({
+        name: "set-password",
+        params: { 
+          mnemonic: this.$route.params.mnemonic
         }
+      })
     },
+
+    validate(inputs){
+      this.mnemonicValid = false
+      if(inputs.length < this.mnemonicCollection.length) return
+
+      for(let i = 0; i < inputs.length; i++){
+        if(inputs[i] != this.mnemonicCollection[i]) {
+          return
+        }
+      }
+      this.mnemonicValid = true
+    }
+  }
 }
 </script>

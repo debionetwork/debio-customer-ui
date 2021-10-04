@@ -27,27 +27,27 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
-import RoleButton from './RoleButton.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
+import RoleButton from "./RoleButton.vue"
 
 export default {
-    name: 'InputPassword',
-    data: () => ({
-        roles: [
-            'Customer',
-            'Lab',
-            'Doctor',
-            'Hospital',
-        ]
-    }),
-    components: {
-        LandingPagePopUp,
-        RoleButton,
-    },
-    methods: {
-        previous() {
-            this.$router.push({name: 'landing-page'});
-        },
-    },
+  name: "InputPassword",
+  data: () => ({
+    roles: [
+      "Customer",
+      "Lab",
+      "Doctor",
+      "Hospital"
+    ]
+  }),
+  components: {
+    LandingPagePopUp,
+    RoleButton
+  },
+  methods: {
+    previous() {
+      this.$router.push({name: "landing-page"})
+    }
+  }
 }
 </script>

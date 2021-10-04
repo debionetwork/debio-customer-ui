@@ -45,7 +45,7 @@
 
 <script>
 export default {
-  name: 'DataTable',
+  name: "DataTable",
   props: {
     headers: { type: [Object, Array]},
     items: { type: [Object, Array]},
@@ -61,20 +61,20 @@ export default {
   data: () => ({
     page: 1,
     pageCount: 0,
-    entriesPerPage: 10,
+    entriesPerPage: 10
     
   }),
   methods: {
     clickedRow() {
-      console.log('clicked')
+      console.log("clicked")
     },
     computedLoadingText() {
-      return this.loadingText ? this.loadingText : 'Loading.. Please wait'
+      return this.loadingText ? this.loadingText : "Loading.. Please wait"
     },
-    defaultFilter(value, search, /*item*/) {
+    defaultFilter(value, search /*item*/) {
       return value != null &&
       search != null &&
-      typeof value !== 'boolean' &&
+      typeof value !== "boolean" &&
       value.toString().toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1
     },
 
@@ -97,7 +97,7 @@ export default {
 
     total() {
       return this.totalItemLength
-    },
+    }
     /** ----------------- */
   },
   computed: {
@@ -106,7 +106,7 @@ export default {
         return this.search
       },
       set(val) {
-        this.$emit('input', val)
+        this.$emit("input", val)
       }
     },
     _customFilter() {

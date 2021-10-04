@@ -32,17 +32,17 @@
 </template>
 
 <script>
-import LandingPagePopUp from '@/views/LandingPage/LandingPagePopUp.vue'
+import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 
 export default {
-    name: 'ChangePasswordSuccessful',
-    components: {
-        LandingPagePopUp,
-    },
-    methods: {
-        signIn() {
-            this.$router.push({name: 'sign-in'});
-        },
-    },
+  name: "ChangePasswordSuccessful",
+  components: {
+    LandingPagePopUp
+  },
+  methods: {
+    signIn() {
+      this.$router.push({name: "sign-in"})
+    }
+  }
 }
 </script>

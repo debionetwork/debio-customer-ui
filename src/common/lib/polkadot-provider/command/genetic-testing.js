@@ -1,20 +1,20 @@
-export async function processDnaSample(api, pair, tracking_id, process_status, callback = ()=>{}) {
+export async function processDnaSample(api, pair, trackingId, processStatus, callback = () => {}) {
   const unsub = await api.tx.geneticTesting
-    .processDnaSample(tracking_id, process_status)
+    .processDnaSample(trackingId, processStatus)
     .signAndSend(pair, { nonce: -1 }, ({ events, status }) => 
       successCallback(api, { events, status, callback, unsub })
     )
 }
 
-export async function receiveDnaSample(api, pair, tracking_id, callback = ()=>{}) {
+export async function receiveDnaSample(api, pair, trackingId, callback = () => {}) {
   const unsub = await api.tx.geneticTesting
-    .receiveDnaSample(tracking_id)
+    .receiveDnaSample(trackingId)
     .signAndSend(pair, { nonce: -1 }, ({ events, status }) => 
       successCallback(api, { events, status, callback, unsub })
     )
 }
 
-export async function rejectDnaSample(api, pair, data, callback = ()=>{}) {
+export async function rejectDnaSample(api, pair, data, callback = () => {}) {
   const unsub = await api.tx.geneticTesting
     .rejectDnaSample(data.tracking_id, data.rejected_title, data.rejected_description)
     .signAndSend(pair, { nonce: -1 }, ({ events, status }) => 
@@ -22,7 +22,7 @@ export async function rejectDnaSample(api, pair, data, callback = ()=>{}) {
     )
 }
 
-export async function submitIndependentTestResult(api, pair, submission, callback = ()=>{}) {
+export async function submitIndependentTestResult(api, pair, submission, callback = () => {}) {
   const unsub = await api.tx.geneticTesting
     .submitIndependentTestResult(submission)
     .signAndSend(pair, { nonce: -1 }, ({ events, status }) => 
@@ -30,9 +30,9 @@ export async function submitIndependentTestResult(api, pair, submission, callbac
     )
 }
 
-export async function submitTestResult(api, pair, tracking_id, submission, callback = ()=>{}) {
+export async function submitTestResult(api, pair, trackingId, submission, callback = () => {}) {
   const unsub = await api.tx.geneticTesting
-    .submitTestResult(tracking_id, submission)
+    .submitTestResult(trackingId, submission)
     .signAndSend(pair, { nonce: -1 }, ({ events, status }) => 
       successCallback(api, { events, status, callback, unsub })
     )
@@ -45,8 +45,8 @@ function successCallback(api, { events, status, callback, unsub }){
       api.events.system.ExtrinsicSuccess.is(event)
     )
     if(eventList.length > 0){
-        callback()
-        unsub()
+      callback()
+      unsub()
     }
   }
 }

@@ -1,4 +1,4 @@
-import { doctorCommandCallback } from '@/common/lib/polkadot-provider/command/doctors'
+import { doctorCommandCallback } from "@/common/lib/polkadot-provider/command/doctors"
 
 export async function createCertification(api, pair, data, callback = () => {}) {
   const unsub = await api.tx.doctorCertifications

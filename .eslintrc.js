@@ -18,7 +18,7 @@ module.exports = {
       "double",
       { avoidEscape: true, allowTemplateLiterals: true }
     ],
-    "new-cap": ["error", { newIsCap: false }],
+    "new-cap": 0,
     semi: ["error", "never"],
     "arrow-spacing": "error",
     "comma-dangle": ["error", "never"],

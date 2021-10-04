@@ -1,10 +1,10 @@
 module.exports = {
-  preset: '@vue/cli-plugin-unit-jest',
+  preset: "@vue/cli-plugin-unit-jest",
   globals: {
-    'vue-jest': {
+    "vue-jest": {
       pug: {
-        doctype: 'html',
-      },
-    },
-  },
+        doctype: "html"
+      }
+    }
+  }
 }

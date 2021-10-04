@@ -1,4 +1,4 @@
-import { hospitalCommandCallback } from '@/common/lib/polkadot-provider/command/hospitals'
+import { hospitalCommandCallback } from "@/common/lib/polkadot-provider/command/hospitals"
 
 export async function createCertification(api, pair, data, callback = () => {}) {
   const unsub = await api.tx.hospitalCertifications

@@ -1,5 +1,5 @@
 import ipfsWorker from "./ipfs-worker"
-import store from '@/store/index'
+import store from "@/store/index"
 
 export function upload({ fileChunk, fileName, fileType }) {
   const chunkSize = 10 * 1024 * 1024 // 10 MB
@@ -7,72 +7,72 @@ export function upload({ fileChunk, fileName, fileType }) {
   const blob = new Blob([ fileChunk ], { type: fileType })
 
   return new Promise((resolve, reject) => {
-      try {
+    try {
       const fileSize = blob.size
       do {
-          let chunk = blob.slice(offset, chunkSize + offset);
-          ipfsWorker.workerUpload.postMessage({
+        let chunk = blob.slice(offset, chunkSize + offset)
+        ipfsWorker.workerUpload.postMessage({
           seed: chunk.seed, file: blob
-          })
-          offset += chunkSize
+        })
+        offset += chunkSize
       } while((chunkSize + offset) < fileSize)
       
       let uploadSize = 0
       const uploadedResultChunks = []
       ipfsWorker.workerUpload.onmessage = async event => {
-          uploadedResultChunks.push(event.data)
-          uploadSize += event.data.data.size
+        uploadedResultChunks.push(event.data)
+        uploadSize += event.data.data.size
           
-          if (uploadSize >= fileSize) {
+        if (uploadSize >= fileSize) {
           resolve({
-              fileName: fileName,
-              fileType: fileType,
-              ipfsPath: uploadedResultChunks
+            fileName: fileName,
+            fileType: fileType,
+            ipfsPath: uploadedResultChunks
           })
-          }
+        }
       }
 
-      } catch (err) {
+    } catch (err) {
       reject(new Error(err.message))
-      }
+    }
   })
 }
 
 export async function downloadDecryptedFromIPFS(path, secretKey, publicKey, fileName, type) {
   store.state.auth.loadingData = {
     loading: true,
-    loadingText: "Decrypt File",
-  };
-  const channel = new MessageChannel();
-  channel.port1.onmessage = ipfsWorker.workerDownload;
+    loadingText: "Decrypt File"
+  }
+  const channel = new MessageChannel()
+  channel.port1.onmessage = ipfsWorker.workerDownload
   const pair = {
     secretKey,
-    publicKey,
-  };
+    publicKey
+  }
 
-  const typeFile = type;
-  ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [channel.port2]);
+  const typeFile = type
+  ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [channel.port2])
   ipfsWorker.workerDownload.onmessage = (event) => {
     store.state.auth.loadingData = {
       loading: true,
-      loadingText: "Downloading File",
-    };
+      loadingText: "Downloading File"
+    }
     if (type == "application/pdf") {
-      downloadPDF(event.data, fileName);
+      downloadPDF(event.data, fileName)
     } else {
-      download(event.data, fileName);
+      download(event.data, fileName)
     }
     //this.$set(this.filesLoading, this.fileDownloadIndex, false);
-  };
+  }
 }
 
 export async function download(data, fileName) {
-  const blob = new Blob([data], { type: "text/plain" });
-  const e = document.createEvent("MouseEvents");
-  const a = document.createElement("a");
-  a.download = fileName;
-  a.href = window.URL.createObjectURL(blob);
-  a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+  const blob = new Blob([data], { type: "text/plain" })
+  const e = document.createEvent("MouseEvents")
+  const a = document.createElement("a")
+  a.download = fileName
+  a.href = window.URL.createObjectURL(blob)
+  a.dataset.downloadurl = ["text/json", a.download, a.href].join(":")
   e.initEvent(
     "click",
     true,
@@ -89,21 +89,21 @@ export async function download(data, fileName) {
     false,
     0,
     null
-  );
-  a.dispatchEvent(e);
+  )
+  a.dispatchEvent(e)
   store.state.auth.loadingData = {
     loading: false,
-    loadingText: "Downloaded File",
-  };
+    loadingText: "Downloaded File"
+  }
 }
 
 export async function downloadPDF(data, fileName) {
-  const blob = new Blob([data], { type: "application/pdf" });
-  const e = document.createEvent("MouseEvents");
-  const a = document.createElement("a");
-  a.download = fileName;
-  a.href = window.URL.createObjectURL(blob);
-  a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+  const blob = new Blob([data], { type: "application/pdf" })
+  const e = document.createEvent("MouseEvents")
+  const a = document.createElement("a")
+  a.download = fileName
+  a.href = window.URL.createObjectURL(blob)
+  a.dataset.downloadurl = ["text/json", a.download, a.href].join(":")
   e.initEvent(
     "click",
     true,
@@ -120,10 +120,10 @@ export async function downloadPDF(data, fileName) {
     false,
     0,
     null
-  );
-  a.dispatchEvent(e);
+  )
+  a.dispatchEvent(e)
   store.state.auth.loadingData = {
     loading: false,
-    loadingText: "Downloaded File",
-  };
+    loadingText: "Downloaded File"
+  }
 }
