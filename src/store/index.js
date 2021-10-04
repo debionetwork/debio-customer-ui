@@ -6,6 +6,8 @@ import metamask from "./metamask"
 import testRequest from "./test-request"
 import substrate from "./substrate"
 import lab from "./lab"
+import wallet from "./wallet"
+
 
 Vue.use(Vuex)
 Vue.config.devtools = true
@@ -17,7 +19,8 @@ export default new Vuex.Store({
     metamask,
     testRequest,
     substrate,
-    lab
+    lab,
+    wallet
   },
   state: {
   },

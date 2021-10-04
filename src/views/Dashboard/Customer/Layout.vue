@@ -56,7 +56,7 @@ export default {
 
   methods: {
     goToRequestTestPage() {
-      // TODO: should be function go to request test
+      this.$router.push({ name: "customer-request-test" })
     },
 
     goToUploadEMR() {

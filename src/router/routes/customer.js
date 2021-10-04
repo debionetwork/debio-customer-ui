@@ -22,6 +22,36 @@ const customerRoutes = [{
       name: "customer-emr-create",
       meta: { pageHeader: "Emr Create", parent: "customer-emr" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Create")
+    },
+    {
+      path: "request-test",
+      name: "customer-request-test",
+      meta: { pageHeader: "Request Test"},
+      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest")
+    },
+    {
+      path: "select-lab",
+      name: "customer-request-test-select-lab",
+      meta: {
+        pageHeader: "Select Lab", parent: "customer-request-test"
+      },
+      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/SelectLab")
+    },
+    {
+      path: "checkout",
+      name: "customer-request-test-checkout",
+      meta: {
+        pageHeader: "Checkout", parent: "customer-request-test"
+      },
+      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/RequestTestCheckout")
+    },
+    {
+      path: "success",
+      name: "customer-request-test-success",
+      meta: {
+        pageHeader: "Success", parent: "customer-request-test"
+      },
+      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/Success")
     }
   ]
 }]

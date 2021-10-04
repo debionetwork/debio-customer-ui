@@ -9,7 +9,7 @@
 
     template(slot="cta")
       ui-debio-card(
-        to="/"
+        :to="{ name: 'customer-request-test'}"
         title="Request a Test"
         sub-title="Get your biological sample tested"
         tiny-card

@@ -98,7 +98,7 @@
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
-    WalletBinding(:show='showMetamaskDialog')
+    WalletBinding(:show="showMetamaskDialog" @close="showMetamaskDialog = false")
 </template>
 
 <script>
