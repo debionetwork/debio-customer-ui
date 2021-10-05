@@ -261,7 +261,7 @@ export default {
       // TEMPORARY
       this.$emit("close")
 
-      // TODO : go to order history page
+      // TODO : go to Payment History page
     }
   }
 }
