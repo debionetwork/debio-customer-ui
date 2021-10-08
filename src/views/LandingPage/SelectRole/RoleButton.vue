@@ -28,7 +28,11 @@ export default {
 
   methods: {
     dashboard(){
-      this.$router.push(`/${this.computeRoleLowerCase}`)
+      if (this.computeRoleLowerCase === "customer") {
+        this.$router.push(`/${this.computeRoleLowerCase}`)
+      } else {
+        window.open(`https://frontend-dev.debio.network/${this.computeRoleLowerCase}`)
+      }
     }
   }
 }
