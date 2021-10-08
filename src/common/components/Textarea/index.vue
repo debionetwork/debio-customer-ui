@@ -23,7 +23,7 @@
 
 <script>
 import { alertIcon } from "@/common/icons"
-import { validateInput } from "@/common/mixins"
+import { validateInput } from "@/common/lib/validate"
 
 export default {
   name: "UiDebioTextArea",

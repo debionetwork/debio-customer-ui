@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { validateForms } from "@/common/mixins"
+import { validateForms } from "@/common/lib/validate"
 
 export default {
   name: "CustomerEmrUpload",

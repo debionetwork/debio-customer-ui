@@ -30,7 +30,7 @@
 
 <script>
 import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@/common/icons"
-import { validateForms } from "@/common/mixins"
+import { validateForms } from "@/common/lib/validate"
 import Button from "@/common/components/Button"
 
 export default {
