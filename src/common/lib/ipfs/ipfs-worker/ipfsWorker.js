@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import IPFSHttpClient from "ipfs-http-client"
 
 onmessage = function(e) {

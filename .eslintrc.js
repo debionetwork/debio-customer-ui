@@ -19,7 +19,7 @@ module.exports = {
       { avoidEscape: true, allowTemplateLiterals: true }
     ],
     "new-cap": 0,
-    semi: ["error", "never"],
+    "semi": 0,
     "arrow-spacing": "error",
     "comma-dangle": ["error", "never"],
     "indent": ["error", 2],
