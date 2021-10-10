@@ -56,12 +56,15 @@
 
 <script>
 import { validateForms } from "@/common/lib/validate"
+import errorMessage from "@/common/constants/error-messages"
 
 export default {
   name: "CustomerEmrUpload",
   mixins: [validateForms],
 
   data: () => ({
+    errorMessage,
+
     document: {
       title: "",
       description: "",
@@ -86,14 +89,12 @@ export default {
 
   debioRules: {
     document: {
-      title: [ val => !!val || "Document title required!" ],
-      category: [ val => !!val || "Category required!" ],
-      description: [
-        val => (val && val.length >= 20) || "Document description min 20 character!"
-      ],
+      title: [ val => !!val || errorMessage.REQUIRED ],
+      category: [ val => !!val || errorMessage.REQUIRED ],
+      description: [ val => !!val || errorMessage.REQUIRED ],
       file: [
-        val => !!val || "File required!",
-        val => (val && val.size < 30000000) || "Maximum file size 30MB!",
+        val => !!val || errorMessage.REQUIRED,
+        val => (val && val.size < 30000000) || errorMessage.FILE_SIZE(30),
         val => (val && val.type === "application/pdf") || "File must be PDF"
       ]
     }

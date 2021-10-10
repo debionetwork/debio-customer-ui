@@ -50,6 +50,7 @@
 import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@/common/icons"
 import { validateForms } from "@/common/lib/validate"
 import Button from "@/common/components/Button"
+import errorMessage from "@/common/constants/error-messages"
 
 export default {
   name: "CustomerEmrConfirm",
@@ -63,6 +64,8 @@ export default {
   },
 
   data: () => ({
+    errorMessage,
+
     inputType: "password",
     password: "",
     eyeOffIcon,
@@ -95,9 +98,7 @@ export default {
   },
 
   debioRules: {
-    password: [
-      val => (val && val.length >= 8) || "Password min 8 character!"
-    ]
+    password: [ val => (val && val.length >= 8) || errorMessage.PASSWORD(8) ]
   },
 
   methods: {
