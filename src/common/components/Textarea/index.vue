@@ -37,6 +37,7 @@ export default {
     label: { type: String, default: null },
     width: { type: [Number, String], default: 200 },
     variant: { type: String, default: "default" },
+    error: { type: Array, default: () => [] },
 
     outlined: Boolean,
     disabled: Boolean,
@@ -78,18 +79,18 @@ export default {
 
   watch: {
     "$attrs.value": {
-      handler() {
-        const error = this.rules.reduce((filtered, rule) => {
-          const isError = rule.call(this, this.$attrs.value)
-  
-          if (typeof isError !== "boolean") filtered.push({ message: isError })
-  
-          return filtered
-        }, [])
-  
-        this.$emit("isError", this.uuid, Boolean(error.length))
-  
-        this.isError = error   
+      handler(val) {
+        this._handleError(val)
+      }
+    },
+
+    error: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+
+        this._handleError(this.$attrs.value)
       }
     }
   },
@@ -97,6 +98,19 @@ export default {
   methods: {
     handleBlur() {
       this.focus = false
+    },
+
+    _handleError(value) {
+      const error = this.rules.reduce((filtered, rule) => {
+        const isError = rule.call(this, value)
+
+        if (typeof isError !== "boolean") filtered.push({ message: isError })
+
+        return filtered
+      }, [])
+      this.$emit("isError", this.uuid, Boolean(error.length))
+
+      this.isError = error
     }
   }
 }

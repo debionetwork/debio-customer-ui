@@ -33,6 +33,7 @@ export default {
 
   props: {
     items: { type: Array, default: () => [] },
+    error: { type: Array, default: () => [] },
     itemValue: { type: String, default: "" },
     width: { type: [String, Number], default: 200 },
     itemText: { type: String, default: "" },
@@ -83,18 +84,17 @@ export default {
 
   watch: {
     selectedOption(val) {
-      let value = val
-      if (value === this.placeholder) value = null
-      const error = this.rules.reduce((filtered, rule) => {
-        const isError = rule.call(this, value)
+      this._handleError(val)
+    },
 
-        if (typeof isError !== "boolean") filtered.push({ message: isError })
+    error: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
 
-        return filtered
-      }, [])
-      this.$emit("isError", this.uuid, Boolean(error.length))
-
-      this.isError = error
+        this._handleError(this.selectedOption)
+      }
     }
   },
 
@@ -123,6 +123,21 @@ export default {
 
     handleClickOutside() {
       this.active = false
+    },
+
+    _handleError(val) {
+      let value = val
+      if (value === this.placeholder) value = null
+      const error = this.rules.reduce((filtered, rule) => {
+        const isError = rule.call(this, value)
+
+        if (typeof isError !== "boolean") filtered.push({ message: isError })
+
+        return filtered
+      }, [])
+      this.$emit("isError", this.uuid, Boolean(error.length))
+
+      this.isError = error
     },
 
     async handleBlur(event) {

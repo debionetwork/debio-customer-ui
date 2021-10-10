@@ -25,7 +25,7 @@
                 @confirmFulfilled="handleConfirmPayload"
                 @showModal="showModal = $event"
               )
-          Button(block :disabled="computeDisabled" height="40" color="secondary" @click="handleContinue") Continue
+          Button(block height="40" color="secondary" @click="handleContinue") Continue
 </template>
 
 <script>
@@ -79,6 +79,9 @@ export default {
     },
 
     handleContinue() {
+      const touchForms = this.$children.filter(a => a._touchForms)
+      touchForms[this.currentStep - 1]._touchForms()
+      if (this.computeDisabled) return
       this.currentStep < 2 ? this.currentStep++ : this.showModal = true
 
       this.stepper = this.stepper.map(step => ({ ...step, active: step.number <= this.currentStep }))

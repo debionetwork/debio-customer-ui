@@ -26,6 +26,7 @@ export default {
 
   props: {
     accept: { type: [Array, String], default: () => [".docx", ".pdf", ".doc"] },
+    error: { type: Array, default: () => [] },
     label: { type: String, default: null },
     variant: { type: String, default: "default" }
   },
@@ -57,17 +58,17 @@ export default {
 
   watch: {
     selectedFile(val) {
-      const error = this.rules.reduce((filtered, rule) => {
-        const isError = rule.call(this, val)
+      this._handleError(val)
+    },
 
-        if (typeof isError !== "boolean") filtered.push({ message: isError })
+    error: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
 
-        return filtered
-      }, [])
-
-      this.$emit("isError", this.uuid, Boolean(error.length))
-
-      this.isError = error
+        this._handleError(this.selectedFile)
+      }
     }
   },
 
@@ -86,6 +87,20 @@ export default {
     handleClearFile() {
       this.$refs["input-file"].value = ""
       this.selectedFile = null
+    },
+
+    _handleError(val) {
+      const error = this.rules.reduce((filtered, rule) => {
+        const isError = rule.call(this, val)
+
+        if (typeof isError !== "boolean") filtered.push({ message: isError })
+
+        return filtered
+      }, [])
+
+      this.$emit("isError", this.uuid, Boolean(error.length))
+
+      this.isError = error
     }
   }
 }
