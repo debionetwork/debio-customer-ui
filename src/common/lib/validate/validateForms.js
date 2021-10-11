@@ -19,34 +19,27 @@ export default {
     },
 
     _touchForms() {
-      Object.entries(this.$options.rules).forEach(([key, value]) => {
-        let error = null
+      const computeErrors = (objectKey, objectValue) => {
         const context = this
 
+        return objectValue.reduce((filtered, rule) => {
+          const isError = rule.call(this, context[objectKey])
+
+          if (typeof isError !== "boolean") filtered.push({ message: isError })
+
+          return filtered
+        }, [])
+      }
+
+      Object.entries(this.$options.rules).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          error = value.reduce((filtered, rule) => {
-            const isError = rule.call(this, context[key])
-
-            if (typeof isError !== "boolean") filtered.push({ message: isError })
-
-            return filtered
-          }, [])
-
-          this.error = error
+          this.error = computeErrors(key, value)
 
           return
         }
 
         Object.entries(value).forEach(([key, value]) => {
-          const error = value.reduce((filtered, rule) => {
-            const isError = rule.call(this, context[key])
-
-            if (typeof isError !== "boolean") filtered.push({ message: isError })
-
-            return filtered
-          }, [])
-
-          this.error = error
+          this.error = computeErrors(key, value)
         })
       })
     }
