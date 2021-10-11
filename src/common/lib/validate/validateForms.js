@@ -19,7 +19,7 @@ export default {
     },
 
     _touchForms() {
-      Object.entries(this.$options.debioRules).forEach(([key, value]) => {
+      Object.entries(this.$options.rules).forEach(([key, value]) => {
         let error = null
         const context = this
 

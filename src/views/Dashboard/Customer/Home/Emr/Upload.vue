@@ -3,7 +3,7 @@
     .emr-upload
       ui-debio-dropdown(
         :value="document.category"
-        :rules="$options.debioRules.document.category"
+        :rules="$options.rules.document.category"
         :items="categories"
         :error="error"
         variant="small"
@@ -22,7 +22,7 @@
           span {{ item.icon }} {{ item.name }}
       ui-debio-input(
         :error="error"
-        :rules="$options.debioRules.document.title"
+        :rules="$options.rules.document.title"
         v-model="document.title"
         variant="small"
         label="Title"
@@ -33,7 +33,7 @@
         validate-on-blur
       )
       ui-debio-textarea(
-        :rules="$options.debioRules.document.description"
+        :rules="$options.rules.document.description"
         :error="error"
         v-model="document.description"
         variant="small"
@@ -46,7 +46,7 @@
       ui-debio-file(
         v-model="document.file"
         :error="error"
-        :rules="$options.debioRules.document.file"
+        :rules="$options.rules.document.file"
         variant="small"
         accept=".pdf"
         label="File input"
@@ -87,7 +87,7 @@ export default {
     ]
   }),
 
-  debioRules: {
+  rules: {
     document: {
       title: [ val => !!val || errorMessage.REQUIRED ],
       category: [ val => !!val || errorMessage.REQUIRED ],
@@ -95,7 +95,7 @@ export default {
       file: [
         val => !!val || errorMessage.REQUIRED,
         val => (val && val.size < 30000000) || errorMessage.FILE_SIZE(30),
-        val => (val && val.type === "application/pdf") || "File must be PDF"
+        val => (val && val.type === "application/pdf") || errorMessage.FILE_FORMAT("PDF")
       ]
     }
   },

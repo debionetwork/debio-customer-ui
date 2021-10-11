@@ -27,7 +27,7 @@
       ui-debio-input.emr-confirm__password(
         v-model="password"
         :error="error"
-        :rules="$options.debioRules.password"
+        :rules="$options.rules.password"
         :type="inputType"
         variant="small"
         placeholder="Password"
@@ -97,7 +97,7 @@ export default {
     }
   },
 
-  debioRules: {
+  rules: {
     password: [ val => (val && val.length >= 8) || errorMessage.PASSWORD(8) ]
   },
 

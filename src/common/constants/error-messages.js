@@ -2,8 +2,19 @@
 
 export default Object.freeze({
   REQUIRED: "This field is required",
-  FILE_FORMAT: "The files uploaded are not in the supported file formats",
   EMAIL: "Email is invalid. It should contain @ followed by a domain",
+
+  /**
+   *
+   * @param {string} format
+   * @returns {string}
+   */
+  FILE_FORMAT: (format) => {
+    const message = "The files uploaded are not in the supported file formats"
+    if (format) return message + ` (${format})`
+
+    return message
+  },
 
   /**
    * 
