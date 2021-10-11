@@ -31,7 +31,8 @@ export default {
       if (this.computeRoleLowerCase === "customer") {
         this.$router.push(`/${this.computeRoleLowerCase}`)
       } else {
-        window.open(`https://frontend-dev.debio.network/${this.computeRoleLowerCase}`)
+        const baseUrl = process.env.VUE_APP_DEV_DEBIO_FRONTEND_URL
+        window.open(`${baseUrl}/${this.computeRoleLowerCase}`)
       }
     }
   }
