@@ -275,7 +275,6 @@ get:
   path: drone_common_config/webhook
   name: discord_token
 ---
----
 kind: secret
 name: telegram_channel_id
 get:
