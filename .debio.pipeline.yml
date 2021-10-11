@@ -157,7 +157,7 @@ steps:
       branch:
         - master
 
-  - name: notify deployment
+  - name: notify deployment on discord
     image: appleboy/drone-discord
     pull: if-not-exists
     settings:
@@ -198,7 +198,7 @@ steps:
         - staging
         - development
 
-  - name: notify deployment
+  - name: notify deployment on telegram
     image: appleboy/drone-telegram
     pull: if-not-exists
     settings:
@@ -274,19 +274,6 @@ name: discord_token
 get:
   path: drone_common_config/webhook
   name: discord_token
----
----
-kind: secret
-name: telegram_channel_id
-get:
-  path: drone_common_config/webhook
-  name: telegram_channel_id
----
-kind: secret
-name: telegram_bot_token
-get:
-  path: drone_common_config/webhook
-  name: telegram_bot_token
 ---
 kind: secret
 name: telegram_channel_id
