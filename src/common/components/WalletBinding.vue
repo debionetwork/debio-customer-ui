@@ -158,8 +158,6 @@ export default {
         const accountId = localStorage.getAddress()
         const ethAddress = this.ethAccount[0].address
 
-        console.log(accountId, ethAddress)
-
         await this.$store.dispatch("wallet/walletBinding", {accountId, ethAddress})
         this.setMetamaskAddress(this.ethAccount[0].address)
         this.$emit("status-wallet", {
