@@ -198,6 +198,34 @@ steps:
         - staging
         - development
 
+  - name: notify deployment
+    image: appleboy/drone-telegram
+    pull: if-not-exists
+    settings:
+      token: telegram_bot_token
+      to: telegram_channel_id
+      message: >
+        {{#success build.status}}
+        ✅ Build #{{build.number}} of `{{repo.name}}` succeeded.
+
+        📝 Commit by {{commit.author}} on
+
+        `{{commit.branch}}`:
+
+        ```
+        {{commit.message}}
+        ```
+
+        🌐 {{ build.link }}
+        🌐 {{ commit.link }}
+        {{/success}}
+    when:
+      status: [ success, failure ]
+      branch:
+        - master
+        - staging
+        - development
+
 ---
 kind: secret
 name: devel_host
@@ -246,6 +274,19 @@ name: discord_token
 get:
   path: drone_common_config/webhook
   name: discord_token
+---
+---
+kind: secret
+name: telegram_channel_id
+get:
+  path: drone_common_config/webhook
+  name: telegram_channel_id
+---
+kind: secret
+name: telegram_bot_token
+get:
+  path: drone_common_config/webhook
+  name: telegram_bot_token
 ---
 kind: secret
 name: deploy_auth
