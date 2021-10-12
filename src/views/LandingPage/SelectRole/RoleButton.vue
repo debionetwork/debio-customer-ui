@@ -1,4 +1,5 @@
 <script>
+import { mapState } from "vuex"
 export default {
   name: "RoleButton",
 
@@ -9,6 +10,10 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      configApp: (state) => state.auth.configApp
+    }),
+
     fillColor() {
       return this.fill ? "currentColor" : "transparent"
     },
@@ -32,8 +37,7 @@ export default {
         this.$router.push(`/${this.computeRoleLowerCase}`)
         return
       } 
-      const role = this.computeRoleLowerCase
-      await this.$store.dispatch("auth/setLabDashboard", role)        
+      window.open(`${this.configApp.labDashboardUrl}/${this.computeRoleLowerCase}`)
     }
   }
 }

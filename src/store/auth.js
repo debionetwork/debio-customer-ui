@@ -3,8 +3,7 @@ import localStorage from "@/common/lib/local-storage"
 const defaultState = {
   role: null,
   configApp: null,
-  loadingData: null,
-  labDashboard: null
+  loadingData: null
 }
 
 export default {
@@ -27,10 +26,6 @@ export default {
       state.loadingData = data
     },
 
-    SET_LAB_DASHBOARD(state, data) {
-      state.labDashboard = data
-    },
-
     CLEAR(state) {
       state.role = defaultState.role
     }
@@ -48,12 +43,15 @@ export default {
         const substrateWs = process.env.VUE_APP_DEBIO_SUBSTRATE_WS
         const urlFaucet = process.env.VUE_APP_URL_FAUCET
         const web3Rpc = process.env.VUE_APP_WEB3_RPC
+        const labDashboardUrl = process.env.VUE_APP_DEBIO_FRONTEND_URL
+        
         configApp = {
           tokenName,
           escrowETHAddress,
           substrateWs,
           urlFaucet,
-          web3Rpc
+          web3Rpc,
+          labDashboardUrl
         }
       } else {
         const tokenName = process.env.VUE_APP_DEV_DEBIO_USE_TOKEN_NAME
@@ -61,13 +59,15 @@ export default {
         const substrateWs = process.env.VUE_APP_DEV_DEBIO_SUBSTRATE_WS
         const urlFaucet = process.env.VUE_APP_DEV_URL_FAUCET
         const web3Rpc = process.env.VUE_APP_DEV_WEB3_RPC
+        const labDashboardUrl = process.env.VUE_APP_DEV_DEBIO_FRONTEND_URL
         configApp = {
           tokenName,
           escrowETHAddress,
           substrateWs,
           urlFaucet,
-          web3Rpc
-        }
+          web3Rpc,
+          labDashboardUrl
+        } 
       }
       commit("SET_CONFIG", configApp)
     },
@@ -90,12 +90,6 @@ export default {
       }
     },
 
-    setLabDashboard ({commit}, role) {
-      const baseUrl = process.env.VUE_APP_DEV_DEBIO_FRONTEND_URL
-      commit("SET_LAB_DASHBOARD", `${baseUrl}/${role}`)
-      return window.open(`${baseUrl}/${role}`)
-    },
-
     clearAuth({ commit }) {
       localStorage.removeAddress()
       commit("CLEAR")
@@ -113,10 +107,7 @@ export default {
 
     getLoading(state) {
       return state.loadingData
-    },
-
-    setLabDashboard(state) {
-      return state.labDashboard
     }
+
   }
 }
