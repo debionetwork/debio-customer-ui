@@ -200,7 +200,6 @@ steps:
 
   - name: notify deployment on telegram
     image: appleboy/drone-telegram
-    pull: if-not-exists
     settings:
       token: telegram_bot_token
       to: telegram_channel_id
