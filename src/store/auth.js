@@ -3,7 +3,8 @@ import localStorage from "@/common/lib/local-storage"
 const defaultState = {
   role: null,
   configApp: null,
-  loadingData: null
+  loadingData: null,
+  labDashboard: null
 }
 
 export default {
@@ -24,6 +25,10 @@ export default {
 
     SET_LOADING(state, data) {
       state.loadingData = data
+    },
+
+    SET_LAB_DASHBOARD(state, data) {
+      state.labDashboard = data
     },
 
     CLEAR(state) {
@@ -85,6 +90,12 @@ export default {
       }
     },
 
+    setLabDashboard ({commit}, role) {
+      const baseUrl = process.env.VUE_APP_DEV_DEBIO_FRONTEND_URL
+      commit("SET_LAB_DASHBOARD", `${baseUrl}/${role}`)
+      return window.open(`${baseUrl}/${role}`)
+    },
+
     clearAuth({ commit }) {
       localStorage.removeAddress()
       commit("CLEAR")
@@ -102,6 +113,10 @@ export default {
 
     getLoading(state) {
       return state.loadingData
+    },
+
+    setLabDashboard(state) {
+      return state.labDashboard
     }
   }
 }

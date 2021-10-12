@@ -27,13 +27,13 @@ export default {
   },
 
   methods: {
-    dashboard(){
+    async dashboard(){
       if (this.computeRoleLowerCase === "customer") {
         this.$router.push(`/${this.computeRoleLowerCase}`)
-      } else {
-        const baseUrl = process.env.VUE_APP_DEV_DEBIO_FRONTEND_URL
-        window.open(`${baseUrl}/${this.computeRoleLowerCase}`)
-      }
+        return
+      } 
+      const role = this.computeRoleLowerCase
+      await this.$store.dispatch("auth/setLabDashboard", role)        
     }
   }
 }
