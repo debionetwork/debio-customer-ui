@@ -2,19 +2,19 @@
   div.layout-dashboard
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
       Button(
-        outlined
+        :outlined="$route.name !== 'customer-request-test'"
         height="35px"
         @click="goToRequestTestPage"
-        class="font-weight-bold sidebar-text primary--text mt-4 dg-raleway-font"
-        color="#FF56E0"
+        class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+        color="primary"
       ) Request a Test
 
       Button(
-        outlined
+        :outlined="$route.name !== 'customer-emr-create'"
         height="35px"
         @click="goToUploadEMR"
-        class="font-weight-bold sidebar-text primary--text mt-4 dg-raleway-font"
-        color="#FF56E0"
+        class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+        color="primary"
       ) Upload EMR
 
     Navbar.layout-dashboard__navbar
@@ -35,7 +35,7 @@ export default {
   data: () => ({
     navs: [
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", img: "@/assets/grid.png" },
-      { text: "My Test", disabled: false, active: false, route: "customer-test", img: "@/assets/box.png" },
+      { text: "My Test", disabled: false, active: false, route: "", img: "@/assets/box.png" },
       { text: "My EMR", disabled: false, active: false, route: "customer-emr", img: "@/assets/file-text.png" },
       { text: "Payment History", disabled: false, active: false, route: "customer-order-history", img: "@/assets/credit-card.png" }
     ]
