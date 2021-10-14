@@ -114,7 +114,7 @@ export default {
         this.errorMessage = err.message
         return
       }
-      this.$router.push({name: "select-role"})
+      this.$router.push({name: "customer-dashboard"})
     }
   }
 }
