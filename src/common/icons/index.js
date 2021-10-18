@@ -14,6 +14,8 @@ import alertIcon from "./alert"
 import userIcon from "./user"
 import usersIcon from "./users"
 import labIllustration from "./labIllustration"
+import particleIllustration from "./particleIllustration"
+import analiticIllustration from "./analiticIllustration"
 import eyeIcon from "./eye"
 import eyeOffIcon from "./eyeOff"
 import logoutIcon from "./logout"
@@ -28,6 +30,7 @@ import hospitalIcon from "./hospital"
 import checkCircleIcon from "./checkCircle"
 import lockIcon from "./lock"
 import trashIcon from "./trash"
+import pencilIcon from "./pencil"
 import gridIcon from "./grid"
 import boxIcon from "./box"
 import databaseIcon from "./database"
@@ -56,6 +59,8 @@ export {
   logoutIcon,
   copyIcon,
   noteIllustration,
+  particleIllustration,
+  analiticIllustration,
   defaultIcon,
   customerIcon,
   labIcon,
@@ -64,6 +69,7 @@ export {
   checkCircleIcon,
   lockIcon,
   trashIcon,
+  pencilIcon,
   gridIcon,
   boxIcon,
   databaseIcon,

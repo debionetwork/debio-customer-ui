@@ -1,5 +1,5 @@
 export default `
-  <path d="M12 8C16.9706 8 21 6.65686 21 5C21 3.34315 16.9706 2 12 2C7.02944 2 3 3.34315 3 5C3 6.65686 7.02944 8 12 8Z" stroke="#363636" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M21 12C21 13.66 17 15 12 15C7 15 3 13.66 3 12" stroke="#363636" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M3 5V19C3 20.66 7 22 12 22C17 22 21 20.66 21 19V5" stroke="#363636" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 13.3333C28.2843 13.3333 35 11.0948 35 8.33334C35 5.57192 28.2843 3.33334 20 3.33334C11.7157 3.33334 5 5.57192 5 8.33334C5 11.0948 11.7157 13.3333 20 13.3333Z" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M35 20C35 22.7667 28.3333 25 20 25C11.6667 25 5 22.7667 5 20" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M5 8.33334V31.6667C5 34.4333 11.6667 36.6667 20 36.6667C28.3333 36.6667 35 34.4333 35 31.6667V8.33334" stroke-linecap="round" stroke-linejoin="round"/>
 `

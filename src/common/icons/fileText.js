@@ -1,7 +1,3 @@
 export default `
-  <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#363636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M14 2V8H20" stroke="#363636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M16 13H8" stroke="#363636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M16 17H8" stroke="#363636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M10 9H9H8" stroke="#363636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M21.7501 14.6H31.375L21.7501 4.7V14.6ZM9.50001 2H23.5L34 12.8V34.4001C34 35.3548 33.6312 36.2705 32.9749 36.9456C32.3185 37.6208 31.4283 38 30.5 38H9.50001C7.5575 38 6 36.38 6 34.4001V5.60001C6 3.60201 7.5575 2 9.50001 2ZM25.2501 30.8V27.2H9.50001V30.8H25.2501ZM30.5 23.5999V20H9.50001V23.5999H30.5Z"/>
 `
