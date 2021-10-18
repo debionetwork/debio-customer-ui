@@ -141,10 +141,9 @@
           :color="'none'"
         )
           ui-debio-icon.btnDrawerIcon(
-            :icon="iconLoader(item.text)"
+            :icon="item.icon"
             size="25"
             stroke
-            view-box="0 0 25 25"
             :color="item.active ? '#C400A5' : '#363636'"
           )
           span.navTitle {{ item.text }}
@@ -165,7 +164,6 @@
                 :icon="phoneIcon"
                 size="16"
                 stroke
-                view-box="0 -3 40 40"
                 :color="'#757274'"
               )
               span Customer Care
@@ -174,14 +172,7 @@
 <script>
 
 import Button from "@/common/components/Button"
-import {
-  gridIcon,
-  boxIcon,
-  databaseIcon,
-  fileTextIcon,
-  creditCardIcon,
-  phoneIcon
-} from "@/common/icons"
+import { phoneIcon } from "@/common/icons"
 
 export default {
   name: "NavigationDrawer",
@@ -194,12 +185,6 @@ export default {
   },
 
   data: () => ({
-    // style: "background-image: linear-gradient(to right, #C400A5 1%, white 10%)",
-    gridIcon,
-    boxIcon,
-    databaseIcon,
-    fileTextIcon,
-    creditCardIcon,
     phoneIcon
   }),
 
@@ -211,21 +196,7 @@ export default {
     openHref(href){
       window.open(href, "_blank").focus()
     },
-    iconLoader(name) {
-      if (name == "Dashboard") {
-        return this.gridIcon
-      }
-      if (name == "My Test") {
-        return this.boxIcon
-      }
-      if (name == "My EMR") {
-        return this.fileTextIcon
-      }
-      if (name == "Payment History") {
-        return this.databaseIcon
-      }
-      return this.creditCardIcon
-    },
+
     customClass(active) {
       if (active) {
         return "font-weight-bold sidebar-text primary--text activeButton"
