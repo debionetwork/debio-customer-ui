@@ -1,12 +1,12 @@
 <template lang="pug">
-  .ui-debio-file(:class="classes")
+  .ui-debio-file(:class="classes" @click="active = true" v-click-outside="{ handler: handleBlur, closeConditional }")
     .ui-debio-file__label(v-if="label" :aria-label="label")
       span {{ label }}
       ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
 
     .ui-debio-file__wrapper
       input.ui-debio-file__input(type="file" ref="input-file" :accept="accept" @change="handleFileChange")
-      ui-debio-input(block read-only :variant="variant" outlined :value="computeFileName" placeholder="Choose File...")
+      ui-debio-input(block read-only :variant="variant" outlined :value="computeFileName" :placeholder="computeButtonLabel")
         v-icon(slot="icon-append" v-if="selectedFile" size="15" @click="handleClearFile") mdi-window-close
       Button.ui-debio-file__button(:color="computeButtonVariant" height="40" @click="handleChooseFile") {{ computeButtonLabel }}
 
@@ -26,12 +26,15 @@ export default {
 
   props: {
     accept: { type: [Array, String], default: () => [".docx", ".pdf", ".doc"] },
-    error: { type: Array, default: () => [] },
+    errorMessages: { type: Array, default: () => [] },
     label: { type: String, default: null },
-    variant: { type: String, default: "default" }
+    placeholder: { type: String, default: "Choose File" },
+    variant: { type: String, default: "default" },
+    validateOnBlur: Boolean,
+    clearFile: Boolean
   },
 
-  data: () => ({ selectedFile: null, alertIcon }),
+  data: () => ({ selectedFile: null, active: false, alertIcon }),
 
   computed: {
     classes() {
@@ -52,13 +55,14 @@ export default {
     },
 
     computeButtonLabel() {
-      return this.selectedFile ? "Change File" : "Choose File"
+      return this.$attrs.value ? "Change File" : this.placeholder
     }
   },
 
   watch: {
-    selectedFile(val) {
-      this._handleError(val)
+    selectedFile(newVal, oldVal) {
+      if (this.validateOnBlur && !!oldVal) return
+      else this._handleError(newVal)
     },
 
     error: {
@@ -69,12 +73,17 @@ export default {
 
         this._handleError(this.selectedFile)
       }
+    },
+
+    clearFile(val) {
+      if (val) this.handleClearFile()
+      else this.selectedFile = this.$attrs.value
     }
   },
 
   methods: {
     handleChooseFile() {
-      this.$refs["input-file"].click()
+      if (this.$refs["input-file"]) this.$refs["input-file"].click()
     },
 
     handleFileChange(event) {
@@ -85,8 +94,9 @@ export default {
     },
 
     handleClearFile() {
-      this.$refs["input-file"].value = ""
+      if (this.$refs["input-file"]) this.$refs["input-file"].value = ""
       this.selectedFile = null
+      this.$emit("input", this.selectedFile)
     },
 
     _handleError(val) {
@@ -101,7 +111,16 @@ export default {
       this.$emit("isError", this.uuid, Boolean(error.length))
 
       this.isError = error
-    }
+    },
+
+    handleBlur() {
+      this.$nextTick(() => {
+        if (this.validateOnBlur && this.active && this.clearFile) this._handleError(this.selectedFile)
+        this.active = false
+      })
+    },
+
+    closeConditional() { return this.active }
   }
 }
 </script>

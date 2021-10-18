@@ -1,5 +1,5 @@
 export default {
-  data: () => ({ formErrors: [], error: null }),
+  data: () => ({ formErrors: [], errorMessages: null }),
   
   computed: {
     computeError() {
@@ -33,13 +33,13 @@ export default {
 
       Object.entries(this.$options.rules).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          this.error = computeErrors(key, value)
+          this.errorMessages = computeErrors(key, value)
 
           return
         }
 
         Object.entries(value).forEach(([key, value]) => {
-          this.error = computeErrors(key, value)
+          this.errorMessages = computeErrors(key, value)
         })
       })
     }

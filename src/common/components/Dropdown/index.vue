@@ -15,7 +15,6 @@
           :key="item.id"
           :class="{ 'ui-debio-dropdown__item--selected': item.selected }"
           :aria-selected="item.selected"
-          @blur="handleBlur"
           @click="handleSelectItem(item, idx)"
         )
           slot(name="item" v-if="$slots.item || $scopedSlots.item" :item="item" :index="idx")
@@ -33,7 +32,7 @@ export default {
 
   props: {
     items: { type: Array, default: () => [] },
-    error: { type: Array, default: () => [] },
+    errorMessages: { type: Array, default: () => [] },
     itemValue: { type: String, default: "" },
     width: { type: [String, Number], default: 200 },
     itemText: { type: String, default: "" },
@@ -43,6 +42,7 @@ export default {
     value: { type: [String, Number, Boolean, Object], default: null },
     variant: { type: String, default: "default" },
 
+    validateOnBlur: Boolean,
     outlined: Boolean,
     returnObject: Boolean,
     closeOnSelect: Boolean,
@@ -83,8 +83,9 @@ export default {
   },
 
   watch: {
-    selectedOption(val) {
-      this._handleError(val)
+    selectedOption(newVal) {
+      if (this.validateOnBlur && (newVal === this.placeholder)) return
+      else this._handleError(newVal)
     },
 
     error: {
@@ -121,10 +122,6 @@ export default {
       this.active = true
     },
 
-    handleClickOutside() {
-      this.active = false
-    },
-
     _handleError(val) {
       let value = val
       if (value === this.placeholder) value = null
@@ -143,6 +140,7 @@ export default {
     async handleBlur(event) {
       if (event?.type !== "click") await new Promise(resolve => setTimeout(resolve, 150))
       this.$nextTick(() => {
+        if (this.validateOnBlur && this.active) this._handleError(this.selectedOption)
         this.active = false
         if ("blur" in this.$listeners) this.$listeners.blur()
       })

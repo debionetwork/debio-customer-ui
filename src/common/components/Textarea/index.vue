@@ -37,8 +37,9 @@ export default {
     label: { type: String, default: null },
     width: { type: [Number, String], default: 200 },
     variant: { type: String, default: "default" },
-    error: { type: Array, default: () => [] },
+    errorMessages: { type: Array, default: () => [] },
 
+    validateOnBlur: Boolean,
     outlined: Boolean,
     disabled: Boolean,
     readOnly: Boolean,
@@ -79,8 +80,9 @@ export default {
 
   watch: {
     "$attrs.value": {
-      handler(val) {
-        this._handleError(val)
+      handler(newVal, oldVal) {
+        if (this.validateOnBlur && !!oldVal) return
+        else this._handleError(newVal)
       }
     },
 
@@ -97,6 +99,7 @@ export default {
 
   methods: {
     handleBlur() {
+      if (this.validateOnBlur) this._handleError(this.$attrs.value)
       this.focus = false
     },
 

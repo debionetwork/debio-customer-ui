@@ -1,7 +1,7 @@
 <template lang="pug">
   .ui-debio-input(:class="classes" :style="computeStyle")
-    .ui-debio-input__label(for="ui-debio-input" v-if="label" :aria-label="label")
-      span {{ label }}
+    .ui-debio-input__label(for="ui-debio-input" v-if="label")
+      span(:aria-label="label") {{ label }}
       ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
 
     .ui-debio-input__wrapper
@@ -24,7 +24,7 @@
       .ui-debio-input__icon.ui-debio-input__icon--append(v-if="$slots['icon-append']")
         slot(name="icon-append")
       
-    .ui-debio-input__error-message(v-if="computeErrorMessage") {{ computeErrorMessage }}
+    .ui-debio-input__error-message(v-if="computeErrorMessage || (error && errorMessages)") {{ computeErrorMessage || errorMessages }}
 </template>
 
 <script>
@@ -43,11 +43,13 @@ export default {
     label: { type: String, default: null },
     width: { type: [Number, String], default: 200 },
     variant: { type: String, default: "default" },
-    error: { type: Array, default: () => [] },
+    errorMessages: { type: [Array, String], default: () => [] },
 
+    validateOnBlur: Boolean,
     outlined: Boolean,
     disabled: Boolean,
     readOnly: Boolean,
+    error: Boolean,
     block: Boolean
   },
 
@@ -58,7 +60,7 @@ export default {
       return [
         { "ui-debio-input--disabled": this.disabled },
         { "ui-debio-input--outlined": this.outlined },
-        { "ui-debio-input--errored": this.isError && this.isError?.length },
+        { "ui-debio-input--errored": (this.isError && this.isError?.length) || this.error },
         { "ui-debio-input--default": this.variant === "default" },
         { "ui-debio-input--small": this.variant === "small" },
         { "ui-debio-input--large": this.variant === "large" },
@@ -89,8 +91,9 @@ export default {
 
   watch: {
     "$attrs.value": {
-      handler(val) {
-        this._handleError(val)
+      handler(newVal, oldVal) {
+        if (this.validateOnBlur && !!oldVal) return
+        else this._handleError(newVal)
       }
     },
 
@@ -107,6 +110,7 @@ export default {
 
   methods: {
     handleBlur() {
+      if (this.validateOnBlur) this._handleError(this.$attrs.value)
       this.focus = false
     },
 

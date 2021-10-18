@@ -14,11 +14,18 @@
           slot(name="title" v-if="$slots['title'] || $scopedSlots['title']")
           span(v-else) {{ title }}
 
-        ui-debio-icon.ui-debio-modal__card-icon(:icon="icon" :view-box="iconViewBox" size="80" stroke)
+        slot
+        ui-debio-icon.ui-debio-modal__card-icon(v-if="!$slots.default" :icon="icon" :view-box="iconViewBox" size="80" stroke)
 
-        .ui-debio-modal__card-cta
+        .ui-debio-modal__card-cta(v-if="showCta")
           slot(name="cta" v-if="$slots['cta'] || $scopedSlots['cta']")
-          Button(v-else outlined block color="secondary" @click="handleCtaAction") {{ ctaTitle }}
+          Button(
+            v-else
+            :disabled="ctaDisabled"
+            :outlined="ctaOutlined"
+            block color="secondary"
+            @click="handleCtaAction"
+          ) {{ ctaTitle }}
 </template>
 
 <script>
@@ -39,7 +46,10 @@ export default {
     icon: { type: String, default: null },
     iconViewBox: { type: String, default: "0 0 40 40" },
     ctaTitle: { type: String, default: "Default button" },
-    ctaAction: { type: Function, default: () => {} }
+    ctaAction: { type: Function, default: () => {} },
+    ctaOutlined: { type: Boolean, default: true },
+    showCta: { type: Boolean, default: true },
+    ctaDisabled: { type: Boolean, default: false }
   },
 
   data: () => ({ closeIcon }),
@@ -97,7 +107,6 @@ export default {
       background: rgba(255, 255, 255, .7)
 
     &__card
-      min-height: 17.25rem
       min-width: 18.063rem
       padding: 2.25rem
       position: relative
@@ -118,6 +127,9 @@ export default {
 
     &__card-title
       @include body-text-2
+
+    &__card-cta
+      width: 100%
 
     &--active
       opacity: 1
