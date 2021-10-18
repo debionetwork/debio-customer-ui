@@ -1,7 +1,12 @@
 <template lang="pug">
   v-card(class="degenics-datatable-card elevation-0")
     slot(name="prepend")
+    v-row
+      v-col
+        slot(name="top-left-slot")
 
+      v-col
+        slot(name="top-right-slot")
     //- <!-- Data Table -->
     v-data-table(
       class="degenics-data-table"
@@ -126,12 +131,12 @@ export default {
 </script>
 
 <style lang="sass">
-@import '/src/styles/variables.scss'
+@import '/src/common/styles/variables.scss'
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap')
 
 .degenics-datatable-card 
-  border-radius: 8px !important
   overflow: hidden !important
-
+  font-family: 'Open Sans', sans-serif !important
 
 
 .degenics-data-table 
@@ -139,23 +144,25 @@ export default {
   overflow: hidden
   margin-top: 24px
 
-  font-size: 9px
-  line-height: 18px
+  font-size: 12px
+  line-height: 16px
   letter-spacing: 0.1px
 
   thead 
     background-color: #f5f7f9 !important
-
+    
+    th.column.sortable i 
+      font-size: 12px
     th 
-      padding-top: 8px !important
-      padding-bottom: 8px !important
-      height: 29px !important
+      padding-top: 12px !important
+      padding-bottom: 12px !important
+      height: 40px !important
 
       * 
         color: black !important
-        font-size: 9px
-        line-height: 18px
-        letter-spacing: 0.1px
+        font-size: 12px
+        line-height: 16px
+        letter-spacing: -0.004em
       
       i.v-icon.notranslate.v-data-table-header__icon:not(:hover) 
         opacity: 0.5
@@ -172,14 +179,16 @@ export default {
     border-bottom: none !important
     td 
       * 
-        height: 57.3px
+        max-height: 50px
       
     
 
     tr 
+      margin: 10px 0 10px 0
       * 
-        font-size: 9px !important
+        font-size: 12px
         border-bottom: #f5f7f9 !important
+        font-weight: 400
       
     
   
