@@ -26,7 +26,7 @@
 
       ui-debio-input.emr-confirm__password(
         v-model="password"
-        :error="error"
+        :errorMessages="errorMessages"
         :rules="$options.rules.password"
         :type="inputType"
         variant="small"

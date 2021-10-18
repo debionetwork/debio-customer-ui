@@ -5,7 +5,7 @@
         :value="document.category"
         :rules="$options.rules.document.category"
         :items="categories"
-        :error="error"
+        :errorMessages="errorMessages"
         variant="small"
         label="Select Category"
         return-object
@@ -21,7 +21,7 @@
         template(v-slot:item="{ item }")
           span {{ item.icon }} {{ item.name }}
       ui-debio-input(
-        :error="error"
+        :errorMessages="errorMessages"
         :rules="$options.rules.document.title"
         v-model="document.title"
         variant="small"
@@ -34,7 +34,7 @@
       )
       ui-debio-textarea(
         :rules="$options.rules.document.description"
-        :error="error"
+        :errorMessages="errorMessages"
         v-model="document.description"
         variant="small"
         label="Description"
@@ -45,7 +45,7 @@
       )
       ui-debio-file(
         v-model="document.file"
-        :error="error"
+        :errorMessages="errorMessages"
         :rules="$options.rules.document.file"
         variant="small"
         accept=".pdf"
