@@ -65,10 +65,7 @@
                       .settings-item__wrapper
                         .settings-item__title(aria-label="Profile") Profile
                         ui-debio-icon.settings-item__icon(:icon="userIcon" size="24" stroke color="#C400A5")
-                    .settings-item(role="button")
-                      .settings-item__wrapper
-                        .settings-item__title(aria-label="Profile") Switch Role
-                        ui-debio-icon.settings-item__icon(:icon="usersIcon" size="24" stroke color="#C400A5")
+
                     .settings-item(role="button")
                       .settings-item__wrapper
                         .settings-item__title(aria-label="Profile") Logout
