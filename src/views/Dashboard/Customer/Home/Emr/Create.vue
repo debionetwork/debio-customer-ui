@@ -3,7 +3,7 @@
     ui-debio-modal(
       :show="showLoadingFiles"
       title="File Upload"
-      @onClose="showLoadingFiles = false"
+      disableDismiss
     )
       template(v-if="computeFiles.length")
         .modal-files-upload__wrapper
@@ -32,7 +32,7 @@
           outlined
           width="100"
           color="secondary"
-          @click="showModalConfirm = null"
+          @click="handleCancelUpload"
         ) Cancel
         Button(
           width="100"
@@ -239,6 +239,7 @@ import { mapGetters, mapState } from "vuex"
 
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
+import { getEMRCategories } from "@/common/lib/emr"
 import {
   addElectronicMedicalRecordInfo,
   registerElectronicMedicalRecord
@@ -275,7 +276,6 @@ export default {
     password: "",
     publicKey: null,
     secretKey: null,
-    pendingFiles: [],
     emr: {
       title: "",
       category: "",
@@ -381,8 +381,9 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     this.initialData()
+    await getEMRCategories()
   },
 
   methods: {
@@ -394,14 +395,12 @@ export default {
     resetState() {
       Object.assign(this.emr, { title: "", category: "", files: [] })
       Object.assign(this.document, { title: "", description: "", file: null })
-    },
 
-    getFileIpfsPath(file) {
-      return file.ipfsPath[0].data.path
+      this.password = ""
     },
 
     getFileIpfsUrl(file) {
-      const path = this.getFileIpfsPath(file)
+      const path = file.ipfsPath[0].data.path
       return `https://ipfs.io/ipfs/${path}`
     },
     
@@ -460,6 +459,11 @@ export default {
       this.showModal = true
       this.isEdit = true
       this.clearFile = false
+    },
+
+    handleCancelUpload() {
+      this.showLoadingFiles = false
+      this.resetState()
     },
 
     onCloseModalDocument() {

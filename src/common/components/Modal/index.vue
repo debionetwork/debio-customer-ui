@@ -3,6 +3,7 @@
     .ui-debio-modal__wrapper
       .ui-debio-modal__card(v-click-outside="{ handler: handleClickOutside, closeConditional }")
         ui-debio-icon.ui-debio-modal__card-close(
+          v-if="!disableDismiss"
           :icon="closeIcon"
           role="button"
           size="13"
@@ -49,7 +50,8 @@ export default {
     ctaAction: { type: Function, default: () => {} },
     ctaOutlined: { type: Boolean, default: true },
     showCta: { type: Boolean, default: true },
-    ctaDisabled: { type: Boolean, default: false }
+    ctaDisabled: { type: Boolean, default: false },
+    disableDismiss: { type: Boolean, default: false }
   },
 
   data: () => ({ closeIcon }),
@@ -79,7 +81,7 @@ export default {
       this.ctaAction()
     },
 
-    handleClickOutside() { if (this.show) this.$emit("onClose", false) },
+    handleClickOutside() { if (this.show && !this.disableDismiss) this.$emit("onClose", false) },
 
     closeConditional() { return this.show }
   }
