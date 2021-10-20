@@ -137,6 +137,7 @@ export default {
 .degenics-datatable-card 
   overflow: hidden !important
   font-family: 'Open Sans', sans-serif !important
+  padding: 1.875rem
 
 
 .degenics-data-table 
