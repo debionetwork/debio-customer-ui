@@ -63,12 +63,7 @@
                   .navbar__settings
                     .settings-item(role="button")
                       .settings-item__wrapper
-                        .settings-item__title(aria-label="Profile") Profile
-                        ui-debio-icon.settings-item__icon(:icon="userIcon" size="24" stroke color="#C400A5")
-
-                    .settings-item(role="button")
-                      .settings-item__wrapper
-                        .settings-item__title(aria-label="Profile") Logout
+                        .settings-item__title(aria-label="Profile") Signout
                         ui-debio-icon.settings-item__icon(:icon="logoutIcon" size="24" stroke color="#C400A5")
 
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'polkadot' || getActiveMenu.type === 'metamask'")
