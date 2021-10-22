@@ -52,6 +52,18 @@ const customerRoutes = [{
         pageHeader: "Success", parent: "customer-request-test"
       },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/Success")
+    },
+    {
+      path: "payment/history",
+      name: "customer-payment-history",
+      meta: { pageHeader: "Payment History" },
+      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/PaymentHistory")
+    },
+    {
+      path: "payment/details",
+      name: "customer-payment-details",
+      meta: { pageHeader: "Payment details", parent: "customer-payment-details" },
+      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/PaymentHistory/Details")
     }
   ]
 }]
