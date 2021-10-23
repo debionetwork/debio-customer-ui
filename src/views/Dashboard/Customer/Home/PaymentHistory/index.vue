@@ -23,8 +23,8 @@
 
         template(v-slot:[`item.service_info.prices_by_currency[0].total_price`]="{ item }")
           .payment-history__price-details
-            .payment-history__item-price {{ item.service_info.prices_by_currency[0].total_price }}
-            .payment-history__item-currency {{ item.service_info.prices_by_currency[0].currency }}
+            | {{ item.service_info.prices_by_currency[0].total_price }}
+            | {{ item.service_info.prices_by_currency[0].currency }}
 
         template(v-slot:[`item.reward`]="{ item }")
           span N/A

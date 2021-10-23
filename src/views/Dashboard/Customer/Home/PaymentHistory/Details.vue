@@ -52,7 +52,19 @@
                   .service__field-title Refund amount
                   .service__refund -
                 .service__field
-                  .service__field-title Reward
+                  .service__field-title.d-flex.align-center
+                    | Reward
+                    .reward(@mouseleave="handleShowPopup('leave')")
+                      ui-debio-icon.reward__icon.ml-1(
+                        :icon="alertIcon"
+                        size="10"
+                        color="#6F6F6F"
+                        stroke
+                        @mouseenter="handleShowPopup('enter')"
+                      )
+                      .reward__popup(v-if="rewardPopup")
+                        .reward__popup-text you will get the reward after your test status is result ready and payment status fulfilled
+                        Button.reward__popup-button.mt-6(color="secondary" height="30" width="100") Learn more
                   .service__field-colon :
                   .service__field-value - DBIO
 
@@ -60,17 +72,31 @@
 
 <script>
 import { alertIcon } from "@/common/icons"
+import Button from "@/common/components/Button"
 
 export default {
   name: "CustomerPaymentDetails",
 
-  data: () => ({ alertIcon }),
+  components: { Button },
+
+  data: () => ({ alertIcon, rewardPopup: false }),
 
   computed: {
     computeDetailsTitle() {
       return this.$route.params?.status === "Paid"
         ? "Thank you for your order"
         : `${this.$route.params?.status} Order`
+    }
+  },
+
+  beforeMount() {
+    if (!Object.keys(this.$route.params).length) this.$router.push({ name: "customer-payment-history" })
+  },
+
+  methods: {
+    handleShowPopup(val) {
+      if (val === "enter") this.rewardPopup = true
+      else this.rewardPopup = false
     }
   }
 }
@@ -96,6 +122,7 @@ export default {
         display: flex
         flex-direction: column
         align-items: center
+        padding-bottom: 100px
 
   .payment-details
     &__product
@@ -126,7 +153,7 @@ export default {
       display: flex
       flex-direction: column
       gap: 15px
-    
+
     &__name
       @include h3
 
@@ -173,6 +200,7 @@ export default {
       justify-content: space-between
       padding: 10px 40px
       background: #FCFCFC
+      @include body-text-2
 
       &:nth-child(odd)
         background: #F6F7FB
@@ -183,4 +211,46 @@ export default {
     &__field-value
       flex: 1
       text-align: right
+  .reward
+    position: relative
+    text-align: right
+
+    &__popup
+      width: 290px
+      padding: 15px
+      position: absolute
+      font-size: 12px
+      top: 23px
+      left: -100px
+      background: #FFFFFF
+      border: 1px solid #E9E9E9
+
+      &::before
+        top: -22px
+        content: ""
+        display: block
+        height: 20px
+        left: 98px
+        position: absolute
+        border-color: transparent transparent #E9E9E9 transparent
+        border-style: solid
+        border-width: 11px
+
+      &::after
+        border-left: solid transparent 10px
+        border-right: solid transparent 10px
+        border-bottom: solid #FFFFFF 10px
+        top: -10px
+        content: " "
+        height: 0
+        left: 99px
+        position: absolute
+        width: 0
+
+    &__popup-text
+      text-align: left
+
+    &__popup-button
+      text-transform: capitalize
+      font-size: 12px
 </style>
