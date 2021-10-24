@@ -1,5 +1,5 @@
 <template lang="pug">
-  .banner
+  .banner(:class="classes")
     .banner__wrapper
       ui-debio-card.banner__card(block)
         template
@@ -12,16 +12,40 @@
                 .banner__subtitle {{ subtitle }}
               
             .banner__cta
-              slot(name="cta")
+              .banner__cta-wrapper
+                slot(name="cta")
+              ui-debio-icon.banner__decoration(
+                v-if="withDecoration"
+                :icon="particleIllustration"
+                size="470"
+                view-box="0 0 390 235"
+              )
 </template>
 
 <script>
+import { particleIllustration } from "@/common/icons"
 
 export default {
   name: "Banner",
   props: {
     title: { type: String, default: "Default title" },
-    subtitle: { type: String, default: "Default subtitle" }
+    subtitle: { type: String, default: "Default subtitle" },
+    gradientColor: { type: String, default: null },
+    withDecoration: Boolean
+  },
+
+  data: () => ({ particleIllustration }),
+
+  computed: {
+    classes() {
+      return [
+        { "banner--with-gradient": this.gradientColor && /^(primary|secondary|tertiary)$/ },
+        { "banner--gradient-primary": this.gradientColor === "primary" },
+        { "banner--gradient-secondary": this.gradientColor === "secondary" },
+        { "banner--gradient-tertiary": this.gradientColor === "tertiary" },
+        { "banner--with-decoration": this.withDecoration }
+      ]
+    }
   }
 }
 </script>
@@ -34,6 +58,7 @@ export default {
         background: #5640A5
         padding: 2.188rem 2rem 2.5rem
         border-radius: 0.25rem
+        position: relative
 
     &__content
       display: flex
@@ -63,14 +88,31 @@ export default {
       line-height: 1.438rem
       color: #FFFFFF
 
-    &__cta
+    &__cta-wrapper
       display: flex
       gap: 1.25rem
+
+    &__decoration
+      position: absolute
+      top: -127px
+      right: 17px
+
+    &--gradient-primary
+      .ui-debio-card__body
+        background: linear-gradient(267.84deg, #FF83EB 18.61%, #FC5EFF 55.16%, #D045BA 93.27%)
+
+    &--gradient-secondary
+      .ui-debio-card__body
+        background: linear-gradient(267.84deg, #9E83FF 18.61%, #815EFF 55.16%, #6345D0 93.27%)
+
+    &--gradient-tertiary
+      .ui-debio-card__body
+        background: linear-gradient(267.84deg, #D783FF 18.61%, #AF5EFF 55.16%, #A445D0 93.27%)
 
     @media screen and (max-width: 959px)
       &__content,
       &__illustrations,
-      &__cta
+      &__cta-wrapper
         flex-direction: column
 
       &__content

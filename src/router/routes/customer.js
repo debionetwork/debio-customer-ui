@@ -52,6 +52,14 @@ const customerRoutes = [{
         pageHeader: "Success", parent: "customer-request-test"
       },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/Success")
+    },
+
+    // Data Bounty
+    {
+      path: "data-bounty",
+      name: "customer-data-bounty",
+      meta: { pageHeader: "Data Bounty" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/DataBounty")
     }
   ]
 }]

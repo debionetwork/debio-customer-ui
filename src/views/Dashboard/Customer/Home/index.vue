@@ -1,6 +1,6 @@
 <template lang="pug">
 .customer-home
-  Banner(
+  ui-debio-banner(
     title="Welcome to Debio!"
     subtitle="The Privacy-First Platform for Personal Biomedical Testing"
   )
@@ -33,12 +33,9 @@
 <script>
 import { creditCardIcon, layersIcon, labIllustration } from "@/common/icons"
 
-import Banner from "@/common/components/Banner.vue"
-
 export default {
   name: "CustomerHome",
 
-  components: {Banner },
   data: () => ({ creditCardIcon, layersIcon, labIllustration, cardBlock: false }),
 
   mounted() {

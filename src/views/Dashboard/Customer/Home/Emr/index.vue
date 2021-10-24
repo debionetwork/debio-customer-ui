@@ -1,6 +1,6 @@
 <template lang="pug">
 .customer-emr
-  Banner(
+  ui-debio-banner(
     title="My EMR"
     subtitle="Here, you can upload a collection of your Electronic Medical Records (medical history, diagnoses, medications, treatment plans, immunization dates, allergies, radiology images, and laboratory)."
   )
@@ -23,12 +23,9 @@
 <script>
 import { layersIcon, noteIllustration } from "@/common/icons"
 
-import Banner from "@/common/components/Banner.vue"
-
 export default {
   name: "CustomerEmr",
 
-  components: {Banner },
   data: () => ({ layersIcon, noteIllustration, cardBlock: false }),
 
   mounted() {

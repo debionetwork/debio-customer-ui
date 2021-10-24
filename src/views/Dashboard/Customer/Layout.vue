@@ -37,6 +37,7 @@ export default {
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", img: "@/assets/grid.png" },
       { text: "My Test", disabled: false, active: false, route: "", img: "@/assets/box.png" },
       { text: "My EMR", disabled: false, active: false, route: "customer-emr", img: "@/assets/file-text.png" },
+      { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", img: "@/assets/credit-card.png" },
       { text: "Payment History", disabled: false, active: false, route: "customer-order-history", img: "@/assets/credit-card.png" }
     ]
   }),
