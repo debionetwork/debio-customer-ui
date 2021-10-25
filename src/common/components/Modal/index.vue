@@ -11,7 +11,7 @@
           stroke
           @click="$emit('onClose', false)"
         )
-        .ui-debio-modal__card-title
+        .ui-debio-modal__card-title(v-if="showTitle")
           slot(name="title" v-if="$slots['title'] || $scopedSlots['title']")
           span(v-else) {{ title }}
 
@@ -50,16 +50,18 @@ export default {
     ctaAction: { type: Function, default: () => {} },
     ctaOutlined: { type: Boolean, default: true },
     showCta: { type: Boolean, default: true },
+    showTitle: { type: Boolean, default: true },
     ctaDisabled: { type: Boolean, default: false },
     disableDismiss: { type: Boolean, default: false }
   },
 
-  data: () => ({ closeIcon }),
+  data: () => ({ closeIcon, dismissAnimation: false }),
 
   computed: {
     classes() {
       return [
         { "ui-debio-modal--active": this.show },
+        { "ui-debio-modal--bounced": this.dismissAnimation && this.disableDismiss },
         { "ui-debio-modal--disabled-icon-animate": this.disabledIconAnimate }
       ]
     }
@@ -81,7 +83,18 @@ export default {
       this.ctaAction()
     },
 
-    handleClickOutside() { if (this.show && !this.disableDismiss) this.$emit("onClose", false) },
+    handleClickOutside() {
+      this.dismissAnimation = true
+
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.dismissAnimation = false
+        }, 300)
+      })
+
+
+      if (this.show && !this.disableDismiss) this.$emit("onClose", false)
+    },
 
     closeConditional() { return this.show }
   }
@@ -154,7 +167,17 @@ export default {
         animation: unset
         animation-delay: unset
 
+    &--bounced
+      .ui-debio-modal__card
+        animation: bounce .3s
+
     @keyframes dash
       to
         stroke-dashoffset: 0
+
+    @keyframes bounce
+      to
+        transform: scale(1)
+      to
+        transform: scale(1.06)
 </style>

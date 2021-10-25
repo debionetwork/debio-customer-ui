@@ -33,7 +33,6 @@
 <script>
 import { creditCardIcon, layersIcon, labIllustration } from "@/common/icons"
 
-
 export default {
   name: "CustomerHome",
 

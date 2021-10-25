@@ -65,6 +65,15 @@ const customerRoutes = [{
       },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/Success")
     },
+
+    // Data Bounty
+    {
+      path: "data-bounty",
+      name: "customer-data-bounty",
+      meta: { pageHeader: "Data Bounty" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/DataBounty")
+    },
+
     {
       path: "payment/history",
       name: "customer-payment-history",
