@@ -27,7 +27,7 @@
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import { gridIcon, boxIcon, databaseIcon, fileTextIcon } from "@/common/icons"
+import { gridIcon, boxIcon, databaseIcon, fileTextIcon, creditCardIcon } from "@/common/icons"
 
 export default {
   name: "MainPage",
@@ -38,7 +38,8 @@ export default {
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
       { text: "My Test", disabled: false, active: false, route: "customer-test", icon: boxIcon },
       { text: "My EMR", disabled: false, active: false, route: "customer-emr", icon: fileTextIcon },
-      { text: "Payment History", disabled: false, active: false, route: "customer-order-history", icon: databaseIcon }
+      { text: "Data Bounty", disabled: false, active: false, route: "customer-order-history", icon: databaseIcon },
+      { text: "Payment History", disabled: false, active: false, route: "customer-order-history", icon: creditCardIcon }
     ]
   }),
 

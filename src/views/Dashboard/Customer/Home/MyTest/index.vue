@@ -1,6 +1,6 @@
 <template lang="pug">
   .customer-test
-    Banner(
+    ui-debio-banner(
       title="My Test"
       subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymousely to expert and scientist!"
     )
@@ -30,16 +30,12 @@
 
 <script>
 import { layersIcon, noteIllustration } from "@/common/icons"
-import Banner from "@/common/components/Banner.vue"
 import StakingServiceTab from "./StakingServiceTab.vue"
 
 export default {
   name: "MyTest",
 
-  components: {
-    Banner,
-    StakingServiceTab
-  },
+  components: { StakingServiceTab },
 
   data: () => ({ 
     layersIcon, 
