@@ -1,5 +1,15 @@
 <template lang="pug">
   .customer-data-bounty
+    modalBounty(
+      title="Do you want to add your test result as a data bounty?"
+      sub-title="You can learn more about data bounty by seeing the information"
+      link="/"
+      loading
+    )
+      .modal-bounty__cta.d-flex.mt-8.justify-center
+        Button(outlined color="secondary" width="100") Cancel
+        Button(color="secondary" width="100") Yes
+
     .customer-data-bounty__wrapper
       ui-debio-banner.customer-data-bounty__banner(
         title="Data Bounty"
@@ -38,12 +48,13 @@
 <script>
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
+import modalBounty from "./modalBounty"
 import { researchIllustration } from "@/common/icons" 
 
 export default {
   name: "CustomerDataBounty",
 
-  components: { DataTable, Button },
+  components: { DataTable, Button, modalBounty },
 
   data: () => ({
     researchIllustration,
@@ -169,4 +180,7 @@ export default {
     &::v-deep
       .banner__subtitle
         max-width: 29.2rem !important
+
+    .modal-bounty__cta
+      gap: 40px
 </style>
