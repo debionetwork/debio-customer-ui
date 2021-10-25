@@ -38,8 +38,8 @@ export default {
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
       { text: "My Test", disabled: false, active: false, route: "customer-test", icon: boxIcon },
       { text: "My EMR", disabled: false, active: false, route: "customer-emr", icon: fileTextIcon },
-      { text: "Data Bounty", disabled: false, active: false, route: "customer-order-history", icon: databaseIcon },
-      { text: "Payment History", disabled: false, active: false, route: "customer-order-history", icon: creditCardIcon }
+      { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", icon: databaseIcon },
+      { text: "Payment History", disabled: false, active: false, route: "customer-payment-history", icon: creditCardIcon }
     ]
   }),
 
