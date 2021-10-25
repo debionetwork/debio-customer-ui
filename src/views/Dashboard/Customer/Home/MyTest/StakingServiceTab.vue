@@ -64,7 +64,7 @@ export default {
         sortable: true
       },
       {
-        text: "Amount (DAI)",
+        text: "Amount (DBIO",
         value: "amount",
         sortable: true,
         align: "right"
