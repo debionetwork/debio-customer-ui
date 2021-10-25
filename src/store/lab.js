@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const defaultState = {
-  labs: [],
+  services: [],
   country: null,
   city: null,
   category: null
@@ -19,6 +19,10 @@ export default {
       state.country = country
     },
 
+    SET_REGION(state, region) {
+      state.region = region
+    },
+
     SET_CITY(state, city) {
       state.city = city
     },
@@ -27,27 +31,31 @@ export default {
       state.category = category
     },
 
-    SET_LABS(state, labs) {
-      state.labs = labs
+    SET_SERVICES(state, services) {
+      state.services = services
     }
   },
   actions: {
-    async setCountryCity ({commit}, data) {
+    async setCountryRegionCity ({commit}, data) {
       commit("SET_COUNTRY", data.country)
+      commit("SET_REGION", data.region)
       commit("SET_CITY", data.city)
     },
 
-    async getLabByCategory({ commit, state }, category) {
+    async getServicesByCategory({ commit, state }, category) {
       const baseUrl = process.env.VUE_APP_DEV_DEBIO_BACKEND_URL
-      const labs = await axios.get(`${baseUrl}/labs/${state.country}/${state.city}/${category}`)
-      commit("SET_LABS", labs.data.body.hits.hits)
+      const services = await axios.get(`${baseUrl}/labs/${state.country}/${state.region}/${state.city}/${category}`)
+      
+      console.log("service di action", services)
+
+      commit("SET_SERVICES", services.data.result)
       commit("SET_CATEGORY", category)
     }
   },
 
   getters: {
-    getLabByCategory(state) {
-      state.labs
+    getServicesByCategory(state) {
+      state.services
     }
   }
 }

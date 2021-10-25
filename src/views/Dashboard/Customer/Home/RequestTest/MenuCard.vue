@@ -1,44 +1,37 @@
 <template lang="pug">
-  v-container.container-card(@click="onClick")
-    v-card.menu-card(hover)
-      div(class="d-flex align-center ml-3 mt-3")
-        v-icon.ml-2(v-if="!avatar" color="#BA8DBB" :size="60") {{ icon }}
-        v-avatar.ml-2(v-else :src="avatar")
-          
-        div(class="ml-2 mb-1" style="width: 100%;")
-          div.mb-2
-            b(class="ml-1 mt-1" style="font-size: 16px;") {{ title }}
-            v-row(class="ml-1 mt-2 mb-1")
-              div(
-                v-for="i in rate"
-                :key="i")
-                v-icon(style="font-size: 14px;" color="primary") mdi-star
+  .container-card(@click="onClick")
+    v-card.menu-card
 
-              div(
-                v-for="i in 2"
-                :key="i")
-                v-icon(style="font-size: 14px;" color="primary") mdi-star-outline 
+      v-row.pa-3
+        v-col(cols="3")
+          v-icon.ml-2(v-if="!avatar" color="#BA8DBB" size="90") {{ icon }}
+          v-img.ml-2(v-else :src="avatar" max-width="90" max-height="90")
+    
+        v-col(cols="9")
+          .menu-card__title
+            .menu-card__name 
+              b {{ title }}
+            .menu-card__price 
+              b {{ price }} {{ currency.toUpperCase() }}
 
-              span(class="ml-2" style="font-size: 9px;") (1)
+          v-row(class="ml-1 mt-1 mb-1")
+            div(
+              v-for="i in rate"
+              :key="i")
+              v-icon(style="font-size: 9px;" color="primary") mdi-star
 
-            div(class="text-caption grey--text text--darken-1" style="font-size: 10px;") {{ address }}
-      
-      hr(class="ml-3 me-3")
-      
-      div(class= "mt-1 ml-3 mb-4") 
-        span(style="font-size: 14px;") Service Offered
+            div(
+              v-for="i in ( 5 - rate)"
+              :key="i")
+              v-icon(style="font-size: 9px;" color="primary") mdi-star-outline 
+            span.ml-2( style="font-size: 9px;") ({{ countRate }})
 
-      div(class="d-flex align-center")                
-        v-icon(class="ml-5 me-3" color="#BA8DBB" :size="30") {{ serviceImage }}
+          .menu-card__name  
+            b {{ labName }}
+
+          .menu-card__address {{ city }}, {{region}}
         
-        div(class="ml-1" style="width: 100%;")
-          div(class="ml-1 mb-2 d-flex justify-space-between fill-height" style="width: 100%;")
-            b(style="text-align; start; font-size: 16px;") {{ subTitle }}
-            b(class="primary--text me-12" style="text-align: end; font-size: 16px;") {{ price }} Dai
 
-          div.description(
-            class="ml-1 mb-5 me-8 text-caption grey--text text--darken-1"
-          ) {{ description }}
 
 </template>
 
@@ -48,18 +41,19 @@ export default {
   name: "MenuCard",
 
   data: () =>  ({
-    rate: 3,
     icon: "mdi-hospital"
   }),
 
   props: {
-    image: String,
     title: String,
-    subTitle: String,
-    address: String,
-    description: String,
+    labName: String,
+    city: String,
+    region: String,
     price: Number,
-    serviceImage: String
+    avatar: String,
+    currency: String,
+    rate: Number,
+    countRate: Number
   },
 
   methods: {
@@ -71,20 +65,44 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .container-card 
-    width: 420px
-    height: 250px
+  @import "@/common/styles/mixins.sass"
+
+  .container-card
+    width: 482px
+    height: 122px
+    padding: 1px
     border-radius: 8px
+    cursor: pointer
+
+    &:hover
+      background-color: #FF56E0
 
   .menu-card 
     border-radius: 8px
-    padding: 2px
-    height: 320px
+    padding: 1px
+    width: 480px
+    height: 120px
 
+
+
+    &__title
+      display: flex
+      justify-content: space-between
+      height:32px
+
+    &__name
+      width: 240px
+      @include body-text-3
     
-  .description 
-    font-size: 10px
-    max-height: 30px
+    &__price
+      margin-right: 5px
+      color: #C400A5
+      @include body-text-3
+
+    &__address
+      width: 270px
+      color: gray
+      @include body-text-5
 
 </style>
 

@@ -1,6 +1,6 @@
 <template lang="pug">
-  v-dialog(:value="show" width="320" persistent )
-    v-card 
+  v-dialog(:value="show" width="400" persistent )
+    v-card.pa-5
       v-app-bar(flat dense color="white")
         v-spacer
         v-btn( class="mt-2" icon @click="closeDialog")
@@ -10,46 +10,52 @@
         div(class="text-h5")
           b Payment
 
-      div(class="text-start ms-5 mt-10")
-        b.mb-5 Lab DNA Favourite
-
       div(class="text-start ms-5 mt-5")
-        .address-detail Jalan Raya Makasar No 44
-        .address-detail Jakarta Pusat
+        b.mb-2 {{ selectedService.labName }}
 
-      div(class="ml-5 mt-10 text-start")
-          span Payment details:
+      div(class="text-start ms-5")
+        .address-detail {{ selectedService.labAddress}}
+        .address-detail {{ selectedService.city}}
 
-      hr(class="ml-3 me-3 mb-5")
+      div(class="ml-5 mb-2 mt-4 text-start" style="font-size: 12px;")
+        b Details
+
+      hr(class="ml-3 me-3 mb-3")
 
       div(class="ml-5 text-start")
         v-row
           v-col(cols="6") 
             div( style=" font-size: 12px;" ) Price:
           v-col(cols="6") 
-            div( style="font-size: 12px;" ) 400 Dai
+            v-row
+              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.detailPrice.price_components[0].value }}
+              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.currency }}
 
         v-row
           v-col(cols="6") 
             div( style="font-size: 12px;" ) QC Price:
           v-col(cols="6") 
-            div( style="font-size: 12px;" ) 5 Dai
+            v-row
+              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.detailPrice.additional_prices[0].value }}
+              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.currency }}
 
-      hr(class="ml-3 me-3 mb-5")
+      b(class="d-flex justify-end me-3") +
+      hr(class="ml-3 me-3")
 
-      div(class="ml-5 mb-10 text-start")
+      div(class="ml-5 mb-5 text-start")
         v-row
           v-col(cols="6") 
-            b( style=" font-size: 12px;" ) Total:
+            b( style=" font-size: 12px;" ) Total Pay:
           v-col(cols="6") 
-            b( style="font-size: 12px;" ) 405 Dai
-        
+            v-row
+              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.price }}
+              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.currency }}        
 
 
 
       div(class="ml-3 me-3 text-center")
         v-text-field(
-          label="Password"
+          label="Input Password"
           v-model="password"
           class="password-field"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -65,7 +71,7 @@
           color="secondary" 
           width="100%"
           height="38"
-          @click="onSubmit"
+          @click="onSubmitTemp"
           ) Pay
 
         v-alert.mt-5.mb-5(
@@ -127,7 +133,7 @@ export default {
       category: (state) => state.lab.category,
       labs: (state) => state.lab.labs,
       labAccount: (state) => state.testRequest.lab,
-      product: (state) => state.testRequest.products,
+      selectedService: (state) => state.testRequest.products,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress
     })
   },
@@ -138,11 +144,23 @@ export default {
       setProductsToRequest: "testRequest/SET_PRODUCTS"
     }),
 
+    async onSubmitTemp () {
+      this.error = ""
+      try {
+        this.wallet.decodePkcs8(this.password)
+        this.$emit("onContinue")
+      }
+      catch (err) {
+        console.log(err)
+        this.password = ""
+        this.error = "The password you entered is wrong"
+      }
+    },
+
     async onSubmit () {
       this.error = ""
       try {
         this.wallet.decodePkcs8(this.password)
-        this.$router.push({ name: "customer-request-test-success" })  
 
         // Checking seller ready eth Address
         this.ethSellerAddress = await ethAddressByAccountId(

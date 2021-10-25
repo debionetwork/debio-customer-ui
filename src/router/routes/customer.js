@@ -42,22 +42,6 @@ const customerRoutes = [{
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest")
     },
     {
-      path: "select-lab",
-      name: "customer-request-test-select-lab",
-      meta: {
-        pageHeader: "Select Lab", parent: "customer-test"
-      },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/SelectLab")
-    },
-    {
-      path: "checkout",
-      name: "customer-request-test-checkout",
-      meta: {
-        pageHeader: "Checkout", parent: "customer-test"
-      },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/RequestTestCheckout")
-    },
-    {
       path: "success",
       name: "customer-request-test-success",
       meta: {

@@ -3,18 +3,17 @@
     div.card-title Oops!
     div.card-sub-title There are no available labs provide this service in your area.
     div.card-body 
-      div 1. You can request a lab to register to DeBio by clicking the "Request a service" button.
-      div 2. Additionally, you can stake an amount of tokens or regular currency (USD), which will be given as an incentive to labs registering in your location.
-      div 3. Labs will use the result of this form, filled-in by you and other DeBio users, to evaluate the demand in the area you designated. 
+      div 1. There's no locking period. Your fund can be unstaked anytime with your consent but there will be a period of 6 days to process it.
+      div 2. Upon receiving your test result, you will be rewarded with DBIO as a token of gratitude for using our service. By unstaking your fund, you will lose this privilege.
+      div 3. You will receive notification when requested service is available. You can proceed to request a test. If the staked amount is bigger than the service price, you will get refund for overpayment. If staked amount is smaller than the service price, to complete the purchase, you should pay for the outstanding amount to complete the purchase.
 
     v-row(class="d-flex justify-center mt-16")
-      v-col(cols="5")
-        Button.mt-5.mb-10(
-          color="secondary" 
-          width="560"
-          height="38"
-          @click="showingAgreementDialog"
-          ) Request a service
+      Button.mt-5.mb-10(
+        color="secondary" 
+        width="560"
+        height="38"
+        @click="showingAgreementDialog"
+        ) Request a service
 
     template
       AgreementDialog(
@@ -94,6 +93,11 @@ export default {
 
 <style lang="sass">
   @import "@/common/styles/mixins.sass"
+
+  .card-no-lab
+    display: flex
+    flex-direction: column
+    align-items: center  
 
   .card-title 
     @include body-text-2
