@@ -145,8 +145,8 @@
           label="EMR Category"
           placeholder="Select EMR Category"
           v-model="emr.category"
-          item-text="name"
-          item-value="name"
+          item-text="category"
+          item-value="category"
           outlined
           validate-on-blur
           block
@@ -286,20 +286,7 @@ export default {
       description: "",
       file: null
     },
-    categories: [
-      { name: "Allergies and adverse drug reactions" },
-      { name: "Chronic diseases" },
-      { name: "Family medical history" },
-      { name: "Illnesses and hospitalizations" },
-      { name: "Imaging reports (e.g. X-ray)" },
-      { name: "Laboratory test results" },
-      { name: "Medications and dosing" },
-      { name: "Prescription record" },
-      { name: "Surgeries and other procedures" },
-      { name: "Vaccinations" },
-      { name: "Observations of daily living (ODLs)" },
-      { name: "Others" }
-    ]
+    categories: []
   }),
 
   computed: {
@@ -383,10 +370,14 @@ export default {
 
   async created() {
     this.initialData()
-    await getEMRCategories()
+    this.fetchCategories()
   },
 
   methods: {
+    async fetchCategories() {
+      this.categories = await getEMRCategories()
+    },
+
     initialData() {
       this.publicKey = hexToU8a(this.mnemonicData.publicKey)
       this.secretKey = hexToU8a(this.mnemonicData.privateKey)

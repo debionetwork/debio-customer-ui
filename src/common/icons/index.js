@@ -20,6 +20,7 @@ import eyeIcon from "./eye"
 import eyeOffIcon from "./eyeOff"
 import logoutIcon from "./logout"
 import closeIcon from "./close"
+import starIcon from "./star"
 import copyIcon from "./copy"
 import noteIllustration from "./noteIllustration"
 import customerIcon from "./customer"
@@ -55,6 +56,7 @@ export {
   userIcon,
   usersIcon,
   fileTextIcon,
+  starIcon,
   labIllustration,
   logoutIcon,
   copyIcon,

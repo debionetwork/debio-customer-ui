@@ -1,16 +1,17 @@
 <template lang="pug"> 
-  .customer-request-test
-    .customer-request-test__wrapper
-      .customer-request-test__nav
-        div.text-center Request a Test
-      
-      .customer-request-test__main
-        .customer-request-test__stepper
-          ui-debio-stepper( 
-            :items="stepperItems"
-            with-line-indicator
-          )
+  v-card
+    .customer-request-test
+      .customer-request-test__wrapper
+        .customer-request-test__nav
+          div.text-center Request a Test
         
+        .customer-request-test__main
+          .customer-request-test__stepper
+            ui-debio-stepper( 
+              :items="stepperItems"
+              with-line-indicator
+            )
+          
         .customer-request-test__form
           RequestTestForm
              
