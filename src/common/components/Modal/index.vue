@@ -3,6 +3,7 @@
     .ui-debio-modal__wrapper
       .ui-debio-modal__card(v-click-outside="{ handler: handleClickOutside, closeConditional }")
         ui-debio-icon.ui-debio-modal__card-close(
+          v-if="!disableDismiss"
           :icon="closeIcon"
           role="button"
           size="13"
@@ -10,15 +11,22 @@
           stroke
           @click="$emit('onClose', false)"
         )
-        .ui-debio-modal__card-title
+        .ui-debio-modal__card-title(v-if="showTitle")
           slot(name="title" v-if="$slots['title'] || $scopedSlots['title']")
           span(v-else) {{ title }}
 
-        ui-debio-icon.ui-debio-modal__card-icon(:icon="icon" :view-box="iconViewBox" size="80" stroke)
+        slot
+        ui-debio-icon.ui-debio-modal__card-icon(v-if="!$slots.default" :icon="icon" :view-box="iconViewBox" size="80" stroke)
 
-        .ui-debio-modal__card-cta
+        .ui-debio-modal__card-cta(v-if="showCta")
           slot(name="cta" v-if="$slots['cta'] || $scopedSlots['cta']")
-          Button(v-else outlined block color="secondary" @click="handleCtaAction") {{ ctaTitle }}
+          Button(
+            v-else
+            :disabled="ctaDisabled"
+            :outlined="ctaOutlined"
+            block color="secondary"
+            @click="handleCtaAction"
+          ) {{ ctaTitle }}
 </template>
 
 <script>
@@ -39,15 +47,21 @@ export default {
     icon: { type: String, default: null },
     iconViewBox: { type: String, default: "0 0 40 40" },
     ctaTitle: { type: String, default: "Default button" },
-    ctaAction: { type: Function, default: () => {} }
+    ctaAction: { type: Function, default: () => {} },
+    ctaOutlined: { type: Boolean, default: true },
+    showCta: { type: Boolean, default: true },
+    showTitle: { type: Boolean, default: true },
+    ctaDisabled: { type: Boolean, default: false },
+    disableDismiss: { type: Boolean, default: false }
   },
 
-  data: () => ({ closeIcon }),
+  data: () => ({ closeIcon, dismissAnimation: false }),
 
   computed: {
     classes() {
       return [
         { "ui-debio-modal--active": this.show },
+        { "ui-debio-modal--bounced": this.dismissAnimation && this.disableDismiss },
         { "ui-debio-modal--disabled-icon-animate": this.disabledIconAnimate }
       ]
     }
@@ -69,7 +83,18 @@ export default {
       this.ctaAction()
     },
 
-    handleClickOutside() { if (this.show) this.$emit("onClose", false) },
+    handleClickOutside() {
+      this.dismissAnimation = true
+
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.dismissAnimation = false
+        }, 300)
+      })
+
+
+      if (this.show && !this.disableDismiss) this.$emit("onClose", false)
+    },
 
     closeConditional() { return this.show }
   }
@@ -97,7 +122,6 @@ export default {
       background: rgba(255, 255, 255, .7)
 
     &__card
-      min-height: 17.25rem
       min-width: 18.063rem
       padding: 2.25rem
       position: relative
@@ -118,6 +142,9 @@ export default {
 
     &__card-title
       @include body-text-2
+
+    &__card-cta
+      width: 100%
 
     &--active
       opacity: 1
@@ -140,7 +167,17 @@ export default {
         animation: unset
         animation-delay: unset
 
+    &--bounced
+      .ui-debio-modal__card
+        animation: bounce .3s
+
     @keyframes dash
       to
         stroke-dashoffset: 0
+
+    @keyframes bounce
+      to
+        transform: scale(1)
+      to
+        transform: scale(1.06)
 </style>
