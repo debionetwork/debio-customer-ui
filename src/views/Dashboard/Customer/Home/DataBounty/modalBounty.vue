@@ -85,7 +85,6 @@ export default {
         background: #FF92AE
         border-radius: 1rem
         animation: loading infinite 1s
-        // animation: name duration timing-function delay iteration-count direction fill-mode
 
     @keyframes loading
       0%
