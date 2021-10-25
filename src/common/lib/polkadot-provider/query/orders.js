@@ -2,6 +2,8 @@ import { queryServicesById } from "./services"
 import { queryLabsById } from "./labs"
 import { queryDnaSamples } from "./genetic-testing"
 import { ethAddressByAccountId } from "./user-profile"
+import axios from "axios"
+import localStorage from "../../local-storage"
 
 export async function getOrdersDetail(api, orderId){
   let orderDetail = await getOrdersData(api, orderId)
@@ -98,4 +100,12 @@ export async function escrowKey(api) {
 export async function lastOrderByCustomer(api, address) {
   const res = await api.query.orders.lastOrderByCustomer(address)
   return res.toHuman()
+}
+
+export async function searchOrder(searchQuery) {
+  const { data: { data } } = await axios.get(`${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/orders/${localStorage.getAddress()}`, {
+    params: { size: 1000, page: 1, keyword: searchQuery || "" }
+  })
+
+  return data
 }

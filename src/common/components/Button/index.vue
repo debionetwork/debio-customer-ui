@@ -8,6 +8,7 @@
     :loading="loading"
     :outlined="outlined"
     :block="block"
+    :to="to"
     :height="height"
     :dark="dark"
   )
@@ -18,6 +19,7 @@
 export default {
   name: "Button",
   props: {
+    to: { type: [String, Object], default: null},
     color: { type: String, default: "white"},
     dark: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },

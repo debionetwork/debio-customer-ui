@@ -4,6 +4,7 @@ import Vue from "vue"
 Vue.component("ui-debio-card", () => import("@/common/components/Card"))
 Vue.component("ui-debio-avatar", () => import("@/common/components/Avatar"))
 Vue.component("ui-debio-banner", () => import("@/common/components/Banner"))
+Vue.component("ui-debio-rating", () => import("@/common/components/Rating"))
 Vue.component("ui-debio-icon", () => import("@/common/components/Icon"))
 Vue.component("ui-debio-stepper", () => import("@/common/components/Stepper"))
 Vue.component("ui-debio-modal", () => import("@/common/components/Modal"))
