@@ -1,5 +1,17 @@
 <style scoped lang="scss">
 .pop-up-main{
+    .pop-up-title{
+        width: 235px;
+        height: 48px;
+
+        font-family: Robto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 28px;
+        line-height: 0px;
+        color: #C400A5;
+    }
+
     .v-input--checkbox {
         width: 437px;
         height: 53px;
@@ -24,11 +36,15 @@
 
 <template lang="pug">
      LandingPagePopUp(:previous='previous')
-        template(v-slot:header) Backup your account
         template(v-slot:main): div.pop-up-main
+            div.pop-up-title Backup your account
             h3 We will give you 12 words that allows you to recover an account
             p You need to carefully save the  words. Copy-paste it, screenshot it, write it down, and keep it safe. If you lose it, we won't be able to help you recover it.
-            v-checkbox(v-model="agreeConditions"): template(v-slot:label): div#checkboxLabel I understand that if I lose my recovery words, I will not be able  to access my account
+            v-checkbox(v-model="agreeConditions"): template(v-slot:label): div#checkboxLabel I understand wiht DeBio 
+              //- TODO : add link 
+              a Terms and Conditions 
+              span and 
+              a Privacy Policy
             v-btn.white--text(elevation='0' color='primary' :disabled="!agreeConditions" @click="generateMnemonic") Continue
 </template>
 
