@@ -39,6 +39,7 @@ import { mapState, mapMutations } from "vuex"
 import MenuCard from "../MenuCard.vue"
 import PaymentDetailCard from "./PaymentDetailCard.vue"
 import Button from "@/common/components/Button"
+import { fetchPaymentDetails } from "@/common/lib/polkadot-provider/query/orders";
 
 
 export default {
@@ -70,8 +71,8 @@ export default {
     currency: ""
   }),
 
-  async mounted () {
-    if (Object.keys(this.$route.params).length) this.handlePrefill()
+  async created () {
+    if (this.$route.params.id) await this.handlePrefill()
 
     this.labDetail = this.labAccount._source.info
     this.labName = this.labDetail.name
@@ -110,8 +111,8 @@ export default {
       this.$router.push({ name: "customer-select-lab"})
     },
 
-    handlePrefill() {
-      const data = this.$route.params.item
+    async handlePrefill() {
+      const data = await fetchPaymentDetails(this.$route.params.id)
 
       this.labDetail = data?.lab_info
       this.labName = data?.lab_info.name
