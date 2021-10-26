@@ -20,13 +20,13 @@ const customerRoutes = [{
     {
       path: "emr/create",
       name: "customer-emr-create",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Emr Create" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Create")
     },
     {
       path: "emr/details/:id",
       name: "customer-emr-details",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Emr Create" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Details")
     },
     {
@@ -38,31 +38,25 @@ const customerRoutes = [{
     {
       path: "request-test",
       name: "customer-request-test",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      meta: { pageHeader: "Request Test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {
-      path: "select-lab",
+      path: "request-test/select-lab",
       name: "customer-request-test-select-lab",
-      meta: {
-        pageHeader: "Select Lab", parent: "customer-test"
-      },
+      meta: { pageHeader: "Select Lab" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/SelectLab")
     },
     {
-      path: "checkout",
+      path: "request-test/checkout/:id?",
       name: "customer-request-test-checkout",
-      meta: {
-        pageHeader: "Checkout", parent: "customer-test"
-      },
+      meta: { pageHeader: "Checkout" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/RequestTestCheckout")
     },
     {
-      path: "success",
+      path: "request-test/success",
       name: "customer-request-test-success",
-      meta: {
-        pageHeader: "Success", parent: "customer-test"
-      },
+      meta: { pageHeader: "Success" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Success")
     },
 

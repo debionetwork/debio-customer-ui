@@ -2,7 +2,7 @@
   div.layout-dashboard
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
       Button(
-        :outlined="$route.name !== 'customer-request-test'"
+        :outlined="computeButtonActive"
         height="35px"
         @click="goToRequestTestPage"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
@@ -53,6 +53,10 @@ export default {
       }
 
       return this.navs.map(nav => ({ ...nav, active: setActive(nav.route) }))
+    },
+
+    computeButtonActive() {
+      return !/(\/customer\/request-test)/.test(this.$route.path)
     }
   },
 
