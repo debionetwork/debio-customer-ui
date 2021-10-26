@@ -38,7 +38,7 @@
             width="80"
             height="25"
             dark
-            :to="{ name: 'customer-payment-details', params: item }"
+            @click="handleDetails(item)"
             block
           ) {{ item.status === 'unpaid' ? 'Pay' : 'Details' }}
 </template>
@@ -101,6 +101,11 @@ export default {
       })
 
       return colors[status.toUpperCase()]
+    },
+
+    handleDetails(item) {
+      if (item.status === "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: item })
+      else this.$router.push({ name: "customer-payment-details", params: item })
     }
   }
 }

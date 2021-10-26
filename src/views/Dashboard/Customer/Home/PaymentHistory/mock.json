@@ -150,7 +150,7 @@
           }
         ],
         "seller_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU",
-        "status": "Paid"
+        "status": "Unpaid"
       },
       "sort": [
         "1632389496000"
@@ -226,7 +226,7 @@
           }
         ],
         "seller_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU",
-        "status": "Paid"
+        "status": "Refunded"
       },
       "sort": [
         "1632369384000"
