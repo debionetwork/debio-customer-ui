@@ -70,24 +70,38 @@ export default {
 
   async mounted () {
     for (let i = 0; i < this.services.length; i++) {
-      const serviceId = this.services[i].id
-      const serviceName = this.services[i].info.name
-      const serviceCategory = this.services[i].info.category
-      const serviceDescription = this.services[i].info.description
-      const labId = this.services[i].lab_id
-      const labName = this.services[i].lab_detail.name
-      const labAddress = this.services[i].lab_detail.address
-      const price = this.services[i].info.prices_by_currency[0].total_price
-      const detailPrice = this.services[i].info.prices_by_currency[0]
-      const currency = this.services[i].info.prices_by_currency[0].currency
-      const city = this.services[i].lab_detail.city
-      const region = this.services[i].lab_detail.region
-      const duration = this.services[i].info.expected_duration.duration
-      let durationType = this.services[i].info.expected_duration.duration_type
+
+      let { 
+        id: serviceId, 
+        lab_id: labId,
+        lab_detail: {
+          name: labName,
+          address: labAddress,
+          city,
+          region
+        },
+        info: {
+          name: serviceName,
+          category: serviceCategory,
+          description: serviceDescription,
+          expected_duration: {
+            duration,
+            duration_type: durationType
+          },
+          prices_by_currency: [
+            {
+              currency,
+              total_price : price
+            }
+          ]
+        }
+      } = this.services[i]
+
       let labRate = 0
       let countRateLab = 0
       let serviceRate = 0
       let countServiceRate = 0
+      let detailPrice = this.services[i].info.prices_by_currency[0]
 
       if (this.rate[labId]) {
         const servicesRate = this.rate[labId].services
