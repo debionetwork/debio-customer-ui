@@ -111,7 +111,7 @@ export default {
     },
 
     handlePrefill() {
-      const data = this.$route.params
+      const data = this.$route.params.item
 
       this.labDetail = data?.lab_info
       this.labName = data?.lab_info.name

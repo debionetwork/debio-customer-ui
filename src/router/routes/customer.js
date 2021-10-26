@@ -81,7 +81,7 @@ const customerRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory")
     },
     {
-      path: "payment/details",
+      path: "payment/details/:id",
       name: "customer-payment-details",
       meta: { pageHeader: "Payment details", parent: "customer-payment-details" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory/Details")

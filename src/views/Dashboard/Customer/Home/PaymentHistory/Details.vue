@@ -1,5 +1,7 @@
 <template lang="pug">
   .payment-history-details
+    ui-debio-modal(:show="isLoading" disable-dismiss :show-title="false" :show-cta="false")
+      | {{ loadingPlaceholder }}
     .payment-history-details__wrapper
       ui-debio-card(block centered-content)
         h2.payment-history-details__title {{ computeDetailsTitle }}
@@ -9,13 +11,13 @@
             .payment-details__product
               ui-debio-avatar.product__image(src="https://picsum.photos/150" size="150" rounded)
               .product__details
-                .product__name {{ $route.params.service_info.name }}
+                .product__name {{ payment.service_info.name }}
                 .product__lab
-                  .product__lab-name {{ $route.params.lab_info.name }}
+                  .product__lab-name {{ payment.lab_info.name }}
                   ui-debio-rating.product__lab-rating(:rating="4" :total-reviews="800" size="15")
                 .product__lab-address
                   span.address__title Address
-                  p.address__text.mb-0 {{ $route.params.lab_info.address }}, {{ $route.params.lab_info.city }}
+                  p.address__text.mb-0 {{ payment.lab_info.address }}, {{ payment.lab_info.city }}
 
             .payment-details__status
               .payment-details__field
@@ -23,12 +25,12 @@
                 .test__status Rejected
               .payment-details__field
                 .payment__title Payment Status
-                .payment__status {{ $route.params.status }}
+                .payment__status {{ payment.status }}
               .payment-details__field
                 .speciment__title Specimen number
-                .speciment__status {{ $route.params.dna_sample_tracking_id }}
+                .speciment__status {{ payment.dna_sample_tracking_id }}
 
-            .payment-details__instruction(v-if="$route.params.status === 'Paid'")
+            .payment-details__instruction(v-if="payment.status === 'Paid'")
               ui-debio-icon.payment-details__instruction-icon(:icon="alertIcon" size="15" color="#52C41B" stroke)
               p.payment-details__instruction-text.mb-0
                 | Please proceed to send sample, see instruction
@@ -40,15 +42,15 @@
                   .service__field-title Service Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ $route.params.service_info.prices_by_currency[0].total_price }}
-                    | {{ $route.params.service_info.prices_by_currency[0].currency }}
-                .service__field(v-if="$route.params.service_info.prices_by_currency[0].additional_prices.length")
+                    | {{ payment.service_info.prices_by_currency[0].total_price }}
+                    | {{ payment.service_info.prices_by_currency[0].currency }}
+                .service__field(v-if="payment.service_info.prices_by_currency[0].additional_prices.length")
                   .service__field-title Quality Control Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ $route.params.service_info.prices_by_currency[0].additional_prices[0].value }}
-                    | {{ $route.params.service_info.prices_by_currency[0].currency }}
-                .service__field(v-if="$route.params.status === 'Refunded'")
+                    | {{ payment.service_info.prices_by_currency[0].additional_prices[0].value }}
+                    | {{ payment.service_info.prices_by_currency[0].currency }}
+                .service__field(v-if="payment.status === 'Refunded'")
                   .service__field-title Refund amount
                   .service__refund -
                 .service__field
@@ -73,27 +75,40 @@
 <script>
 import { alertIcon } from "@/common/icons"
 import Button from "@/common/components/Button"
+import { fetchPaymentDetails } from "@/common/lib/polkadot-provider/query/orders";
+import serviceHandler from "@/common/lib/metamask/mixins/serviceHandler"
 
 export default {
   name: "CustomerPaymentDetails",
 
+  mixins: [serviceHandler],
+
   components: { Button },
 
-  data: () => ({ alertIcon, rewardPopup: false }),
+  data: () => ({ alertIcon, rewardPopup: false, payment: {} }),
 
   computed: {
     computeDetailsTitle() {
-      return this.$route.params?.status === "Paid"
+      return this.payment?.status === "Paid"
         ? "Thank you for your order"
-        : `${this.$route.params?.status} Order`
+        : `${this.payment?.status} Order`
     }
   },
 
   beforeMount() {
-    if (!Object.keys(this.$route.params).length) this.$router.push({ name: "customer-payment-history" })
+    if (!this.$route.params.id) this.$router.push({ name: "customer-payment-history" })
+  },
+
+  async created() {
+    await this.fetchDetails()
   },
 
   methods: {
+    async fetchDetails() {
+      const dataPayment = await this.dispatch(fetchPaymentDetails, this.$route.params.id)
+      this.payment = dataPayment
+    },
+
     handleShowPopup(val) {
       if (val === "enter") this.rewardPopup = true
       else this.rewardPopup = false

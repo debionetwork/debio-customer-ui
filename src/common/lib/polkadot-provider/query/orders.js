@@ -102,10 +102,18 @@ export async function lastOrderByCustomer(api, address) {
   return res.toHuman()
 }
 
-export async function searchOrder(searchQuery) {
-  const { data: { data } } = await axios.get(`${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/orders/${localStorage.getAddress()}`, {
+export async function fetchPaymentHistories(searchQuery) {
+  const { data: { data } } = await axios.get(`
+    ${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/orders/list/${localStorage.getAddress()}
+  `, {
     params: { size: 1000, page: 1, keyword: searchQuery || "" }
   })
+
+  return data
+}
+
+export async function fetchPaymentDetails(hash) {
+  const { data } = await axios.get(`${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/orders/${hash}`)
 
   return data
 }

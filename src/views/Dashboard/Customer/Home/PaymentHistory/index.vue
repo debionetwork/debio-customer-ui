@@ -1,5 +1,7 @@
 <template lang="pug">
   .payment-history
+    ui-debio-modal(:show="isLoading" disable-dismiss :show-title="false" :show-cta="false")
+      | {{ loadingPlaceholder }}
     .payment-history__wrapper
       DataTable(:headers="paymentHeaders" :items="payments")
         template(slot="prepend")
@@ -8,12 +10,13 @@
               h2.payment-history__title Payment History
               p.payment-history__subtitle.mb-0 List of all request service payment
             ui-debio-input.payment-history__search-bar(
-              outlined
+              v-model="searchQuery"
               variant="small"
               width="270"
               placeholder="Service Name, Payment Status, Lab Name"
+              outlined
             )
-              ui-debio-icon(slot="icon-append" size="20" :icon="searchIcon" stroke)
+              ui-debio-icon(slot="icon-append" size="20" @click="onSearchInput(searchQuery)" role="button" :icon="searchIcon" stroke)
         template(v-slot:[`item.service_info.name`]="{ item }")
           .payment-history__name-details
             ui-debio-avatar(:src="'https://picsum.photos/200'" size="41" rounded)
@@ -47,17 +50,21 @@
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { searchIcon } from "@/common/icons"
-// import { searchOrder } from "@/common/lib/polkadot-provider/query/orders";
-import mock from "./mock.json"
+import { fetchPaymentHistories } from "@/common/lib/polkadot-provider/query/orders";
+
+import serviceHandler from "@/common/lib/metamask/mixins/serviceHandler"
 
 export default {
   name: "CustomerPaymentHistory",
+
+  mixins: [serviceHandler],
 
   components: { DataTable, Button },
 
   data: () => ({
     searchIcon,
-    
+
+    searchQuery: "",
     paymentHeaders: [
       { text: "Service Name", value: "service_info.name", sortable: true },
       { text: "Lab Name", value: "lab_info.name", sortable: true },
@@ -77,13 +84,13 @@ export default {
   }),
 
   async created() {
-    await this.onSearchInput()
+    await this.dispatch(this.onSearchInput)
   },
 
   methods: {
-    async onSearchInput() {
-      // const results = await searchOrder(val)
-      this.payments = mock.data.map(result => ({
+    async onSearchInput(val) {
+      const results = await fetchPaymentHistories(val)
+      this.payments = results.map(result => ({
         ...result._source,
         id: result._id,
         created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
@@ -104,8 +111,10 @@ export default {
     },
 
     handleDetails(item) {
-      if (item.status === "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: item })
-      else this.$router.push({ name: "customer-payment-details", params: item })
+      const { id } = item
+
+      if (item.status === "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: { item, id } })
+      else this.$router.push({ name: "customer-payment-details", params: { id } })
     }
   }
 }
