@@ -37,7 +37,7 @@ export default {
 @import "@/common/styles/variables.scss";
 
 * {
-  font-family: "Raleway", sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
 ::-moz-selection { /* Code for Firefox */

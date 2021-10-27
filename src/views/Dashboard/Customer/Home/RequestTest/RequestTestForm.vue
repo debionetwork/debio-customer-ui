@@ -1,7 +1,7 @@
 <template lang="pug">
   v-row(class="d-flex justify-center mt-16")
     v-col(cols="5")
-      label Select a country
+      label Country
       v-autocomplete(
         dense
         key="country"
@@ -9,12 +9,12 @@
         :items="countries"
         item-text="name"
         item-value="iso2"
-        placeholder="Country"
+        placeholder="Select country"
         @change="onCountryChange"
         autocomplete="off"
         outlined)
 
-      label Select a region
+      label State/Province
       v-autocomplete(
         dense
         key="state"
@@ -22,13 +22,13 @@
         :items="states"
         item-text="name"
         item-value="state_code"
-        placeholder="State/Province"
+        placeholder="Select State/Province"
         :disabled="!country"
         @change="onStateChange"
         autocomplete="off"
         outlined)
 
-      label Select a city
+      label City
       v-autocomplete(
         dense
         key="city"
@@ -36,33 +36,28 @@
         :items="cities"
         item-text="name"
         return-object
-        placeholder="City"
+        placeholder="Select City"
         :disabled="!state"
         @change="onCityChange"
         autocomplete="off"
         outlined)
 
-      label Select a service category
+      label Category
       v-select(
         dense
         :items="categories"
         item-text="service_categories"
         item-value="service_categories"
         menu-props="auto"
-        placeholder="Category"
+        placeholder="Select Category"
         :disabled="!city"
         @change="onCategoryChange"
         autocomplete="off"
         outlined)
 
-      template(v-if="!category" )
-        v-icon(color="red") mdi-alert-circle-outline
-        span(class="red--text") You haven't selected any service category
-
       Button(
-        class="mt-16"
         color="secondary" 
-        width="546"
+        width="100%"
         height="38"
         @click= "onSubmit"
         ) Continue
@@ -135,7 +130,7 @@ export default {
     },
     
     async onCityChange(selectedCity) {
-      this.city = selectedCity.state_code
+      this.city = selectedCity.name
     },
 
     async onCategoryChange(selectedCategory) {
@@ -144,12 +139,16 @@ export default {
 
     async onSubmit() {
       const country = this.country
+      const region = this.state
       const city = this.city
       const category = this.category
       this.setCategory(category)
-      await this.$store.dispatch("lab/setCountryCity", {country, city})
-      await this.$store.dispatch("lab/getLabByCategory", category)
-      this.$router.push({ name: "customer-request-test-select-lab" })
+
+      await this.$store.dispatch("lab/setCountryRegionCity", {country, region, city})
+      await this.$store.dispatch("lab/getServicesByCategory", category)
+      await this.$store.dispatch("rating/getRate")
+  
+      this.$emit("click")
     }
   }
 }

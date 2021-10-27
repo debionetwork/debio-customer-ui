@@ -1,4 +1,4 @@
-import store from "../../store"
+import store from "@/store"
 import contractInfo from "@/store/metamask/contracts/contract.json"
 import { sendTransaction } from "./wallet"
 

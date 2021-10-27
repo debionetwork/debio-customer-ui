@@ -10,7 +10,7 @@
       ) Request a Test
 
       Button(
-        :outlined="$route.name !== 'customer-emr-create'"
+        outlined 
         height="35px"
         @click="goToUploadEMR"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
