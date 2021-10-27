@@ -62,7 +62,7 @@
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'settings'")
                   .navbar__settings
                     .settings-item(role="button")
-                      .settings-item__wrapper
+                      .settings-item__wrapper(@click="signOut")
                         .settings-item__title(aria-label="Signout") Signout
                         ui-debio-icon.settings-item__icon(:icon="logoutIcon" size="24" stroke color="#C400A5")
 
@@ -94,6 +94,8 @@
 </template>
 
 <script>
+
+import { mapActions } from "vuex"
 import {
   searchIcon,
   bellIcon,
@@ -107,8 +109,9 @@ import {
   metamaskFoxIcon,
   copyIcon
 } from "@/common/icons"
-
 import WalletBinding from "./WalletBinding.vue"
+import localStorage from "@/common/lib/local-storage"
+
 
 export default {
   name: "Navbar",
@@ -168,6 +171,10 @@ export default {
   }),
 
   computed: {
+    ...mapActions({
+      clearAuth: "auth/clearAuth"
+    }),
+
     getActiveMenu() {
       return this.menus.find(menu => menu.active)
     },
@@ -234,7 +241,12 @@ export default {
     handleDropdownAction(type) {
       if (type === "metamask") this.disconnectWallet()
       else this.downloadKeystore()
-      // TODO: Should handle polkadot and metamask actions
+      // TODO: Should handl,e polkadot and metamask actions
+    },
+    signOut () {
+      localStorage.clear()
+      this.clearAuth
+      this.$router.push({ name: "sign-in"})
     }
   }
 }
