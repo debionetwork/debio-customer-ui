@@ -2,7 +2,7 @@
   div.layout-dashboard
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
       Button(
-        outlined
+        :outlined="computeButtonActive"
         height="35px"
         @click="goToRequestTestPage"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
@@ -10,7 +10,7 @@
       ) Request a Test
 
       Button(
-        outlined 
+        :outlined="$route.path !== '/customer/emr/upload'"
         height="35px"
         @click="goToUploadEMR"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
@@ -36,7 +36,7 @@ export default {
   data: () => ({
     navs: [
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
-      { text: "My Test", disabled: false, active: false, route: "customer-test", icon: boxIcon },
+      { text: "My Test", disabled: false, active: false, route: "my-test", icon: boxIcon },
       { text: "My EMR", disabled: false, active: false, route: "customer-emr", icon: fileTextIcon },
       { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", icon: databaseIcon },
       { text: "Payment History", disabled: false, active: false, route: "customer-payment-history", icon: creditCardIcon }
@@ -53,6 +53,10 @@ export default {
       }
 
       return this.navs.map(nav => ({ ...nav, active: setActive(nav.route) }))
+    },
+
+    computeButtonActive() {
+      return !/(\/customer\/request-test)/.test(this.$route.path)
     }
   },
 
@@ -79,7 +83,7 @@ export default {
     grid-template-areas: "sidebar navbar" "sidebar main"
 
     &__navbar
-      padding: 1.25rem !important
+      padding: 2.5rem 1.25rem !important
       padding-right: 2.5rem !important
       grid-area: navbar
 
