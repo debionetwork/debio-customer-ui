@@ -1,55 +1,43 @@
 <template lang="pug"> 
-  .customer-request-test
-    .customer-request-test__wrapper
-      .customer-request-test__nav
-        .customer-request-test__nav-button(@click="handleBack")
-          v-icon.customer-request-test__nav-icon mdi-chevron-left
+  .customer-payment-checkout
+    .customer-payment-checkout__wrapper
+      .customer-payment-checkout__nav
+        .customer-payment-checkout__nav-button(@click="handleBack")
+          v-icon.customer-payment-checkout__nav-icon mdi-chevron-left
       
-      .customer-request-test__main
-        .customer-request-test__stepper
+      .customer-payment-checkout__main
+        .customer-payment-checkout__stepper
           ui-debio-stepper( 
             :items="stepperItems"
           )
         
         template
-          SelectLocation(
-            @onSubmit="toSelectService"
-          )
+          PaymentCheckout
+                    
 </template>
 
 <script>
 
-import SelectLocation from "./SelectLocation"
+import PaymentCheckout from "./PaymentCheckout"
 
 export default {
-  name: "RequestTest",
+  name: "Checkout",
 
   components: {
-    SelectLocation
+    PaymentCheckout
   },
 
   data: () => ({
     stepperItems: [
-      { number: 1, title: "Select Location and Service Category", active: true },
+      { number: 1, title: "Select Location and Service Category", active: false },
       { number: 2, title: "Select Service", active: false },
-      { number: 3, title: "Checkout & Payment", active: false },
+      { number: 3, title: "Checkout & Payment", active: true },
       { number: 4, title: "Success", active: false }
-    ]
+    ]  
   }),
-
-
-  async mounted () {
-    if (!this.services.length) {
-      this.showNoLab = true
-    }
-  },
 
   methods: {
     handleBack() {
-      this.$router.push({ name: "customer-dashboard"})
-    },
-
-    toSelectService() {
       this.$router.push({ name: "customer-select-service"})
     }
   }
@@ -60,7 +48,7 @@ export default {
 <style lang="sass">
   @import "@/common/styles/mixins.sass"
 
-  .customer-request-test
+  .customer-payment-checkout
     width: 100%
     height: 100%
     background: #FFFFFF

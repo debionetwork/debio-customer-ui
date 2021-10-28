@@ -28,7 +28,7 @@ export default {
 
   methods: {
     onContinue () {
-      this.$emit("onContinue")
+      this.$router.push({ name: "customer-select-service"})
     }
   }
 

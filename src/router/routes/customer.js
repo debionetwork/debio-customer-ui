@@ -2,7 +2,7 @@ import { checkIsLoggedIn } from "@/common/lib/route-guard"
 
 const customerRoutes = [{
   path: "/customer",
-  component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Layout"),
+  component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout"),
   name: "customer",
   beforeEnter: checkIsLoggedIn,
   children: [
@@ -10,43 +10,55 @@ const customerRoutes = [{
       path: "/",
       name: "customer-dashboard",
       meta: { pageHeader: "Home" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home")
     },
     {
       path: "emr",
       name: "customer-emr",
       meta: { pageHeader: "My EMR" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr")
     },  
     {
       path: "emr/upload",
       name: "customer-emr-create",
       meta: { pageHeader: "Upload EMR" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Create")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Create")
     },
     {
       path: "emr/details/:id?",
       name: "customer-emr-details",
       meta: { pageHeader: "Details", parent: "customer-emr" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Details")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Details")
     },
     {
       path: "my-test",
       name: "my-test",
       meta: { pageHeader: "My Test"},
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/MyTest")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest")
     },
     {
       path: "request-test",
       name: "customer-request-test",
       meta: { pageHeader: "Request Test" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {
-      path: "success",
-      name: "customer-request-test-success",
-      meta: { pageHeader: "Success" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/Success")
+      path: "select-service",
+      name: "customer-select-service",
+      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/SelectServicePage")
+    },
+    {
+      path: "customer-checkout",
+      name: "customer-checkout",
+      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Checkout")
+    },
+    {
+      path: "customer-success",
+      name: "customer-success",
+      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Success")
     },
 
     // Data Bounty

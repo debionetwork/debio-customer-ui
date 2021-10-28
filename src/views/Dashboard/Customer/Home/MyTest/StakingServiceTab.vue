@@ -149,7 +149,7 @@ export default {
 
   methods: {
     toRequestTest() {
-      this.$router.push({ name: "customer-request-test"})
+      this.$router.push({ name: "customer-select-service"})
     },
 
     setButtonBackground(status) {

@@ -142,7 +142,7 @@ export default {
       this.error = ""
       try {
         this.wallet.decodePkcs8(this.password)
-        this.$emit("onContinue")
+        this.$router.push({ name: "customer-success"})
       }
       catch (err) {
         console.log(err)

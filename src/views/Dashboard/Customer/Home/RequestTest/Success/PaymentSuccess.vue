@@ -16,11 +16,11 @@
 </template>
 <script>
 
-import LabDetailCard from "./LabDetailCard.vue"
-import PaymentDetailCard from "./PaymentDetailCard.vue"
+import LabDetailCard from "../LabDetailCard.vue"
+import PaymentDetailCard from "../PaymentDetailCard.vue"
 
 export default {
-  name: "Success",
+  name: "PaymentSuccess",
 
   components: {
     LabDetailCard,
