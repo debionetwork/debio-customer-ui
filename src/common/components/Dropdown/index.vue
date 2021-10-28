@@ -4,21 +4,38 @@
       span {{ label }}
       ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
     .ui-debio-dropdown__wrapper(@click="openOptions")
-      .ui-debio-dropdown__label-value
-        span(aria-label="Vaccinations") {{ selectedOption }}
+      .ui-debio-dropdown__value-wrapper
+        ui-debio-input.ui-debio-dropdown__searchbox(
+          :placeholder="computePlaceholder"
+          variant="small"
+          :value="searchQuery"
+          @input="handleSearch"
+          @keydown="handleSelectArrow"
+          @click="searchFocus = true"
+          block
+          ref="searchbox"
+          id="searchbox"
+        )
+        label.ui-debio-dropdown__value(v-show="!active" for="searchbox") {{ selectedOption }}
         v-icon(:class="{ 'ui-debio-dropdown__chevron--active': active }") mdi-chevron-down
 
-      .ui-debio-dropdown__selects(:class="{ 'ui-debio-dropdown__selects--show': active }" role="listbox")
-        .ui-debio-dropdown__item(
-          role="option"
-          v-for="(item, idx) in computeItems"
-          :key="item.id"
-          :class="{ 'ui-debio-dropdown__item--selected': item.selected }"
-          :aria-selected="item.selected"
-          @click="handleSelectItem(item, idx)"
-        )
-          slot(name="item" v-if="$slots.item || $scopedSlots.item" :item="item" :index="idx")
-          span(v-else) {{ item[itemText] }}
+      .ui-debio-dropdown__selects(:class="{ 'ui-debio-dropdown__selects--show': active }" ref="selects" role="listbox")
+        template(v-if="computeItems.length")
+          .ui-debio-dropdown__item(
+            role="option"
+            v-for="(item, idx) in computeItems"
+            :key="item.id"
+            :class="{ 'ui-debio-dropdown__item--selected': item.selected || idx === focusOnItem }"
+            :aria-selected="item.selected"
+            @click="handleSelectItem(item, idx)"
+          )
+            template
+              slot(name="item" v-if="$slots.item || $scopedSlots.item" :item="item" :index="idx")
+              span(v-else) {{ item[itemText] }}
+        .ui-debio-dropdown__item.ui-debio-dropdown__item--undefined(v-else)
+          | Collections 
+          strong.primary--text {{ searchQuery }} 
+          | not found
     .ui-debio-input__error-message(v-if="computeErrorMessage") {{ computeErrorMessage }}
 </template>
 
@@ -39,7 +56,7 @@ export default {
     label: { type: String, default: "Default Label" },
     customLabel: { type: Function, default: () => {} },
     placeholder: { type: String, default: "Select options" },
-    value: { type: [String, Number, Boolean, Object], default: null },
+    value: { type: [String, Number, Boolean, Object, Array], default: null },
     variant: { type: String, default: "default" },
 
     validateOnBlur: Boolean,
@@ -49,7 +66,14 @@ export default {
     block: Boolean
   },
 
-  data: () => ({ active: false, alertIcon }),
+  data: () => ({
+    alertIcon,
+
+    searchQuery: "",
+    focusOnItem: null,
+    active: false,
+    searchFocus: false
+  }),
 
   computed: {
     classes() {
@@ -63,8 +87,26 @@ export default {
       ]
     },
 
+    computeSearchValue() {
+      return this.placeholder === this.selectedOption || !this.active && this.closeOnSelect
+        ? ""
+        : this.selectedOption
+    },
+
+    computePlaceholder() {
+      const placeholder = this.computeSearchValue || this.placeholder
+
+      return !this.active ? "" : placeholder
+    },
+
     computeItems() {
-      return this.items.map(item => ({ ...item, selected: false, customLabelResult: "" }))
+      const filtered = this.items.filter(item => {
+        return this.searchQuery.toLowerCase()
+          .split(" ")
+          .every(v => item[this.itemValue].toLowerCase().includes(v))
+      })
+
+      return filtered.map(item => ({ ...item, selected: false, customLabelResult: "" }))
     },
 
     computeStyle() {
@@ -96,11 +138,17 @@ export default {
 
         this._handleError(this.selectedOption)
       }
+    },
+
+    active(val) {
+      if (val) this.$refs?.searchbox?.$el.querySelector(".ui-debio-input__input").focus()
     }
   },
 
   methods: {
     handleSelectItem(selectedItem, indexValue) {
+      this.focusOnItem = null
+
       this.computeItems.forEach((item , idx) => {
         if (indexValue === idx && item.selected !== true) item.selected = true
 
@@ -109,17 +157,54 @@ export default {
 
       let value = this.returnObject ? selectedItem : selectedItem[this.itemValue]
 
-      if (!selectedItem.selected) value = null
+      if (!selectedItem.selected || value === this.selectedOption) value = null
 
       if (this.customLabel) this.customLabelResult = this.customLabel(selectedItem)
 
-      if (this.closeOnSelect) this.active = false
+      if (this.closeOnSelect) {
+        this.searchFocus = false
+        this.searchQuery = ""
+      }
 
       this.$emit("input", value)
     },
 
     openOptions() {
+      if (this.closeOnSelect && this.active && !this.searchFocus) this.active = false
+      else this.active = true
+    },
+
+    handleSearch(query) {
       this.active = true
+
+      this.searchQuery = query
+    },
+
+    handleSelectArrow(e) {
+      if (!/(13|38|40)/.test(e.keyCode)) return // Allows keys such as enter, arrow up and down
+
+      this.active = true
+
+      const container = this.$refs.selects
+      const offsetItem = [...document.getElementsByClassName("ui-debio-dropdown__item--selected")]
+        .find(el => el.textContent !== this.selectedOption)?.offsetTop
+
+      if (this.focusOnItem === null) this.focusOnItem = 0
+
+      if (e.keyCode === 40 && this.focusOnItem < (this.computeItems?.length - 1)) {
+        this.focusOnItem++
+        if (offsetItem > 170) container.scrollTop += 30
+      }
+
+      if (e.keyCode === 38 && this.focusOnItem > 0) {
+        this.focusOnItem--
+        if (offsetItem < 170) container.scrollTop -= 30
+      }
+
+      if (this.focusOnItem !== null && e.keyCode === 13)
+        this.handleSelectItem(this.computeItems[this.focusOnItem], this.focusOnItem)
+
+      if (this.closeOnSelect && this.active && e.keyCode === 13) this.active = false
     },
 
     _handleError(val) {
@@ -139,9 +224,12 @@ export default {
 
     async handleBlur(event) {
       if (event?.type !== "click") await new Promise(resolve => setTimeout(resolve, 150))
+
       this.$nextTick(() => {
         if (this.validateOnBlur && this.active) this._handleError(this.selectedOption)
+        this.searchQuery = ""
         this.active = false
+        this.searchFocus = false
         if ("blur" in this.$listeners) this.$listeners.blur()
       })
     }
@@ -149,7 +237,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
   @import "@/common/styles/mixins.sass"
 
   .ui-debio-dropdown
@@ -177,11 +265,14 @@ export default {
       font-size: 1rem
       color: black
 
-    &__label-value
+    &__value-wrapper
       display: flex
       justify-content: space-between
       align-items: center
       width: 100%
+
+    &__value
+      position: absolute
 
     &__chevron
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
@@ -201,9 +292,12 @@ export default {
       background: #FFFFFF
       transform: translateY(-0.625rem)
       opacity: 0
+      text-overflow: ellipsis
       visibility: hidden
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
       overflow-y: auto
+      overflow-x: hidden
+      white-space: nowrap
 
       &--show
         opacity: 1
@@ -232,7 +326,7 @@ export default {
       &:last-of-type
         border-radius: 0 0 0.25rem 0.25rem
 
-      &:hover
+      &:not(.ui-debio-dropdown__item--undefined):hover
         background: #F5F7F9
 
         &::before
@@ -258,6 +352,9 @@ export default {
         &::before
           opacity: 1
 
+      &--undefined
+        text-align: center
+        padding: 1rem
 
     &--disabled
       .ui-debio-dropdown__wrapper
@@ -269,11 +366,11 @@ export default {
         border-color: #5640A5 !important
 
     &--prepend-icon
-      .ui-debio-dropdown__label-value
+      .ui-debio-dropdown__value-wrapper
         margin-left: 1.375rem
 
     &--append-icon
-      .ui-debio-dropdown__label-value
+      .ui-debio-dropdown__value-wrapper
         margin-right: 1.375rem
 
     &--outlined
@@ -309,7 +406,7 @@ export default {
       .ui-debio-dropdown__selects
         top: 4rem
 
-      .ui-debio-dropdown__label-value
+      .ui-debio-dropdown__value-wrapper
         @include body-text-medium-2
 
       .ui-debio-input__error-message
@@ -325,7 +422,7 @@ export default {
       .ui-debio-dropdown__selects
         top: 3.5rem
 
-      .ui-debio-dropdown__label-value
+      .ui-debio-dropdown__value-wrapper
         @include body-text-medium-3
 
       .ui-debio-input__error-message
@@ -341,7 +438,7 @@ export default {
       .ui-debio-dropdown__selects
         top: 4.5rem
 
-      .ui-debio-dropdown__label-value
+      .ui-debio-dropdown__value-wrapper
         @include body-text-medium-1
 
       .ui-debio-input__error-message
@@ -366,7 +463,17 @@ export default {
         border-color: #C400A5 !important
 
       .ui-debio-dropdown__label,
-      .ui-debio-dropdown__label-value,
-      .ui-debio-dropdown__label-value i
+      .ui-debio-dropdown__value-wrapper,
+      .ui-debio-dropdown__value-wrapper i
         color: #C400A5 !important
+
+    &::v-deep
+      .ui-debio-input
+        &__wrapper
+          border: unset
+          box-shadow: unset
+          background: unset
+
+        &__input
+          padding: unset
 </style>

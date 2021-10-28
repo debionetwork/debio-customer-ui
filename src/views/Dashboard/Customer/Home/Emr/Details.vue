@@ -30,7 +30,10 @@
             .customer-emr-details__document-title Medical Receipt Diagnose Treatment
       .customer-emr-details__viewer
         .customer-emr-details__viewer-wrapper
-          embed.customer-emr-details__viewer-content(src="http://pii.or.id/uploads/dummies.pdf#view=fitH" type="application/pdf")
+          embed.customer-emr-details__viewer-content(
+            src=`http://pii.or.id/uploads/dummies.pdf#view=fitH`
+            type="application/pdf"
+          )
 </template>
 
 <script>
