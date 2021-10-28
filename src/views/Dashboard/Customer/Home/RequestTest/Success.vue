@@ -2,7 +2,7 @@
   .customer-payment-success
     .customer-payment-success__title 
       b Thank you for your order!
-      .customer-payment-success__sub-title Please proceed to send sample
+    .customer-payment-success__sub-title Please proceed to send sample
       
 
     template

@@ -22,7 +22,6 @@
                 cols="12"
                 sm="9"
               )
-              
                 v-text-field(
                   v-model="amount"
                   outlined
@@ -32,12 +31,9 @@
                 cols="12"
                 sm="3"
               )
-                v-select(
+                v-text-field(
+                  placeholder="DBIO"
                   outlined
-                  max="30"
-                  v-model="currencyType"
-                  :items="currencyList"
-                  :rules="[val => !!val || 'Currency Type is Required']"
                 )
 
         v-checkbox(class="mt-5" v-model="agree")
@@ -71,7 +67,7 @@ export default {
   },
 
   data: () => ({
-    currencyList: ["DAI"], // Currently only staking in DAI is supported
+    currencyList: ["DBIO"], // Currently only staking in DAI is supported
     currencyType: "DAI",
     agree: false,
     amount: "",

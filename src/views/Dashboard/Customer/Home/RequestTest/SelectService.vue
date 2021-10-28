@@ -15,6 +15,7 @@
         )
           MenuCard.card(  
             :title="service.serviceName"
+            :icon="service.serviceImage"
             :rate="service.serviceRate"
             :countRate="service.countServiceRate"
             :lab-name="service.labName"
@@ -84,6 +85,7 @@ export default {
           name: serviceName,
           category: serviceCategory,
           description: serviceDescription,
+          image: serviceImage,
           expected_duration: {
             duration,
             duration_type: durationType
@@ -118,6 +120,7 @@ export default {
       const service = {
         serviceName,
         serviceRate,
+        serviceImage,
         serviceCategory,
         serviceDescription,
         labName,

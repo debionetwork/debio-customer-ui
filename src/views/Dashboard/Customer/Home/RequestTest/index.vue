@@ -76,22 +76,38 @@ export default {
   methods: {
     handleBack() {
       if (this.isSelectLocation) {
+        this.stepperItems[0].active = true
+        this.stepperItems[1].active = false
+        this.stepperItems[2].active = false
+        this.stepperItems[3].active = false
         this.$router.push({ name: "customer-dashboard"})
       }
 
       if (this.isSelectService) {
         this.isSelectService = false
         this.isSelectLocation = true
+        this.stepperItems[0].active = true
+        this.stepperItems[1].active = false
+        this.stepperItems[2].active = false
+        this.stepperItems[3].active = false
       }
 
       if (this.isPaymentCheckout) {
         this.isPaymentCheckout = false
         this.isSelectService = true
+        this.stepperItems[0].active = false
+        this.stepperItems[1].active = true
+        this.stepperItems[2].active = false
+        this.stepperItems[3].active = false
       }
 
       if (this.isSuccessPage) {
         this.isSuccessPage = false
         this.isPaymentCheckout = true
+        this.stepperItems[0].active = false
+        this.stepperItems[1].active = false
+        this.stepperItems[2].active = true
+        this.stepperItems[3].active = false
       }
     },
 
@@ -125,7 +141,7 @@ export default {
 
   .customer-request-test
     width: 100%
-    height: 100% 
+    height: 100%
     background: #FFFFFF
 
     &__wrapper
@@ -148,7 +164,7 @@ export default {
       @include body-text-3
 
     &__main
-      padding: 2.313rem 3.125rem
+      padding-bottom: 100px
       width: 100%
       display: flex
       flex-direction: column

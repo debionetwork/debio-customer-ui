@@ -13,48 +13,42 @@
       div(class="text-start ms-5 mt-5")
         b.mb-2 {{ selectedService.labName }}
 
-      div(class="text-start ms-5")
+      div(class="ml-5 text-start")
         .address-detail {{ selectedService.labAddress}}
         .address-detail {{ selectedService.city}}
 
-      div(class="ml-5 mb-2 mt-4 text-start" style="font-size: 12px;")
-        b Details
+
+      div(class="text-start")
+        div(class="ml-5 mb-2 mt-4 text-start" style="font-size: 12px;")
+          b Details
 
       hr(class="ml-3 me-3 mb-3")
 
-      div(class="ml-5 text-start")
-        v-row
-          v-col(cols="6") 
-            div( style=" font-size: 12px;" ) Price:
-          v-col(cols="6") 
-            v-row
-              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.detailPrice.price_components[0].value }}
-              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.currency }}
+      div(class="text-start")
+        div(class="ml-5 text-start me-10")
+          div(class="d-flex justify-space-between mb-2" )
+            div( style="font-size: 12px;" ) Service Price
+            div( style="font-size: 12px;" ) {{ selectedService.detailPrice.price_components[0].value }} {{ selectedService.currency.toUpperCase() }}
 
-        v-row
-          v-col(cols="6") 
-            div( style="font-size: 12px;" ) QC Price:
-          v-col(cols="6") 
-            v-row
-              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.detailPrice.additional_prices[0].value }}
-              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.currency }}
+          div(class="d-flex justify-space-between" )
+            div( style="font-size: 12px;" ) Quality Control Price
+            div( style="font-size: 12px;" ) {{ selectedService.detailPrice.additional_prices[0].value }} {{ selectedService.currency.toUpperCase() }}    
 
-      b(class="d-flex justify-end me-3") +
-      hr(class="ml-3 me-3")
+       
+      div(class="d-flex justify-end me-3" style="font-size: 12px") +
+      hr(class="ml-3 me-3 mb-2")
 
-      div(class="ml-5 mb-5 text-start")
-        v-row
-          v-col(cols="6") 
-            b( style=" font-size: 12px;" ) Total Pay:
-          v-col(cols="6") 
-            v-row
-              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.price }}
-              v-col(cols="3" style="font-size: 12px;" ) {{ selectedService.currency }}        
+      div(class="text-start")
+        div(class="ml-5 text-start me-10")
+          div(class="d-flex justify-space-between mb-2" )
+            b( style=" font-size: 12px;" ) Total Price
+            b( style="font-size: 12px;" ) {{ selectedService.price }} {{ selectedService.currency.toUpperCase()}}
 
 
 
-      div(class="ml-3 me-3 text-center")
+      div(class="ml-3 mt-5 me-3 text-center")
         v-text-field(
+          height="40px"
           label="Input Password"
           v-model="password"
           class="password-field"
