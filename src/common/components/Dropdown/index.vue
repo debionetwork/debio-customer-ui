@@ -25,9 +25,10 @@
             role="option"
             v-for="(item, idx) in computeItems"
             :key="item.id"
-            :class="{ 'ui-debio-dropdown__item--selected': item.selected || idx === focusOnItem }"
+            @mouseover="focusOnItem = null"
+            :class="{ 'ui-debio-dropdown__item--selected': item.selected || item.uuid === focusOnItem && !item.selected }"
             :aria-selected="item.selected"
-            @click="handleSelectItem(item, idx)"
+            @click="handleSelectItem(item, item.uuid)"
           )
             template
               slot(name="item" v-if="$slots.item || $scopedSlots.item" :item="item" :index="idx")
@@ -42,6 +43,7 @@
 <script>
 import { alertIcon } from "@/common/icons"
 import { validateInput } from "@/common/lib/validate"
+import { generateUUID } from "@/common/utils/uuid"
 
 export default {
   name: "UiDebioDropdown",
@@ -69,7 +71,9 @@ export default {
   data: () => ({
     alertIcon,
 
+    listItems: [],
     searchQuery: "",
+    indexer: null,
     focusOnItem: null,
     active: false,
     searchFocus: false
@@ -100,13 +104,13 @@ export default {
     },
 
     computeItems() {
-      const filtered = this.items.filter(item => {
+      const filtered = this.listItems.filter(item => {
         return this.searchQuery.toLowerCase()
           .split(" ")
           .every(v => item[this.itemValue].toLowerCase().includes(v))
       })
 
-      return filtered.map(item => ({ ...item, selected: false, customLabelResult: "" }))
+      return filtered
     },
 
     computeStyle() {
@@ -142,15 +146,29 @@ export default {
 
     active(val) {
       if (val) this.$refs?.searchbox?.$el.querySelector(".ui-debio-input__input").focus()
+    },
+
+    items: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.listItems = val.map(item => ({
+          uuid: generateUUID(),
+          ...item,
+          selected: false,
+          customLabelResult: ""
+        }))
+      }
     }
   },
 
   methods: {
-    handleSelectItem(selectedItem, indexValue) {
-      this.focusOnItem = null
+    handleSelectItem(selectedItem, uuid) {
+      this.indexer = null
+      this.focusOnItem = uuid
 
-      this.computeItems.forEach((item , idx) => {
-        if (indexValue === idx && item.selected !== true) item.selected = true
+      this.computeItems.forEach((item) => {
+        if (uuid === item?.uuid && item.selected !== true) item.selected = true
 
         else item.selected = false
       })
@@ -181,7 +199,13 @@ export default {
     },
 
     handleSelectArrow(e) {
-      if (!/(13|38|40)/.test(e.keyCode)) return // Allows keys such as enter, arrow up and down
+      const keys = Object.freeze({
+        ENTER: 13,
+        ARROW_UP: 38,
+        ARROW_DOWN: 40
+      })
+
+      if (!Object.values(keys).includes(e.keyCode)) return // Allows keys such as enter, arrow up and down
 
       this.active = true
 
@@ -189,22 +213,25 @@ export default {
       const offsetItem = [...document.getElementsByClassName("ui-debio-dropdown__item--selected")]
         .find(el => el.textContent !== this.selectedOption)?.offsetTop
 
-      if (this.focusOnItem === null) this.focusOnItem = 0
+      if (this.indexer === null) this.indexer = 0
 
-      if (e.keyCode === 40 && this.focusOnItem < (this.computeItems?.length - 1)) {
-        this.focusOnItem++
+      if (e.keyCode === keys.ARROW_DOWN && this.indexer < (this.computeItems?.length - 1)) {
+        this.indexer++
         if (offsetItem > 170) container.scrollTop += 30
       }
 
-      if (e.keyCode === 38 && this.focusOnItem > 0) {
-        this.focusOnItem--
+      if (e.keyCode === keys.ARROW_UP && this.indexer > 0) {
+        this.indexer--
         if (offsetItem < 170) container.scrollTop -= 30
       }
 
-      if (this.focusOnItem !== null && e.keyCode === 13)
-        this.handleSelectItem(this.computeItems[this.focusOnItem], this.focusOnItem)
+      this.focusOnItem = this.computeItems[this.indexer]?.uuid
 
-      if (this.closeOnSelect && this.active && e.keyCode === 13) this.active = false
+      if (this.indexer !== null && e.keyCode === keys.ENTER) {
+        this.handleSelectItem(this.computeItems[this.indexer], this.focusOnItem)
+      }
+
+      if (this.closeOnSelect && this.active && e.keyCode === keys.ENTER) this.active = false
     },
 
     _handleError(val) {
