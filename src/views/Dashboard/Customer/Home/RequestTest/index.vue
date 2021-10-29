@@ -15,6 +15,10 @@
           SelectLocation(
             @onSubmit="toSelectService"
           )
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> remove unnecessary comments
 </template>
 
 <script>
