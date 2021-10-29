@@ -3,10 +3,6 @@ import { checkIsLoggedIn } from "@/common/lib/route-guard"
 const customerRoutes = [{
   path: "/customer",
   component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout"),
-<<<<<<< HEAD
-  name: "customer",
-=======
->>>>>>> remove unnecessary comments
   beforeEnter: checkIsLoggedIn,
   children: [
     {
@@ -18,31 +14,19 @@ const customerRoutes = [{
     {
       path: "emr",
       name: "customer-emr",
-<<<<<<< HEAD
-      meta: { pageHeader: "My EMR" },
-=======
       meta: { pageHeader: "Emr" },
->>>>>>> remove unnecessary comments
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr")
     },  
     {
       path: "emr/upload",
       name: "customer-emr-create",
-<<<<<<< HEAD
-      meta: { pageHeader: "Upload EMR" },
-=======
       meta: { pageHeader: "Emr Create", parent: "customer-emr" },
->>>>>>> remove unnecessary comments
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Create")
     },
     {
       path: "emr/details/:id?",
       name: "customer-emr-details",
-<<<<<<< HEAD
-      meta: { pageHeader: "Details", parent: "customer-emr" },
-=======
       meta: { pageHeader: "Emr Create", parent: "customer-emr" },
->>>>>>> remove unnecessary comments
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Details")
     },
     {
@@ -54,11 +38,7 @@ const customerRoutes = [{
     {
       path: "request-test",
       name: "customer-request-test",
-<<<<<<< HEAD
-      meta: { pageHeader: "Request Test" },
-=======
       meta: { pageHeader: "Request Test", parent: "customer-test"},
->>>>>>> remove unnecessary comments
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {

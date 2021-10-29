@@ -7,10 +7,10 @@
       )
 
         template(v-slot:[`item.stakeStatus`]="{ item }")
-          span(:style="{ color: setButtonBackground(item.stakeStatus) }") {{ item.stakeStatus }}
+          span(:style="setButtonBackground(item.stakeStatus)") {{ item.stakeStatus }}
 
         template(v-slot:[`item.amount`]="{ item }")
-          span(:style="{ color: setButtonBackground(item.stakeStatus) }") {{ item.amount }}
+          span(:style="setButtonBackground(item.stakeStatus)") {{ item.amount }}
 
         template(v-slot:[`item.actions`]="{ item }")
           .customer-staking-tab__actions(v-if="item.stakeStatus !== 'Waiting for Unstake'" )
@@ -161,7 +161,7 @@ export default {
         "UNSTAKED": "#E32319"
       })
 
-      return colors[status.toUpperCase()]
+      return { color: colors[status.toUpperCase()] }
     }
   }
 }
