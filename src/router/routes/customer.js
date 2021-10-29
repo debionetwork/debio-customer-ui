@@ -3,6 +3,7 @@ import { checkIsLoggedIn } from "@/common/lib/route-guard"
 const customerRoutes = [{
   path: "/customer",
   component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Layout"),
+  name: "customer",
   beforeEnter: checkIsLoggedIn,
   children: [
     {
@@ -14,39 +15,37 @@ const customerRoutes = [{
     {
       path: "emr",
       name: "customer-emr",
-      meta: { pageHeader: "Emr" },
+      meta: { pageHeader: "My EMR" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr")
     },  
     {
-      path: "emr/create",
+      path: "emr/upload",
       name: "customer-emr-create",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Upload EMR" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Create")
     },
     {
-      path: "emr/details/:id",
+      path: "emr/details/:id?",
       name: "customer-emr-details",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Details", parent: "customer-emr" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Details")
     },
     {
-      path: "customer-test",
-      name: "customer-test",
+      path: "my-test",
+      name: "my-test",
       meta: { pageHeader: "My Test"},
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/MyTest")
     },
     {
       path: "request-test",
       name: "customer-request-test",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      meta: { pageHeader: "Request Test" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest")
     },
     {
       path: "success",
       name: "customer-request-test-success",
-      meta: {
-        pageHeader: "Success", parent: "customer-test"
-      },
+      meta: { pageHeader: "Success" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/RequestTest/Success")
     },
 
@@ -59,7 +58,7 @@ const customerRoutes = [{
     },
 
     {
-      path: "payment/history",
+      path: "payment/histories",
       name: "customer-payment-history",
       meta: { pageHeader: "Payment History" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/PaymentHistory")
@@ -67,7 +66,7 @@ const customerRoutes = [{
     {
       path: "payment/details",
       name: "customer-payment-details",
-      meta: { pageHeader: "Payment details", parent: "customer-payment-details" },
+      meta: { pageHeader: "Details", parent: "customer-payment-history" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/PaymentHistory/Details")
     }
   ]

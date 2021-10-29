@@ -1,9 +1,8 @@
 <template lang="pug">
   .navbar(@mouseleave.prevent="handleHideDropdown(computeMouseLeave)")
     .navbar__wrapper
-      .navbar__search-bar(@mouseenter.prevent="handleHideDropdown(computeMouseLeave)")
-        ui-debio-input(v-model="searchQuery" placeholder="Search..." width="350")
-          ui-debio-icon(:icon="searchIcon" slot="icon-append" color="#000" stroke size="20")
+      .navbar__breadcrumbs(@mouseenter.prevent="handleHideDropdown(computeMouseLeave)")
+        ui-debio-breadcrumbs
 
       .navbar__user-menu(ref="menu" :class="{ 'navbar__user-menu--settings': !!getActiveMenu && getActiveMenu.type === 'settings' }")
         template(v-for="(menu, idx) in menus")
@@ -94,8 +93,8 @@
 </template>
 
 <script>
-
 import { mapActions } from "vuex"
+
 import {
   searchIcon,
   bellIcon,
@@ -109,6 +108,7 @@ import {
   metamaskFoxIcon,
   copyIcon
 } from "@/common/icons"
+
 import WalletBinding from "./WalletBinding.vue"
 import localStorage from "@/common/lib/local-storage"
 
@@ -243,6 +243,7 @@ export default {
       else this.downloadKeystore()
       // TODO: Should handl,e polkadot and metamask actions
     },
+
     signOut () {
       localStorage.clear()
       this.clearAuth
