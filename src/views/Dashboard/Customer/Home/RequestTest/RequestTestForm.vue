@@ -85,7 +85,8 @@ export default {
     cities: [],
     categories: [],
     countries: [],
-    coinName: ""
+    coinName: "",
+    isRequestService: false
   }),
 
   computed: {
@@ -142,10 +143,11 @@ export default {
       const region = this.state
       const city = this.city
       const category = this.category
+      const isRequestService = this.isRequestService
       this.setCategory(category)
 
       await this.$store.dispatch("lab/setCountryRegionCity", {country, region, city})
-      await this.$store.dispatch("lab/getServicesByCategory", category)
+      await this.$store.dispatch("lab/getServicesByCategory", category, isRequestService)
       await this.$store.dispatch("rating/getRate")
   
       this.$emit("click")

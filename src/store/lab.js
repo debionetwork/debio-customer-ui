@@ -42,11 +42,17 @@ export default {
       commit("SET_CITY", data.city)
     },
 
-    async getServicesByCategory({ commit, state }, category) {
+    async getServicesByCategory({ commit, state }, category, isRequestService) {
       const baseUrl = process.env.VUE_APP_DEV_DEBIO_BACKEND_URL
-      const services = await axios.get(`${baseUrl}/labs/${state.country}/${state.region}/${state.city}/${category}`)
-      
-      console.log("service di action", services)
+      const params = {
+        country: state.country,
+        region: state.region ,
+        city: state.city,
+        category,
+        service_flow: isRequestService
+      }
+
+      const services = await axios.get(`${baseUrl}/labs`, { params })
 
       commit("SET_SERVICES", services.data.result)
       commit("SET_CATEGORY", category)
