@@ -4,6 +4,7 @@ const customerRoutes = [{
   path: "/customer",
   component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout"),
   beforeEnter: checkIsLoggedIn,
+  name: "customer",
   redirect: { name: "customer-dashboard" },
   children: [
     {
@@ -15,19 +16,19 @@ const customerRoutes = [{
     {
       path: "emr",
       name: "customer-emr",
-      meta: { pageHeader: "Emr" },
+      meta: { pageHeader: "My EMR" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr")
     },  
     {
       path: "emr/upload",
       name: "customer-emr-create",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Upload EMR" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Create")
     },
     {
       path: "emr/details/:id?",
       name: "customer-emr-details",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Details", parent: "customer-emr" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Details")
     },
     {
@@ -39,25 +40,25 @@ const customerRoutes = [{
     {
       path: "request-test",
       name: "customer-request-test",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      meta: { pageHeader: "Request Test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {
-      path: "select-service",
+      path: "request-test/service",
       name: "customer-select-service",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      meta: { pageHeader: "Select Service", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/SelectServicePage")
     },
     {
-      path: "customer-checkout",
+      path: "request-test/checkout",
       name: "customer-checkout",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      meta: { pageHeader: "Checkout", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Checkout")
     },
     {
-      path: "customer-success",
+      path: "request-test/success",
       name: "customer-success",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      meta: { pageHeader: "Success", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Success")
     },
 
