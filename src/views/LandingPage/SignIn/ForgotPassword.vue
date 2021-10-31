@@ -1,6 +1,7 @@
 <style scoped lang="scss">
 .pop-up-main{
     img {
+        margin-top: 40px;
         width: 152px;
         height: 152px;
     }
@@ -23,9 +24,8 @@
         template(v-slot:header) Forgot Password
         template(v-slot:main): div.pop-up-main
             img(src='@/assets/lock.png')
-            h2 Restore your password using mnemonic phrase or keystore
+            h2 Restore your password using mnemonic phrase
             v-btn.white--text(elevation='0' color='primary' @click='inputMnemonic') Mnemonic Phrase
-            v-btn(elevation='0' color='primary' outlined @click='importKeystore') Import Keystore
 </template>
 
 <script>
@@ -43,10 +43,6 @@ export default {
 
     inputMnemonic() {
       this.$router.push({name: "input-mnemonic"})
-    },
-
-    importKeystore() {
-      this.$router.push({name: "import-keystore"})
     }
   }
 }

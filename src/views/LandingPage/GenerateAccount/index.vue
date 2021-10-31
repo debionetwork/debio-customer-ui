@@ -61,7 +61,7 @@ export default {
   }),
   methods: {
     previous() {
-      this.$router.push({name: "landing-page"})
+      this.$router.push({name: "sign-in"})
     },
     generateMnemonic() {
       this.$router.push({name: "generate-mnemonic"})
