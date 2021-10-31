@@ -1,9 +1,8 @@
 <template lang="pug">
   .navbar(@mouseleave.prevent="handleHideDropdown(computeMouseLeave)")
     .navbar__wrapper
-      .navbar__search-bar(@mouseenter.prevent="handleHideDropdown(computeMouseLeave)")
-        ui-debio-input(v-model="searchQuery" placeholder="Search..." width="350")
-          ui-debio-icon(:icon="searchIcon" slot="icon-append" color="#000" stroke size="20")
+      .navbar__breadcrumbs(@mouseenter.prevent="handleHideDropdown(computeMouseLeave)")
+        ui-debio-breadcrumbs
 
       .navbar__user-menu(ref="menu" :class="{ 'navbar__user-menu--settings': !!getActiveMenu && getActiveMenu.type === 'settings' }")
         template(v-for="(menu, idx) in menus")
@@ -62,7 +61,7 @@
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'settings'")
                   .navbar__settings
                     .settings-item(role="button")
-                      .settings-item__wrapper
+                      .settings-item__wrapper(@click="signOut")
                         .settings-item__title(aria-label="Signout") Signout
                         ui-debio-icon.settings-item__icon(:icon="logoutIcon" size="24" stroke color="#C400A5")
 
@@ -94,6 +93,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex"
+
 import {
   searchIcon,
   bellIcon,
@@ -109,6 +110,8 @@ import {
 } from "@/common/icons"
 
 import WalletBinding from "./WalletBinding.vue"
+import localStorage from "@/common/lib/local-storage"
+
 
 export default {
   name: "Navbar",
@@ -168,6 +171,10 @@ export default {
   }),
 
   computed: {
+    ...mapActions({
+      clearAuth: "auth/clearAuth"
+    }),
+
     getActiveMenu() {
       return this.menus.find(menu => menu.active)
     },
@@ -234,7 +241,13 @@ export default {
     handleDropdownAction(type) {
       if (type === "metamask") this.disconnectWallet()
       else this.downloadKeystore()
-      // TODO: Should handle polkadot and metamask actions
+      // TODO: Should handl,e polkadot and metamask actions
+    },
+
+    signOut () {
+      localStorage.clear()
+      this.clearAuth
+      this.$router.push({ name: "sign-in"})
     }
   }
 }

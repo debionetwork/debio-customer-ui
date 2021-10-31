@@ -1,41 +1,46 @@
 <template lang="pug"> 
-  .customer-request-test
-    .customer-request-test__wrapper
-      .customer-request-test__nav
-        .customer-request-test__nav-button(@click="handleBack")
-          v-icon.customer-request-test__nav-icon mdi-chevron-left
+  .customer-select-service
+    .customer-select-service__wrapper
+      .customer-select-service__nav
+        .customer-select-service__nav-button(@click="handleBack")
+          v-icon.customer-select-service__nav-icon mdi-chevron-left
       
-      .customer-request-test__main
-        .customer-request-test__stepper
+      .customer-select-service__main
+        .customer-select-service__stepper
           ui-debio-stepper( 
             :items="stepperItems"
           )
         
         template
-          SelectLocation(
-            @onSubmit="toSelectService"
+          SelectService(
+            @onSubmit="PaymentCheckout"
           )
                     
 </template>
 
 <script>
 
-import SelectLocation from "./SelectLocation"
+import SelectService from "./SelectService"
 
 export default {
-  name: "RequestTest",
+  name: "SelectServicePage",
 
   components: {
-    SelectLocation
+    SelectService
   },
 
   data: () => ({
     stepperItems: [
-      { number: 1, title: "Select Location and Service Category", active: true },
-      { number: 2, title: "Select Service", active: false },
+      { number: 1, title: "Select Location and Service Category", active: false },
+      { number: 2, title: "Select Service", active: true },
       { number: 3, title: "Checkout & Payment", active: false },
       { number: 4, title: "Success", active: false }
-    ]
+    ],
+    isSelectLocation: true,
+    isSelectService: false,
+    isPaymentCheckout: false,
+    isSuccessPage: false,
+    showNoLab: false
   }),
 
 
@@ -47,11 +52,11 @@ export default {
 
   methods: {
     handleBack() {
-      this.$router.push({ name: "customer-dashboard"})
+      this.$router.push({ name: "customer-request-test"})
     },
 
-    toSelectService() {
-      this.$router.push({ name: "customer-select-service"})
+    toPaymentCheckout () {
+      this.$router.push({ name: "customer-checkout"})
     }
   }
 }
@@ -61,7 +66,7 @@ export default {
 <style lang="sass">
   @import "@/common/styles/mixins.sass"
 
-  .customer-request-test
+  .customer-select-service
     width: 100%
     height: 100%
     background: #FFFFFF

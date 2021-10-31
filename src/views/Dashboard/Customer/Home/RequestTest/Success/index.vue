@@ -1,57 +1,47 @@
 <template lang="pug"> 
-  .customer-request-test
-    .customer-request-test__wrapper
-      .customer-request-test__nav
-        .customer-request-test__nav-button(@click="handleBack")
-          v-icon.customer-request-test__nav-icon mdi-chevron-left
+  .customer-success
+    .customer-success__wrapper
+      .customer-success__nav
+        .customer-success__nav-button(@click="handleBack")
+          v-icon.customer-success__nav-icon mdi-chevron-left
       
-      .customer-request-test__main
-        .customer-request-test__stepper
+      .customer-success__main
+        .customer-success__stepper
           ui-debio-stepper( 
             :items="stepperItems"
           )
         
         template
-          SelectLocation(
-            @onSubmit="toSelectService"
-          )
-                    
+          PaymentSuccess
+          
 </template>
 
 <script>
 
-import SelectLocation from "./SelectLocation"
+import PaymentSuccess from "./PaymentSuccess"
+
+
+
 
 export default {
-  name: "RequestTest",
+  name: "Success",
 
   components: {
-    SelectLocation
+    PaymentSuccess
   },
 
   data: () => ({
     stepperItems: [
-      { number: 1, title: "Select Location and Service Category", active: true },
+      { number: 1, title: "Select Location and Service Category", active: false },
       { number: 2, title: "Select Service", active: false },
       { number: 3, title: "Checkout & Payment", active: false },
-      { number: 4, title: "Success", active: false }
+      { number: 4, title: "Success", active: true }
     ]
   }),
 
-
-  async mounted () {
-    if (!this.services.length) {
-      this.showNoLab = true
-    }
-  },
-
   methods: {
     handleBack() {
-      this.$router.push({ name: "customer-dashboard"})
-    },
-
-    toSelectService() {
-      this.$router.push({ name: "customer-select-service"})
+      this.$router.push({ name: "customer-checkout"})
     }
   }
 }
@@ -61,7 +51,7 @@ export default {
 <style lang="sass">
   @import "@/common/styles/mixins.sass"
 
-  .customer-request-test
+  .customer-success
     width: 100%
     height: 100%
     background: #FFFFFF

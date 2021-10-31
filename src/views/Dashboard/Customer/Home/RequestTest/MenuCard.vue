@@ -18,18 +18,18 @@
             div(
               v-for="i in rate"
               :key="i")
-              v-icon(style="font-size: 9px;" color="primary") mdi-star
+              v-icon(style="font-size: 10px;" color="primary") mdi-star
 
             div(
               v-for="i in ( 5 - rate)"
               :key="i")
-              v-icon(style="font-size: 9px;" color="primary") mdi-star-outline 
-            span.ml-2( style="font-size: 9px;") ({{ countRate }})
+              v-icon(style="font-size: 10px;" color="primary") mdi-star-outline 
+            span.ml-2( style="font-size: 10px;") ({{ countRate }})
 
           .menu-card__name  
             b {{ labName }}
 
-          .menu-card__address {{ city }}, {{region}}
+          .menu-card__address {{ city }}, {{ city }}
         
 
 
@@ -40,12 +40,9 @@
 export default {
   name: "MenuCard",
 
-  data: () =>  ({
-    icon: "mdi-hospital"
-  }),
-
   props: {
     title: String,
+    icon: String,
     labName: String,
     city: String,
     region: String,
@@ -68,8 +65,8 @@ export default {
   @import "@/common/styles/mixins.sass"
 
   .container-card
-    width: 482px
-    height: 122px
+    width: 452px
+    height: 117px
     padding: 1px
     border-radius: 8px
     cursor: pointer
@@ -80,10 +77,8 @@ export default {
   .menu-card 
     border-radius: 8px
     padding: 1px
-    width: 480px
-    height: 120px
-
-
+    width: 450px
+    height: 115px
 
     &__title
       display: flex

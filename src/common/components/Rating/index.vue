@@ -52,7 +52,7 @@ export default {
     value: { type: Number, default: 0, validator: val => val >= 0 },
     totalRating: { type: Number, default: 5, validator: val => val >= 0 },
     totalReviews: { type: Number, default: 0, validator: val => val >= 0 },
-    size: { type: [String, Number], default: 0 },
+    size: { type: [String, Number], default: 15 },
 
     interactive: { type: Boolean, default: false },
     withReviewers: { type: Boolean, default: true }

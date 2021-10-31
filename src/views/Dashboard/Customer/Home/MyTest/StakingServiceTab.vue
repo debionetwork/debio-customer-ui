@@ -5,22 +5,40 @@
         :headers="headers"
         :items="items"
       )
+
+        template(v-slot:[`item.stakeStatus`]="{ item }")
+          span(:style="setButtonBackground(item.stakeStatus)") {{ item.stakeStatus }}
+
+        template(v-slot:[`item.amount`]="{ item }")
+          span(:style="setButtonBackground(item.stakeStatus)") {{ item.amount }}
+
         template(v-slot:[`item.actions`]="{ item }")
-          .customer-staking-tab__actions
-            Button(
-              height="40px"
+          .customer-staking-tab__actions(v-if="item.stakeStatus !== 'Waiting for Unstake'" )
+            Button.pa-2(
+              height="25px"
               width="50%"
               color="primary"
-              :disabled="item.unstake"
+              :disabled="item.stakeStatus === 'Unstaked' || item.stakeStatus === 'Request test'"
             ) Unstake
 
-            Button(
-              height="40px"
+            Button.pa-2(
+              v-if="item.stakeStatus === 'Staked' || item.stakeStatus === 'Service Available'" 
+              height="25px"
               width="50%"
               color="secondary"
               @click="toRequestTest"
-              :disabled="item.proceed"
+              :disabled="item.stakeStatus === 'Staked'"
             ) Proceed
+
+          .customer-staking-tab__actions(v-else)
+            Button.pa-2(
+              height="25px"
+              width="50%"
+              color="primary"
+              disabled 
+            ) 5D : 15H : 30M
+          
+
 </template>
 
 <script>
@@ -64,7 +82,7 @@ export default {
         sortable: true
       },
       {
-        text: "Amount (DBIO",
+        text: "Amount (DBIO)",
         value: "amount",
         sortable: true,
         align: "right"
@@ -82,19 +100,15 @@ export default {
         category: "Single Gene",
         orderDate: "1 Jan 2021",
         stakeStatus: "Staked",
-        amount: 2000,
-        unstake: true,
-        proceed: false
+        amount: 2000
       },
       {
         country: "Indonesia",
         city: "Kota Administrasi Jakarta Selatan",
         category: "Single Gene",
         orderDate: "1 Oct 2021",
-        stakeStatus: "Unstaked",
-        amount: 500,
-        unstake: true,
-        proceed: true
+        stakeStatus: "Service Available",
+        amount: 500
       },
       {
         country: "Singapore",
@@ -102,38 +116,31 @@ export default {
         category: "Covid-19 Testing",
         orderDate: "23 Dec 2020",
         stakeStatus: "Request test",
-        amount: 50,
-        unstake: false,
-        proceed: false
+        amount: 50
       },
       {
         country: "Singapore",
         city: "Singapore",
         category: "Whole Genome Sequencing",
         orderDate: "23 Dec 2020",
-        stakeStatus: "Staked",
-        amount: 5000,
-        proceed: false
+        stakeStatus: "Waiting for Unstake",
+        amount: 5000
       },
       {
         country: "Singapore",
         city: "Singapore",
         category: "Whole Genome Sequencing",
         orderDate: "23 Dec 2020",
-        stakeStatus: "Request test",
-        amount: 5000,
-        unstake: true,
-        proceed: true
+        stakeStatus: "Unstaked",
+        amount: 5000
       },
       {
         country: "Singapore",
         city: "Singapore",
         category: "Whole Transcriptome Sequencing",
         orderDate: "7 Agustus 2020",
-        stakeStatus: "Request test",
-        amount: 5000,
-        unstake: true,
-        proceed: true
+        stakeStatus: "Unstaked",
+        amount: 5000
       }
     ],
     documents: null,
@@ -142,7 +149,19 @@ export default {
 
   methods: {
     toRequestTest() {
-      this.$router.push({ name: "customer-request-test-select-lab"})
+      this.$router.push({ name: "customer-select-service"})
+    },
+
+    setButtonBackground(status) {
+      const colors = Object.freeze({
+        "STAKED": "#F60689",
+        "SERVICE AVAILABLE": "#5640A5",
+        "REQUEST TEST": "#4CBB65",
+        "WAITING FOR UNSTAKE": "#FAAD15",
+        "UNSTAKED": "#E32319"
+      })
+
+      return { color: colors[status.toUpperCase()] }
     }
   }
 }
@@ -157,15 +176,16 @@ export default {
     background: #FFFFFF
 
     &__tabs
-      padding: 3px
+      padding: 2px
 
     &__table
-      padding: 10px
+      width: 100%
+      padding: 0px 30px
 
     &__actions
-      padding: 35px
+      padding: 25px
       display: flex
       align-items: center
-      gap: 30px
-      margin: 5px
+      gap: 20px
+      margin: 3px 20px
 </style>

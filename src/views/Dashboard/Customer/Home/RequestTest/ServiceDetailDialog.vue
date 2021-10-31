@@ -1,70 +1,73 @@
 <template lang="pug">
-  v-dialog.pa-5(:value="show" width="480" persistent )
-    v-card 
-      v-app-bar(flat dense color="white")
-        v-spacer
-        v-btn( class="mt-8" icon @click="closeDialog")
+  v-dialog(:value="show" width="480" persistent )
+    v-card
+      div.pa-5(class="d-flex justify-end") 
+        v-btn.fixed-button(icon @click="closeDialog")
           v-icon mdi-close
 
-      div(class="d-flex justify-center pt-3")
-        v-icon(color="#BA8DBB" :size="125") mdi-apple
+      div.pa-5(class="d-flex justify-center")
+        v-icon(color="#BA8DBB" :size="125") {{ selectedService.serviceImage }}
         
-      div(class="d-flex justify-center pb-5 pt-5")
-        div(class="text-h6")
+      div(class="d-flex justify-center pb-5 pt-1")
+        .dialog-service__title
           b {{ selectedService.serviceName }}
 
       div(class="pa-5")
-        div(class="ml-5 pb-5")
-          b Description
-          div  {{ selectedService.serviceDescription }}
+        div(class="pa-2")
+          .dialog-service__sub-title
+            b Description
+          .dialog-service__description
+            div  {{ selectedService.serviceDescription }}
 
-        div(class="ml-5 pb-5")
-          b Expected Duration
-          div {{ selectedService.duration }} {{ selectedService.durationType}}
-
+        div(class="pa-2")
+          .dialog-service__sub-title
+            b Expected Duration
+          .dialog-service__description          
+            div {{ selectedService.duration }} {{ selectedService.durationType}}
       
-      v-row.pa-3
+      v-row(class="pa-5")
         v-col(cols="3")
-          v-icon.ml-2(v-if="!avatar" color="#BA8DBB" size="90") mdi-apple
+          v-icon.ml-2(v-if="!avatar" color="#BA8DBB" size="90") mdi-hospital
           v-img.ml-2(v-else :src="avatar" max-width="90" max-height="90")
         
-        v-col(cols="9")
-          div
+        v-col(cols="6 mt-3")
+          .dialog-service__sub-title
             b {{ selectedService.labName }}
 
-            v-row(class="ml-1 mt-1 mb-1")
-              div(
-                v-for="i in selectedService.labRate"
-                :key="i")
-                v-icon(style="font-size: 9px;" color="primary") mdi-star
-
-              div(
-                v-for="i in ( 5 - selectedService.labRate )"
-                :key="i")
-                v-icon(style="font-size: 9px;" color="primary") mdi-star-outline 
-              span.ml-2( style="font-size: 9px;") ({{ selectedService.countRateLab }})
-
-          div
+          .dialog-service__description          
             span {{ selectedService.labAddress }}
 
-      template
-        div(class="d-flex justify-space-between align-center pa-8")
-          Button(
-            color="secondary" 
-            width="45%"
-            height="38" 
-            style="font-size: 8px"
-            outlined 
-            @click="downloadFile"
-          ) Download Sample Report
 
-          Button(
-            color="secondary" 
-            width="45%"
-            height="38" 
-            style="font-size: 8px" 
-            @click="onSelect"
-          ) Select This Service
+        v-col(cols="3")
+          v-row(class="ml-1 mt-1 mb-1")
+            div(
+              v-for="i in selectedService.labRate"
+              :key="i")
+              v-icon(color="primary" size="10") mdi-star
+
+            div(
+              v-for="i in ( 5 - selectedService.labRate )"
+              :key="i")
+              v-icon(color="primary" size="10" ) mdi-star-outline 
+            span.ml-2( style="font-size: 10px;") ({{ selectedService.countRateLab }})
+
+      .dialog-service__button
+        Button(
+          color="secondary" 
+          width="48%"
+          height="38" 
+          style="font-size: 11px"
+          outlined 
+          @click="downloadFile"
+        ) Download Sample Report
+
+        Button(
+          color="secondary" 
+          width="48%"
+          height="38" 
+          style="font-size: 11px"
+          @click="onSelect"
+        ) Select This Service
 
 </template>
 
@@ -105,7 +108,7 @@ export default {
     },
 
     onSelect () {
-      this.$emit("onSelect")
+      this.$router.push({ name: "customer-checkout"})
     },
 
     async downloadFile () {
@@ -124,5 +127,39 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+  @import "@/common/styles/mixins.sass"
+
+  .dialog-service
+    &__title
+      display: flex
+      align-items: center
+      text-align: center
+      letter-spacing: 0.0044rem
+      @include h6
+
+    &__sub-title
+      @include body-text-2-opensans
+
+    &__description
+      @include body-text-3-opensans
+
+    &__button
+      margin-top: 15px
+      display: flex
+      align-items: center
+      justify-content: space-between
+      padding: 0 35px 40px 35px
+      gap: 10px
+    
+    
+  .fixed-button
+    position: fixed
+    width: 50px
+
+      
+
+</style>
 
 

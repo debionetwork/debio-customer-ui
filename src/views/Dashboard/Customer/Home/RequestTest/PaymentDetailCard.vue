@@ -1,88 +1,83 @@
 <template lang="pug">
   v-container.container-card
-    v-card.menu-card 
-      v-card.menu-card
-        div(class="ml-5 mt-5 mb-5 text-center" )
-          b Order Summary
+    v-card.menu-card
+      div(class="mt-5 mb-5 text-center" )
+        b Order Summary
 
-        div(class="ml-5 mb-2 text-start" style="font-size: 12px;")
-          b Details
+      div(class="ml-5 mb-2 text-start" style="font-size: 12px;")
+        b Details
 
-        hr(class="ml-3 me-3 mb-3")
+      hr(class="ml-3 me-3 mb-3")
 
-        div(class="ml-5 text-start")
-          v-row
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) Service Price
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) {{ selectedService.detailPrice.price_components[0].value }} {{ selectedService.currency}}
-          v-row
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) Quality Control Price
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) {{ selectedService.detailPrice.additional_prices[0].value }} {{ selectedService.currency }}
+      div(class="ml-5 text-start me-10")
+        div(class="d-flex justify-space-between mb-2" )
+          div( style="font-size: 12px;" ) Service Price
+          div( style="font-size: 12px;" ) {{ selectedService.detailPrice.price_components[0].value }} {{ selectedService.currency.toUpperCase() }}
+        
+        div(class="d-flex justify-space-between" )
+          div( style="font-size: 12px;" ) Quality Control Price
+          div( style="font-size: 12px;" ) {{ selectedService.detailPrice.additional_prices[0].value }} {{ selectedService.currency.toUpperCase() }}    
 
-        b(class="d-flex justify-end me-3") +
-        hr(class="ml-3 me-3 mb-2")
+      div(class="d-flex justify-end me-3" style="font-size: 12px") +
+      hr(class="ml-3 me-3 mb-2")
 
-        div(class="ml-5 text-start")
-          v-row
-            v-col(cols="6") 
-              b( style=" font-size: 12px;" ) Total Price
-            v-col(cols="6") 
-              b( style="font-size: 12px;" ) {{ selectedService.price }} {{ selectedService.currency}}
-       
-        div(class="ml-5 text-start" v-if="newService")
-          v-row
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) Staking Amount
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) 400 DAI
-        hr(class="ml-3 me-3 mb-5" v-if="newService")
+      div(class="ml-5 text-start me-10")
+        div(class="d-flex justify-space-between mb-2" )
+          b( style=" font-size: 12px;" ) Total Price
+          b( style="font-size: 12px;" ) {{ selectedService.price }} {{ selectedService.currency.toUpperCase()}}
 
-        div(class="ml-5 text-start" v-if="newService")
-          v-row
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) Remaining Amount
-            v-col(cols="6") 
-              div( style="font-size: 12px;" ) 550 DAI
+      
+      div(class="ml-5 text-start" v-if="newService")
+        v-row
+          v-col(cols="6") 
+            div( style="font-size: 12px;" ) Staking Amount
+          v-col(cols="6") 
+            div( style="font-size: 12px;" ) 400 DAI
+      hr(class="ml-3 me-3 mb-5" v-if="newService")
+
+      div(class="ml-5 text-start" v-if="newService")
+        v-row
+          v-col(cols="6") 
+            div( style="font-size: 12px;" ) Remaining Amount
+          v-col(cols="6") 
+            div( style="font-size: 12px;" ) 550 DAI
 
 
 
-        div(class="ml-4 text-center" )
-          div(v-if="!success" class="d-flex justify-space-between align-center")
-            Button(
-              class="mt-8"
-              color="secondary"
-              width="360"
-              height="32"
-              @click="onSubmit"
-              ) Submit Order
+      div(class="ml-4 text-center" )
+        div(v-if="!success" class="d-flex justify-space-between align-center")
+          Button(
+            class="mt-8"
+            color="secondary"
+            width="300"
+            height="35"
+            @click="onSubmit"
+            ) Submit Order
 
-          div(v-else class="d-flex justify-space-between align-center pa-8")
-            Button(
-              color="secondary" 
-              width="45%"
-              height="32"
-              @click="toInstruction"
-              style="font-size: 8px;"
-              outlined 
-              ) View Instruction
+        div(v-else class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
+          Button(
+            color="secondary" 
+            width="46%"
+            height="35"
+            @click="toInstruction"
+            style="font-size: 10px;"
+            outlined 
+            ) View Instruction
 
-            Button(
-              color="secondary" 
-              width="45%"
-              height="32"
-              style="font-size: 8px;"
-              @click="toEtherscan"
-              ) View Etherscan
+          Button(
+            color="secondary" 
+            width="46%"
+            height="35"
+            style="font-size: 10px;"
+            @click="toEtherscan"
+            ) View Etherscan
 
-      template
-        PaymentReceiptDialog(
-          :show="showReceipt"
-          @onContinue="onContinue"
-          @close="showReceipt = false"
-        )
+    template
+      PaymentReceiptDialog(
+        :show="showReceipt"
+        @onContinue="onContinue"
+        @close="showReceipt = false"
+      )
               
       
 </template>
@@ -153,15 +148,17 @@ export default {
   @import "@/common/styles/mixins.sass"
 
   .container-card 
-    width: 420px
-    height: 250px
+    width: 360px
+    height: 328px
     border-radius: 8px
-
 
   .menu-card
     border-radius: 8px
     padding: 2px
     height: 320px
 
+    &__title
+      display: flex
+      margin: 35px 10px 5px 10px
 </style>
 

@@ -2,7 +2,7 @@
   .customer-payment-success
     .customer-payment-success__title 
       b Thank you for your order!
-      .customer-payment-success__sub-title Please proceed to send sample
+    .customer-payment-success__sub-title Please proceed to send sample
       
 
     template
@@ -16,11 +16,11 @@
 </template>
 <script>
 
-import LabDetailCard from "./LabDetailCard.vue"
-import PaymentDetailCard from "./PaymentDetailCard.vue"
+import LabDetailCard from "../LabDetailCard.vue"
+import PaymentDetailCard from "../PaymentDetailCard.vue"
 
 export default {
-  name: "Success",
+  name: "PaymentSuccess",
 
   components: {
     LabDetailCard,
