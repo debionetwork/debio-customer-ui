@@ -66,7 +66,7 @@
                         ui-debio-icon.settings-item__icon(:icon="logoutIcon" size="24" stroke color="#C400A5")
 
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'polkadot' || getActiveMenu.type === 'metamask'")
-                  ui-debio-input(label="Your Address" ref="polkadot" disabled value="0xab5801a7d3983ab5U29rmtY794Heuerk51b.." block)
+                  ui-debio-input(label="Your Address" ref="polkadot" disabled :value="walletAddress" block)
                     ui-debio-icon(
                       slot="icon-append"
                       :icon="copyIcon"
@@ -75,17 +75,14 @@
                       color="#5640A5"
                       size="20"
                       role="button"
-                      @click="handleCopy('0xab5801a7d3983ab5U29rmtY794Heuerk51b..')"
+                      @click="handleCopy(walletAddress)"
                     )
                   .navbar__balance
                     .navbar__balance-wrapper
                       .navbar__balance-type {{ getActiveMenu.currency }} Balance
                       .navbar__balance-amount
                         ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? debioIcon : daiIcon" size="10")
-                        span 100
-                    .navbar__balance-desc(v-if="getActiveMenu.type === 'metamask'")
-                      | If you want to view DBIO current price, go to this <a href="#">link</a>
-                    .navbar__balance-usd(v-else) (100 USD)
+                        span {{ walletBalance }}
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
@@ -93,7 +90,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex"
+import { mapActions, mapMutations, mapState } from "vuex"
 
 import {
   searchIcon,
@@ -111,6 +108,10 @@ import {
 
 import WalletBinding from "./WalletBinding.vue"
 import localStorage from "@/common/lib/local-storage"
+import { queryBalance } from "@/common/lib/polkadot-provider/query/balance"
+import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile"
+import { getBalanceETH } from "@/common/lib/metamask/wallet";
+
 
 
 export default {
@@ -135,6 +136,8 @@ export default {
     loginStatus: false,
     arrowPosition: "",
     showMetamaskDialog: false,
+    balance: 0,
+    walletAddress: "",
     menus: [
       {
         id: 1,
@@ -155,7 +158,6 @@ export default {
         type: "polkadot",
         title: "Polkadot Wallet",
         currency: "DBIO",
-        action: "Download Keystore",
         active: false
       },
       {
@@ -175,6 +177,14 @@ export default {
       clearAuth: "auth/clearAuth"
     }),
 
+    ...mapState({
+      walletBalance: (state) => state.substrate.walletBalance,
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
+      metamaskWalletBalance: (state) => state.metamask.metamaskWalletBalance
+    }),
+
     getActiveMenu() {
       return this.menus.find(menu => menu.active)
     },
@@ -186,9 +196,21 @@ export default {
     }
   },
 
+  async mounted () {
+    this.fetchWalletBalance()
+    this.checkMetamaskAddress()
+  },
+
   methods: {
-    handleCopy() {
-      // TODO: Should copy address metamask / polkadot
+    ...mapMutations({
+      setWalletBalance: "substrate/SET_WALLET_BALANCE",
+      setMetamaskAddress: "metamask/SET_WALLET_ADDRESS",
+      setMetamaskBalance: "metamask/SET_WALLET_BALANCE",
+      clearWallet: "substrate/CLEAR_WALLET"
+    }),
+
+    async handleCopy(text) {
+      await navigator.clipboard.writeText(text)
     },
 
     handleAvatar() {
@@ -198,8 +220,16 @@ export default {
     handleHover(e, idx) {
       this.menus.forEach(menu => menu.active = false)
       const selectedMenu = this.menus[idx]
+      
+      if (selectedMenu.type === "polkadot") {
+        this.walletAddress = this.wallet.address
+      }
 
       if (selectedMenu.type === "metamask" && !this.loginStatus) return
+
+      if (selectedMenu.type === "metamask") {
+        this.walletAddress = this.metamaskWalletAddress
+      }
 
       selectedMenu.active = true
 
@@ -222,26 +252,46 @@ export default {
       this.menus[idx].active = false
     },
 
+    async fetchWalletBalance() {
+      try {
+        const balanceNummber = await queryBalance(
+          this.api,
+          this.wallet.address
+        )
+        this.setWalletBalance(balanceNummber)
+      } catch (err) {
+        console.error(err)
+      }
+    },
+
+    async checkMetamaskAddress() {
+      if (this.metamaskWalletAddress === "") {
+        const ethRegisterAddress = await ethAddressByAccountId(
+          this.api,
+          this.wallet.address
+        )
+
+        if (ethRegisterAddress !== null) {
+          const balance = await getBalanceETH(ethRegisterAddress)
+          this.setMetamaskAddress(ethRegisterAddress)
+          this.setMetamaskBalance(balance)
+          this.loginStatus = true
+        }
+      }
+    },
+
     connectToMetamask() {
-      this.showMetamaskDialog = true
-      this.loginStatus = true
+      this.showMetamaskDialog = true      
     },
 
     disconnectWallet() {
       this.loginStatus = false
-
       this.menus.find(menu => menu.type === "metamask").active = false
-      // TODO: Should handle disconect metamask wallet
-    },
-
-    downloadKeystore() {
-      // TODO: Should handle download polkadot keystore
+      this.clearWallet()
     },
 
     handleDropdownAction(type) {
       if (type === "metamask") this.disconnectWallet()
-      else this.downloadKeystore()
-      // TODO: Should handl,e polkadot and metamask actions
     },
 
     signOut () {
