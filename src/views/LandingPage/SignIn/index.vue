@@ -129,7 +129,6 @@ export default {
     dataMnemonic: null,
     dataMnemonicJson: null,
     isNoAccount: false,
-    nonce: null,
     keystoreInputErrors: []
   }),
 
@@ -175,15 +174,7 @@ export default {
         if (this.dataAccountJson === null) {
           this.isNoAccount = true
         }
-        
         this.dataAccount = JSON.parse(this.dataAccountJson)
-
-        const { nonce } = await this.api.query.system.account(
-          this.dataAccount.address
-        )
-
-        this.nonce = nonce
-
         this.dataMnemonicJson =
           localStorage.getLocalStorageByName("mnemonic_data")
         this.dataMnemonic = JSON.parse(this.dataMnemonicJson)
@@ -206,33 +197,38 @@ export default {
 
       const keystore = JSON.parse(this.keystore)
 
-      if (keystore != null) {
-        if (Array.isArray(keystore)) {
-          dataKeystore = keystore
-        } else {
-          dataKeystore.push(keystore)
-          if (this.dataMnemonicJson != null && this.dataMnemonicJson != "") {
-            dataKeystore.push(JSON.parse(this.dataMnemonicJson))
-          }
-        }
-        const result = await this.restoreAccountKeystore({
-          file: dataKeystore,
-          password: this.password
-        })
-
-        this.isLoading = false
-        this.keystoreInputErrors = ""
-        if (result.success) {
-          this._show = false
-          this.clearInput()
-          this.$router.push({name: "customer-dashboard"})
-          return
-        } else {
-          this.keystoreInputErrors = result.error
-        }
-      } else {
+      if (keystore === null) {
         this.keystoreInputErrors = "no keystore"
+        return
       }
+
+      if (Array.isArray(keystore)) {
+        dataKeystore = keystore
+        return
+      }
+
+      dataKeystore.push(keystore)
+
+      if (this.dataMnemonicJson !== null && this.dataMnemonicJson !== "") {
+        dataKeystore.push(JSON.parse(this.dataMnemonicJson))
+      }
+
+      const result = await this.restoreAccountKeystore({
+        file: dataKeystore,
+        password: this.password
+      })
+
+      this.isLoading = false
+      this.keystoreInputErrors = ""
+
+      if (!result.success) {
+        this.keystoreInputErrors = result.error
+        return
+      }
+
+      this._show = false
+      this.clearInput()
+      this.$router.push({name: "customer-dashboard"})
     },
 
     clearInput() {
