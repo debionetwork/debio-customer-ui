@@ -143,7 +143,7 @@ export default {
       }
     }
 
-    if (!this.services.length) {
+    if (!this.serviceList.length) {
       this.showNoLab = true
     }
 
