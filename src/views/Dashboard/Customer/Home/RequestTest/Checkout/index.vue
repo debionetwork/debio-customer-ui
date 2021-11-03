@@ -43,6 +43,8 @@ export default {
 
     const data = await fetchPaymentDetails(this.$route.params.id)
 
+    if (data?.status !== "Unpaid") this.$router.push({ name: "customer-payment-history" })
+
     this.prefillService = {
       service: {
         price: data?.service_info.prices_by_currency[0].price_components[0].value,
