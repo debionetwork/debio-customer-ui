@@ -4,33 +4,29 @@
       .customer-emr-details__emr
         .customer-emr-details__emr-title List of TBC Documents
         .customer-emr-details__emr-documents
-          .customer-emr-details__document.customer-emr-details__document--active(role="button")
+          .customer-emr-details__document(
+            v-for="(document, idx) in documents"
+            :key="idx"
+            role="button"
+            :title="document.name"
+            :class="{ 'customer-emr-details__document--active': selected === idx }"
+            @click="handleSelectDocument(idx)"
+          )
             ui-debio-icon.customer-emr-details__document-icon(
               :icon="fileTextIcon"
               size="28"
               color="#D3C9D1"
               fill
             )
-            .customer-emr-details__document-title Treatment
-          .customer-emr-details__document(role="button")
-            ui-debio-icon.customer-emr-details__document-icon(
-              :icon="fileTextIcon"
-              size="28"
-              color="#D3C9D1"
-              fill
-            )
-            .customer-emr-details__document-title Diagnose
-          .customer-emr-details__document(role="button")
-            ui-debio-icon.customer-emr-details__document-icon(
-              :icon="fileTextIcon"
-              size="28"
-              color="#D3C9D1"
-              fill
-            )
-            .customer-emr-details__document-title Medical Receipt Diagnose Treatment
+            label.customer-emr-details__document-title(
+              :aria-label="document.name"
+            ) {{ document.name }}
       .customer-emr-details__viewer
         .customer-emr-details__viewer-wrapper
-          embed.customer-emr-details__viewer-content(src="http://pii.or.id/uploads/dummies.pdf#view=fitH" type="application/pdf")
+          embed.customer-emr-details__viewer-content(
+            src=`http://pii.or.id/uploads/dummies.pdf#view=fitH`
+            type="application/pdf"
+          )
 </template>
 
 <script>
@@ -40,8 +36,21 @@ export default {
   name: "CustomerEmrDetails",
 
   data: () => ({
-    fileTextIcon
-  })
+    fileTextIcon,
+
+    selected: 0,
+    documents: [
+      { name: "Treatment" },
+      { name: "Diagnose" },
+      { name: "Medical Receipt Diagnose Treatment" }
+    ]
+  }),
+
+  methods: {
+    handleSelectDocument(idx) {
+      this.selected = idx
+    }
+  }
 }
 </script>
 

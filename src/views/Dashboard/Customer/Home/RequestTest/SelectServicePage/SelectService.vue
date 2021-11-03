@@ -78,7 +78,8 @@ export default {
           name: labName,
           address: labAddress,
           city,
-          region
+          region,
+          verification_status:  verificationStatus
         },
         info: {
           name: serviceName,
@@ -133,13 +134,16 @@ export default {
         countRateLab,
         countServiceRate,
         duration,
-        durationType
+        durationType,
+        verificationStatus
       }
 
-      this.serviceList.push(service)
+      if (service.verificationStatus === "Verified") {
+        this.serviceList.push(service)
+      }
     }
 
-    if (!this.services.length) {
+    if (!this.serviceList.length) {
       this.showNoLab = true
     }
 

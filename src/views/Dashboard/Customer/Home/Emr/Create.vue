@@ -148,6 +148,7 @@
           item-text="category"
           item-value="category"
           outlined
+          close-on-select
           validate-on-blur
           block
           @isError="handleError"

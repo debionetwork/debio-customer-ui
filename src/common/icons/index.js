@@ -38,6 +38,20 @@ import gridIcon from "./grid"
 import boxIcon from "./box"
 import databaseIcon from "./database"
 import phoneIcon from "./phone"
+import microscopeIcon from "./microscope"
+import weightLifterIcon from "./weightLifter"
+import fileSearchIcon from "./fileSearch"
+import hairIcon from "./hair"
+import familyTreeIcon from "./familyTree"
+import dnaIcon from "./dna"
+import foodAppleIcon from "./foodApple"
+import pillIcon from "./pill"
+import virusIcon from "./virus"
+import registeredBanner from "./registeredBanner"
+import receivedBanner from "./receivedBanner"
+import wetworkBanner from "./wetworkBanner"
+import resultReadyBanner from "./resultReadyBanner"
+import qualityControlBanner from "./qualityControlBanner"
 
 export {
   creditCardIcon,
@@ -79,5 +93,19 @@ export {
   gridIcon,
   boxIcon,
   databaseIcon,
-  phoneIcon
+  phoneIcon,
+  microscopeIcon,
+  weightLifterIcon,
+  fileSearchIcon,
+  hairIcon,
+  familyTreeIcon,
+  dnaIcon,
+  foodAppleIcon,
+  pillIcon,
+  virusIcon,
+  registeredBanner,
+  receivedBanner,
+  wetworkBanner,
+  resultReadyBanner,
+  qualityControlBanner
 }

@@ -13,22 +13,22 @@
 </style>
 
 <template lang="pug">
-     LandingPagePopUp(:previous='previous')
+     LandingPagePopUp(:previous="previous")
         template(v-slot:header) Input Mnemonic Phrase
         template(v-slot:main): div.pop-up-main
             div
                 p Please type in your Mnemonic Phrase
                 v-textarea(
-                    v-model='mnemonic'
-                    :rules='[mnemonicRule]'
+                    v-model="mnemonic"
+                    :rules="[mnemonicRule]"
                     no-resize
                     outlined
                 )
             div: v-btn.white--text(
-                :disabled='!checkIfValid'
-                elevation='0' 
-                color='primary' 
-                @click='changePassword'
+                :disabled="!checkIfValid"
+                elevation="0" 
+                color="primary" 
+                @click="changePassword"
             ) Continue
 </template>
 
@@ -65,7 +65,7 @@ export default {
 
   methods: {
     previous() {
-      this.$router.push({name: "forgot-password"})
+      this.$router.push({name: "sign-in"})
     },
 
     changePassword() {

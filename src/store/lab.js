@@ -1,4 +1,4 @@
-import axios from "axios"
+import { getServicesByCategory } from "@/common/lib/labs"
 
 const defaultState = {
   services: [],
@@ -42,20 +42,32 @@ export default {
       commit("SET_CITY", data.city)
     },
 
-    async getServicesByCategory({ commit, state }, category) {
-      const baseUrl = process.env.VUE_APP_DEV_DEBIO_BACKEND_URL
-      const services = await axios.get(`${baseUrl}/labs/${state.country}/${state.region}/${state.city}/${category}`)
-      
-      console.log("service di action", services)
+    async getServicesByCategory({ commit }, datas) {
+      const { category, isRequestService } = datas
+      const { data : data } = await getServicesByCategory (category, isRequestService)
 
-      commit("SET_SERVICES", services.data.result)
+
+      commit("SET_SERVICES", data.result)
       commit("SET_CATEGORY", category)
     }
   },
 
   getters: {
-    getServicesByCategory(state) {
-      state.services
+    getCountryRegionCity(state) {
+      const { country, region, city } = state
+      return { country, region, city}
+    },
+
+    getCategory(state) {
+      return state.category
+    },
+
+    getIsRequestService(state) {
+      return state.isRequestService
+    },
+
+    getServices(state) {
+      return state.services
     }
   }
 }

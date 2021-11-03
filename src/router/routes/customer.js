@@ -18,11 +18,11 @@ const customerRoutes = [{
       name: "customer-emr",
       meta: { pageHeader: "My EMR" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr")
-    },  
+    },
     {
       path: "emr/upload",
       name: "customer-emr-create",
-      meta: { pageHeader: "Upload" },
+      meta: { pageHeader: "Upload EMR" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Create")
     },
     {
@@ -34,13 +34,22 @@ const customerRoutes = [{
     {
       path: "my-test",
       name: "my-test",
-      meta: { pageHeader: "My Test"},
+      meta: { pageHeader: "My Test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest")
+    },
+    {
+      path: "order-history-detail",
+      name: "order-history-detail",
+      meta: {
+        pageHeader: "Order History Detail",
+        parent: "customer-test"
+      },
+      component: () => import( /* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest/OrderHistoryDetail")
     },
     {
       path: "request-test",
       name: "customer-request-test",
-      meta: { pageHeader: "Request Test", parent: "customer-request-test" },
+      meta: { pageHeader: "Request Test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {

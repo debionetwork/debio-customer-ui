@@ -39,8 +39,7 @@ import { mapState, mapMutations } from "vuex"
 import MenuCard from "../MenuCard.vue"
 import PaymentDetailCard from "./PaymentDetailCard.vue"
 import Button from "@/common/components/Button"
-import { fetchPaymentDetails } from "@/common/lib/polkadot-provider/query/orders";
-
+import { fetchPaymentDetails } from "@/common/lib/orders";
 
 export default {
   name: "RequestTestCheckout",

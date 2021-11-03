@@ -19,7 +19,7 @@
 <script>
 
 import PaymentCheckout from "./PaymentCheckout"
-import { fetchPaymentDetails } from "@/common/lib/polkadot-provider/query/orders"
+import { fetchPaymentDetails } from "@/common/lib/orders";
 
 export default {
   name: "Checkout",
@@ -42,7 +42,6 @@ export default {
     if (!this.$route.params.id) return
 
     const data = await fetchPaymentDetails(this.$route.params.id)
-    console.log(data);
 
     this.prefillService = {
       service: {

@@ -75,7 +75,7 @@
 <script>
 import { alertIcon } from "@/common/icons"
 import Button from "@/common/components/Button"
-import { fetchPaymentDetails } from "@/common/lib/polkadot-provider/query/orders";
+import { fetchPaymentDetails } from "@/common/lib/orders";
 import serviceHandler from "@/common/lib/metamask/mixins/serviceHandler"
 
 export default {
