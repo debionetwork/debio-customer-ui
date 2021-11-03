@@ -40,11 +40,11 @@ import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { hexToU8a } from "@polkadot/util"
 
 import DataTable from "@/common/components/DataTable"
-import serviceHandler from "@/common/lib/metamask/mixins/serviceHandler"
+import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "CustomerEmr",
-  mixins: [serviceHandler],
+  mixins: [metamaskServiceHandler],
 
   components: { DataTable },
 
@@ -140,11 +140,11 @@ export default {
   methods: {
     async getDocumentsHistory() {
       this.emrDocuments = []
-      await this.dispatch(this.getEMRHistory)
+      await this.metamaskDispatchAction(this.getEMRHistory)
     },
 
     async getEMRHistory() {
-      const dataEMR = await this.dispatch(queryGetEMRList, this.api, this.wallet.address)
+      const dataEMR = await this.metamaskDispatchAction(queryGetEMRList, this.api, this.wallet.address)
 
       if (dataEMR != null) {
         const listEMR = dataEMR.info.reduce((filtered, current) => {
@@ -156,7 +156,7 @@ export default {
         if (listEMR.length > 0) {
           listEMR.reverse()
           for (let i = 0; i < listEMR.length; i++) {
-            const emrDetail = await this.dispatch(queryElectronicMedicalRecordInfoById,
+            const emrDetail = await this.metamaskDispatchAction(queryElectronicMedicalRecordInfoById,
               this.api,
               listEMR[i]
             )
@@ -203,7 +203,7 @@ export default {
 
     async onDelete(item) {
       this.wallet.decodePkcs8(this.password)
-      await this.dispatch(removeElectronicMedicalRecordInfo,
+      await this.metamaskDispatchAction(removeElectronicMedicalRecordInfo,
         this.api,
         this.wallet,
         item.data.id
@@ -218,7 +218,7 @@ export default {
       const baseUrl = "https://ipfs.io/ipfs/"
       const path = item.data.record_link.replace(baseUrl, "")
 
-      await this.dispatch(downloadDecryptedFromIPFS,
+      await this.metamaskDispatchAction(downloadDecryptedFromIPFS,
         path,
         privateKey,
         publicKey,

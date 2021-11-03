@@ -2,7 +2,7 @@
 export default {
   data: () => ({
     isLoading: false,
-    isErrors: null 
+    isErrors: null
   }),
 
   computed: {
@@ -18,11 +18,11 @@ export default {
      * @param args
      * @returns {Promise<*>}
      */
-    async dispatch(action, ...args) {
+    async metamaskDispatchAction(action, ...args) {
       this.isLoading = true
       try {
         const response = await action.apply(this, args)
-        
+
         return Promise.resolve(response)
       } catch (error) {
         this.isErrors = error

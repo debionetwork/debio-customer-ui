@@ -76,12 +76,12 @@
 import { alertIcon } from "@/common/icons"
 import Button from "@/common/components/Button"
 import { fetchPaymentDetails } from "@/common/lib/orders";
-import serviceHandler from "@/common/lib/metamask/mixins/serviceHandler"
+import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "CustomerPaymentDetails",
 
-  mixins: [serviceHandler],
+  mixins: [metamaskServiceHandler],
 
   components: { Button },
 
@@ -105,7 +105,7 @@ export default {
 
   methods: {
     async fetchDetails() {
-      const dataPayment = await this.dispatch(fetchPaymentDetails, this.$route.params.id)
+      const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
       this.payment = dataPayment
     },
 

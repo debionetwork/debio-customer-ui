@@ -1,6 +1,6 @@
 <template lang="pug">
   .modal-bounty
-    ui-debio-modal(:show="true" :show-cta="false" :show-title="false" disable-dismiss)
+    ui-debio-modal(:show="show" :show-cta="false" :show-title="false" disable-dismiss)
       .modal-bounty__wrapper
         .modal-bounty__illustration
           ui-debio-icon(:icon="doctorsIllustration" view-box="0 0 281 173" width="295" height="188")
@@ -24,6 +24,7 @@ export default {
     title: { type: String, default: "" },
     link: { type: [String, Object], default: null },
     subTitle: { type: String, default: null },
+    show: Boolean,
     loading: Boolean
   },
 

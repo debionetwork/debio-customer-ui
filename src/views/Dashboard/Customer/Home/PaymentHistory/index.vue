@@ -15,6 +15,7 @@
               width="270"
               placeholder="Service Name, Payment Status, Lab Name"
               outlined
+              @keydown.enter="onSearchInput(searchQuery)"
             )
               ui-debio-icon(slot="icon-append" size="20" @click="onSearchInput(searchQuery)" role="button" :icon="searchIcon" stroke)
         template(v-slot:[`item.service_info.name`]="{ item }")
@@ -52,12 +53,12 @@ import Button from "@/common/components/Button"
 import { searchIcon } from "@/common/icons"
 import { fetchPaymentHistories } from "@/common/lib/orders";
 
-import serviceHandler from "@/common/lib/metamask/mixins/serviceHandler"
+import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "CustomerPaymentHistory",
 
-  mixins: [serviceHandler],
+  mixins: [metamaskServiceHandler],
 
   components: { DataTable, Button },
 
@@ -84,7 +85,7 @@ export default {
   }),
 
   async created() {
-    await this.dispatch(this.onSearchInput)
+    await this.metamaskDispatchAction(this.onSearchInput)
   },
 
   methods: {
