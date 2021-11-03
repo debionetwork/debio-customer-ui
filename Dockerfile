@@ -1,7 +1,5 @@
 # build stage
-FROM node:lts-alpine as build-stage
-RUN apk add --update alpine-sdk
-RUN apk add python
+FROM node:14.17.5-buster as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
