@@ -12,13 +12,14 @@
           )
         
         template
-          PaymentCheckout
+          PaymentCheckout(:prefillService="prefillService")
                     
 </template>
 
 <script>
 
 import PaymentCheckout from "./PaymentCheckout"
+import { fetchPaymentDetails } from "@/common/lib/polkadot-provider/query/orders"
 
 export default {
   name: "Checkout",
@@ -28,6 +29,7 @@ export default {
   },
 
   data: () => ({
+    prefillService: {},
     stepperItems: [
       { number: 1, title: "Select Location and Service Category", active: false },
       { number: 2, title: "Select Service", active: false },
@@ -36,9 +38,40 @@ export default {
     ]  
   }),
 
+  async created() {
+    if (!this.$route.params.id) return
+
+    const data = await fetchPaymentDetails(this.$route.params.id)
+    console.log(data);
+
+    this.prefillService = {
+      service: {
+        price: data?.service_info.prices_by_currency[0].price_components[0].value,
+        currency: data?.service_info.prices_by_currency[0].currency,
+        qc_value: data?.service_info.prices_by_currency[0].additional_prices[0].value,
+        total_price: data?.service_info.prices_by_currency[0].total_price
+      },
+      lab: {
+        name: data?.lab_info.name,
+        city: data?.lab_info.city,
+        county: data?.lab_info.county,
+        address: data?.lab_info.address,
+        duration: data?.service_info.expected_duration.duration,
+        duration_type: data?.service_info.expected_duration.duration_type,
+        service_image: data?.service_info.image,
+        service_name: data?.service_info.name,
+        service_rating: 5, // Update when backend is ready
+        price: data?.service_info.prices_by_currency[0].price_components[0].value,
+        currency: data?.service_info.prices_by_currency[0].currency,
+        lab_rating: 4
+      }
+    }
+  },
+
   methods: {
     handleBack() {
-      this.$router.push({ name: "customer-select-service"})
+      if (Object.keys(this.prefillService).length) return
+      this.$router.push({ name: "customer-request-test-service"})
     }
   }
 }

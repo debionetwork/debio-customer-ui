@@ -51,7 +51,7 @@ export default {
     },
 
     toSelectService() {
-      this.$router.push({ name: "customer-select-service"})
+      this.$router.push({ name: "customer-request-test-service"})
     }
   }
 }

@@ -50,7 +50,7 @@
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { searchIcon } from "@/common/icons"
-import { fetchPaymentHistories } from "@/common/lib/polkadot-provider/query/orders";
+import { fetchPaymentHistories } from "@/common/lib/orders";
 
 import serviceHandler from "@/common/lib/metamask/mixins/serviceHandler"
 
@@ -113,7 +113,7 @@ export default {
     handleDetails(item) {
       const { id } = item
 
-      if (item.status !== "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: { id } })
+      if (item.status === "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: { id } })
       else this.$router.push({ name: "customer-payment-details", params: { id } })
     }
   }

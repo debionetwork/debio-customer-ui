@@ -41,7 +41,7 @@ export default {
 
   methods: {
     handleBack() {
-      this.$router.push({ name: "customer-checkout"})
+      this.$router.push({ name: "customer-request-test-checkout"})
     }
   }
 }

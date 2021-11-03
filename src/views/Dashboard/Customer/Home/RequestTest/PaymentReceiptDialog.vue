@@ -11,11 +11,11 @@
           b Payment
 
       div(class="text-start ms-5 mt-5")
-        b.mb-2 {{ selectedService.labName }}
+        b.mb-2 {{ prefillService.lab.name || selectedService.labName }}
 
       div(class="ml-5 text-start")
-        .address-detail {{ selectedService.labAddress}}
-        .address-detail {{ selectedService.city}}
+        .address-detail {{ prefillService.lab.address || selectedService.labAddress}}
+        .address-detail {{ prefillService.lab.city || selectedService.city}}
 
 
       div(class="text-start")
@@ -28,11 +28,15 @@
         div(class="ml-5 text-start me-10")
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
-            div( style="font-size: 12px;" ) {{ selectedService.detailPrice.price_components[0].value }} {{ selectedService.currency.toUpperCase() }}
+            div( style="font-size: 12px;" )
+              | {{ prefillService.service.price || selectedService.detailPrice.price_components[0].value }} 
+              | {{ prefillService.service.currency || selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
-            div( style="font-size: 12px;" ) {{ selectedService.detailPrice.additional_prices[0].value }} {{ selectedService.currency.toUpperCase() }}    
+            div( style="font-size: 12px;" )
+              | {{ prefillService.service.price || selectedService.detailPrice.additional_prices[0].value }} 
+              | {{ prefillService.service.currency || selectedService.currency.toUpperCase() }}
 
        
       div(class="d-flex justify-end me-3" style="font-size: 12px") +
@@ -42,7 +46,9 @@
         div(class="ml-5 text-start me-10")
           div(class="d-flex justify-space-between mb-2" )
             b( style=" font-size: 12px;" ) Total Price
-            b( style="font-size: 12px;" ) {{ selectedService.price }} {{ selectedService.currency.toUpperCase()}}
+            b( style="font-size: 12px;" )
+              | {{ prefillService.service.total_price || selectedService.price }} 
+              | {{ prefillService.service.currency || selectedService.currency.toUpperCase()}}
 
 
 
@@ -105,6 +111,7 @@ export default {
   mixins: [serviceHandlerMixin],
 
   props: {
+    prefillService: { type: Object, default: () => {} },
     show: Boolean
   },
 
@@ -142,7 +149,7 @@ export default {
       this.error = ""
       try {
         this.wallet.decodePkcs8(this.password)
-        this.$router.push({ name: "customer-success"})
+        this.$router.push({ name: "customer-request-test-success"})
       }
       catch (err) {
         console.log(err)

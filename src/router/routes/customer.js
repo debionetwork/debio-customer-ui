@@ -44,20 +44,20 @@ const customerRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {
-      path: "select-service",
-      name: "customer-select-service",
+      path: "request-test/service",
+      name: "customer-request-test-service",
       meta: { pageHeader: "Select Services", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/SelectServicePage")
     },
     {
-      path: "customer-checkout",
-      name: "customer-checkout",
+      path: "request-test/checkout/:id?",
+      name: "customer-request-test-checkout",
       meta: { pageHeader: "Checkout", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Checkout")
     },
     {
-      path: "customer-success",
-      name: "customer-success",
+      path: "request-test/success",
+      name: "customer-request-test-success",
       meta: { pageHeader: "Success", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Success")
     },
@@ -77,7 +77,7 @@ const customerRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory")
     },
     {
-      path: "payment/details/:id",
+      path: "payment/details/:id?",
       name: "customer-payment-details",
       meta: { pageHeader: "Details", parent: "customer-payment-history" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory/Details")

@@ -56,7 +56,7 @@ export default {
     },
 
     toPaymentCheckout () {
-      this.$router.push({ name: "customer-checkout"})
+      this.$router.push({ name: "customer-request-test-checkout"})
     }
   }
 }

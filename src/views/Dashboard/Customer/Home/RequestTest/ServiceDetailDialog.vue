@@ -108,7 +108,7 @@ export default {
     },
 
     onSelect () {
-      this.$router.push({ name: "customer-checkout"})
+      this.$router.push({ name: "customer-request-test-checkout"})
     },
 
     async downloadFile () {
