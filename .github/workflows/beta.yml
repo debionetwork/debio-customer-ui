@@ -3,7 +3,7 @@ name: Beta automation
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-beta*'
 
 concurrency:
   group: beta-automation
@@ -102,7 +102,7 @@ jobs:
         with:
           context: .
           push: true
-          # file: .maintain/docker/Dockerfile
+          file: .maintain/docker/Dockerfile
           tags: |
             ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
             ${{ github.repository }}:latest-beta
@@ -120,25 +120,79 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
-  # deploy:
-  #   runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-  #   needs: [compute-build-info, build-and-publish-docker-image]
+    needs: [compute-build-info, build-and-publish-docker-image]
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-  #     - name: reload service
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.SSH_HOST }}
-  #         username: ${{ secrets.SSH_USERNAME }}
-  #         key: ${{ secrets.SSH_KEY }}
-  #         port: ${{ secrets.SSH_PORT }}
-  #         script: |
-  #           docker stop debio_frontend_revamp_pre_prod || true && docker rm debio_frontend_revamp_pre_prod || true
-  #           docker pull ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
-  #           docker run -d --name=debio_frontend_revamp_pre_prod --env=debioenv=development -v /etc/localtime:/etc/localtime:ro -p 0.0.0.0:8087:80 --restart=always ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.PREPROD_GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.PREPROD_GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Get secrets
+        id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@main
+        with:
+          secrets: |-
+            VUE_APP_DEBIO_USE_TOKEN_NAME:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_DEBIO_USE_TOKEN_NAME
+            VUE_APP_DEBIO_ESCROW_ETH_ADDRESS:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_DEBIO_ESCROW_ETH_ADDRESS
+            VUE_APP_DAI_CONTRACT_ADDRESS:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_DAI_CONTRACT_ADDRESS
+            VUE_APP_DEBIO_SUBSTRATE_WS:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_DEBIO_SUBSTRATE_WS
+            VUE_APP_URL_FAUCET:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_URL_FAUCET
+            VUE_APP_WEB3_RPC:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_WEB3_RPC
+            VUE_APP_DEBIO_BACKEND_URL:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_DEBIO_BACKEND_URL
+            VUE_APP_RECAPTCHA_SITE_KEY:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_RECAPTCHA_SITE_KEY
+            VUE_APP_ROLE:${{ secrets.PREPROD_GCP_PROJECT_ID }}/VUE_APP_ROLE
+            # STARTUP_PROB_PATH:${{ secrets.PREPROD_GCP_PROJECT_ID }}/STARTUP_PROB_PATH
+            # LIVENESS_PROB_PATH:${{ secrets.PREPROD_GCP_PROJECT_ID }}/LIVENESS_PROB_PATH
+            # READINESS_PROB_PATH:${{ secrets.PREPROD_GCP_PROJECT_ID }}/READINESS_PROB_PATH
+            SSH_HOST:${{ secrets.PREPROD_GCP_PROJECT_ID }}/SSH_HOST
+            SSH_USERNAME:${{ secrets.PREPROD_GCP_PROJECT_ID }}/SSH_USERNAME
+            SSH_KEY:${{ secrets.PREPROD_GCP_PROJECT_ID }}/SSH_KEY
+            SSH_PORT:${{ secrets.PREPROD_GCP_PROJECT_ID }}/SSH_PORT
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ steps.secrets.outputs.SSH_HOST }}
+          username: ${{ steps.secrets.outputs.SSH_USERNAME }}
+          key: ${{ steps.secrets.outputs.SSH_KEY }}
+          port: ${{ steps.secrets.outputs.SSH_PORT }}
+          script: |
+            helm repo add debio https://charts.debio.network
+            helm repo update
+            helm upgrade debio-customer-ui debio/debio-customer-ui \
+              --install \
+              --set-string image.tag=${{ needs.compute-build-info.outputs.latest_tag }} \
+              --set-string config.debioUseTokenName=${{ steps.secrets.outputs.VUE_APP_DEBIO_USE_TOKEN_NAME }} \
+              --set-string config.debioEscrowETHAddress=${{ steps.secrets.outputs.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS }} \
+              --set-string config.DAIContractAddress=${{ steps.secrets.outputs.VUE_APP_DAI_CONTRACT_ADDRESS }} \
+              --set-string config.debioWs=${{ steps.secrets.outputs.VUE_APP_DEBIO_SUBSTRATE_WS }} \
+              --set-string config.urlFaucet=${{ steps.secrets.outputs.VUE_APP_URL_FAUCET }} \
+              --set-string config.web3Rpc=${{ steps.secrets.outputs.VUE_APP_WEB3_RPC }} \
+              --set-string config.debioBackendUrl=${{ steps.secrets.outputs.VUE_APP_DEBIO_BACKEND_URL }} \
+              --set-string config.recaptchaSiteKey=${{ steps.secrets.outputs.VUE_APP_RECAPTCHA_SITE_KEY }} \
+              --set-string config.role=${{ steps.secrets.outputs.VUE_APP_ROLE }} \
+              # --set-string config.startupProbe.path=${{ steps.secrets.outputs.STARTUP_PROB_PATH }} \
+              # --set-string config.livenessProbe.path=${{ steps.secrets.outputs.LIVENESS_PROB_PATH }} \
+              # --set-string config.readinessProbe.path=${{ steps.secrets.outputs.READINESS_PROB_PATH }} \
+              --set ingress.enabled=true \
+              --set-string ingress.annotations."kubernetes\.io/ingress\.class"=nginx \
+              --set-string ingress.annotations."cert-manager\.io/cluster-issuer"=letsencrypt \
+              --set-string ingress.annotations."nginx\.ingress\.kubernetes\.io/limit-rps"="10" \
+              --set-string ingress.hosts[0].host=app.testnet.debio.network \
+              --set-string ingress.hosts[0].paths[0].path=/ \
+              --set-string ingress.hosts[0].paths[0].pathType=ImplementationSpecific \
+              --set-string ingress.tls[0].secretName=debio-customer-ui-tls \
+              --set-string ingress.tls[0].hosts[0]=app.testnet.debio.network \
+              --set autoscaling.enabled=true
+            kubectl rollout status deployment/debio-customer-ui
