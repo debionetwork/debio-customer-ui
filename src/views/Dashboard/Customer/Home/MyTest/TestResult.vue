@@ -81,19 +81,37 @@
 </template>
 
 <script>
+import ipfsWorker from "@/common/lib/ipfs/ipfs-worker";
+import { mapState } from "vuex";
+import { queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing";
+import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs";
+import { getOrdersDetail } from "@/common/lib/polkadot-provider/query/orders";
+import { queryServicesById } from "@/common/lib/polkadot-provider/query/services";
+import { hexToU8a } from "@polkadot/util";
+import { submitRatingOrder } from "@/common/lib/rating";
 import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
 import Modal from "@/common/components/Modal"
 export default {
   name: "TestResult",
   components: { Modal },
   data: () => ({
+    privateKey: "",
+    publicKey: "",
+    specimentNumberInput: "",
+    ownerAddress: "",
+    speciment: {},
+    services: [],
+    lab: null,
+    order: null,
+    isDataPdf: false,
+    serviceName: "",
+    serviceCategory: "",
     downloadIcon,
     debioIcon,
     creditCardIcon,
     starIcon,
     checkCircleIcon,
     resultLoading: false,
-    reportResult: "",
     showModal: false,
     showModalRating: false,
     files: [
@@ -112,6 +130,8 @@ export default {
         fileSubTitle: "Download Your Genomic Data"
       }
     ],
+    fileDownloadIndex: 0,
+    baseUrl: "https://ipfs.io/ipfs/",
     dummyResult: {
       title: "Whole Genome Sequencing Test Report",
       subTitle: "GSI Lab, 5 July 2021",
@@ -119,7 +139,187 @@ export default {
     }
   }),
 
+  async mounted() {
+    this.resultLoading = true;
+    this.specimentNumberInput = this.$route.params.dna_sample_tracking_id;
+    this.privateKey = hexToU8a(this.mnemonicData.privateKey);
+    this.ownerAddress = this.wallet.address;
+    await this.getSpciments();
+    await this.getLabServices();
+    await this.getFileUploaded();
+    await this.decryptWallet();
+  },
+
   methods: {
+    async getSpciments() {
+      try {
+        console.log(this.speciment, this.specimentNumberInput, this.api);
+        this.speciment = await queryDnaTestResults(
+          this.api,
+          this.specimentNumberInput
+        );
+      } catch (error) {
+        this.resultLoading = false;
+        console.log(error);
+      }
+    },
+
+    async getLabServices() {
+      try {
+        this.lab = await queryLabsById(this.api, this.speciment.lab_id);
+        this.order = await getOrdersDetail(this.api, this.speciment.order_id);
+        this.ownerAddress = this.order.customer_eth_address;
+        this.services = await queryServicesById(this.api, this.order.service_id);
+
+        this.serviceCategory = this.services.info.category;
+        this.serviceName = this.services.info.name;
+      } catch (error) {
+        this.resultLoading = false;
+        this.services = [];
+      }
+    },
+
+    async getFileUploaded() {
+      try {
+        if (this.speciment.report_link !== "") {
+          this.files.push({
+            fileType: "report",
+            fileName: this.serviceName + " Report",
+            fileLink: this.speciment.report_link,
+            fileTitle: "Download Report",
+            fileSubTitle: "Download Your Test Report"
+          });
+        }
+
+        if (this.speciment.result_link !== "") {
+          this.files.push({
+            fileType: "result",
+            fileName: this.serviceName + " Result",
+            fileLink: this.speciment.result_link,
+            fileTitle: "Download Raw Data",
+            fileSubTitle: "Download Your Genomic Data"
+          });
+        }
+      } catch (error) {
+        this.resultLoading = false;
+      }
+    },
+
+    async decryptWallet() {
+      try {
+        this.publicKey = this.lab.info.box_public_key;
+        if (this.actionType === "result") {
+          await this.parseResult();
+        }
+
+        if (this.actionType === "download") {
+          await this.downloadDecryptedFromIPFS();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async parseResult() {
+      try {
+        const path = this.files[0].fileLink.replace(this.baseUrl, "");
+        const secretKey = this.privateKey;
+        const publicKey = this.lab.info.box_public_key;
+        
+        const pair = {
+          secretKey,
+          publicKey
+        };
+
+        const typeFile = "text/plain";
+        const channel = new MessageChannel();
+        channel.port1.onmessage = ipfsWorker.workerDownload;
+        ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [
+          channel.port2
+        ]);
+
+        ipfsWorker.workerDownload.onmessage = (event) => {
+          const regexMatchPdf = /^(data:application\/\pdf)/g 
+          const isDataPdf = regexMatchPdf.test(event.data);
+          this.isDataPdf = isDataPdf;
+          
+          this.result = event.data;
+          this.resultLoading = false;
+        };
+      } catch (error) {
+        this.resultLoading = false;
+      }
+    },
+
+    async downloadDecryptedFromIPFS() {
+      try {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = ipfsWorker.workerDownload;
+        const path = this.files[this.fileDownloadIndex].fileLink.replace(
+          this.baseUrl,
+          ""
+        );
+
+        const secretKey = this.privateKey;
+        const publicKey = this.publicKey;
+        const pair = {
+          secretKey,
+          publicKey
+        };
+        const typeFile = "text/plain";
+      
+        ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [
+          channel.port2
+        ]);
+
+        ipfsWorker.workerDownload.onmessage = (event) => {
+          this.download(
+            event.data,
+            this.files[this.fileDownloadIndex].fileName
+          );
+        };
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async download(data, fileName) {
+      const blob = new Blob([data], { type: "text/plain" });
+      const e = document.createEvent("MouseEvents");
+      const a = document.createElement("a");
+      a.download = fileName;
+      a.href = this.isDataPdf ? data : window.URL.createObjectURL(blob);
+      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      e.initMouseEvent(
+        "click",
+        true,
+        false,
+        window,
+        0,
+        0,
+        0,
+        0,
+        0,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null
+      );
+      a.dispatchEvent(e);
+    },
+
+    actionDownload(type) {
+      if (type === "report") {
+
+      }
+
+      if (type === "result") {
+        
+      }
+    },
+
     actionRating() {
       console.log("rating")
       this.showModalRating = true
@@ -130,19 +330,44 @@ export default {
       this.showModal = false
     },
 
-    submitRating() {
+    async submitRating() {
+      const res = await submitRatingOrder(
+        this.speciment.lab_id,
+        this.order.service_id,
+        this.speciment.order_id,
+        0,
+        0,
+        ""
+      );
+
+      console.log(res);
       this.showModalRating = false
       this.showModal = true
     }
   },
 
   computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      mnemonicData: (state) => state.substrate.mnemonicData
+    }),
+
+    reportResult() {
+      if (this.dialog) {
+        return "";
+      }
+      if (this.resultLoading) {
+        return "Decrypting report..";
+      }
+      console.log("result", this.result);
+      return this.result ? this.result : "No report available for this result";
+    },
+
     modalTitle() {
       return `Thank you! ${"\n"} Your feedback has been sent`
     }
   }
-
-
 }
 </script>
 
