@@ -101,8 +101,8 @@ jobs:
           push: true
           file: .maintain/docker/Dockerfile
           tags: |
-            hub.debio.network/debio_frontend_revamp:${{ needs.compute-build-info.outputs.latest_tag }}
-            hub.debio.network/debio_frontend_revamp:latest
+            ${{ github.repository }}:${{ needs.compute-build-info.outputs.latest_tag }}
+            ${{ github.repository }}:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
