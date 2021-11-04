@@ -126,22 +126,7 @@ export default {
     resultLoading: false,
     showModal: false,
     showModalRating: false,
-    files: [
-      {
-        fileType: "report",
-        fileName: "DNA Sequence" + " Report",
-        fileLink: "https://ipfs.io/ipfs/QmdHkXZ2613Vx13dWQsvULsrDW5ggS31ahP4F3sNCKe6eD",
-        fileTitle: "Download Report",
-        fileSubTitle: "Download Your Test Report"
-      },
-      {
-        fileType: "result",
-        fileName: "DNA Sequence" + " Result",
-        fileLink: "https://ipfs.io/ipfs/QmRSQGh9zsjGnG2wQ2pLLX5gKZs1ufF1tp7aBgNAZmzJd9",
-        fileTitle: "Download Raw Data",
-        fileSubTitle: "Download Your Genomic Data"
-      }
-    ],
+    files: [],
     dataType: "report",
     fileDownloadIndex: 0,
     baseUrl: "https://ipfs.io/ipfs/",
@@ -323,7 +308,7 @@ export default {
       a.dispatchEvent(e);
     },
 
-    actionDownload(type, index) {
+    async actionDownload(type, index) {
       this.dataType = type;
       this.fileDownloadIndex = index;
       await this.decryptWallet();
