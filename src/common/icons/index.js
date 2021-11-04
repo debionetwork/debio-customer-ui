@@ -95,7 +95,7 @@ export {
   boxIcon,
   databaseIcon,
   phoneIcon,
-  doctorDashboardIllustrator
+  doctorDashboardIllustrator,
   microscopeIcon,
   weightLifterIcon,
   fileSearchIcon,
