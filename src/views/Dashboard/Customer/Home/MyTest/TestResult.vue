@@ -34,7 +34,7 @@
                 :sub-title="file.fileSubTitle"
                 tiny-card
                 with-icon
-                @click="actionDownload(file.fileType)"
+                @click="actionDownload(file.fileType, index)"
               )
                 ui-debio-icon(
                   slot="icon"
@@ -68,6 +68,13 @@
         @onClose="showModalRating = false"
       )
         template
+          ui-debio-rating(
+            :size="33"
+            :total-rating="5"
+            :with-reviewers="false"
+            :interactive="true"
+            @input="getRating"
+          )
 
       ui-debio-modal(
         :show="showModal"
@@ -91,9 +98,13 @@ import { hexToU8a } from "@polkadot/util";
 import { submitRatingOrder } from "@/common/lib/rating";
 import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
 import Modal from "@/common/components/Modal"
+import Rating from "@/common/components/Rating"
 export default {
   name: "TestResult",
-  components: { Modal },
+  components: { 
+    Modal,
+    Rating
+  },
   data: () => ({
     privateKey: "",
     publicKey: "",
@@ -101,6 +112,7 @@ export default {
     ownerAddress: "",
     speciment: {},
     services: [],
+    rating: 0,
     lab: null,
     order: null,
     isDataPdf: false,
@@ -130,6 +142,7 @@ export default {
         fileSubTitle: "Download Your Genomic Data"
       }
     ],
+    dataType: "report",
     fileDownloadIndex: 0,
     baseUrl: "https://ipfs.io/ipfs/",
     dummyResult: {
@@ -310,14 +323,10 @@ export default {
       a.dispatchEvent(e);
     },
 
-    actionDownload(type) {
-      if (type === "report") {
-
-      }
-
-      if (type === "result") {
-        
-      }
+    actionDownload(type, index) {
+      this.dataType = type;
+      this.fileDownloadIndex = index;
+      await this.decryptWallet();
     },
 
     actionRating() {
@@ -330,19 +339,27 @@ export default {
       this.showModal = false
     },
 
-    async submitRating() {
-      const res = await submitRatingOrder(
-        this.speciment.lab_id,
-        this.order.service_id,
-        this.speciment.order_id,
-        0,
-        0,
-        ""
-      );
+    getRating(stars) {
+      this.rating = stars
+    },
 
-      console.log(res);
-      this.showModalRating = false
-      this.showModal = true
+    async submitRating() {
+      try {
+        const res = await submitRatingOrder(
+          this.speciment.lab_id,
+          this.order.service_id,
+          this.speciment.order_id,
+          this.order.customer_id,
+          this.rating
+        );
+
+        console.log(res);
+        this.showModalRating = false
+        this.showModal = true
+      } catch (error) {
+        this.showModalRating = false
+        this.showModal = true
+      }
     }
   },
 
