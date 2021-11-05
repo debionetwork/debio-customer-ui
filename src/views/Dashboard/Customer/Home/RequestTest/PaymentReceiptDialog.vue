@@ -17,10 +17,8 @@
         .address-detail {{ prefillService.lab.address || selectedService.labAddress}}
         .address-detail {{ prefillService.lab.city || selectedService.city}}
 
-
-      div(class="text-start")
-        div(class="ml-5 mb-2 mt-4 text-start" style="font-size: 12px;")
-          b Details
+      div(class="ml-5 mb-2 mt-4 text-start" style="font-size: 12px;")
+        b Details
 
       hr(class="ml-3 me-3 mb-3")
 
@@ -54,7 +52,6 @@
 
       div(class="ml-3 mt-5 me-3 text-center")
         v-text-field(
-          height="40px"
           label="Input Password"
           v-model="password"
           class="password-field"
@@ -66,21 +63,28 @@
           @keyup.enter="onPasswordSet"
           outlined
         )
+        
+        v-progress-circular.mb-5(
+          v-if="isLoading"
+          indeterminate
+          color="primary"
+          )
       
-        Button(
-          color="secondary" 
-          width="100%"
-          height="38"
-          @click="onSubmitTemp"
-          ) Pay
-
         v-alert.mt-5.mb-5(
           v-if="error" 
           dense 
           text 
           type="error"
           style="font-size: 12px;"
-          ) {{ error }}
+        ) {{ error }}
+
+        Button(
+          color="secondary" 
+          width="100%"
+          height="38"
+          @click="onSubmit"
+        ) Pay
+
   
             
       
@@ -91,14 +95,13 @@
 
 import Button from "@/common/components/Button"
 import { mapState, mapMutations } from "vuex"
-import Kilt from "@kiltprotocol/sdk-js"
-import { u8aToHex } from "@polkadot/util"
-import { setEthAddress, serviceHandlerMixin } from "@/common/lib/polkadot-provider"
+import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
-import { startApp } from "@/common/lib/metamask"
+import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
 import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
+import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
 
 
 export default {
@@ -122,165 +125,134 @@ export default {
     showDialog: false,
     ethSellerAddress: null,
     ethAccount: null,
-    isCompleted: false
+    isCompleted: false,
+    isLoading: false,
+    dataEvent: null,
+    lastOrder: null,
+    detailOrder: null
   }),
 
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
-      country: (state) => state.lab.country,
-      city: (state) => state.lab.city,
-      category: (state) => state.lab.category,
-      labs: (state) => state.lab.labs,
-      labAccount: (state) => state.testRequest.lab,
       selectedService: (state) => state.testRequest.products,
-      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress
+      lastEventData: (state) => state.substrate.lastEventData,
+      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
+      metamaskWalletBalance: (state) => state.metamask.metamaskWalletBalance,
+      mnemonicData: state => state.substrate.mnemonicData,
+      walletBalance: (state) => state.substrate.walletBalance
     })
+  },
+
+  async mounted () {
+    if (this.lastEventData.method === "OrderCreated") {
+      this.dataEvent = JSON.parse(this.lastEventData.data.toString())[0]
+      console.log(this.dataEvent)
+    }
+
+    // get last order id
+    this.lastOrder = await lastOrderByCustomer(
+      this.api,
+      this.wallet.address
+    )
+
+    this.detailOrder = await getOrdersData(this.api, this.lastOrder)
   },
 
   methods: {
     ...mapMutations({
       setLabToRequest: "testRequest/SET_LAB",
-      setProductsToRequest: "testRequest/SET_PRODUCTS"
+      setProductsToRequest: "testRequest/SET_PRODUCTS",
+      setMetamaskAddress: "metamask/SET_WALLET_ADDRESS"
     }),
 
-    async onSubmitTemp () {
-      this.error = ""
-      try {
-        this.wallet.decodePkcs8(this.password)
-        this.$router.push({ name: "customer-request-test-success"})
-      }
-      catch (err) {
-        console.log(err)
-        this.password = ""
-        this.error = "The password you entered is wrong"
-      }
-    },
-
     async onSubmit () {
+      this.isLoading = true
       this.error = ""
       try {
-        this.wallet.decodePkcs8(this.password)
-
-        // Checking seller ready eth Address
-        this.ethSellerAddress = await ethAddressByAccountId(
-          this.api,
-          this.labAccount._id
-        )
-        if (this.ethSellerAddress === null) {
-          this.password = ""
-          this.error = "The seller has no ETH Address."
-          return
-        }
-
-        // get last order id
-        const lastOrder = await lastOrderByCustomer(
-          this.api,
-          this.wallet.address
-        )
-
-        // cek if user has last unpaid order
-        let sendOrder = false
-        if (lastOrder === null) {
-          sendOrder = true
-        } else {
-
-          const detailOrder = await getOrdersData(this.api, lastOrder)
-          if (detailOrder.status != "Unpaid") {
-            sendOrder = true
-          }
-        }
-
-        // if user has unpaid order
-        if (!sendOrder) {
-          this.password = ""
-          this.error = "You still have unpaid orders."
-        }
-
+        this.wallet.decodePkcs8(this.password)        
         this.ethAccount = await startApp()
         if (this.ethAccount.currentAccount === "no_install") {
+          this.isLoading = false
           this.password = ""
           this.error = "Please install MetaMask!"
           return
         }
-
-        if (this.metamaskWalletAddress != null && this.metamaskWalletAddress != "") {
-          
-          const accountList = this.ethAccount.accountList
-
-          if (accountList.length <= 0) {
-            this.password = ""
-            this.error = "Metamask has no address ETH."
-            return
-          }
-
-          let statusAddUse = false
-          for (let i = 0; i < accountList.length; i++) {
-            if (accountList[i] === this.metamaskWalletAddress) {
-              statusAddUse = true
-            }                  
-          }
-          
-          if (!statusAddUse) {
-            this.password = ""
-            this.error = "The address is not listed on Metamask."
-            return
-          }
+        
+        // cek kalo udah binding wallet
+        if (!this.metamaskWalletAddress) {
+          this.isLoading = false
+          this.password = ""
+          this.error = "Metamask has no address ETH."
+          return
         }
 
-        if(this.ethAccount.currentAccount != null ) {
-          await this.dispatch(
-            setEthAddress, 
-            this.api, 
-            this.wallet, 
-            this.ethAccount.currentAccount,
-            async () => {
-              this.setMetamaskAddress(this.ethAccount.currentAccount)
-              this.$emit("status-wallet", {
-                status: true
-              })
-              await this.getMunnyFromFaucet(this.ethAccount.currentAccount)
-            }
-          )
-        }
-
+        // check ETH Balance
         const balance = await getBalanceETH(this.metamaskWalletAddress)
         if (balance <= 0 ) {
+          this.isLoading = false
           this.password = ""
           this.error = "ETH balance is 0"
           return
         }
 
-        const customerBoxPublicKey = this.getKiltBoxPublicKey()
-        for (let i = 0; i < this.product.length; i++) {
-          await createOrder(
-            this.api,
-            this.wallet,
-            this.products[i].accountId,
-            customerBoxPublicKey,
-            this.products[i].indexPrice
-          )
+        // Seller has no ETH address
+        this.ethSellerAddress = await ethAddressByAccountId(
+          this.api,
+          this.selectedService.labId
+        )
+
+        if (this.ethSellerAddress === null) {
+          this.isLoading = false
+          this.password = ""
+          this.error = "The seller has no ETH Address."
+          return
         }
-      
-        this.$router.push({ name: "customer-request-test-success" })  
+
+        const customerBoxPublicKey = this.mnemonicData.publicKey
+        await createOrder(
+          this.api,
+          this.wallet,
+          this.selectedService.serviceId,
+          customerBoxPublicKey,
+          this.selectedService.indexPrice
+        )
+        
+        this.payOrder()     
+        
       } catch (err) {
         console.log(err)
+        this.isLoading = false
         this.password = ""
         this.error = "The password you entered is wrong"
       } 
     },
 
-    getKiltBoxPublicKey() {
-      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonic)
-      return u8aToHex(cred.boxKeyPair.publicKey)
+    async payOrder () {
+      const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
+      const totalPrice = this.selectedService.price
+
+      if (stakingAmountAllowance < totalPrice ) {
+        const txHash = await approveDaiStakingAmount(
+          this.metamaskWalletAddress,
+          totalPrice
+        )
+        await getTransactionReceiptMined(txHash)
+      }
+
+      const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)
+      await getTransactionReceiptMined(txHash)
+
+      this.isLoading = false
+      this.password = ""
+      this.$router.push({ name: "customer-success"})
+      
+      
     },
 
-    closeDialog() {
-      // TEMPORARY
+    closeDialog(){
       this.$emit("close")
-
-      // TODO : go to Payment History page
     }
   }
 }

@@ -2,7 +2,7 @@
   div.layout-dashboard
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
       Button(
-        :outlined="computeButtonActive"
+        outlined
         height="35px"
         @click="goToRequestTestPage"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
@@ -10,7 +10,7 @@
       ) Request a Test
 
       Button(
-        :outlined="$route.path !== '/customer/emr/upload'"
+        outlined
         height="35px"
         @click="goToUploadEMR"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"

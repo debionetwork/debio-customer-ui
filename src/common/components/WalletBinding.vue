@@ -125,20 +125,7 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress
-    }),
-
-    watch: {
-      show() {
-        if (!this.show) return
-  
-        this.error = ""
-        this.loading = false
-        this.putAccount = false
-        this.putWallet = true
-        this.inputPassword = false
-        this.isLoading = false
-      }
-    }
+    })
   },
 
   methods: {
