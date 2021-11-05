@@ -3,7 +3,7 @@
     ui-debio-modal(
       :show="showLoadingFiles"
       title="File Upload"
-      disableDismiss
+      disable-dismiss
     )
       template(v-if="computeFiles.length")
         .modal-files-upload__wrapper
@@ -44,6 +44,7 @@
     ui-debio-modal(
       :show="showModalPassword"
       title="Encrypt EMR files by input your password"
+      disable-dismiss
       @onClose="showModalPassword = false; wrongPassword = false"
     )
       ui-debio-input(
@@ -165,7 +166,10 @@
         .customer-create-emr__files
           .customer-create-emr__files-title Uploaded Files
           .customer-create-emr__files-items
-            .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(v-if="!computeFiles.length")
+            .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(
+              v-if="!computeFiles.length"
+              @click="showModal = true"
+            )
               .customer-create-emr__file-details.mt-0
                 .customer-create-emr__file-details--left
                   ui-debio-icon.customer-create-emr__file-icon(
@@ -242,7 +246,7 @@ import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/emr"
 import {
-  addElectronicMedicalRecordInfo,
+  addElectronicMedicalRecordFile,
   registerElectronicMedicalRecord
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 import { queryGetEMRList } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
@@ -328,10 +332,10 @@ export default {
   },
 
   watch: {
-    lastEventData() {
-      if (this.lastEventData != null) {
-        const dataEvent = JSON.parse(this.lastEventData.data.toString())
-        if (this.lastEventData.method === "ElectronicMedicalRecordInfoAdded") {
+    lastEventData(event) {
+      if (event !== null) {
+        const dataEvent = JSON.parse(event.data.toString())
+        if (event.method === "ElectronicMedicalRecordFileAdded") {
           if (dataEvent[0].owner_id === this.wallet.address) {
             this.countFileAdded += 1
             if (this.countFileAdded === this.emr.files.length) {
@@ -342,10 +346,10 @@ export default {
             }
           }
         } else if (
-          this.lastEventData.method === "ElectronicMedicalRecordAdded"
+          event.method === "ElectronicMedicalRecordAdded"
         ) {
           if (dataEvent[0].owner_id === this.wallet.address && this.registerEMR) {
-            this.prosesFiles()
+            this.processFiles()
           }
         }
       }
@@ -462,7 +466,6 @@ export default {
       this.showModal = false
       Object.assign(this.document, { title: "", description: "", file: null })
       this.clearFile = true
-      this.isEdit = false
     },
 
     onDelete(id) {
@@ -475,7 +478,7 @@ export default {
       this.showModalPassword = true
     },
 
-    async prosesFiles() {
+    async processFiles() {
       if (this.emr.files.length > 0) {
         await this.handleUpload(this.emr.files[0], 0)
       }
@@ -483,18 +486,18 @@ export default {
 
     async finalSubmit() {
       try {
-        this.wallet.decodePkcs8(this.password)
+        await this.wallet.decodePkcs8(this.password)
         if (this.emr.files.length > 0) {
           const listEMR = await queryGetEMRList(this.api, this.wallet.address)
           if (listEMR === null) {
             this.registerEMR = true
-            await registerElectronicMedicalRecord(this.api, this.wallet)
+            await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
           } else {
-            await this.prosesFiles()
+            await this.processFiles()
           }
         }
       } catch (e) {
-        console.error(e)
+        this.wrongPassword = true
       }
     },
 
@@ -524,7 +527,7 @@ export default {
               description: dataFile.description,
               record_link: link
             }
-            await addElectronicMedicalRecordInfo(
+            await addElectronicMedicalRecordFile(
               context.api,
               context.wallet,
               dataBody

@@ -14,39 +14,87 @@
     :loading="isLoading"
     :items="emrDocuments"
   )
+    template(v-slot:[`item.documentTitle`]="{ item }")
+      .d-flex.flex-column
+        span(v-for="file in item.files") {{ file.title }}
+
+    template(v-slot:[`item.documentDescription`]="{ item }")
+      .d-flex.flex-column
+        span(v-for="file in item.files") {{ file.description }}
+
+    template(v-slot:[`item.created_at`]="{ item }")
+      span {{ compareDate(new Date(), new Date(item.created_at)) }}
+
     template(v-slot:[`item.actions`]="{ item }")
+      ui-debio-modal(
+        :show="showModalPassword"
+        :show-title="false"
+        disable-dismiss
+        @onClose="showModalPassword = false; wrongPassword = false"
+      )
+        ui-debio-icon(:icon="alertIcon" stroke size="80")
+        h1 Delete
+        p.modal-password__subtitle Are you sure you want to delete this EMR files?
+
+        ui-debio-input(
+          :rules="$options.rules.password"
+          :errorMessages="passwordErrorMessages"
+          v-model="password"
+          @keyup.enter="onDelete(item)"
+          type="password"
+          outlined
+        )
+
+        .modal-password__cta.d-flex.justify-center(slot="cta")
+          Button(
+            outlined
+            width="100"
+            color="secondary"
+            @click="showModalPassword = false; wrongPassword = false"
+          ) Cancel
+
+          Button(
+            width="100"
+            color="secondary"
+            @click="onDelete(item)"
+          ) Delete
       .customer-emr__actions
-        ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item.data.id)")
-        ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="onDelete(item)")
+        ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item.id)")
         ui-debio-icon(:icon="downloadIcon" size="16" role="button" stroke @click="onDownload(item)")
+        ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="showModalPassword = true")
 </template>
 
 <script>
 import { mapState } from "vuex"
+import { validateForms } from "@/common/lib/validate"
 import {
   layersIcon,
   analiticIllustration,
   eyeIcon,
+  alertIcon,
   trashIcon,
   downloadIcon
 } from "@/common/icons"
+
+import { compareDate } from "@/common/utils"
+import errorMessage from "@/common/constants/error-messages"
 
 import {
   queryGetEMRList,
   queryElectronicMedicalRecordInfoById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
-import { removeElectronicMedicalRecordInfo } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
-import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
-import { hexToU8a } from "@polkadot/util"
+
+// import { removeElectronicMedicalRecord } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 
 import DataTable from "@/common/components/DataTable"
+import Button from "@/common/components/Button"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "CustomerEmr",
-  mixins: [metamaskServiceHandler],
+  mixins: [metamaskServiceHandler, validateForms],
 
-  components: { DataTable },
+  components: { DataTable, Button },
 
   data: () => ({
     layersIcon,
@@ -54,13 +102,17 @@ export default {
     eyeIcon,
     trashIcon,
     downloadIcon,
+    alertIcon,
+    compareDate,
 
     cardBlock: false,
-    password: "12345678",
+    showModalPassword: false,
+    wrongPassword: false,
+    password: "",
     headers: [
       {
         text: "EMR Title",
-        value: "emrTitle",
+        value: "title",
         sortable: true
       },
       {
@@ -70,17 +122,17 @@ export default {
       },
       {
         text: "Document Title",
-        value: "title",
+        value: "documentTitle",
         sortable: true
       },
       {
         text: "Description",
-        value: "description",
+        value: "documentDescription",
         sortable: true
       },
       {
         text: "Upload Date",
-        value: "date",
+        value: "created_at",
         align: "center",
         sortable: true
       },
@@ -90,17 +142,44 @@ export default {
         align: "center"
       }
     ],
-
-    items: [
+    emrDocuments: [
       {
-        title: "Test",
-        category: "Test",
-        documentTitle: "Test",
-        documentDescription: "Test",
-        upload: "Test"
+        id: 1,
+        title: "Covid 19",
+        category: "Vaccinations",
+        files: [
+          {
+            title: "Xray",
+            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            description: "My xray sample"
+          },
+          {
+            title: "Data vaccination",
+            link: "QmUv4n9iwJw75WbYy3P8D9LUzzAdzYzcgYEMH8Du35gumE",
+            description: "my vaccinations detail"
+          }
+        ],
+        created_at: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
+      },
+      {
+        id: 2,
+        title: "Whole genome squencing",
+        category: "Vaccinations",
+        files: [
+          {
+            title: "Xray",
+            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            description: "My xray sample"
+          },
+          {
+            title: "Data vaccination",
+            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            description: "my vaccinations detail"
+          }
+        ],
+        created_at: "2/7/2011"
       }
-    ],
-    emrDocuments: []
+    ]
   }),
 
   computed: {
@@ -110,7 +189,11 @@ export default {
       mnemonicData: (state) => state.substrate.mnemonicData,
       lastEventData: (state) => state.substrate.lastEventData,
       loadingData: (state) => state.auth.loadingData
-    })
+    }),
+
+    passwordErrorMessages() {
+      return this.errorMessages || (this.wrongPassword ? "Password not match" : "")
+    }
   },
 
   watch: {
@@ -137,9 +220,14 @@ export default {
     this.getDocumentsHistory()
   },
 
+  rules: {
+    password: [ val => !!val || errorMessage.PASSWORD(8) ]
+  },
+
   methods: {
     async getDocumentsHistory() {
-      this.emrDocuments = []
+      // TODO: Un comment after backend ready
+      // this.emrDocuments = []
       await this.metamaskDispatchAction(this.getEMRHistory)
     },
 
@@ -201,30 +289,15 @@ export default {
       this.$router.push({ name: "customer-emr-details", params: { id }})
     },
 
-    async onDelete(item) {
-      this.wallet.decodePkcs8(this.password)
-      await this.metamaskDispatchAction(removeElectronicMedicalRecordInfo,
-        this.api,
-        this.wallet,
-        item.data.id
-      )
-    },
-
-    async onDownload(item) {
-      if (item.type !== "emr") return
-
-      const publicKey = hexToU8a(this.mnemonicData.publicKey)
-      const privateKey = hexToU8a(this.mnemonicData.privateKey)
-      const baseUrl = "https://ipfs.io/ipfs/"
-      const path = item.data.record_link.replace(baseUrl, "")
-
-      await this.metamaskDispatchAction(downloadDecryptedFromIPFS,
-        path,
-        privateKey,
-        publicKey,
-        item.data.id + ".pdf",
-        "application/pdf"
-      )
+    async onDelete() {
+      this.showModalPassword = true
+      // TODO: Update this when Backend is ready
+      // this.wallet.decodePkcs8(this.password)
+      // await this.metamaskDispatchAction(removeElectronicMedicalRecord,
+      //   this.api,
+      //   this.wallet,
+      //   item.data.id
+      // )
     }
   }
 }
@@ -239,6 +312,7 @@ export default {
     &__actions
       display: flex
       align-items: center
+      justify-content: center
       gap: 20px
 
     &::v-deep
@@ -247,4 +321,15 @@ export default {
       .banner-illustration
         position: absolute
         bottom: -100px
+
+      .ui-debio-modal__card
+        gap: 20px
+
+    .modal-password
+      &__subtitle
+        max-width: 251px
+        text-align: center
+
+      &__cta
+        gap: 20px
 </style>

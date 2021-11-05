@@ -1,16 +1,16 @@
 <template lang="pug">
   .customer-emr-details
-    .customer-emr-details__wrapper
+    .customer-emr-details__wrapper(v-if="selectedFiles")
       .customer-emr-details__emr
-        .customer-emr-details__emr-title List of TBC Documents
+        .customer-emr-details__emr-title List of {{ selectedFiles.title }}
         .customer-emr-details__emr-documents
           .customer-emr-details__document(
-            v-for="(document, idx) in documents"
+            v-for="(document, idx) in selectedFiles.files"
             :key="idx"
             role="button"
-            :title="document.name"
+            :title="document.title"
             :class="{ 'customer-emr-details__document--active': selected === idx }"
-            @click="handleSelectDocument(idx)"
+            @click="parseResult(idx, document)"
           )
             ui-debio-icon.customer-emr-details__document-icon(
               :icon="fileTextIcon"
@@ -19,18 +19,25 @@
               fill
             )
             label.customer-emr-details__document-title(
-              :aria-label="document.name"
-            ) {{ document.name }}
-      .customer-emr-details__viewer
-        .customer-emr-details__viewer-wrapper
-          embed.customer-emr-details__viewer-content(
-            src=`http://pii.or.id/uploads/dummies.pdf#view=fitH`
-            type="application/pdf"
-          )
+              :aria-label="document.title"
+            ) {{ document.title }}
+      keep-alive
+        .customer-emr-details__viewer
+          .customer-emr-details__viewer-wrapper
+            h3.text-center(v-if="isLoading") {{ message }}
+            embed.customer-emr-details__viewer-content(
+              v-if="!isLoading && result"
+              :src="`${result}#view=fitH`"
+              type="application/pdf"
+            )
 </template>
 
 <script>
+import { mapState } from "vuex"
+import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
+import { hexToU8a } from "@polkadot/util"
 import { fileTextIcon } from "@/common/icons"
+import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 
 export default {
   name: "CustomerEmrDetails",
@@ -38,17 +45,121 @@ export default {
   data: () => ({
     fileTextIcon,
 
+    isLoading: false,
+    publicKey: null,
+    secretKey: null,
+    result: null,
+    message: "Loading EMR your document file, please wait...",
     selected: 0,
-    documents: [
-      { name: "Treatment" },
-      { name: "Diagnose" },
-      { name: "Medical Receipt Diagnose Treatment" }
+    emrDocuments: [
+      {
+        id: 1,
+        title: "Covid 19",
+        category: "Vaccinations",
+        files: [
+          {
+            title: "Xray",
+            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            description: "My xray sample"
+          },
+          {
+            title: "Data vaccination",
+            link: "QmUv4n9iwJw75WbYy3P8D9LUzzAdzYzcgYEMH8Du35gumE",
+            description: "my vaccinations detail"
+          }
+        ],
+        created_at: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
+      },
+      {
+        id: 2,
+        title: "Whole genome squencing",
+        category: "Vaccinations",
+        files: [
+          {
+            title: "Xray",
+            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            description: "My xray sample"
+          },
+          {
+            title: "Data vaccination",
+            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            description: "my vaccinations detail"
+          }
+        ],
+        created_at: "2/7/2011"
+      }
     ]
   }),
 
+  computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      lastEventData: (state) => state.substrate.lastEventData,
+      loadingData: (state) => state.auth.loadingData
+    }),
+
+    selectedFiles() {
+      return this.emrDocuments[this.$route.params.id - 1]
+    }
+  },
+
+  async created() {
+    this.initialData()
+    await this.parseResult(0, this.selectedFiles?.files[0])
+  },
+
   methods: {
-    handleSelectDocument(idx) {
+    initialData() {
+      this.publicKey = hexToU8a(this.mnemonicData.publicKey)
+      this.secretKey = hexToU8a(this.mnemonicData.privateKey)
+    },
+
+    async parseResult(idx, { link }) {
       this.selected = idx
+
+      const path = link
+
+      const secretKey = this.secretKey
+      const publicKey = this.publicKey
+
+      const pair = {
+        secretKey,
+        publicKey
+      }
+
+      const typeFile = "application/pdf"
+      const channel = new MessageChannel()
+
+      try {
+        this.isLoading = true
+        channel.port1.onmessage = ipfsWorker.workerDownload
+
+        await ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [
+          channel.port2
+        ])
+
+        ipfsWorker.workerDownload.onmessage = (event) => {
+          const blob = window.URL.createObjectURL(new Blob([event.data], { type: typeFile }))
+
+          this.result = blob
+          this.isLoading = false
+        }
+      } catch {
+        this.message = "Oh no! Something went wrong. Please try again later"
+      }
+
+    },
+
+    async download({ title, link }) {
+      await downloadDecryptedFromIPFS(
+        link,
+        this.secretKey,
+        this.publicKey,
+        `${title}.pdf`,
+        "application/pdf"
+      )
     }
   }
 }
