@@ -78,7 +78,7 @@
 
     ui-debio-modal(
       :show="showModal"
-      :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
+      :title="isEdit ? "Edit EMR File" : "Add EMR File""
       cta-title="Submit"
       :cta-action="handleNewFile"
       :cta-outlined="false"
@@ -238,7 +238,7 @@
 /* eslint-disable no-unused-vars */
 import { mapGetters, mapState } from "vuex"
 
-import store from '@/store/index'
+import store from "@/store/index"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/emr"
@@ -505,7 +505,7 @@ export default {
       try {
         this.pair.unlock(this.password)
 
-        await store.dispatch('substrate/getEncryptedAccountData', {
+        await store.dispatch("substrate/getEncryptedAccountData", {
           password: this.password
         })
 

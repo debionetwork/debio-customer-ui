@@ -1,6 +1,6 @@
 import types from "./types.json"
 import store from "@/store/index"
-import CryptoJS from 'crypto-js'	
+import CryptoJS from "crypto-js"	
 import { u8aToHex } from "@polkadot/util" // u8aToString, stringToU8a
 import keyring from "@polkadot/ui-keyring"
 import { Keyring } from "@polkadot/keyring"
