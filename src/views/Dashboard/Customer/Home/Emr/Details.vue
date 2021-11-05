@@ -23,8 +23,10 @@
             ) {{ document.title }}
       keep-alive
         .customer-emr-details__viewer
-          .customer-emr-details__viewer-wrapper
-            h3.text-center(v-if="isLoading") {{ message }}
+          .customer-emr-details__viewer-wrapper(
+            :class="{ 'customer-emr-details__viewer-wrapper--animated': isLoading }"
+          )
+            h3.customer-emr-details__viewer-loading.text-center(v-if="isLoading") {{ message }}
             embed.customer-emr-details__viewer-content(
               v-if="!isLoading && result"
               :src="`${result}#view=fitH`"
@@ -49,7 +51,7 @@ export default {
     publicKey: null,
     secretKey: null,
     result: null,
-    message: "Loading EMR your document file, please wait...",
+    message: "Loading EMR your document file, please wait",
     selected: 0,
     emrDocuments: [
       {
@@ -222,9 +224,47 @@ export default {
       width: 100%
 
     &__viewer-wrapper
+      display: flex
+      align-items: center
+      justify-content: center
       padding: 22px
+      min-height: 500px
       background: #F5F7F9
       border-radius: 4px
+
+      &--animated
+        position: relative
+        overflow: hidden
+
+        &::before
+          content: ""
+          display: block
+          position: absolute
+          top: 0
+          left: 0
+          width: 300px
+          height: 100%
+          background: rgba(255, 255, 255, .5)
+          animation: shine infinite 1s
+
+          @keyframes shine
+            0%
+              transform: skew(25deg) translateX(-1000px)
+            100%
+              transform: skew(25deg) translateX(1000px)
+
+    &__viewer-loading
+      &::after
+        content: ""
+        animation: dots infinite 2s linear
+
+        @keyframes dots
+          0%
+            content: "."
+          50%
+            content: ".."
+          100%
+            content: "..."
 
     &__viewer-content
       width: 100%
