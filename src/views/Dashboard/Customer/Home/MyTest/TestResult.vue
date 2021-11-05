@@ -89,6 +89,7 @@
 
 <script>
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker";
+import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs";
 import { mapState } from "vuex";
 import { queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing";
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs";
@@ -101,16 +102,18 @@ import Modal from "@/common/components/Modal"
 import Rating from "@/common/components/Rating"
 export default {
   name: "TestResult",
+
   components: { 
     Modal,
     Rating
   },
+
   data: () => ({
     privateKey: "",
     publicKey: "",
-    specimentNumberInput: "",
+    idOrder: "",
     ownerAddress: "",
-    speciment: {},
+    testResult: {},
     services: [],
     rating: 0,
     lab: null,
@@ -127,7 +130,6 @@ export default {
     showModal: false,
     showModalRating: false,
     files: [],
-    dataType: "report",
     fileDownloadIndex: 0,
     baseUrl: "https://ipfs.io/ipfs/",
     dummyResult: {
@@ -139,22 +141,24 @@ export default {
 
   async mounted() {
     this.resultLoading = true;
-    this.specimentNumberInput = this.$route.params.dna_sample_tracking_id;
+    this.idOrder = this.$route.params.idOrder;
     this.privateKey = hexToU8a(this.mnemonicData.privateKey);
     this.ownerAddress = this.wallet.address;
-    await this.getSpciments();
+    await this.getTestResult();
     await this.getLabServices();
     await this.getFileUploaded();
-    await this.decryptWallet();
+    await this.parseResult();
   },
 
   methods: {
-    async getSpciments() {
+    async getTestResult() {
       try {
-        console.log(this.speciment, this.specimentNumberInput, this.api);
-        this.speciment = await queryDnaTestResults(
+        this.order = await getOrdersDetail(this.api, this.idOrder);
+        this.ownerAddress = this.order.customer_eth_address;
+
+        this.testResult = await queryDnaTestResults(
           this.api,
-          this.specimentNumberInput
+          this.order.dna_sample_tracking_id
         );
       } catch (error) {
         this.resultLoading = false;
@@ -164,11 +168,10 @@ export default {
 
     async getLabServices() {
       try {
-        this.lab = await queryLabsById(this.api, this.speciment.lab_id);
-        this.order = await getOrdersDetail(this.api, this.speciment.order_id);
-        this.ownerAddress = this.order.customer_eth_address;
+        this.lab = await queryLabsById(this.api, this.testResult.lab_id);
         this.services = await queryServicesById(this.api, this.order.service_id);
 
+        this.publicKey = this.lab.info.box_public_key;
         this.serviceCategory = this.services.info.category;
         this.serviceName = this.services.info.name;
       } catch (error) {
@@ -203,21 +206,6 @@ export default {
       }
     },
 
-    async decryptWallet() {
-      try {
-        this.publicKey = this.lab.info.box_public_key;
-        if (this.actionType === "result") {
-          await this.parseResult();
-        }
-
-        if (this.actionType === "download") {
-          await this.downloadDecryptedFromIPFS();
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
     async parseResult() {
       try {
         const path = this.files[0].fileLink.replace(this.baseUrl, "");
@@ -249,69 +237,26 @@ export default {
       }
     },
 
-    async downloadDecryptedFromIPFS() {
+    async actionDownload(index) {
+      this.fileDownloadIndex = index;
+
       try {
-        const channel = new MessageChannel();
-        channel.port1.onmessage = ipfsWorker.workerDownload;
+        const fileName = this.files[this.fileDownloadIndex].fileName;
         const path = this.files[this.fileDownloadIndex].fileLink.replace(
           this.baseUrl,
           ""
         );
 
-        const secretKey = this.privateKey;
-        const publicKey = this.publicKey;
-        const pair = {
-          secretKey,
-          publicKey
-        };
-        const typeFile = "text/plain";
-      
-        ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [
-          channel.port2
-        ]);
-
-        ipfsWorker.workerDownload.onmessage = (event) => {
-          this.download(
-            event.data,
-            this.files[this.fileDownloadIndex].fileName
-          );
-        };
+        await downloadDecryptedFromIPFS(
+          path, 
+          this.privateKey, 
+          this.publicKey, 
+          fileName, 
+          "text/plain"
+        );
       } catch (error) {
         console.log(error);
       }
-    },
-
-    async download(data, fileName) {
-      const blob = new Blob([data], { type: "text/plain" });
-      const e = document.createEvent("MouseEvents");
-      const a = document.createElement("a");
-      a.download = fileName;
-      a.href = this.isDataPdf ? data : window.URL.createObjectURL(blob);
-      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
-      e.initMouseEvent(
-        "click",
-        true,
-        false,
-        window,
-        0,
-        0,
-        0,
-        0,
-        0,
-        false,
-        false,
-        false,
-        false,
-        0,
-        null
-      );
-      a.dispatchEvent(e);
-    },
-
-    async actionDownload(type, index) {
-      this.dataType = type;
-      this.fileDownloadIndex = index;
-      await this.decryptWallet();
     },
 
     actionRating() {
@@ -330,7 +275,7 @@ export default {
 
     async submitRating() {
       try {
-        const res = await submitRatingOrder(
+        await submitRatingOrder(
           this.speciment.lab_id,
           this.order.service_id,
           this.speciment.order_id,
@@ -338,7 +283,6 @@ export default {
           this.rating
         );
 
-        console.log(res);
         this.showModalRating = false
         this.showModal = true
       } catch (error) {
@@ -359,10 +303,11 @@ export default {
       if (this.dialog) {
         return "";
       }
+
       if (this.resultLoading) {
         return "Decrypting report..";
       }
-      console.log("result", this.result);
+      
       return this.result ? this.result : "No report available for this result";
     },
 
