@@ -4,7 +4,7 @@ import store from "@/store/index"
 async function dispatchGetAccount(wallet, address, func){
   if (wallet == null) {
     if (address != "") {
-      await store.dispatch("substrate/getAccount", {
+      await store.dispatch("substrate/getAllAccounts", {
         address: address
       })
     }
