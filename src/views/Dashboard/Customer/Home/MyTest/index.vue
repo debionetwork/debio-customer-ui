@@ -81,20 +81,26 @@ import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
 import localStorage from "@/common/lib/local-storage"
+import { hexToU8a } from "@polkadot/util"
+import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
+import { getSignedUrl, createSyncEvent } from "@/common/lib/ipfs/gcs"
 import dataTesting from "./dataTesting.json"
+import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "MyTest",
 
-  components: { 
+  mixins: [metamaskServiceHandler],
+
+  components: {
     StakingServiceTab,
     DataTable,
     Button
   },
 
-  data: () => ({ 
-    layersIcon, 
-    noteIllustration, 
+  data: () => ({
+    layersIcon,
+    noteIllustration,
     cardBlock: false,
     documents: null,
     tabs: null,
@@ -122,7 +128,15 @@ export default {
     this.onSearchInput();
   },
 
-  async created() {},
+  async created() {
+    await this.downloadFile()
+    const pair = {
+      secretKey: hexToU8a(this.mnemonicData.privateKey),
+      publicKey: hexToU8a(this.mnemonicData.publicKey)
+    }
+
+    console.log("created ===> ", pair);
+  },
 
   methods: {
     toRequestTest() {
@@ -165,6 +179,26 @@ export default {
 
     goToInstruction() {
       console.log("insturction")
+    },
+
+    async downloadFile() {
+      const pair = {
+        secretKey: hexToU8a(this.mnemonicData.privateKey),
+        publicKey: hexToU8a(this.mnemonicData.publicKey)
+      }
+
+      // const baseUrl = "https://ipfs.io/ipfs/"
+      // const path = this.ipfsUrl.replace(baseUrl, "")
+      await this.metamaskDispatchAction(
+        syncDecryptedFromIPFS,
+        "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+        pair,
+        "file.vcf",
+        "text/vCard"
+      )
+
+      await this.metamaskDispatchAction(getSignedUrl, "file.vcf")
+      await this.metamaskDispatchAction(createSyncEvent, { filename: "file.vcf"})
     }
   },
 
@@ -173,7 +207,8 @@ export default {
       walletBalance: (state) => state.substrate.walletBalance,
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
-      lastEventData: (state) => state.substrate.lastEventData
+      lastEventData: (state) => state.substrate.lastEventData,
+      mnemonicData: (state) => state.substrate.mnemonicData
     }),
 
     userAddress() {
@@ -184,34 +219,34 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .customer-test
-    &::v-deep
-      .banner__subtitle
-        max-width: 36.188rem !important
+.customer-test
+  &::v-deep
+    .banner__subtitle
+      max-width: 36.188rem !important
 
-  .customer-my-test
-    width: 100%
-    height: 200px 
-    background: #FFFFFF
-    margin-top: 30px
+.customer-my-test
+  width: 100%
+  height: 200px
+  background: #FFFFFF
+  margin-top: 30px
 
-    &__tabs
-      padding: 3px
+  &__tabs
+    padding: 3px
 
-    &__table
-      padding: 10px
+  &__table
+    padding: 10px
 
-    &__actions
-      padding: 35px
-      display: flex
-      align-items: center
-      gap: 30px
-      margin: 5px
+  &__actions
+    padding: 35px
+    display: flex
+    align-items: center
+    gap: 30px
+    margin: 5px
 
-    &__status
-      color: #48A868
+  &__status
+    color: #48A868
 
-    &__title-detail
-      margin: 0 5px 0 0
-      border-radius: 5px
+  &__title-detail
+    margin: 0 5px 0 0
+    border-radius: 5px
 </style>
