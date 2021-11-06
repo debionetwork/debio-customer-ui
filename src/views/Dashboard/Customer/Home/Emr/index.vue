@@ -1,5 +1,40 @@
 <template lang="pug">
 .customer-emr
+  ui-debio-modal(
+    :show="showModalPassword"
+    :show-title="false"
+    disable-dismiss
+    @onClose="showModalPassword = false; wrongPassword = false"
+  )
+    ui-debio-icon(:icon="alertIcon" stroke size="80")
+    h1 Delete
+    p.modal-password__subtitle Are you sure you want to delete {{ selectedFile.title }} EMR files?
+
+    ui-debio-input(
+      :rules="$options.rules.password"
+      :errorMessages="passwordErrorMessages"
+      v-model="password"
+      @keyup.enter="onDelete"
+      type="password"
+      variant="small"
+      label="Delete your EMR files by input your password"
+      placeholder="Input your password"
+      block
+      outlined
+    )
+
+    .modal-password__cta.d-flex(slot="cta")
+      Button(
+        outlined
+        color="secondary"
+        @click="showModalPassword = false; wrongPassword = false"
+      ) Cancel
+
+      Button(
+        color="secondary"
+        :disabled="passwordErrorMessages || !password"
+        @click="onDelete"
+      ) Delete
   ui-debio-banner(
     title="My EMR"
     subtitle="Here, you can upload a collection of your Electronic Medical Records (medical history, diagnoses, medications, treatment plans, immunization dates, allergies, radiology images, and laboratory)."
@@ -26,42 +61,10 @@
       span {{ compareDate(new Date(), new Date(item.created_at)) }}
 
     template(v-slot:[`item.actions`]="{ item }")
-      ui-debio-modal(
-        :show="showModalPassword"
-        :show-title="false"
-        disable-dismiss
-        @onClose="showModalPassword = false; wrongPassword = false"
-      )
-        ui-debio-icon(:icon="alertIcon" stroke size="80")
-        h1 Delete
-        p.modal-password__subtitle Are you sure you want to delete this EMR files?
-
-        ui-debio-input(
-          :rules="$options.rules.password"
-          :errorMessages="passwordErrorMessages"
-          v-model="password"
-          @keyup.enter="onDelete(item)"
-          type="password"
-          outlined
-        )
-
-        .modal-password__cta.d-flex.justify-center(slot="cta")
-          Button(
-            outlined
-            width="100"
-            color="secondary"
-            @click="showModalPassword = false; wrongPassword = false"
-          ) Cancel
-
-          Button(
-            width="100"
-            color="secondary"
-            @click="onDelete(item)"
-          ) Delete
       .customer-emr__actions
         ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item.id)")
-        ui-debio-icon(:icon="downloadIcon" size="16" role="button" stroke @click="onDownload(item)")
-        ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="showModalPassword = true")
+        //- ui-debio-icon(:icon="downloadIcon" size="16" role="button" stroke @click="onDownload(item)")
+        ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="handleOpenModalDelete(item)")
 </template>
 
 <script>
@@ -289,14 +292,19 @@ export default {
       this.$router.push({ name: "customer-emr-details", params: { id }})
     },
 
-    async onDelete() {
+    handleOpenModalDelete(item) {
+      this.selectedFile = item
       this.showModalPassword = true
+    },
+
+    async onDelete() {
+      this.showModalPassword = false
       // TODO: Update this when Backend is ready
       // this.wallet.decodePkcs8(this.password)
       // await this.metamaskDispatchAction(removeElectronicMedicalRecord,
       //   this.api,
       //   this.wallet,
-      //   item.data.id
+      //   this.selectedFile.data.id
       // )
     }
   }
