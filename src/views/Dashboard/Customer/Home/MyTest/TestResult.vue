@@ -72,7 +72,7 @@
             :size="33"
             :total-rating="5"
             :with-reviewers="false"
-            :interactive="true"
+            interactive
             @input="getRating"
           )
 
@@ -162,7 +162,7 @@ export default {
         );
       } catch (error) {
         this.resultLoading = false;
-        console.log(error);
+        console.error(error);
       }
     },
 
@@ -177,6 +177,7 @@ export default {
       } catch (error) {
         this.resultLoading = false;
         this.services = [];
+        console.error(error);
       }
     },
 
@@ -203,6 +204,7 @@ export default {
         }
       } catch (error) {
         this.resultLoading = false;
+        console.error(error);
       }
     },
 
@@ -234,6 +236,7 @@ export default {
         };
       } catch (error) {
         this.resultLoading = false;
+        console.error(error);
       }
     },
 
@@ -255,12 +258,11 @@ export default {
           "text/plain"
         );
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     },
 
     actionRating() {
-      console.log("rating")
       this.showModalRating = true
     },
 
@@ -288,6 +290,7 @@ export default {
       } catch (error) {
         this.showModalRating = false
         this.showModal = true
+        console.error(error);
       }
     }
   },
@@ -300,13 +303,9 @@ export default {
     }),
 
     reportResult() {
-      if (this.dialog) {
-        return "";
-      }
+      if (this.dialog) return "";
 
-      if (this.resultLoading) {
-        return "Decrypting report..";
-      }
+      if (this.resultLoading) return "Decrypting report..";
       
       return this.result ? this.result : "No report available for this result";
     },
