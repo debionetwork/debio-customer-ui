@@ -8,7 +8,7 @@
   )
     ui-debio-icon(:icon="alertIcon" stroke size="80")
     h1 Delete
-    p.modal-password__subtitle Are you sure you want to delete {{ selectedFile.title }} EMR files?
+    p.modal-password__subtitle(v-if="selectedFile") Are you sure you want to delete {{ selectedFile.title }} EMR files?
 
     ui-debio-input(
       :rules="$options.rules.password"
@@ -111,6 +111,7 @@ export default {
     cardBlock: false,
     showModalPassword: false,
     wrongPassword: false,
+    selectedFile: null,
     password: "",
     headers: [
       {
@@ -220,7 +221,7 @@ export default {
   },
 
   created() {
-    this.getDocumentsHistory()
+    // this.getDocumentsHistory()
   },
 
   rules: {
