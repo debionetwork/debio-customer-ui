@@ -303,9 +303,13 @@ export default {
     }),
 
     reportResult() {
-      if (this.dialog) return "";
+      if (this.dialog) {
+        return "";
+      }
 
-      if (this.resultLoading) return "Decrypting report..";
+      if (this.resultLoading) {
+        return "Decrypting report..";
+      }
       
       return this.result ? this.result : "No report available for this result";
     },
