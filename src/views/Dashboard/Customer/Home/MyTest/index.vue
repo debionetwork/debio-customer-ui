@@ -78,10 +78,13 @@
 import { layersIcon, noteIllustration } from "@/common/icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
 import DataTable from "@/common/components/DataTable"
+import store from "@/store"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
 import localStorage from "@/common/lib/local-storage"
-import { hexToU8a } from "@polkadot/util"
+import { u8aToHex } from "@polkadot/util"
 import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { getSignedUrl, createSyncEvent } from "@/common/lib/ipfs/gcs"
 import dataTesting from "./dataTesting.json"
@@ -102,6 +105,8 @@ export default {
     layersIcon,
     noteIllustration,
     cardBlock: false,
+    publicKey: null,
+    secretKey: null,
     documents: null,
     tabs: null,
     isReady: false,
@@ -129,16 +134,19 @@ export default {
   },
 
   async created() {
+    await this.initialData()
     await this.downloadFile()
-    const pair = {
-      secretKey: hexToU8a(this.mnemonicData.privateKey),
-      publicKey: hexToU8a(this.mnemonicData.publicKey)
-    }
-
-    console.log("created ===> ", pair);
   },
 
   methods: {
+    async initialData() {
+      await store.dispatch("substrate/getEncryptedAccountData", { password: "5t4r3e2w1q" })
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
     toRequestTest() {
       this.$router.push({ name: "customer-request-test-select-lab"})
     },
@@ -183,22 +191,19 @@ export default {
 
     async downloadFile() {
       const pair = {
-        secretKey: hexToU8a(this.mnemonicData.privateKey),
-        publicKey: hexToU8a(this.mnemonicData.publicKey)
+        secretKey: this.secretKey,
+        publicKey: this.publicKey
       }
 
-      // const baseUrl = "https://ipfs.io/ipfs/"
-      // const path = this.ipfsUrl.replace(baseUrl, "")
-      await this.metamaskDispatchAction(
-        syncDecryptedFromIPFS,
-        "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+      await syncDecryptedFromIPFS(
+        "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG", // TODO: (Testing purpose) Update when my test ready
         pair,
         "file.vcf",
         "text/vCard"
       )
 
-      await this.metamaskDispatchAction(getSignedUrl, "file.vcf")
-      await this.metamaskDispatchAction(createSyncEvent, { filename: "file.vcf"})
+      await getSignedUrl(getSignedUrl, "file.vcf")
+      await createSyncEvent(createSyncEvent, { filename: "file.vcf"})
     }
   },
 

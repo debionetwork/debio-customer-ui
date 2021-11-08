@@ -8,12 +8,10 @@ export async function getSignedUrl(fileName, action = 'read') {
     }
   })
 
-  console.log("getSignedUrl ====> ", signedUrl);
   return signedUrl
 }
 
 export async function createSyncEvent(fileName) {
   const { data } = await axios.post(`${process.env.VUE_APP_BACKEND_API}gcs/create_sync_event`, fileName)
-  console.log("createSyncEvent ====> ", data);
   return data
 }
