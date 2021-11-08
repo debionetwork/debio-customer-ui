@@ -152,9 +152,6 @@ jobs:
             VUE_APP_DEBIO_BACKEND_URL:${{ secrets.STG_GCP_PROJECT_ID }}/VUE_APP_DEBIO_BACKEND_URL
             VUE_APP_RECAPTCHA_SITE_KEY:${{ secrets.STG_GCP_PROJECT_ID }}/VUE_APP_RECAPTCHA_SITE_KEY
             VUE_APP_ROLE:${{ secrets.STG_GCP_PROJECT_ID }}/VUE_APP_ROLE
-            # STARTUP_PROB_PATH:${{ secrets.STG_GCP_PROJECT_ID }}/STARTUP_PROB_PATH
-            # LIVENESS_PROB_PATH:${{ secrets.STG_GCP_PROJECT_ID }}/LIVENESS_PROB_PATH
-            # READINESS_PROB_PATH:${{ secrets.STG_GCP_PROJECT_ID }}/READINESS_PROB_PATH
             SSH_HOST:${{ secrets.STG_GCP_PROJECT_ID }}/SSH_HOST
             SSH_USERNAME:${{ secrets.STG_GCP_PROJECT_ID }}/SSH_USERNAME
             SSH_KEY:${{ secrets.STG_GCP_PROJECT_ID }}/SSH_KEY
@@ -183,9 +180,6 @@ jobs:
               --set-string config.debioBackendUrl=${{ steps.secrets.outputs.VUE_APP_DEBIO_BACKEND_URL }} \
               --set-string config.recaptchaSiteKey=${{ steps.secrets.outputs.VUE_APP_RECAPTCHA_SITE_KEY }} \
               --set-string config.role=${{ steps.secrets.outputs.VUE_APP_ROLE }} \
-              # --set-string config.startupProbe.path=${{ steps.secrets.outputs.STARTUP_PROB_PATH }} \
-              # --set-string config.livenessProbe.path=${{ steps.secrets.outputs.LIVENESS_PROB_PATH }} \
-              # --set-string config.readinessProbe.path=${{ steps.secrets.outputs.READINESS_PROB_PATH }} \
               --set ingress.enabled=true \
               --set-string ingress.annotations."kubernetes\.io/ingress\.class"=nginx \
               --set-string ingress.annotations."cert-manager\.io/cluster-issuer"=letsencrypt \
