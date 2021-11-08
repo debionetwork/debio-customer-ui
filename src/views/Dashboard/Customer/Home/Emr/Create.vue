@@ -78,7 +78,7 @@
 
     ui-debio-modal(
       :show="showModal"
-      :title="isEdit ? "Edit EMR File" : "Add EMR File""
+      :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
       cta-title="Submit"
       :cta-action="handleNewFile"
       :cta-outlined="false"
