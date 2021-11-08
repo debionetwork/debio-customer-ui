@@ -56,6 +56,8 @@ export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
 /**
  * payOrder
  * 
+ * Send a payment order to Escrow contract
+ * 
  * @param {string} orderId
  * @param {string} serviceId
  * @param {string} customerSubstrateAddress
@@ -66,12 +68,10 @@ export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
  * @param {string | number} testingPrice
  * @param {string | number} qcPrice 
  * @param {string | number} payAmount
- * 
  * @returns
  * 
  */
 
-// orderId, serviceId, customerSubstrateAddress, sellerSubstrateAddress, customerEthAddress, sellerEthAddress, dnaSampleTrackingId, testingPrice, qcPrice, payAmount
 export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const contracEscrowInterface = store.getters["metamask/contracts/getEscrowContract"]
   const web3 = store.getters["metamask/getWeb3"]

@@ -81,11 +81,7 @@ export default {
       verificationStatus: "Verified",
       indexPrice: 0
     }
-
-    console.log(this.prefillService)
-
     this.setProductsToRequest(this.prefillService)
-
   },
 
   methods: {
