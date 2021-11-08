@@ -170,7 +170,7 @@ jobs:
             helm repo update
             helm upgrade debio-customer-ui debio/debio-customer-ui \
               --install \
-              --set-string image.tag=${{ needs.compute-build-info.outputs.latest_tag }} \
+              --set-string image.tag=${{ needs.compute-build-info.outputs.sha_short }}-${{ needs.compute-build-info.outputs.date }} \
               --set-string config.debioUseTokenName=${{ steps.secrets.outputs.VUE_APP_DEBIO_USE_TOKEN_NAME }} \
               --set-string config.debioEscrowETHAddress=${{ steps.secrets.outputs.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS }} \
               --set-string config.DAIContractAddress=${{ steps.secrets.outputs.VUE_APP_DAI_CONTRACT_ADDRESS }} \
