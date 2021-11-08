@@ -148,7 +148,6 @@ export default {
   async mounted () {
     if (this.lastEventData.method === "OrderCreated") {
       this.dataEvent = JSON.parse(this.lastEventData.data.toString())[0]
-      console.log(this.dataEvent)
     }
 
     // get last order id
