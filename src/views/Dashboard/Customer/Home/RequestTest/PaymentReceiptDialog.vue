@@ -11,11 +11,11 @@
           b Payment
 
       div(class="text-start ms-5 mt-5")
-        b.mb-2 {{ prefillService.lab.name || selectedService.labName }}
+        b.mb-2 {{ selectedService.labName }}
 
       div(class="ml-5 text-start")
-        .address-detail {{ prefillService.lab.address || selectedService.labAddress}}
-        .address-detail {{ prefillService.lab.city || selectedService.city}}
+        .address-detail {{ selectedService.labAddress}}
+        .address-detail {{ selectedService.city}}
 
       div(class="ml-5 mb-2 mt-4 text-start" style="font-size: 12px;")
         b Details
@@ -27,14 +27,14 @@
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
             div( style="font-size: 12px;" )
-              | {{ prefillService.service.price || selectedService.detailPrice.price_components[0].value }} 
-              | {{ prefillService.service.currency || selectedService.currency.toUpperCase() }}
+              | {{ selectedService.detailPrice.price_components[0].value }} 
+              | {{ selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
             div( style="font-size: 12px;" )
-              | {{ prefillService.service.price || selectedService.detailPrice.additional_prices[0].value }} 
-              | {{ prefillService.service.currency || selectedService.currency.toUpperCase() }}
+              | {{ selectedService.detailPrice.additional_prices[0].value }} 
+              | {{ selectedService.currency.toUpperCase() }}
 
        
       div(class="d-flex justify-end me-3" style="font-size: 12px") +
@@ -45,8 +45,8 @@
           div(class="d-flex justify-space-between mb-2" )
             b( style=" font-size: 12px;" ) Total Price
             b( style="font-size: 12px;" )
-              | {{ prefillService.service.total_price || selectedService.price }} 
-              | {{ prefillService.service.currency || selectedService.currency.toUpperCase()}}
+              | {{  selectedService.price }} 
+              | {{ selectedService.currency.toUpperCase()}}
 
 
 
@@ -158,6 +158,7 @@ export default {
     )
 
     this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+    
   },
 
   methods: {
@@ -211,14 +212,18 @@ export default {
         }
 
         const customerBoxPublicKey = this.mnemonicData.publicKey
-        await createOrder(
-          this.api,
-          this.wallet,
-          this.selectedService.serviceId,
-          customerBoxPublicKey,
-          this.selectedService.indexPrice
-        )
-        
+
+        console.log(this.detailOrder)
+        if (this.detailOrder.status !== "Unpaid") {          
+          await createOrder(
+            this.api,
+            this.wallet,
+            this.selectedService.serviceId,
+            customerBoxPublicKey,
+            this.selectedService.indexPrice
+          )
+        }
+
         this.payOrder()     
         
       } catch (err) {

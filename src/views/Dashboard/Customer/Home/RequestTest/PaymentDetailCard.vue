@@ -13,14 +13,14 @@
         div(class="d-flex justify-space-between mb-2" )
           div( style="font-size: 12px;" ) Service Price
           div( style="font-size: 12px;" )
-            | {{ prefillService.service.price || selectedService.detailPrice.price_components[0].value }} 
-            | {{ prefillService.service.currency || selectedService.currency.toUpperCase() }}
+            | {{ dataService.detailPrice.price_components[0].value }} 
+            | {{ dataService.currency.toUpperCase() }}
         
         div(class="d-flex justify-space-between" )
           div( style="font-size: 12px;" ) Quality Control Price
           div( style="font-size: 12px;" )
-            | {{ prefillService.service.qc_value || selectedService.detailPrice.additional_prices[0].value }} 
-            | {{ prefillService.service.currency || selectedService.currency.toUpperCase() }}
+            | {{ dataService.detailPrice.additional_prices[0].value }} 
+            | {{ dataService.currency.toUpperCase() }}
 
       div(class="d-flex justify-end me-3" style="font-size: 12px") +
       hr(class="ml-3 me-3 mb-2")
@@ -29,8 +29,8 @@
         div(class="d-flex justify-space-between mb-2" )
           b( style=" font-size: 12px;" ) Total Price
           b( style="font-size: 12px;" )
-            | {{ prefillService.service.total_price || selectedService.price }} 
-            | {{ prefillService.service.currency || selectedService.currency.toUpperCase()}}
+            | {{ dataService.price }} 
+            | {{ dataService.currency.toUpperCase()}}
 
       div(class="ml-4 text-center" v-if="!isCancelled")
         div(v-if="!success" class="d-flex justify-space-between align-center")
@@ -80,7 +80,6 @@
 
     template
       PaymentReceiptDialog(
-        :prefillService="prefillService"
         :show="showReceipt"
         @onContinue="onContinue"
         @close="showReceipt = false"
@@ -114,10 +113,11 @@ export default {
     CancelDialog
   },
 
+
+
   data: () => ({
     showReceipt: false,
     newService: false,
-    labDetail: null,
     lastOrder: null,
     detailOrder: null,
     cancelDialog: false,
@@ -125,11 +125,6 @@ export default {
   }),
 
   async mounted () {
-    this.labDetail = {
-      labName : this.selectedService.labName,
-      labAddress : this.selectedService.labAddress,
-      city: this.selectedService.city
-    }
 
     // get last order id
     this.lastOrder = await lastOrderByCustomer(
@@ -142,8 +137,7 @@ export default {
 
 
   props: {
-    success: { type: Boolean, default: false },
-    prefillService: { type: Object, default: () => {} }
+    success: { type: Boolean, default: false }
   },
 
   computed: {
@@ -151,7 +145,7 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       mnemonicData: (state) => state.substrate.mnemonicData,
-      selectedService: (state) => state.testRequest.products,
+      dataService: (state) => state.testRequest.products,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress
     })
   },
