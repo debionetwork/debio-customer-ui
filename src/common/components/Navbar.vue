@@ -52,7 +52,13 @@
               template
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'notification'")
                   .navbar__notification
-                    .notification-item(role="button" v-for="notif in notifications")
+                    .notification-item.text-center(v-if="!notifications.length") No notifications yet
+                    router-link.notification-item(
+                      role="button"
+                      v-for="(notif, idx) in notifications"
+                      :key="idx"
+                      :to="{ name: notif.route, params: notif.params }"
+                    )
                       .notification-item__wrapper
                         .notification-item__title(:aria-label="notif.message") {{ notif.message }}
                         .notification-item__description(
@@ -316,6 +322,7 @@ export default {
   .navbar
     padding: 3rem
     width: 100%
+    z-index: 100
 
     &__triangle
       height: 1.25rem
@@ -426,6 +433,9 @@ export default {
         background: #D3C9D1
 
   .notification-item
+    color: #000000 !important
+    text-decoration: none
+
     &__wrapper
       position: relative
       padding: 0.688rem 1.438rem
