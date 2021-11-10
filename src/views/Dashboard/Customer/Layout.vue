@@ -17,17 +17,18 @@
         color="primary"
       ) Upload EMR
 
-    Navbar.layout-dashboard__navbar
+    Navbar.layout-dashboard__navbar(:notifications="localListNotification")
     .layout-dashboard__main
       transition(name="transition-slide-x" mode="out-in")
         router-view
 </template>
 
 <script>
+import { mapState } from "vuex"
+import { gridIcon, boxIcon, databaseIcon, fileTextIcon, creditCardIcon } from "@/common/icons"
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import { gridIcon, boxIcon, databaseIcon, fileTextIcon, creditCardIcon } from "@/common/icons"
 
 export default {
   name: "MainPage",
@@ -44,6 +45,12 @@ export default {
   }),
 
   computed: {
+    ...mapState({
+      lastEventData: (state) => state.substrate.lastEventData,
+      wallet: (state) => state.substrate.wallet,
+      localListNotification: (state) => state.substrate.localListNotification
+    }),
+
     computeNavs() {
       const setActive = name => {
         return (
@@ -60,7 +67,30 @@ export default {
     }
   },
 
+  watch: {
+    lastEventData(event) {
+      if (event !== null) {
+        this.$store.dispatch("substrate/addListNotification", {
+          address: this.wallet.address,
+          event: event,
+          role: "customer"
+        });
+      }
+    }
+  },
+
+  async created() {
+    await this.getListNotification()
+  },
+
   methods: {
+    async getListNotification() {
+      await this.$store.dispatch("substrate/getListNotification", {
+        address: this.wallet.address,
+        role: "customer"
+      })
+    },
+
     goToRequestTestPage() {
       this.$router.push({ name: "customer-request-test" })
     },

@@ -58,12 +58,11 @@
         span(v-for="file in item.files") {{ file.description }}
 
     template(v-slot:[`item.created_at`]="{ item }")
-      span {{ compareDate(new Date(), new Date(item.created_at)) }}
+      span {{ new Date(item.created_at).toLocaleDateString() }}
 
     template(v-slot:[`item.actions`]="{ item }")
       .customer-emr__actions
         ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item.id)")
-        //- ui-debio-icon(:icon="downloadIcon" size="16" role="button" stroke @click="onDownload(item)")
         ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="handleOpenModalDelete(item)")
 </template>
 
@@ -79,15 +78,12 @@ import {
   downloadIcon
 } from "@/common/icons"
 
-import { compareDate } from "@/common/utils"
 import errorMessage from "@/common/constants/error-messages"
 
 import {
   queryGetEMRList,
-  queryElectronicMedicalRecordInfoById
+  queryElectronicMedicalRecordFileById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
-
-// import { removeElectronicMedicalRecord } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
@@ -106,7 +102,6 @@ export default {
     trashIcon,
     downloadIcon,
     alertIcon,
-    compareDate,
 
     cardBlock: false,
     showModalPassword: false,
@@ -220,10 +215,6 @@ export default {
     })
   },
 
-  created() {
-    // this.getDocumentsHistory()
-  },
-
   rules: {
     password: [ val => !!val || errorMessage.PASSWORD(8) ]
   },
@@ -231,7 +222,6 @@ export default {
   methods: {
     async getDocumentsHistory() {
       // TODO: Un comment after backend ready
-      // this.emrDocuments = []
       await this.metamaskDispatchAction(this.getEMRHistory)
     },
 
@@ -248,7 +238,7 @@ export default {
         if (listEMR.length > 0) {
           listEMR.reverse()
           for (let i = 0; i < listEMR.length; i++) {
-            const emrDetail = await this.metamaskDispatchAction(queryElectronicMedicalRecordInfoById,
+            const emrDetail = await this.metamaskDispatchAction(queryElectronicMedicalRecordFileById,
               this.api,
               listEMR[i]
             )
@@ -301,12 +291,6 @@ export default {
     async onDelete() {
       this.showModalPassword = false
       // TODO: Update this when Backend is ready
-      // this.wallet.decodePkcs8(this.password)
-      // await this.metamaskDispatchAction(removeElectronicMedicalRecord,
-      //   this.api,
-      //   this.wallet,
-      //   this.selectedFile.data.id
-      // )
     }
   }
 }

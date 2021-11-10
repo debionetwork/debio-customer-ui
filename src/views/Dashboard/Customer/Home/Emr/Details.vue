@@ -1,5 +1,39 @@
 <template lang="pug">
   .customer-emr-details
+    ui-debio-modal(
+      :show="showModalPassword"
+      title="Open EMR files by input your password"
+      disable-dismiss
+      @onClose="$router.push({ name: 'customer-emr' })"
+    )
+      ui-debio-input(
+        :errorMessages="passwordErrorMessages"
+        :rules="$options.rules.password"
+        type="password"
+        variant="small"
+        placeholder="Input Password"
+        v-model="password"
+        outlined
+        block
+        :error="wrongPassword"
+        validate-on-blur
+        @keyup.enter="handlePassword"
+        @blur="wrongPassword = false"
+        @isError="handleError"
+      )
+
+      .modal-password__cta.d-flex.justify-space-between(slot="cta")
+        Button(
+          outlined
+          color="secondary"
+          @click="$router.push({ name: 'customer-emr' })"
+        ) Cancel
+
+        Button(
+          color="secondary"
+          @click="handlePassword"
+        ) Submit
+
     .customer-emr-details__wrapper(v-if="selectedFiles")
       .customer-emr-details__emr
         .customer-emr-details__emr-title List of {{ selectedFiles.title }}
@@ -36,22 +70,34 @@
 
 <script>
 import { mapState } from "vuex"
-import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
-import { hexToU8a } from "@polkadot/util"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import store from "@/store"
+import { u8aToHex } from "@polkadot/util"
+import { validateForms } from "@/common/lib/validate"
+import errorMessage from "@/common/constants/error-messages"
+import Button from "@/common/components/Button"
 import { fileTextIcon } from "@/common/icons"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 
 export default {
   name: "CustomerEmrDetails",
 
+  mixins: [validateForms],
+
+  components: { Button },
+
   data: () => ({
     fileTextIcon,
 
     isLoading: false,
+    showModalPassword: false,
+    wrongPassword: false,
+    password: null,
     publicKey: null,
     secretKey: null,
     result: null,
-    message: "Loading EMR your document file, please wait",
+    message: "Loading EMR document file, please wait",
     selected: 0,
     emrDocuments: [
       {
@@ -61,12 +107,12 @@ export default {
         files: [
           {
             title: "Xray",
-            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            link: "QmWyTbp8Gw8FcUsGNudtf7WoUT6LAYCnnrzeceg5PnUjUK",
             description: "My xray sample"
           },
           {
             title: "Data vaccination",
-            link: "QmUv4n9iwJw75WbYy3P8D9LUzzAdzYzcgYEMH8Du35gumE",
+            link: "QmaacnLDGpXuaP3JX7uWau8r67wE8BmS96v24m6dAGSaeR",
             description: "my vaccinations detail"
           }
         ],
@@ -79,12 +125,12 @@ export default {
         files: [
           {
             title: "Xray",
-            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            link: "QmQe4udiBTcQfuDgHtGLpvoDw2PkvftrisDBzPvDkzUYWW",
             description: "My xray sample"
           },
           {
             title: "Data vaccination",
-            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
+            link: "QmfNewKtBtGhET6RGLzDjEzspNAVADcdEQdrXkgujqRq1y",
             description: "my vaccinations detail"
           }
         ],
@@ -104,18 +150,28 @@ export default {
 
     selectedFiles() {
       return this.emrDocuments[this.$route.params.id - 1]
+    },
+
+    passwordErrorMessages() {
+      return this.errorMessages || (this.wrongPassword ? "Password not match" : "")
     }
   },
 
   async created() {
-    this.initialData()
-    await this.parseResult(0, this.selectedFiles?.files[0])
+    this.showModalPassword = true
+  },
+
+  rules: {
+    password: [ val => !!val || errorMessage.PASSWORD(8) ]
   },
 
   methods: {
-    initialData() {
-      this.publicKey = hexToU8a(this.mnemonicData.publicKey)
-      this.secretKey = hexToU8a(this.mnemonicData.privateKey)
+    async initialData() {
+      await store.dispatch("substrate/getEncryptedAccountData", { password: this.password })
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
     },
 
     async parseResult(idx, { link }) {
@@ -123,12 +179,9 @@ export default {
 
       const path = link
 
-      const secretKey = this.secretKey
-      const publicKey = this.publicKey
-
       const pair = {
-        secretKey,
-        publicKey
+        secretKey: this.secretKey,
+        publicKey: this.publicKey
       }
 
       const typeFile = "application/pdf"
@@ -154,14 +207,16 @@ export default {
 
     },
 
-    async download({ title, link }) {
-      await downloadDecryptedFromIPFS(
-        link,
-        this.secretKey,
-        this.publicKey,
-        `${title}.pdf`,
-        "application/pdf"
-      )
+    async handlePassword() {
+      try {
+        await this.initialData()
+        await this.parseResult(0, this.selectedFiles?.files[0])
+
+        this.showModalPassword = false
+      } catch (error) {
+        this.wrongPassword = true
+        console.error(error);
+      }
     }
   }
 }
@@ -270,4 +325,8 @@ export default {
       width: 100%
       min-height: 700px
       border-radius: 4px
+
+    .modal-password
+      &__cta
+        gap: 20px
 </style>

@@ -21,9 +21,8 @@
               ui-debio-avatar.product__image(src="https://picsum.photos/150" size="150" rounded)
               .product__details
                 .product__name {{ payment.service_info.name }}
-                .product__lab
-                  .product__lab-name {{ payment.lab_info.name }}
-                  ui-debio-rating.product__lab-rating(:rating="4" :total-reviews="800" size="15")
+                ui-debio-rating.product__lab-rating(:rating="4" :total-reviews="800" size="15")
+                .product__lab-name {{ payment.lab_info.name }}
                 .product__lab-address
                   span.address__title Address
                   p.address__text.mb-0 {{ payment.lab_info.address }}, {{ payment.lab_info.city }}
@@ -101,7 +100,8 @@ export default {
 
   computed: {
     ...mapState({
-      api: (state) => state.substrate.api
+      api: (state) => state.substrate.api,
+      rating: (state) => state.rating.rate
     }),
 
     computeDetailsTitle() {

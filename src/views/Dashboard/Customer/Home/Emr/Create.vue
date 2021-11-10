@@ -76,6 +76,42 @@
           color="secondary"
           @click="finalSubmit"
         ) Submit
+    //- TODO: Remove this later
+    ui-debio-modal(
+      :show="showModalPasswordCreated"
+      title="Input your password"
+      disable-dismiss
+      @onClose="showModalPasswordCreated = false; wrongPassword = false"
+    )
+      ui-debio-input(
+        :errorMessages="passwordErrorMessages"
+        :rules="$options.rules.password"
+        type="password"
+        variant="small"
+        placeholder="Input Password"
+        v-model="password"
+        outlined
+        block
+        :error="wrongPassword"
+        validate-on-blur
+        @keyup.enter="submitPassword"
+        @blur="wrongPassword = false"
+        @isError="handleError"
+      )
+
+      .modal-password__cta.d-flex(slot="cta")
+        Button(
+          outlined
+          width="100"
+          color="secondary"
+          @click="$router.push({ name: 'customer-emr' })"
+        ) Cancel
+
+        Button(
+          width="100"
+          color="secondary"
+          @click="submitPassword"
+        ) Submit
 
     ui-debio-modal(
       :show="showModal"
@@ -242,7 +278,9 @@
 /* eslint-disable no-unused-vars */
 import { mapGetters, mapState } from "vuex"
 
-import store from "@/store/index"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import store from "@/store"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/emr"
@@ -251,7 +289,7 @@ import {
   registerElectronicMedicalRecord
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 import { queryGetEMRList } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
-import { hexToU8a } from "@polkadot/util"
+import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
@@ -274,6 +312,7 @@ export default {
     showModal: false,
     showModalConfirm: null,
     showModalPassword: false,
+    showModalPasswordCreated: false, // TODO: Remove this later
     wrongPassword: false,
     showLoadingFiles: false,
     registerEMR: false,
@@ -375,18 +414,13 @@ export default {
   },
 
   async created() {
-    this.initialData()
     this.fetchCategories()
+    this.showModalPasswordCreated = true // TODO: Remove this later
   },
 
   methods: {
     async fetchCategories() {
       this.categories = await getEMRCategories()
-    },
-
-    initialData() {
-      this.publicKey = hexToU8a(this.mnemonicData.publicKey)
-      this.secretKey = hexToU8a(this.mnemonicData.privateKey)
     },
 
     resetState() {
@@ -485,9 +519,30 @@ export default {
       }
     },
 
+    async submitPassword() { // TODO: Remove this later
+      try {
+        await this.wallet.decodePkcs8(this.password)
+        await store.dispatch("substrate/getEncryptedAccountData", { password: this.password })
+        const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+        this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+        this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+
+        this.showModalPasswordCreated = false
+      } catch (e) {
+        this.wrongPassword = true
+      }
+    },
+
     async finalSubmit() {
       try {
         await this.wallet.decodePkcs8(this.password)
+        await store.dispatch("substrate/getEncryptedAccountData", { password: this.password })
+        const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+        this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+        this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+
         if (this.emr.files.length > 0) {
           const listEMR = await queryGetEMRList(this.api, this.wallet.address)
           if (listEMR === null) {
@@ -508,10 +563,6 @@ export default {
       try {
         this.pair.unlock(this.password)
 
-        await store.dispatch("substrate/getEncryptedAccountData", {
-          password: this.password
-        })
-
         const file = dataFile.file
         const context = this
         const fr = new FileReader()
@@ -527,6 +578,7 @@ export default {
             })
 
             const link = context.getFileIpfsUrl(uploaded)
+
             const dataBody = {
               title: dataFile.title,
               description: dataFile.description,
