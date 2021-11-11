@@ -12,7 +12,7 @@
         v-if="!success"
         :errorMessages="passwordErrorMessages"
         :rules="$options.rules.password"
-        type="password"
+        :type="showPassword ? 'text' : 'password'"
         variant="small"
         placeholder="Input Password"
         v-model="password"
@@ -24,6 +24,14 @@
         @blur="error = null"
         @isError="handleError"
       )
+        ui-debio-icon(
+          slot="icon-append"
+          role="button"
+          size="18"
+          @click="handleShowPassword"
+          :icon="showPassword ? eyeIcon : eyeOffIcon"
+          stroke
+        )
 
       .modal-password__cta.d-flex(slot="cta")
         Button(
@@ -61,6 +69,8 @@ import { validateForms } from "@/common/lib/validate"
 import {
   gridIcon,
   boxIcon,
+  eyeIcon,
+  eyeOffIcon,
   databaseIcon,
   checkCircleIcon,
   fileTextIcon,
@@ -82,8 +92,11 @@ export default {
 
   data: () => ({
     checkCircleIcon,
+    eyeIcon,
+    eyeOffIcon,
 
     showModalPassword: false,
+    showPassword: false,
     success: false,
     error: null,
     password: null,
@@ -140,6 +153,10 @@ export default {
       this.$router.push({ name: "customer-emr-create" })
     },
 
+    handleShowPassword() {
+      this.showPassword = !this.showPassword
+    },
+
     async handleSubmitPassword() {
       try {
         await this.wallet.unlock(this.password)
@@ -151,7 +168,7 @@ export default {
 
         setTimeout(() => {
           this.showModalPassword = false
-        }, 1200)
+        }, 1300)
       } catch (e) {
         this.error = e
       }
