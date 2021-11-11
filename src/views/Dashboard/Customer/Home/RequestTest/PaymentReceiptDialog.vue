@@ -232,7 +232,7 @@ export default {
         const customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
 
         if (this.status !== "Unpaid") {          
-          const order = await createOrder(
+          await createOrder(
             this.api,
             this.wallet,
             this.selectedService.serviceId,
