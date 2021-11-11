@@ -27,13 +27,13 @@
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
             div( style="font-size: 12px;" )
-              | {{ selectedService.detailPrice.price_components[0].value }} 
+              | {{ selectedService.detailPrice.priceComponents[0].value }} 
               | {{ selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
             div( style="font-size: 12px;" )
-              | {{ selectedService.detailPrice.additional_prices[0].value }} 
+              | {{ selectedService.detailPrice.additionalPrices[0].value }} 
               | {{ selectedService.currency.toUpperCase() }}
 
        

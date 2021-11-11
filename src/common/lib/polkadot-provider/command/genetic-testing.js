@@ -16,7 +16,7 @@ export async function receiveDnaSample(api, pair, trackingId, callback = () => {
 
 export async function rejectDnaSample(api, pair, data, callback = () => {}) {
   const unsub = await api.tx.geneticTesting
-    .rejectDnaSample(data.tracking_id, data.rejected_title, data.rejected_description)
+    .rejectDnaSample(data.trackingId, data.rejectedTitle, data.rejectedDescription)
     .signAndSend(pair, { nonce: -1 }, ({ events, status }) => 
       successCallback(api, { events, status, callback, unsub })
     )

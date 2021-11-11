@@ -23,7 +23,7 @@
               v-col(cols="5.5")
                 b.menu-card__service-sub-title Price
                 .menu-card__service-description
-                  | {{ dataService.detailPrice.price_components[0].value }} 
+                  | {{ dataService.detailPrice.priceComponents[0].value }} 
                   | {{ dataService.currency.toUpperCase() }}
               v-col(cols="6.5") 
                 b.menu-card__service-sub-title Duration
