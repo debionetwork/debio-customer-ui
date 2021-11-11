@@ -94,7 +94,7 @@
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
-    WalletBinding(:show="showMetamaskDialog" @close="showMetamaskDialog = false")
+    WalletBinding(:show="showMetamaskDialog" @close="closeDialog")
 </template>
 
 <script>
@@ -119,7 +119,7 @@ import WalletBinding from "./WalletBinding.vue"
 import localStorage from "@/common/lib/local-storage"
 import { queryBalance } from "@/common/lib/polkadot-provider/query/balance"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile"
-import { getBalanceETH } from "@/common/lib/metamask/wallet";
+import { getBalanceDAI } from "@/common/lib/metamask/wallet"
 
 
 
@@ -215,6 +215,10 @@ export default {
   async mounted () {
     this.fetchWalletBalance()
     this.checkMetamaskAddress()
+
+    if (this.loginStatus) {
+      this.menus.find(menu => menu.type === "metamask").active = true
+    }
   },
 
   methods: {
@@ -290,7 +294,7 @@ export default {
         )
 
         if (ethRegisterAddress !== null) {
-          const balance = await getBalanceETH(ethRegisterAddress)
+          const balance = await getBalanceDAI(ethRegisterAddress)
           this.setMetamaskAddress(ethRegisterAddress)
           this.setMetamaskBalance(balance)
           this.loginStatus = true
@@ -309,6 +313,11 @@ export default {
 
     handleDropdownAction(type) {
       if (type === "metamask") this.disconnectWallet()
+    },
+
+    closeDialog () {
+      this.loginStatus = true
+      this.showMetamaskDialog = false
     },
 
     signOut () {
