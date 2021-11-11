@@ -43,8 +43,8 @@ export default {
     },
 
     async getServicesByCategory({ commit }, datas) {
-      const { category, isRequestService } = datas
-      const { data : data } = await getServicesByCategory (category, isRequestService)
+      const { category, status } = datas
+      const { data : data } = await getServicesByCategory (category, status)
 
 
       commit("SET_SERVICES", data.result)

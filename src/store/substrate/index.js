@@ -175,7 +175,7 @@ export default {
           console.log("Is pair locked?", pair.isLocked)
           commit("SET_WALLET", pair)
           
-          localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(file[1]))
+          localStorage.setLocalStorageByName("mnemonic_data", CryptoJS.AES.encrypt(file[1].mnemonic, password));	
           commit("SET_MNEMONIC_DATA", file[1])
           commit("SET_LOADING_WALLET", false)
           

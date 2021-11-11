@@ -89,8 +89,8 @@
                     .navbar__balance-wrapper
                       .navbar__balance-type {{ getActiveMenu.currency }} Balance
                       .navbar__balance-amount
-                        ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? debioIcon : daiIcon" size="10")
-                        span {{ walletBalance }}
+                        ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? daiIcon : debioIcon" size="10")
+                        span {{ activeBalance }}
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
@@ -153,6 +153,7 @@ export default {
     showMetamaskDialog: false,
     balance: 0,
     walletAddress: "",
+    activeBalance: "",
     menus: [
       {
         id: 1,
@@ -238,12 +239,14 @@ export default {
       
       if (selectedMenu.type === "polkadot") {
         this.walletAddress = this.wallet.address
+        this.activeBalance = this.walletBalance
       }
 
       if (selectedMenu.type === "metamask" && !this.loginStatus) return
 
       if (selectedMenu.type === "metamask") {
         this.walletAddress = this.metamaskWalletAddress
+        this.activeBalance = this.metamaskWalletBalance
       }
 
       selectedMenu.active = true
@@ -302,7 +305,6 @@ export default {
     disconnectWallet() {
       this.loginStatus = false
       this.menus.find(menu => menu.type === "metamask").active = false
-      this.clearWallet()
     },
 
     handleDropdownAction(type) {

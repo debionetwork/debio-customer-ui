@@ -25,6 +25,8 @@
     "region": "Text",
     "city": "Text",
     "address": "Text",
+    "phone_number": "Text",
+    "website": "Text",
     "latitude": "Option<Text>",
     "longitude": "Option<Text>",
     "profile_image": "Option<Text>"
@@ -43,8 +45,8 @@
   },
   "CurrencyType": {
     "_enum": [
-      "Dai",
-      "Ethereum"
+      "DAI",
+      "ETH"
     ]
   },
   "PriceByCurrency": {
@@ -61,8 +63,13 @@
     "description": "Text",
     "test_result_sample": "Text",
     "long_description": "Option<Text>",
-    "image": "Option<Text>",
-    "dna_collection_process": "Option<Text>"
+    "image": "Option<Text>"
+  },
+  "ServiceFlow": {
+    "_enum": [
+      "RequestTest",
+      "StakingRequestService"
+    ]
   },
   "DurationType": {
     "_enum": [
@@ -78,7 +85,8 @@
   "Service": {
     "id": "H256",
     "owner_id": "AccountId",
-    "info": "ServiceInfo"
+    "info": "ServiceInfo",
+    "service_flow": "ServiceFlow"
   },
   "ServiceOf": "Service",
   "ServiceInfoOf": "ServiceInfo",
@@ -121,6 +129,7 @@
     "prices": "Vec<Price>",
     "additional_prices": "Vec<Price>",
     "status": "OrderStatus",
+    "order_flow": "ServiceFlow",
     "created_at": "u64",
     "updated_at": "u64"
   },
@@ -131,12 +140,8 @@
       "Registered",
       "Arrived",
       "Rejected",
-      "Success",
-      "Failed",
       "QualityControlled",
-      "GenotypedSequenced",
-      "Reviewed",
-      "Computed",
+      "WetWork",
       "ResultReady"
     ]
   },
@@ -186,19 +191,19 @@
       "Doctor"
     ]
   },
-  "ElectronicMedicalRecordFile": {
+  "ElectronicMedicalRecordInfo": {
     "id": "H256",
     "owner_id": "AccountId",
     "title": "Text",
-    "category": "Text",
-    "document_title": "Text",
     "description": "Text",
     "record_link": "Text",
     "uploaded_at": "Moment"
   },
   "ElectronicMedicalRecord": {
     "owner_id": "AccountId",
-    "info": "Vec<H256>"
+    "title": "Text",
+    "category": "Text",
+    "files": "Vec<H256>"
   },
   "ElectronicMedicalRecordOf": "ElectronicMedicalRecord",
   "ElectronicMedicalRecordFileOf": "ElectronicMedicalRecordFile",

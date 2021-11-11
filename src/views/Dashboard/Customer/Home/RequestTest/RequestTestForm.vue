@@ -85,8 +85,7 @@ export default {
     cities: [],
     categories: [],
     countries: [],
-    coinName: "",
-    isRequestService: false
+    status: "RequestTest"
   }),
 
   computed: {
@@ -100,7 +99,6 @@ export default {
   async mounted() {
     await this.getCountries()
     await this.getServiceCategory()
-    this.coinName = this.configApp.tokenName
   },
 
   methods: {
@@ -143,10 +141,10 @@ export default {
       const region = this.state
       const city = this.city
       const category = this.category
-      const isRequestService = this.isRequestService
+      const status = this.status
       this.setCategory(category)
       await this.$store.dispatch("lab/setCountryRegionCity", {country, region, city})
-      await this.$store.dispatch("lab/getServicesByCategory", {category, isRequestService})
+      await this.$store.dispatch("lab/getServicesByCategory", {category, status})
       await this.$store.dispatch("rating/getRate")
   
       this.$emit("click")

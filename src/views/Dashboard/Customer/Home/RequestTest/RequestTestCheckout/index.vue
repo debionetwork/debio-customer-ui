@@ -100,6 +100,10 @@ export default {
     })
   },
 
+  async mounted () {
+    console.log(this.labAccount)
+  },
+
   methods : {
     ...mapMutations({
       setLabToRequest: "testRequest/SET_LAB",

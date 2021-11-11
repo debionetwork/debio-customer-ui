@@ -49,9 +49,9 @@
       template(v-slot:main): div.pop-up-main
         div.d-flex.flex-column
           p Your Address
-            ui-debio-input( disabled :value="dataAccount.address" block)
+          ui-debio-input( disabled :value="address" block)
 
-          p Please input your password
+          p.mt-8 Please input your password
           v-text-field(
             label="Type in your password"
             v-model="password"
@@ -105,7 +105,9 @@ import { mapGetters, mapState, mapActions } from "vuex"
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 import localStorage from "@/common/lib/local-storage"
 import Dialog from "@/common/components/Dialog"
-
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"	
+import { u8aToHex } from "@polkadot/util"
 
 export default {
   name: "InputPassword",
@@ -129,7 +131,8 @@ export default {
     dataMnemonic: null,
     dataMnemonicJson: null,
     isNoAccount: false,
-    keystoreInputErrors: []
+    keystoreInputErrors: [],
+    address: ""
   }),
 
   computed: {
@@ -145,6 +148,9 @@ export default {
   async mounted() {
     await this.getKeyStoreLocal()
     this.setKeystore()
+    if (this.dataAccount) {
+      this.address = this.dataAccount.address
+    }
   },
 
   methods: {
@@ -169,16 +175,11 @@ export default {
 
     async getKeyStoreLocal() {
       try {
-        this.isLoading = true
         this.dataAccountJson = localStorage.getKeystore()
         if (this.dataAccountJson === null) {
           this.isNoAccount = true
         }
         this.dataAccount = JSON.parse(this.dataAccountJson)
-        this.dataMnemonicJson =
-          localStorage.getLocalStorageByName("mnemonic_data")
-        this.dataMnemonic = JSON.parse(this.dataMnemonicJson)
-        this.isLoading = false
       } catch (err) {
         console.log(err)
         this.isloading = false
@@ -209,8 +210,20 @@ export default {
 
       dataKeystore.push(keystore)
 
-      if (this.dataMnemonicJson !== null && this.dataMnemonicJson !== "") {
-        dataKeystore.push(JSON.parse(this.dataMnemonicJson))
+      this.dataMnemonicJson = localStorage.getLocalStorageByName("mnemonic_data")
+      const encryptedMnemonic = this.dataMnemonicJson
+
+      const mnemonic  = CryptoJS.AES.decrypt(encryptedMnemonic, this.password).toString(CryptoJS.enc.Utf8)
+      const identity = await Kilt.Identity.buildFromMnemonic(mnemonic)
+
+      const dataMnemonic = {
+        privateKey: u8aToHex(identity.boxKeyPair.secretKey),
+        publicKey: u8aToHex(identity.boxKeyPair.publicKey),
+        mnemonic
+      }
+
+      if (mnemonic) {
+        dataKeystore.push(dataMnemonic)
       }
 
       const result = await this.restoreAccountKeystore({
