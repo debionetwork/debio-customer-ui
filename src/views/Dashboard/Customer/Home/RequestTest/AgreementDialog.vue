@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-dialog(:value="show" width="480" persistent)
+  v-dialog(:value="show" width="480" persistent rounded )
     v-card
       v-app-bar(flat dense color="white" )
         v-toolbar-title(class="title mt-8" v-if="agreement") Staking Coin Agreement
@@ -55,9 +55,9 @@
 
 <script>
 import { mapState } from "vuex"
-import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
-import { approveDaiStakingAmount, checkAllowance, sendServiceRequestStaking } from "@/common/lib/metamask/service-request"
+import { startApp } from "@/common/lib/metamask"
 import localStorage from "@/common/lib/local-storage"
+import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
 export default {
   name: "AgreementDialog",
@@ -67,8 +67,8 @@ export default {
   },
 
   data: () => ({
-    currencyList: ["DBIO"], // Currently only staking in DAI is supported
-    currencyType: "DAI",
+    currencyList: ["DBIO"], 
+    currencyType: "DBIO",
     agree: false,
     amount: "",
     dialogAlert: false,
@@ -78,7 +78,10 @@ export default {
   }),
   computed: {
     ...mapState({
+      api: (state) => state.substrate.api,
+      pair: (state) => state.substrate.pair,
       country: state => state.lab.country,
+      region: state => state.lab.region,
       city: state => state.lab.city,
       category: state => state.lab.category
     })
@@ -100,32 +103,15 @@ export default {
       }
 
       try {
-        this.isLoading = true
-        const stakingAmount = this.amount
-        console.log(this.ethAccount.currentAccount)
-
-        const stakingAmountAllowance = await checkAllowance(this.ethAccount.currentAccount)
-
-
-        if (stakingAmountAllowance < stakingAmount) {
-          const txHash = await await approveDaiStakingAmount(
-            this.ethAccount.currentAccount,
-            stakingAmount // Approve only as much as needed to stake
-          )
-          await getTransactionReceiptMined(txHash)
-        }
-
-        const serviceCategory = this.category[0]
-        const txHash = await sendServiceRequestStaking(
-          this.ethAccount.currentAccount,
+        await createRequest(
+          this.api,
+          this.pair,
           this.country,
+          this.region,
           this.city,
-          serviceCategory,
-          stakingAmount
+          this.category,
+          this.amount
         )
-        await getTransactionReceiptMined(txHash)
-
-        await this.$store.dispatch("lab/setStakingAmount", stakingAmount)
 
         const address = localStorage.getAddress()
         const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + "customer"

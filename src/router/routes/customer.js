@@ -59,7 +59,7 @@ const customerRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {
-      path: "request-test/service",
+      path: "request-test/service/:flag?",
       name: "customer-request-test-service",
       meta: { pageHeader: "Select Services", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/SelectServicePage")

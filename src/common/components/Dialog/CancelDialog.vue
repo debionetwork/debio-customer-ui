@@ -7,7 +7,7 @@
             v-icon.me-5.mt-5(style="font-size: 20px;") mdi-close
         
 
-        v-card-text.mt-5(align="center")
+        v-card-text.mt-5.pa-6(align="center" v-if="!inputPassword")
           .dialog-cancel__title
             b.mt-5.pa-5 Do you want to cancel ?
           
@@ -31,28 +31,84 @@
               style="font-size: 10px;"
               @click="cancelOrder"
             ) Yes
+
+        div(class="mb-2 ml-10 mr-10 pa-10" v-if="inputPassword")      
+          div(align="center") 
+            b(class="mb-2" )
+            v-text-field(
+              label="Input DeBio Password "
+              class="mt-2 password-field"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showPassword ? 'text' : 'password'"
+              :rules="[val => !!val || 'Password is required']"
+              @click:append="showPassword = !showPassword"
+              outlined
+              auto-grow
+              v-model="password"
+            )
+
+            v-btn(
+              depressed
+              color="secondary"
+              large
+              width="100%"
+              @click="cancelOrder") Continue
+            v-alert(v-if="error" dense text type="error") {{ error }}              
+
+          
 </template>
 
 <script>
+import { mapState } from "vuex"
 import Button from "@/common/components/Button"
+import { cancelOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 
 export default {
   name: "CancelDialog",
+
+  data: () => ({
+    password: "",
+    error: "",
+    showPassword: false,
+    inputPassword: false
+  }),
+
+  computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet
+    })  
+  },
 
   components: {
     Button
   },
 
   props: {
-    show: Boolean
+    show: Boolean,
+    orderId: String
   },
 
   methods : {
-    cancelOrder() {
-      this.$emit("click")
+    async cancelOrder() {
+      if (this.wallet.isLocked) {
+        this.inputPassword = true
+        await this.wallet.decodePkcs8(this.password)
+      }
+      
+      await cancelOrder(
+        this.api,
+        this.wallet,
+        this.orderId
+      )
+
+      this.password = ""
+      this.$emit("cancel")
+      this.$emit("close")    
     },
 
     closeDialog() {
+      this.inputPassword = false
       this.$emit("close")
     }
   }
