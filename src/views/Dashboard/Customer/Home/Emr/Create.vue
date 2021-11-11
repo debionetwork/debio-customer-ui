@@ -76,42 +76,6 @@
           color="secondary"
           @click="finalSubmit"
         ) Submit
-    //- TODO: Remove this later
-    ui-debio-modal(
-      :show="showModalPasswordCreated"
-      title="Input your password"
-      disable-dismiss
-      @onClose="showModalPasswordCreated = false; wrongPassword = false"
-    )
-      ui-debio-input(
-        :errorMessages="passwordErrorMessages"
-        :rules="$options.rules.password"
-        type="password"
-        variant="small"
-        placeholder="Input Password"
-        v-model="password"
-        outlined
-        block
-        :error="wrongPassword"
-        validate-on-blur
-        @keyup.enter="submitPassword"
-        @blur="wrongPassword = false"
-        @isError="handleError"
-      )
-
-      .modal-password__cta.d-flex(slot="cta")
-        Button(
-          outlined
-          width="100"
-          color="secondary"
-          @click="$router.push({ name: 'customer-emr' })"
-        ) Cancel
-
-        Button(
-          width="100"
-          color="secondary"
-          @click="submitPassword"
-        ) Submit
 
     ui-debio-modal(
       :show="showModal"
@@ -312,10 +276,9 @@ export default {
     showModal: false,
     showModalConfirm: null,
     showModalPassword: false,
-    showModalPasswordCreated: false, // TODO: Remove this later
     wrongPassword: false,
     showLoadingFiles: false,
-    registerEMR: false,
+    registerId: null,
     clearFile: false,
     countFileAdded: 0,
     password: "",
@@ -335,10 +298,6 @@ export default {
   }),
 
   computed: {
-    ...mapGetters({
-      pair: "substrate/wallet"
-    }),
-
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
@@ -376,23 +335,27 @@ export default {
       if (event !== null) {
         const dataEvent = JSON.parse(event.data.toString())
         if (event.method === "ElectronicMedicalRecordFileAdded") {
-          if (dataEvent[0].owner_id === this.wallet.address) {
+          if (dataEvent[1] === this.wallet.address) {
             this.countFileAdded += 1
+
             if (this.countFileAdded === this.emr.files.length) {
               this.showLoadingFiles = false
+              this.registerId = null
               this.resetState()
             } else {
-              this.handleUpload(this.emr.files[this.countFileAdded], this.countFileAdded)
+              this.handleUpload(this.registerId, this.emr.files[this.countFileAdded], this.countFileAdded)
             }
           }
-        } else if (
-          event.method === "ElectronicMedicalRecordAdded"
-        ) {
-          if (dataEvent[0].owner_id === this.wallet.address && this.registerEMR) {
-            this.processFiles()
+        } else if (event.method === "ElectronicMedicalRecordAdded") {
+          if (dataEvent[0].ownerId === this.wallet.address && this.registerId) {
+            this.processFiles(this.registerId)
           }
         }
       }
+    },
+
+    mnemonicData(val) {
+      if (val) this.initialDataKey()
     }
   },
 
@@ -415,10 +378,17 @@ export default {
 
   async created() {
     this.fetchCategories()
-    this.showModalPasswordCreated = true // TODO: Remove this later
+    if (this.mnemonicData) this.initialDataKey()
   },
 
   methods: {
+    initialDataKey() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
     async fetchCategories() {
       this.categories = await getEMRCategories()
     },
@@ -513,55 +483,31 @@ export default {
       this.showModalPassword = true
     },
 
-    async processFiles() {
+    async processFiles(registerId) {
       if (this.emr.files.length > 0) {
-        await this.handleUpload(this.emr.files[0], 0)
-      }
-    },
-
-    async submitPassword() { // TODO: Remove this later
-      try {
-        await this.wallet.decodePkcs8(this.password)
-        await store.dispatch("substrate/getEncryptedAccountData", { password: this.password })
-        const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
-
-        this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
-        this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
-
-        this.showModalPasswordCreated = false
-      } catch (e) {
-        this.wrongPassword = true
+        await this.handleUpload(registerId, this.emr.files[0], 0)
       }
     },
 
     async finalSubmit() {
       try {
         await this.wallet.decodePkcs8(this.password)
-        await store.dispatch("substrate/getEncryptedAccountData", { password: this.password })
-        const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
-
-        this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
-        this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
 
         if (this.emr.files.length > 0) {
-          const listEMR = await queryGetEMRList(this.api, this.wallet.address)
-          if (listEMR === null) {
-            this.registerEMR = true
-            await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
-          } else {
-            await this.processFiles()
-          }
+          const registerId = await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
+          this.registerId = registerId
+          await this.processFiles(registerId)
         }
       } catch (e) {
         this.wrongPassword = true
       }
     },
 
-    async handleUpload(dataFile, index) {
+    async handleUpload(id, dataFile, index) {
       this.wrongPassword = false
 
       try {
-        this.pair.unlock(this.password)
+        this.wallet.unlock(this.password)
 
         const file = dataFile.file
         const context = this
@@ -580,9 +526,10 @@ export default {
             const link = context.getFileIpfsUrl(uploaded)
 
             const dataBody = {
+              id: id,
               title: dataFile.title,
               description: dataFile.description,
-              record_link: link
+              recordLink: link
             }
             await addElectronicMedicalRecordFile(
               context.api,

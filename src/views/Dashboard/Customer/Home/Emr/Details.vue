@@ -1,39 +1,5 @@
 <template lang="pug">
   .customer-emr-details
-    ui-debio-modal(
-      :show="showModalPassword"
-      title="Open EMR files by input your password"
-      disable-dismiss
-      @onClose="$router.push({ name: 'customer-emr' })"
-    )
-      ui-debio-input(
-        :errorMessages="passwordErrorMessages"
-        :rules="$options.rules.password"
-        type="password"
-        variant="small"
-        placeholder="Input Password"
-        v-model="password"
-        outlined
-        block
-        :error="wrongPassword"
-        validate-on-blur
-        @keyup.enter="handlePassword"
-        @blur="wrongPassword = false"
-        @isError="handleError"
-      )
-
-      .modal-password__cta.d-flex.justify-space-between(slot="cta")
-        Button(
-          outlined
-          color="secondary"
-          @click="$router.push({ name: 'customer-emr' })"
-        ) Cancel
-
-        Button(
-          color="secondary"
-          @click="handlePassword"
-        ) Submit
-
     .customer-emr-details__wrapper(v-if="selectedFiles")
       .customer-emr-details__emr
         .customer-emr-details__emr-title List of {{ selectedFiles.title }}
@@ -72,10 +38,7 @@
 import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-import store from "@/store"
 import { u8aToHex } from "@polkadot/util"
-import { validateForms } from "@/common/lib/validate"
-import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
 import { fileTextIcon } from "@/common/icons"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
@@ -83,17 +46,12 @@ import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 export default {
   name: "CustomerEmrDetails",
 
-  mixins: [validateForms],
-
   components: { Button },
 
   data: () => ({
     fileTextIcon,
 
     isLoading: false,
-    showModalPassword: false,
-    wrongPassword: false,
-    password: null,
     publicKey: null,
     secretKey: null,
     result: null,
@@ -116,7 +74,7 @@ export default {
             description: "my vaccinations detail"
           }
         ],
-        created_at: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
+        createdAt: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
       },
       {
         id: 2,
@@ -134,7 +92,7 @@ export default {
             description: "my vaccinations detail"
           }
         ],
-        created_at: "2/7/2011"
+        createdAt: "2/7/2011"
       }
     ]
   }),
@@ -150,24 +108,21 @@ export default {
 
     selectedFiles() {
       return this.emrDocuments[this.$route.params.id - 1]
-    },
-
-    passwordErrorMessages() {
-      return this.errorMessages || (this.wrongPassword ? "Password not match" : "")
     }
   },
 
-  async created() {
-    this.showModalPassword = true
+  watch: {
+    mnemonicData(val) {
+      if (val) this.initialData()
+    }
   },
 
-  rules: {
-    password: [ val => !!val || errorMessage.PASSWORD(8) ]
+  created() {
+    if (this.mnemonicData) this.initialData()
   },
 
   methods: {
     async initialData() {
-      await store.dispatch("substrate/getEncryptedAccountData", { password: this.password })
       const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
 
       this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
@@ -205,18 +160,6 @@ export default {
         this.message = "Oh no! Something went wrong. Please try again later"
       }
 
-    },
-
-    async handlePassword() {
-      try {
-        await this.initialData()
-        await this.parseResult(0, this.selectedFiles?.files[0])
-
-        this.showModalPassword = false
-      } catch (error) {
-        this.wrongPassword = true
-        console.error(error);
-      }
     }
   }
 }

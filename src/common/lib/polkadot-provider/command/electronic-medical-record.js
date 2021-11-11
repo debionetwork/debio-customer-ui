@@ -7,7 +7,7 @@ export async function registerElectronicMedicalRecord(api, pair, data) {
 
 export async function addElectronicMedicalRecordFile(api, pair, data) {
   const result = await api.tx.electronicMedicalRecord
-    .addElectronicMedicalRecordFile(data.title, data.description, data.record_link)
+    .addElectronicMedicalRecordFile(data.id, data.title, data.description, data.recordLink)
     .signAndSend(pair, { nonce: -1 })
   return result.toHuman()
 }

@@ -3,8 +3,13 @@ export async function queryGetEMRList(api, ownerId) {
   return res.toHuman()
 }
 
-export async function queryElectronicMedicalRecordFileById(api, emrId) {
-  const res = await api.query.electronicMedicalRecord.electronicMedicalRecordFileById(emrId)
+export async function queryElectronicMedicalRecordById(api, emrId) {
+  const res = await api.query.electronicMedicalRecord.electronicMedicalRecordById(emrId)
+  return res.toHuman()
+}
+
+export async function queryElectronicMedicalRecordFileById(api, fileId) {
+  const res = await api.query.electronicMedicalRecord.electronicMedicalRecordFileById(fileId)
   return res.toHuman()
 }
 

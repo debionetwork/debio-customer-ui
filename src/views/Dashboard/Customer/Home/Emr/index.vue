@@ -4,7 +4,7 @@
     :show="showModalPassword"
     :show-title="false"
     disable-dismiss
-    @onClose="showModalPassword = false; wrongPassword = false"
+    @onClose="showModalPassword = false; error = null"
   )
     ui-debio-icon(:icon="alertIcon" stroke size="80")
     h1 Delete
@@ -13,8 +13,10 @@
     ui-debio-input(
       :rules="$options.rules.password"
       :errorMessages="passwordErrorMessages"
+      :error="error"
       v-model="password"
       @keyup.enter="onDelete"
+      @blur="error = null"
       type="password"
       variant="small"
       label="Delete your EMR files by input your password"
@@ -27,12 +29,12 @@
       Button(
         outlined
         color="secondary"
-        @click="showModalPassword = false; wrongPassword = false"
+        @click="showModalPassword = false; error = null"
       ) Cancel
 
       Button(
         color="secondary"
-        :disabled="passwordErrorMessages || !password"
+        :disabled="!password"
         @click="onDelete"
       ) Delete
   ui-debio-banner(
@@ -57,8 +59,8 @@
       .d-flex.flex-column
         span(v-for="file in item.files") {{ file.description }}
 
-    template(v-slot:[`item.created_at`]="{ item }")
-      span {{ new Date(item.created_at).toLocaleDateString() }}
+    template(v-slot:[`item.createdAt`]="{ item }")
+      span {{ new Date(item.createdAt).toLocaleDateString() }}
 
     template(v-slot:[`item.actions`]="{ item }")
       .customer-emr__actions
@@ -82,7 +84,7 @@ import errorMessage from "@/common/constants/error-messages"
 
 import {
   queryGetEMRList,
-  queryElectronicMedicalRecordFileById
+  queryElectronicMedicalRecordById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
 
 import DataTable from "@/common/components/DataTable"
@@ -105,8 +107,8 @@ export default {
 
     cardBlock: false,
     showModalPassword: false,
-    wrongPassword: false,
     selectedFile: null,
+    error: null,
     password: "",
     headers: [
       {
@@ -131,7 +133,7 @@ export default {
       },
       {
         text: "Upload Date",
-        value: "created_at",
+        value: "createdAt",
         align: "center",
         sortable: true
       },
@@ -158,7 +160,7 @@ export default {
             description: "my vaccinations detail"
           }
         ],
-        created_at: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
+        createdAt: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
       },
       {
         id: 2,
@@ -176,7 +178,7 @@ export default {
             description: "my vaccinations detail"
           }
         ],
-        created_at: "2/7/2011"
+        createdAt: "2/7/2011"
       }
     ]
   }),
@@ -191,7 +193,7 @@ export default {
     }),
 
     passwordErrorMessages() {
-      return this.errorMessages || (this.wrongPassword ? "Password not match" : "")
+      return this.errorMessages || this.error
     }
   },
 
@@ -219,26 +221,29 @@ export default {
     password: [ val => !!val || errorMessage.PASSWORD(8) ]
   },
 
+  created() {
+    this.getDocumentsHistory()
+  },
+
   methods: {
     async getDocumentsHistory() {
-      // TODO: Un comment after backend ready
       await this.metamaskDispatchAction(this.getEMRHistory)
     },
 
     async getEMRHistory() {
       const dataEMR = await this.metamaskDispatchAction(queryGetEMRList, this.api, this.wallet.address)
 
-      if (dataEMR != null) {
-        const listEMR = dataEMR.info.reduce((filtered, current) => {
+      if (dataEMR !== null) {
+        const listEMR = dataEMR.reduce((filtered, current) => {
           if (filtered.every(v => v !== current)) filtered.push(current)
 
           return filtered
         }, [])
 
         if (listEMR.length > 0) {
-          listEMR.reverse()
+          listEMR.reverse() // TODO: BAD way, Need reverse from backend
           for (let i = 0; i < listEMR.length; i++) {
-            const emrDetail = await this.metamaskDispatchAction(queryElectronicMedicalRecordFileById,
+            const emrDetail = await this.metamaskDispatchAction(queryElectronicMedicalRecordById,
               this.api,
               listEMR[i]
             )
@@ -255,28 +260,31 @@ export default {
       }
     },
 
-    prepareEMRData(dataEMR) {
-      const title = dataEMR.title
-      const description = dataEMR.description
-      var d = new Date(parseInt(dataEMR.uploaded_at.replace(/,/g, "")))
-      const timestamp = d.getTime().toString()
-      const data = dataEMR
-      const date = d.toLocaleString("en-US", {
-        day: "numeric", // numeric, 2-digit
-        year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
-      })
 
-      const order = {
-        title,
-        description,
-        data,
-        date,
-        timestamp,
-        type: "emr"
-      }
 
-      this.emrDocuments.push(order)
+    prepareEMRData() {
+      // TODO: Data still not fetched properly. Need update later
+      // const title = dataEMR.title
+      // const description = dataEMR.description
+      // var d = new Date(parseInt(dataEMR.uploadedAt.replace(/,/g, "")))
+      // const timestamp = d.getTime().toString()
+      // const data = dataEMR
+      // const date = d.toLocaleString("en-US", {
+      //   day: "numeric", // numeric, 2-digit
+      //   year: "numeric", // numeric, 2-digit
+      //   month: "long" // numeric, 2-digit, long, short, narrow
+      // })
+
+      // const order = {
+      //   title,
+      //   description,
+      //   data,
+      //   date,
+      //   timestamp,
+      //   type: "emr"
+      // }
+
+      // this.emrDocuments.push(order)
     },
 
     onDetails(id) {
@@ -289,7 +297,15 @@ export default {
     },
 
     async onDelete() {
-      this.showModalPassword = false
+      const { id } = this.selectedFile
+      try {
+        await this.wallet.decodePkcs8(this.password)
+
+        this.emrDocuments = this.emrDocuments.filter(document => document.id !== id)
+        this.showModalPassword = false
+      } catch (e) {
+        this.error = e
+      }
       // TODO: Update this when Backend is ready
     }
   }
