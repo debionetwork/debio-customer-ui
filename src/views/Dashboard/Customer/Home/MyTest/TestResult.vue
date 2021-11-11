@@ -34,7 +34,7 @@
                 :sub-title="file.fileSubTitle"
                 tiny-card
                 with-icon
-                @click="actionDownload(file.fileType, index)"
+                @click="actionDownload(index)"
               )
                 ui-debio-icon(
                   slot="icon"
@@ -45,6 +45,7 @@
                 )
 
             ui-debio-card(
+              v-if="!ratingTestResult"
               class="mt-2"
               tiny-card
               with-icon
@@ -58,6 +59,19 @@
                   :icon="starIcon"
                   stroke
                   color="#c400a5"
+                )
+            ui-debio-card(
+              v-else
+              class="mt-2"
+              tiny-card
+              with-icon
+              :title="ratingTitle"
+              :sub-title="ratingSubTitle"
+              )
+                ui-debio-rating(
+                  :size="33"
+                  :total-rating="ratingTestResult"
+                  :with-reviewers="false"
                 )
 
       ui-debio-modal(
@@ -96,10 +110,10 @@ import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs";
 import { getOrdersDetail } from "@/common/lib/polkadot-provider/query/orders";
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services";
 import { hexToU8a } from "@polkadot/util";
-import { submitRatingOrder } from "@/common/lib/rating";
+import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/rating";
 import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
-import Modal from "@/common/components/Modal"
-import Rating from "@/common/components/Rating"
+import Modal from "@/common/components/Modal";
+import Rating from "@/common/components/Rating";
 export default {
   name: "TestResult",
 
@@ -116,6 +130,9 @@ export default {
     testResult: {},
     services: [],
     rating: 0,
+    ratingTitle: "",
+    ratingSubTitle: "",
+    ratingTestResult: null,
     lab: null,
     order: null,
     isDataPdf: false,
@@ -151,11 +168,21 @@ export default {
   },
 
   methods: {
+    async getRatingTestResult() {
+      try {
+        const data = await getRatingByOrderId(this.idOrder);
+        console.log(data);
+        // todo set rating from response backend
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
     async getTestResult() {
       try {
         this.order = await getOrdersDetail(this.api, this.idOrder);
         this.ownerAddress = this.order.customer_eth_address;
-
+        console.log(this.order)
         this.testResult = await queryDnaTestResults(
           this.api,
           this.order.dna_sample_tracking_id
@@ -183,21 +210,21 @@ export default {
 
     async getFileUploaded() {
       try {
-        if (this.speciment.report_link !== "") {
+        if (this.testResult.report_link !== "") {
           this.files.push({
             fileType: "report",
             fileName: this.serviceName + " Report",
-            fileLink: this.speciment.report_link,
+            fileLink: this.testResult.report_link,
             fileTitle: "Download Report",
             fileSubTitle: "Download Your Test Report"
           });
         }
 
-        if (this.speciment.result_link !== "") {
+        if (this.testResult.result_link !== "") {
           this.files.push({
             fileType: "result",
             fileName: this.serviceName + " Result",
-            fileLink: this.speciment.result_link,
+            fileLink: this.testResult.result_link,
             fileTitle: "Download Raw Data",
             fileSubTitle: "Download Your Genomic Data"
           });
@@ -278,9 +305,9 @@ export default {
     async submitRating() {
       try {
         await submitRatingOrder(
-          this.speciment.lab_id,
+          this.testResult.lab_id,
           this.order.service_id,
-          this.speciment.order_id,
+          this.testResult.order_id,
           this.order.customer_id,
           this.rating
         );

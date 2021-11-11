@@ -11,3 +11,9 @@ export const submitRatingOrder = async (labId, serviceId, orderId, ratingBy, rat
   
   return result.data;
 }
+
+export const getRatingByOrderId = async (orderId) => {
+  const result = await axios.get(`${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/${orderId}`, {});
+
+  return result.data;
+}
