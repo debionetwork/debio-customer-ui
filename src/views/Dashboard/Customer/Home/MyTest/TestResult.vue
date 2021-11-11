@@ -89,6 +89,16 @@
             interactive
             @input="getRating"
           )
+          ui-debio-text-area(
+            :rules="$options.rules.review"
+            variant="small"
+            label="Write a review"
+            placeholder="Write a review"
+            v-model="review"
+            validate-on-blur
+            outlined
+            block
+          )
 
       ui-debio-modal(
         :show="showModal"
@@ -112,8 +122,10 @@ import { queryServicesById } from "@/common/lib/polkadot-provider/query/services
 import { hexToU8a } from "@polkadot/util";
 import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/rating";
 import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
+import errorMessage from "@/common/constants/error-messages"
 import Modal from "@/common/components/Modal";
 import Rating from "@/common/components/Rating";
+import Rating from "@/common/components/Textarea";
 export default {
   name: "TestResult",
 
@@ -123,6 +135,13 @@ export default {
   },
 
   data: () => ({
+    downloadIcon,
+    debioIcon,
+    creditCardIcon,
+    starIcon,
+    checkCircleIcon,
+    errorMessage,
+
     privateKey: "",
     publicKey: "",
     idOrder: "",
@@ -130,6 +149,7 @@ export default {
     testResult: {},
     services: [],
     rating: 0,
+    review: "",
     ratingTitle: "",
     ratingSubTitle: "",
     ratingTestResult: null,
@@ -138,11 +158,6 @@ export default {
     isDataPdf: false,
     serviceName: "",
     serviceCategory: "",
-    downloadIcon,
-    debioIcon,
-    creditCardIcon,
-    starIcon,
-    checkCircleIcon,
     resultLoading: false,
     showModal: false,
     showModalRating: false,
@@ -161,6 +176,7 @@ export default {
     this.idOrder = this.$route.params.idOrder;
     this.privateKey = hexToU8a(this.mnemonicData.privateKey);
     this.ownerAddress = this.wallet.address;
+    await this.getRatingTestResult();
     await this.getTestResult();
     await this.getLabServices();
     await this.getFileUploaded();
@@ -171,8 +187,9 @@ export default {
     async getRatingTestResult() {
       try {
         const data = await getRatingByOrderId(this.idOrder);
-        console.log(data);
-        // todo set rating from response backend
+        this.ratingTestResult = data.rating;
+        this.ratingTitle = `Rating ${this.ratingTestResult},0`;
+        this.ratingSubTitle = data.review;
       } catch (error) {
         console.error(error);
       }
@@ -181,11 +198,11 @@ export default {
     async getTestResult() {
       try {
         this.order = await getOrdersDetail(this.api, this.idOrder);
-        this.ownerAddress = this.order.customer_eth_address;
+        this.ownerAddress = this.order.customerEthAddress;
         console.log(this.order)
         this.testResult = await queryDnaTestResults(
           this.api,
-          this.order.dna_sample_tracking_id
+          this.order.dnaSampleTrackingId
         );
       } catch (error) {
         this.resultLoading = false;
@@ -195,10 +212,10 @@ export default {
 
     async getLabServices() {
       try {
-        this.lab = await queryLabsById(this.api, this.testResult.lab_id);
-        this.services = await queryServicesById(this.api, this.order.service_id);
+        this.lab = await queryLabsById(this.api, this.testResult.labId);
+        this.services = await queryServicesById(this.api, this.order.serviceId);
 
-        this.publicKey = this.lab.info.box_public_key;
+        this.publicKey = this.lab.info.boxPublicKey;
         this.serviceCategory = this.services.info.category;
         this.serviceName = this.services.info.name;
       } catch (error) {
@@ -210,21 +227,21 @@ export default {
 
     async getFileUploaded() {
       try {
-        if (this.testResult.report_link !== "") {
+        if (this.testResult.reportLink !== "") {
           this.files.push({
             fileType: "report",
             fileName: this.serviceName + " Report",
-            fileLink: this.testResult.report_link,
+            fileLink: this.testResult.reportLink,
             fileTitle: "Download Report",
             fileSubTitle: "Download Your Test Report"
           });
         }
 
-        if (this.testResult.result_link !== "") {
+        if (this.testResult.resultLink !== "") {
           this.files.push({
             fileType: "result",
             fileName: this.serviceName + " Result",
-            fileLink: this.testResult.result_link,
+            fileLink: this.testResult.resultLink,
             fileTitle: "Download Raw Data",
             fileSubTitle: "Download Your Genomic Data"
           });
@@ -304,13 +321,18 @@ export default {
 
     async submitRating() {
       try {
-        await submitRatingOrder(
-          this.testResult.lab_id,
-          this.order.service_id,
-          this.testResult.order_id,
-          this.order.customer_id,
-          this.rating
+        const data = await submitRatingOrder(
+          this.testResult.labId,
+          this.order.serviceId,
+          this.testResult.orderId,
+          this.order.customerId,
+          this.rating,
+          this.review
         );
+
+        this.ratingTestResult = data.rating;
+        this.ratingTitle = `Rating ${this.ratingTestResult},0`;
+        this.ratingSubTitle = data.review;
 
         this.showModalRating = false
         this.showModal = true
@@ -343,6 +365,12 @@ export default {
 
     modalTitle() {
       return `Thank you! ${"\n"} Your feedback has been sent`
+    }
+  },
+
+  rules: {
+    document: {
+      review: [ val => !!val || errorMessage.REQUIRED ]
     }
   }
 }
