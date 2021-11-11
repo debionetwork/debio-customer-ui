@@ -1,6 +1,6 @@
 import store from "@/store"
 import contractInfo from "@/store/metamask/contracts/contract.json"
-import { sendTransaction } from "./wallet"
+import sendTransaction from "../send-transaction"
 import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders"
 
 
