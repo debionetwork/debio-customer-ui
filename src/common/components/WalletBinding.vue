@@ -72,7 +72,7 @@
             v-col(class="justify-start" ) DAI Balance
             template
               ui-debio-icon.mr-2(:icon="daiIcon" size="14" )
-              span.mr-5 {{ethAccount[0].balance}}
+              span.mr-5 {{ balance }}
     
           
           v-btn(
@@ -93,6 +93,8 @@ import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import localStorage from "@/common/lib/local-storage"
 import Button from "@/common/components/Button"
 import { daiIcon, copyIcon } from "@/common/icons"
+import { getBalanceDAI } from "@/common/lib/metamask/wallet"
+
 
 
 export default {
@@ -117,7 +119,8 @@ export default {
     inputPassword: false,
     address: "",
     copyIcon,
-    daiIcon
+    daiIcon,
+    balance: 0
   }),
 
   computed: {
@@ -147,9 +150,8 @@ export default {
 
         await this.$store.dispatch("wallet/walletBinding", {accountId, ethAddress})
         this.setMetamaskAddress(this.ethAccount[0].address)
-        this.$emit("status-wallet", {
-          status: true
-        })
+        this.balance = await getBalanceDAI(this.ethAccount[0].address)
+
         this.loading = false
         this.putWallet = false
       } 
