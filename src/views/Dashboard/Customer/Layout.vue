@@ -150,7 +150,7 @@ export default {
     }
   },
 
-  async created() {
+  async mounted() {
     if (!this.mnemonicData) this.showModalPassword = true
     await this.getListNotification()
   },

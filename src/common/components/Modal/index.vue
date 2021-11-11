@@ -108,7 +108,7 @@ export default {
     position: fixed
     top: 0
     left: 0
-    z-index: 100
+    z-index: 101
     opacity: 0
     visibility: hidden
     transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
