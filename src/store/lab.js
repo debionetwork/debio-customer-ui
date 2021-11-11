@@ -4,7 +4,8 @@ const defaultState = {
   services: [],
   country: null,
   city: null,
-  category: null
+  category: null,
+  stakingData: null
 }
 
 export default {
@@ -33,7 +34,13 @@ export default {
 
     SET_SERVICES(state, services) {
       state.services = services
+    },
+
+    SET_STAKING_SERVICE(state, stakingData) {
+      console.log(stakingData)
+      state.stakingData = stakingData
     }
+
   },
   actions: {
     async setCountryRegionCity ({commit}, data) {
@@ -68,6 +75,11 @@ export default {
 
     getServices(state) {
       return state.services
+    },
+
+    getStakingData(state) {
+      return state.stakingData
     }
+
   }
 }

@@ -6,7 +6,7 @@
           v-icon mdi-close
 
       div.pa-5(class="d-flex justify-center")
-        v-icon(color="#BA8DBB" :size="125") {{ selectedService.serviceImage }}
+        ui-debio-avatar(src="https://picsum.photos/150" size="125" rounded)
         
       div(class="d-flex justify-center pb-5 pt-1")
         .dialog-service__title
@@ -27,8 +27,7 @@
       
       v-row(class="pa-5")
         v-col(cols="3")
-          v-icon.ml-2(v-if="!avatar" color="#BA8DBB" size="90") mdi-hospital
-          v-img.ml-2(v-else :src="avatar" max-width="90" max-height="90")
+          ui-debio-avatar(src="https://picsum.photos/150" size="90" rounded)
         
         v-col(cols="6 mt-3")
           .dialog-service__sub-title

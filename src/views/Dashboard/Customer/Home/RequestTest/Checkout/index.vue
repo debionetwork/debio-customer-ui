@@ -12,7 +12,7 @@
           )
         
         template
-          PaymentCheckout(:prefillService="prefillService")
+          PaymentCheckout
                     
 </template>
 
@@ -66,7 +66,8 @@ export default {
       serviceImage: data?.service_info.image,
       serviceCategory: data?.service_info.category,
       serviceDescription: data?.service_info.description,
-      labId: data?.lab_info.name,
+      labName: data?.lab_info.name,
+      labId: data?.lab_info.id,
       labRate: 0,
       labAddress: data?.lab_info.address,
       price: data?.service_info.prices_by_currency[0].total_price,

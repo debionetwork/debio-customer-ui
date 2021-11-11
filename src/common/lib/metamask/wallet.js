@@ -125,6 +125,12 @@ export async function getBalanceETH(address) {
   }
 }
 
+export async function getBalanaceDAI(address) {
+  const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
+  let balance = await contractERC20Interface.methods.balanceOf(address).call()
+  return balance
+}
+
 export async function getBalanceUSDT() {
   const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
   let balance = await contractERC20Interface.methods

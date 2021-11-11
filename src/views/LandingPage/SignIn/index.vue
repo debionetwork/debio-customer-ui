@@ -59,7 +59,6 @@
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             :type="showPassword ? 'text' : 'password'"
             :rules="[val => !!val || 'Password is required']"
-            :disabled="isLoading"
             @click:append="showPassword = !showPassword"
             @keyup.enter="onPasswordSet"
             outlined

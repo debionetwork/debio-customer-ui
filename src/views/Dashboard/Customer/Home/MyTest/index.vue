@@ -70,7 +70,18 @@
                   .customer-my-test__status
                   span(:style="setStatusColor(item.status)") {{ item.status }}
           v-tab-item
-            StakingServiceTab
+            .customer-my-test__table
+              StakingServiceTab(
+                @unstake="showingDialog"
+              )
+          ConfirmationDialog(
+            :show="showDialog"
+            title="Are you sure you want to unstake?"
+            message="If you wish to proceed, you won't be able to continue the request service process and no DBIO reward will be given. Your staking amount will be returned after 144 hours or 6 days"
+            @click="unstakeService"
+            @close="closingDialog"
+          )
+      
 
 </template>
 
@@ -82,6 +93,7 @@ import Button from "@/common/components/Button"
 import { mapState } from "vuex"
 import localStorage from "@/common/lib/local-storage"
 import dataTesting from "./dataTesting.json"
+import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 
 export default {
   name: "MyTest",
@@ -89,7 +101,8 @@ export default {
   components: { 
     StakingServiceTab,
     DataTable,
-    Button
+    Button,
+    ConfirmationDialog
   },
 
   data: () => ({ 
@@ -115,7 +128,8 @@ export default {
         align: "center",
         width: "5%"
       }
-    ]
+    ],
+    showDialog: false
   }),
 
   mounted() {
@@ -165,6 +179,14 @@ export default {
 
     goToInstruction() {
       console.log("insturction")
+    },
+
+    showingDialog() {
+      this.showDialog = true
+    },
+
+    closingDialog() {
+      this.showDialog = false
     }
   },
 
@@ -193,13 +215,13 @@ export default {
     width: 100%
     height: 200px 
     background: #FFFFFF
-    margin-top: 30px
+    margin-top: 35px
 
     &__tabs
       padding: 3px
 
     &__table
-      padding: 10px
+      padding: 1px
 
     &__actions
       padding: 35px

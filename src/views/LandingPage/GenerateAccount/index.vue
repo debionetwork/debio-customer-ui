@@ -41,10 +41,19 @@
             h3 We will give you 12 words that allows you to recover an account
             p You need to carefully save the  words. Copy-paste it, screenshot it, write it down, and keep it safe. If you lose it, we won't be able to help you recover it.
             v-checkbox(v-model="agreeConditions"): template(v-slot:label): div#checkboxLabel I understand wiht DeBio 
-              //- TODO : add link 
-              a Terms and Conditions 
-              span and 
-              a Privacy Policy
+              v-tooltip(bottom)
+                template(v-slot:activator="{ on }")
+                  a(target="_blank"
+                    href="https://app.gitbook.com/s/-Me8JCBOdWFqjBTM_Viy/legal/terms-and-condition"
+                    @click.stop
+                    v-on="on"
+                  ) Terms and Condition
+                  span  and 
+                  a(target="_blank"
+                    href="https://app.gitbook.com/s/-Me8JCBOdWFqjBTM_Viy/legal/privacy-policy"
+                    @click.stop
+                    v-on="on"
+                  ) Privacy Policy
             v-btn.white--text(elevation='0' color='primary' :disabled="!agreeConditions" @click="generateMnemonic") Continue
 </template>
 
