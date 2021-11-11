@@ -140,19 +140,20 @@ export default {
           verificationStatus:  verificationStatus
         } = this.services[i]
 
-        let labRate = 0
-        let countRateLab = 0
-        let serviceRate = 0
-        let countServiceRate = 0
-        let detailPrice = this.services[i].info.pricesByCurrency[0]
+        const labRate = this.rate && this.rate.length > 1
+          ? this.rate.find(r => r.labId === labId)
+          : null
 
-        if (this.rate[labId]) {
-          const servicesRate = this.rate[labId].services
-          labRate = this.rate[labId].ratingLab
-          countRateLab = this.rate[labId].countRatingLab
-          serviceRate = servicesRate[serviceId].ratingService
-          countServiceRate = servicesRate[serviceId].countRatingService
-        }
+        const countRateLab = labRate ? labRate.count_rating_lab : 0
+
+        const serviceRate = labRate.services
+          .find(service => service.service_id === serviceId)
+
+        const countServiceRate = serviceRate
+          ? serviceRate.count_rating_service
+          : 0
+
+        const detailPrice = this.services[i].info.pricesByCurrency[0]
 
         if (durationType === "WorkingDays") {
           durationType = "Working Days"
