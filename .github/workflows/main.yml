@@ -66,9 +66,9 @@ jobs:
               debio_dev/data/debio-customer-ui vue_app_dev_debio_backend_url;
               debio_dev/data/debio-customer-ui vue_app_dai_contract_address;
               debio_dev/data/debio-customer-ui vue_app_debio_api_key;
-              debio_dev/data/frontend_file frontend_file file_data | FILE_DATA;
-              debio_dev/data/frontend_file frontend_file file_name | FILE_NAME;
-              debio_dev/data/frontend_file frontend_file path | FILE_PATH;
+              debio_dev/data/frontend_file file_data | FILE_DATA;
+              debio_dev/data/frontend_file file_name | FILE_NAME;
+              debio_dev/data/frontend_file path | FILE_PATH;
 
       - name: Create .env & gcp sa
         shell: bash
