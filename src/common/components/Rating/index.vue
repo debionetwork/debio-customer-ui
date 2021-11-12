@@ -45,7 +45,7 @@
 import { starIcon } from "@/common/icons"
 
 export default {
-  name: "UiDebioStepper",
+  name: "UiDebioRating",
 
   props: {
     rating: { type: Number, default: 0, validator: val => val >= 0 },
