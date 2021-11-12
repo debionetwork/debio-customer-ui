@@ -95,12 +95,6 @@ jobs:
           VUE_APP_DEBIO_API_KEY=$VUE_APP_DEBIO_API_KEY
           EOF
 
-          cd ./src/views/Login/DemoLabAccounts && touch labs.js
-
-          tee -a $FILE_NAME <<EOF
-          $FILE_DATA
-          EOF
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
