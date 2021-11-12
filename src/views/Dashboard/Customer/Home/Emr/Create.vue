@@ -68,11 +68,13 @@
           outlined
           width="100"
           color="secondary"
+          :disabled="isLoading"
           @click="showModalPassword = false; wrongPassword = false"
         ) Cancel
 
         Button(
           width="100"
+          :loading="isLoading"
           color="secondary"
           @click="finalSubmit"
         ) Submit
@@ -277,6 +279,7 @@ export default {
     showModalConfirm: null,
     showModalPassword: false,
     wrongPassword: false,
+    isLoading: false,
     showLoadingFiles: false,
     registerId: null,
     clearFile: false,
@@ -347,6 +350,8 @@ export default {
             }
           }
         } else if (event.method === "ElectronicMedicalRecordAdded") {
+          this.isLoading = false
+          this.registerId = dataEvent[0].id
           if (dataEvent[0].ownerId === this.wallet.address && this.registerId) {
             this.processFiles(this.registerId)
           }
@@ -490,16 +495,16 @@ export default {
     },
 
     async finalSubmit() {
+      this.isLoading = true
       try {
         await this.wallet.decodePkcs8(this.password)
 
         if (this.emr.files.length > 0) {
-          const registerId = await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
-          this.registerId = registerId
-          await this.processFiles(registerId)
+          await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
         }
       } catch (e) {
         this.wrongPassword = true
+        this.isLoading = false
       }
     },
 
@@ -633,9 +638,11 @@ export default {
     },
 
     onRetry(file) {
+      // TODO: Add script later
     },
 
     onCancel(file) {
+      // TODO: Add script later
     }
   }
 }

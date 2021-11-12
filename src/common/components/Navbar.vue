@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import { compareDate } from "@/common/utils"
+import { compareDate } from "@/common/lib/utils"
 import { mapActions, mapMutations, mapState } from "vuex"
 
 import {

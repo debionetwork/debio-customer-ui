@@ -1,4 +1,4 @@
-import { generateUUID } from "@/common/utils"
+import { generateUUID } from "@/common/lib/utils"
 
 export default {
   props: {
