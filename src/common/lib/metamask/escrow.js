@@ -73,9 +73,15 @@ export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
  */
 
 export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
+  
+  console.log("=====================================")
   const contracEscrowInterface = store.getters["metamask/contracts/getEscrowContract"]
+  console.log("contract", contracEscrowInterface)
+
   const web3 = store.getters["metamask/getWeb3"]
   const currentData = await getOrdersData(api, orderId)
+
+  const escrowWithSigner = contracEscrowInterface.connect(sellerEth)
 
   const serviceId = currentData.serviceId
   const customerSubstrateAddress = currentData.customerId
@@ -86,6 +92,8 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const testingPrice = currentData.prices[0].value
   const qcPrice = currentData.additionalPrices[0].value
   const payAmount = (parseFloat(testingPrice) + parseFloat(qcPrice)).toFixed(2)
+
+  console.log("escrow with signer ==> ", escrowWithSigner)
 
   const txData = contracEscrowInterface.methods
     .payOrder(

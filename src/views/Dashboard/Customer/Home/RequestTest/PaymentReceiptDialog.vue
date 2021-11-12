@@ -258,10 +258,12 @@ export default {
           this.metamaskWalletAddress,
           totalPrice
         )
+ 
         await getTransactionReceiptMined(txHash)
       }
 
       const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)
+      
       await getTransactionReceiptMined(txHash)
 
       this.isLoading = false

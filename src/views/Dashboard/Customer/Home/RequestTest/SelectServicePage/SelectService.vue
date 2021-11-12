@@ -1,7 +1,7 @@
 <template lang="pug">
   .customer-select-service
     .customer-select-service__title 
-      b Select your preferred Laboratory
+      b Select your preferred Service
 
     template(v-if="showNoLab")
       NoLab
