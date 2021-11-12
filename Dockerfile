@@ -1,8 +1,8 @@
 # build stage
-FROM node:14.17.5-buster as build-stage
+FROM node:16.11.1 as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run lint
 RUN npm run build
