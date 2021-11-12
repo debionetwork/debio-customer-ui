@@ -18,6 +18,7 @@
 
 <script>
 
+import { mapState, mapMutations } from "vuex"
 import PaymentCheckout from "./PaymentCheckout"
 import { fetchPaymentDetails } from "@/common/lib/orders";
 
@@ -38,6 +39,13 @@ export default {
     ]  
   }),
 
+  computed: {
+    ...mapState({
+      dataService: (state) => state.testRequest.products
+    })
+  },
+  
+
   async created() {
     if (!this.$route.params.id) return
 
@@ -45,31 +53,42 @@ export default {
 
     if (data?.status !== "Unpaid") this.$router.push({ name: "customer-payment-history" })
 
-    this.prefillService = {
-      service: {
-        price: data?.service_info.prices_by_currency[0].price_components[0].value,
-        currency: data?.service_info.prices_by_currency[0].currency,
-        qc_value: data?.service_info.prices_by_currency[0].additional_prices[0].value,
-        total_price: data?.service_info.prices_by_currency[0].total_price
-      },
-      lab: {
-        name: data?.lab_info.name,
-        city: data?.lab_info.city,
-        county: data?.lab_info.county,
-        address: data?.lab_info.address,
-        duration: data?.service_info.expected_duration.duration,
-        duration_type: data?.service_info.expected_duration.duration_type,
-        service_image: data?.service_info.image,
-        service_name: data?.service_info.name,
-        service_rating: 5, // Update when backend is ready
-        price: data?.service_info.prices_by_currency[0].price_components[0].value,
-        currency: data?.service_info.prices_by_currency[0].currency,
-        lab_rating: 4
-      }
+    let durationType = data?.service_info.expected_duration.duration_type
+
+    if (durationType === "WorkingDays") {
+      durationType = "Working Days"
     }
+
+    this.prefillService = {
+      serviceId: data?.seller_id,
+      serviceName: data?.service_info.name,
+      serviceRate: 0,
+      serviceImage: data?.service_info.image,
+      serviceCategory: data?.service_info.category,
+      serviceDescription: data?.service_info.description,
+      labId: data?.lab_info.name,
+      labRate: 0,
+      labAddress: data?.lab_info.address,
+      price: data?.service_info.prices_by_currency[0].total_price,
+      detailPrice: data?.service_info.prices_by_currency[0],
+      currency: data?.service_info.prices_by_currency[0].currency,
+      city: data?.lab_info.city,
+      region: data?.lab_info.region,
+      countRateLab: 0,
+      countServiceRate: 0,
+      duration: data?.service_info.expected_duration.duration,
+      durationType,
+      verificationStatus: "Verified",
+      indexPrice: 0
+    }
+    this.setProductsToRequest(this.prefillService)
   },
 
   methods: {
+    ...mapMutations({
+      setProductsToRequest: "testRequest/SET_PRODUCTS"
+    }),
+
     handleBack() {
       if (Object.keys(this.prefillService).length) return
       this.$router.push({ name: "customer-request-test-service"})

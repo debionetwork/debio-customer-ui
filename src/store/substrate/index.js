@@ -1,6 +1,5 @@
-import types from "./types.json"
 import store from "@/store/index"
-import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"	
 import { u8aToHex } from "@polkadot/util" // u8aToString, stringToU8a
 import keyring from "@polkadot/ui-keyring"
 import { Keyring } from "@polkadot/keyring"
@@ -108,10 +107,9 @@ export default {
         const PROVIDER_SOCKET = store.getters["auth/getConfig"].substrateWs
         const wsProvider = new WsProvider(PROVIDER_SOCKET)
         const api = await ApiPromise.create({
-          provider: wsProvider,
-          types: types
+          provider: wsProvider
         })
-
+        
         // Example of how to subscribe to events via storage
         api.query.system.events((events) => {
           console.log(`\nReceived ${events.length} events:`)
@@ -128,10 +126,10 @@ export default {
             }
           })
         })
-
+        
         await api.isReady
         commit("SET_API", api)
-
+        
         commit("SET_LOADING_API", false)
       } catch (err) {
         console.log(err)
@@ -142,7 +140,7 @@ export default {
       try {
         commit("SET_LOADING_WALLET", true)
         commit("CLEAR_WALLET")
-
+        
         const { pair, json } = keyring.addUri(mnemonic, password, { name: "accountName" })
         pair.unlock(password)
         localStorage.setKeystore(JSON.stringify(json))
@@ -151,17 +149,9 @@ export default {
         console.log("Is pair locked?", pair.isLocked)
         commit("SET_WALLET", pair) // FIXME: simpen untuk dev
         commit("SET_LOADING_WALLET", false)
-
-        const identity = await Kilt.Identity.buildFromMnemonic(mnemonic)
-
-        const dataMnemonic = {
-          privateKey: u8aToHex(identity.boxKeyPair.secretKey),
-          publicKey: u8aToHex(identity.boxKeyPair.publicKey),
-          mnemonic: mnemonic
-        }
-
-        localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(dataMnemonic))
-        commit("SET_MNEMONIC_DATA", dataMnemonic)
+        
+        localStorage.setLocalStorageByName("mnemonic_data", CryptoJS.AES.encrypt(mnemonic, password));	
+        commit("SET_MNEMONIC_DATA", mnemonic)	
         return { success: true }
       } catch (err) {
         console.log(err)
@@ -182,11 +172,11 @@ export default {
           commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
           console.log("Is pair locked?", pair.isLocked)
           commit("SET_WALLET", pair)
-
-          localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(file[1]))
+          
+          localStorage.setLocalStorageByName("mnemonic_data", CryptoJS.AES.encrypt(file[1].mnemonic, password));	
           commit("SET_MNEMONIC_DATA", file[1])
           commit("SET_LOADING_WALLET", false)
-
+          
           return { success: true }
         } else {
           // FIXME: Ini belum ada mnemonic nya
@@ -199,35 +189,29 @@ export default {
           commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
           console.log("Is pair locked?", pair.isLocked)
           commit("SET_WALLET", pair)
-
+          
           return { success: true }
-          /*
-          localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(file[1]));
-          commit('SET_MNEMONIC_DATA', file[1])
-          commit('SET_LOADING_WALLET', false)
-          */
         }
-
       } catch (err) {
         commit("CLEAR_WALLET")
         commit("SET_LOADING_WALLET", false)
         return { success: false, error: err.message }
       }
     },
-    async getAccount({ commit, state }, { address }) {
+    getEncryptedAccountData({ commit }, { password }) {	
+      const encryptedMnemonic = localStorage.getLocalStorageByName("mnemonic_data");	
+      if (encryptedMnemonic != null) {	
+        commit("SET_MNEMONIC_DATA", CryptoJS.AES.decrypt(encryptedMnemonic, password));	
+      }	
+    },	
+    async getAllAccounts({ commit, state }, { address }) {	
       try {
         commit("SET_LOADING_WALLET", true)
         const pair = keyring.getPair(address)
         commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
         commit("SET_WALLET", pair)
         commit("SET_LOADING_WALLET", false)
-
-        const dataMnemonicJson = localStorage.getLocalStorageByName("mnemonic_data")
-        if (dataMnemonicJson != null && dataMnemonicJson != "") {
-          const dataMnemonic = JSON.parse(dataMnemonicJson)
-          commit("SET_MNEMONIC_DATA", dataMnemonic)
-        }
-
+        
         commit("SET_LAB_ACCOUNT", null)
         commit("SET_IS_LAB_ACCOUNT_EXIST", false)
         const labAccount = await queryEntireLabDataById(state.api, address)
@@ -235,7 +219,7 @@ export default {
           commit("SET_LAB_ACCOUNT", labAccount)
           commit("SET_IS_LAB_ACCOUNT_EXIST", true)
         }
-
+        
         commit("SET_DOCTOR_ACCOUNT", null)
         commit("SET_IS_DOCTOR_ACCOUNT_EXIST", false)
         const doctorAccount = await queryEntireDoctorDataById(state.api, address)
@@ -243,7 +227,7 @@ export default {
           commit("SET_DOCTOR_ACCOUNT", doctorAccount)
           commit("SET_IS_DOCTOR_ACCOUNT_EXIST", true)
         }
-
+        
         commit("SET_HOSPITAL_ACCOUNT", null)
         commit("SET_IS_HOSPITAL_ACCOUNT_EXIST", false)
         const hospitalAccount = await queryEntireHospitalDataById(state.api, address)

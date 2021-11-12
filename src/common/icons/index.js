@@ -53,6 +53,7 @@ import receivedBanner from "./receivedBanner"
 import wetworkBanner from "./wetworkBanner"
 import resultReadyBanner from "./resultReadyBanner"
 import qualityControlBanner from "./qualityControlBanner"
+import rejectedQCBanner from "./rejectedQCBanner"
 
 export {
   creditCardIcon,
@@ -109,5 +110,6 @@ export {
   receivedBanner,
   wetworkBanner,
   resultReadyBanner,
-  qualityControlBanner
+  qualityControlBanner,
+  rejectedQCBanner
 }

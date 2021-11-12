@@ -81,12 +81,12 @@
                     .navbar__balance-wrapper
                       .navbar__balance-type {{ getActiveMenu.currency }} Balance
                       .navbar__balance-amount
-                        ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? debioIcon : daiIcon" size="10")
-                        span {{ walletBalance }}
+                        ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? daiIcon : debioIcon" size="10")
+                        span {{ activeBalance }}
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
-    WalletBinding(:show="showMetamaskDialog" @close="showMetamaskDialog = false")
+    WalletBinding(:show="showMetamaskDialog" @close="closeDialog")
 </template>
 
 <script>
@@ -110,7 +110,7 @@ import WalletBinding from "./WalletBinding.vue"
 import localStorage from "@/common/lib/local-storage"
 import { queryBalance } from "@/common/lib/polkadot-provider/query/balance"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile"
-import { getBalanceETH } from "@/common/lib/metamask/wallet";
+import { getBalanceDAI } from "@/common/lib/metamask/wallet"
 
 
 
@@ -138,6 +138,7 @@ export default {
     showMetamaskDialog: false,
     balance: 0,
     walletAddress: "",
+    activeBalance: "",
     menus: [
       {
         id: 1,
@@ -199,6 +200,10 @@ export default {
   async mounted () {
     this.fetchWalletBalance()
     this.checkMetamaskAddress()
+
+    if (this.loginStatus) {
+      this.menus.find(menu => menu.type === "metamask").active = true
+    }
   },
 
   methods: {
@@ -223,12 +228,14 @@ export default {
       
       if (selectedMenu.type === "polkadot") {
         this.walletAddress = this.wallet.address
+        this.activeBalance = this.walletBalance
       }
 
       if (selectedMenu.type === "metamask" && !this.loginStatus) return
 
       if (selectedMenu.type === "metamask") {
         this.walletAddress = this.metamaskWalletAddress
+        this.activeBalance = this.metamaskWalletBalance
       }
 
       selectedMenu.active = true
@@ -272,7 +279,7 @@ export default {
         )
 
         if (ethRegisterAddress !== null) {
-          const balance = await getBalanceETH(ethRegisterAddress)
+          const balance = await getBalanceDAI(ethRegisterAddress)
           this.setMetamaskAddress(ethRegisterAddress)
           this.setMetamaskBalance(balance)
           this.loginStatus = true
@@ -287,11 +294,15 @@ export default {
     disconnectWallet() {
       this.loginStatus = false
       this.menus.find(menu => menu.type === "metamask").active = false
-      this.clearWallet()
     },
 
     handleDropdownAction(type) {
       if (type === "metamask") this.disconnectWallet()
+    },
+
+    closeDialog () {
+      this.loginStatus = true
+      this.showMetamaskDialog = false
     },
 
     signOut () {

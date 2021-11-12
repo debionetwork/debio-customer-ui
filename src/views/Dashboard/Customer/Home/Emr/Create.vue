@@ -238,6 +238,7 @@
 /* eslint-disable no-unused-vars */
 import { mapGetters, mapState } from "vuex"
 
+import store from "@/store/index"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/emr"
@@ -328,7 +329,7 @@ export default {
   },
 
   watch: {
-    lastEventData() {
+    async lastEventData() {
       if (this.lastEventData != null) {
         const dataEvent = JSON.parse(this.lastEventData.data.toString())
         if (this.lastEventData.method === "ElectronicMedicalRecordInfoAdded") {
@@ -338,7 +339,7 @@ export default {
               this.showLoadingFiles = false
               this.resetState()
             } else {
-              this.handleUpload(this.emr.files[this.countFileAdded], this.countFileAdded)
+              await this.handleUpload(this.emr.files[this.countFileAdded], this.countFileAdded)
             }
           }
         } else if (
@@ -498,11 +499,15 @@ export default {
       }
     },
 
-    handleUpload(dataFile, index) {
+    async handleUpload(dataFile, index) {
       this.wrongPassword = false
 
       try {
         this.pair.unlock(this.password)
+
+        await store.dispatch("substrate/getEncryptedAccountData", {
+          password: this.password
+        })
 
         const file = dataFile.file
         const context = this

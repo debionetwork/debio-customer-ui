@@ -1,8 +1,48 @@
 <template lang="pug">
   div.layout-dashboard
+    ui-debio-modal(
+      :show="showModalPassword"
+      title="Unlock Wallet by Input your password"
+      :icon="checkCircleIcon"
+      :showCta="!success"
+      :showTitle="!success"
+      disable-dismiss
+    )
+      ui-debio-input(
+        v-if="!success"
+        :errorMessages="passwordErrorMessages"
+        :rules="$options.rules.password"
+        :type="showPassword ? 'text' : 'password'"
+        variant="small"
+        placeholder="Input Password"
+        v-model="password"
+        outlined
+        block
+        :error="error"
+        validate-on-blur
+        @keyup.enter="handleSubmitPassword"
+        @blur="error = null"
+        @isError="handleError"
+      )
+        ui-debio-icon(
+          slot="icon-append"
+          role="button"
+          size="18"
+          @click="handleShowPassword"
+          :icon="showPassword ? eyeIcon : eyeOffIcon"
+          stroke
+        )
+
+      .modal-password__cta.d-flex(slot="cta")
+        Button(
+          block
+          color="secondary"
+          @click="handleSubmitPassword"
+        ) Submit
+
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
       Button(
-        :outlined="computeButtonActive"
+        outlined
         height="35px"
         @click="goToRequestTestPage"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
@@ -10,7 +50,7 @@
       ) Request a Test
 
       Button(
-        :outlined="$route.path !== '/customer/emr/upload'"
+        outlined
         height="35px"
         @click="goToUploadEMR"
         class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
@@ -24,16 +64,43 @@
 </template>
 
 <script>
+import store from "@/store"
+import { validateForms } from "@/common/lib/validate"
+import {
+  gridIcon,
+  boxIcon,
+  eyeIcon,
+  eyeOffIcon,
+  databaseIcon,
+  checkCircleIcon,
+  fileTextIcon,
+  creditCardIcon
+} from "@/common/icons"
+
+import { mapState } from "vuex"
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import { gridIcon, boxIcon, databaseIcon, fileTextIcon, creditCardIcon } from "@/common/icons"
+import errorMessage from "@/common/constants/error-messages"
 
 export default {
   name: "MainPage",
+
+  mixins: [validateForms],
+
   components: { NavigationDrawer, Navbar, Button },
 
   data: () => ({
+    checkCircleIcon,
+    eyeIcon,
+    eyeOffIcon,
+
+    showModalPassword: false,
+    showPassword: false,
+    success: false,
+    error: null,
+    password: null,
+
     navs: [
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
       { text: "My Test", disabled: false, active: false, route: "my-test", icon: boxIcon },
@@ -44,6 +111,11 @@ export default {
   }),
 
   computed: {
+    ...mapState({
+      wallet: (state) => state.substrate.wallet,
+      mnemonicData: (state) => state.substrate.mnemonicData
+    }),
+
     computeNavs() {
       const setActive = name => {
         return (
@@ -57,7 +129,19 @@ export default {
 
     computeButtonActive() {
       return !/(\/customer\/request-test)/.test(this.$route.path)
+    },
+
+    passwordErrorMessages() {
+      return this.errorMessages || this.error
     }
+  },
+
+  created() {
+    if (!this.mnemonicData) this.showModalPassword = true
+  },
+
+  rules: {
+    password: [ val => !!val || errorMessage.PASSWORD(8) ]
   },
 
   methods: {
@@ -67,6 +151,27 @@ export default {
 
     goToUploadEMR() {
       this.$router.push({ name: "customer-emr-create" })
+    },
+
+    handleShowPassword() {
+      this.showPassword = !this.showPassword
+    },
+
+    async handleSubmitPassword() {
+      try {
+        await this.wallet.unlock(this.password)
+        await store.dispatch("substrate/getEncryptedAccountData", {
+          password: this.password
+        })
+
+        this.success = true
+
+        setTimeout(() => {
+          this.showModalPassword = false
+        }, 1300)
+      } catch (e) {
+        this.error = e
+      }
     }
   }
 }
@@ -98,6 +203,10 @@ export default {
       Button
        font-weight: 500 !important
        font-size: 13px
+
+  .modal-password
+    &__cta
+      gap: 20px
   
   .transition-slide-x
     &-enter-active,
