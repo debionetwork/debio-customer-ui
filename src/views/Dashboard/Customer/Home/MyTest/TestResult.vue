@@ -199,7 +199,7 @@ export default {
       try {
         this.order = await getOrdersDetail(this.api, this.idOrder);
         this.ownerAddress = this.order.customerEthAddress;
-        console.log(this.order)
+        
         this.testResult = await queryDnaTestResults(
           this.api,
           this.order.dnaSampleTrackingId
@@ -256,7 +256,7 @@ export default {
       try {
         const path = this.files[0].fileLink.replace(this.baseUrl, "");
         const secretKey = this.privateKey;
-        const publicKey = this.lab.info.box_public_key;
+        const publicKey = this.lab.info.boxPublicKey;
         
         const pair = {
           secretKey,
