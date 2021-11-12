@@ -90,7 +90,7 @@ export default {
   },
 
   async mounted () {
-    this.getServices()
+    
     if (this.$route.params.flag === "staking") {
       this.services = mockData.data
     }
@@ -99,6 +99,8 @@ export default {
       this.services = this.dataServices
     }
  
+    this.getServices()
+
     for (let i = 0; i < this.services.length; i++) {
 
       let { 
@@ -213,9 +215,10 @@ export default {
           verification_status:  verificationStatus
         } = this.services[i]
 
+
         const labRateData = await this.$store.dispatch("rating/getLabRate", labId)
         const labRate = labRateData.rating
-        const countRateLab = 0
+        const countRateLab = labRateData.count
         const serviceData = await this.$store.dispatch("rating/getServiceRate", serviceId)
         const serviceRate = serviceData.rating_service
         const countServiceRate = serviceData.count_rating_service
@@ -253,6 +256,8 @@ export default {
           this.serviceList.push(service)
         }
       }
+
+      console.log("this service", this.serviceList)
 
       if (!this.serviceList.length) {
         this.showNoLab = true
