@@ -23,7 +23,7 @@
               v-col(cols="5.5")
                 b.menu-card__service-sub-title Price
                 .menu-card__service-description
-                  | {{ dataService.detailPrice.priceComponents[0].value }} 
+                  | {{ dataService.detailPrice.price_components[0].value }} 
                   | {{ dataService.currency.toUpperCase() }}
               v-col(cols="6.5") 
                 b.menu-card__service-sub-title Duration
@@ -34,10 +34,10 @@
       hr(class="ml-3 me-3")
       
       div(class="d-flex")
-        ui-debio-avatar.ma-5(src="https://picsum.photos/150" size="90" rounded)
+        ui-debio-avatar.ma-3(src="https://picsum.photos/150" size="90" rounded)
             
         .menu-card__lab-detail
-          b.mt-5.menu-card__service-title {{ dataService.labName }}
+          b.mt-2.menu-card__service-title {{ dataService.labName }}
             v-row(class="ml-1 mt-1 mb-1")
               div(
                 v-for="i in dataService.labRate"
@@ -52,7 +52,7 @@
               span(class="ml-2" style="font-size: 9px;") ({{ dataService.countRateLab }})
         
             div.description(
-              class="ml-1 mb-5 me-8 text-caption grey--text text--darken-1"
+              class="mb-5 me-8 text-caption grey--text text--darken-1"
             ) {{ dataService.labAddress }}
       
 
@@ -121,3 +121,4 @@ export default {
     max-height: 30px
 
 </style>
+

@@ -131,6 +131,7 @@ export async function getBalanceDAI(address) {
 
   let balance = await contractERC20Interface.methods.balanceOf(address).call()
   let daiBalance = web3.utils.fromWei(balance, "ether")
+  
   return daiBalance
 }
 

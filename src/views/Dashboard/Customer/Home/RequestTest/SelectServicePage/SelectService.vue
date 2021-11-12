@@ -85,12 +85,12 @@ export default {
       country: (state) => state.lab.country,
       city: (state) => state.lab.city,
       category: (state) => state.lab.category,
-      dataServices: (state) => state.lab.services,
-      rate: (state) => state.rating.rate
+      dataServices: (state) => state.lab.services
     })
   },
 
   async mounted () {
+    this.getServices()
     if (this.$route.params.flag === "staking") {
       this.services = mockData.data
     }
@@ -99,7 +99,80 @@ export default {
       this.services = this.dataServices
     }
  
-    this.getServices()
+    for (let i = 0; i < this.services.length; i++) {
+
+      let { 
+        id: serviceId, 
+        lab_id: labId,
+        lab_detail: {
+          name: labName,
+          address: labAddress,
+          city,
+          region,
+          country
+        },
+        info: {
+          name: serviceName,
+          category: serviceCategory,
+          description: serviceDescription,
+          image: serviceImage,
+          expected_duration: {
+            duration,
+            duration_type: durationType
+          },
+          prices_by_currency: [
+            {
+              currency,
+              total_price : price
+            }
+          ]
+        },
+        verification_status:  verificationStatus
+      } = this.services[i]
+
+      let labRate = 0
+      let countRateLab = 0
+      let serviceRate = 0
+      let countServiceRate = 0
+      let detailPrice = this.services[i].info.prices_by_currency[0]
+
+      if (durationType === "WorkingDays") {
+        durationType = "Working Days"
+      }
+
+      const service = {
+        serviceId,
+        serviceName,
+        serviceRate,
+        serviceImage,
+        serviceCategory,
+        serviceDescription,
+        labId,
+        labName,
+        labRate,
+        labAddress,
+        price,
+        detailPrice,
+        currency,
+        country,
+        city,
+        region,
+        countRateLab,
+        countServiceRate,
+        duration,
+        durationType,
+        verificationStatus
+      }
+
+      if (service.verificationStatus === "Verified") {
+        this.serviceList.push(service)
+      }
+    }
+
+    if (!this.serviceList.length) {
+      this.showNoLab = true
+    }
+
   },
 
   methods: {
@@ -114,8 +187,8 @@ export default {
 
         let {
           id: serviceId,
-          labId: labId,
-          labDetail: {
+          lab_id: labId,
+          lab_detail: {
             name: labName,
             address: labAddress,
             city,
@@ -126,33 +199,26 @@ export default {
             category: serviceCategory,
             description: serviceDescription,
             image: serviceImage,
-            expectedDuration: {
+            expected_duration: {
               duration,
-              durationType: durationType
+              duration_type: durationType
             },
-            pricesByCurrency: [
+            prices_by_currency: [
               {
                 currency,
-                totalPrice : price
+                total_price : price
               }
             ]
           },
-          verificationStatus:  verificationStatus
+          verification_status:  verificationStatus
         } = this.services[i]
 
-        const labRate = this.rate && this.rate.length > 1
-          ? this.rate.find(r => r.labId === labId)
-          : null
-
-        const countRateLab = labRate ? labRate.count_rating_lab : 0
-
-        const serviceRate = labRate.services
-          .find(service => service.service_id === serviceId)
-
-        const countServiceRate = serviceRate
-          ? serviceRate.count_rating_service
-          : 0
-
+        const labRateData = await this.$store.dispatch("rating/getLabRate", labId)
+        const labRate = labRateData.rating
+        const countRateLab = 0
+        const serviceData = await this.$store.dispatch("rating/getServiceRate", serviceId)
+        const serviceRate = serviceData.rating_service
+        const countServiceRate = serviceData.count_rating_service
         const detailPrice = this.services[i].info.pricesByCurrency[0]
 
         if (durationType === "WorkingDays") {

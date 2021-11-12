@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-dialog(:value="show" width="400" persistent rounded )
+  v-dialog(:value="show" width="400" rounded persistent )
     v-card.pa-5
       v-app-bar(flat dense color="white")
         v-spacer
@@ -27,13 +27,13 @@
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
             div( style="font-size: 12px;" )
-              | {{ selectedService.detailPrice.priceComponents[0].value }} 
+              | {{ selectedService.detailPrice.price_components[0].value }} 
               | {{ selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
             div( style="font-size: 12px;" )
-              | {{ selectedService.detailPrice.additionalPrices[0].value }} 
+              | {{ selectedService.detailPrice.additional_prices[0].value }} 
               | {{ selectedService.currency.toUpperCase() }}
 
        
@@ -99,7 +99,7 @@ import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
-import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
+import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
 import localStorage from "@/common/lib/local-storage"
 import CryptoJS from "crypto-js"	
@@ -167,7 +167,6 @@ export default {
       this.detailOrder = await getOrdersData(this.api, this.lastOrder)
       this.status = this.detailOrder.status
     }
-    
   },
 
   methods: {
@@ -197,6 +196,11 @@ export default {
           this.error = "Metamask has no address ETH."
           return
         }
+
+        const dai = await getBalanceDAI(this.metamaskWalletAddress)
+
+        console.log("dai", dai)
+
 
         // check ETH Balance
         const balance = await getBalanceETH(this.metamaskWalletAddress)

@@ -86,6 +86,10 @@ export default {
     avatar: ""
   }),
 
+  mounted () {
+    console.log(this.selectedService)
+  },
+
   components: {
     Button
   },

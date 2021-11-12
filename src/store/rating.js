@@ -1,7 +1,10 @@
 import axios from "axios"
 
+const baseUrl = process.env.VUE_APP_DEV_DEBIO_BACKEND_URL
+
 const defaultState = {
-  rate: null
+  labRate: null,
+  serviceRate: null
 }
 
 export default {
@@ -12,23 +15,36 @@ export default {
   },
 
   mutations: {
-    SET_RATE(state, rate) {
-      state.rate = rate
+    SET_LAB_RATE(state, rate) {
+      state.labRate = rate
+    },
+
+    SET_SERVICE_RATE(state, rate) {
+      state.serviceRate = rate
     }
   },
   actions: {
 
-    async getRate({ commit }) {
-      const baseUrl = process.env.VUE_APP_DEV_DEBIO_BACKEND_URL
-      const rate = await axios.get(`${baseUrl}/rating/service`)
-      
-      commit("SET_RATE", rate.data.data)
+    async getLabRate({ commit }, address ) {
+      const rate = await axios.get(`${baseUrl}/rating/lab/${address}`)
+      commit("SET_LAB_RATE", rate.data.data)
+      return rate.data.data
+    },
+
+    async getServiceRate({ commit }, address) {
+      const rate = await axios.get(`${baseUrl}/rating/service/${address}`)
+      commit("SET_SERVICE_RATE", rate.data.data)
+      return rate.data.data
     }
   },
 
   getters: {
-    getRateg(state) {
-      state.rate
+    getLabRate(state) {
+      return state.labRate
+    },
+
+    getServiceRate(state) {
+      return state.serviceRate
     }
   }
 }

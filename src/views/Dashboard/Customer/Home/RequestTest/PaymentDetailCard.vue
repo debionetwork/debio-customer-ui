@@ -13,13 +13,13 @@
         div(class="d-flex justify-space-between mb-2" )
           div( style="font-size: 12px;" ) Service Price
           div( style="font-size: 12px;" )
-            | {{ dataService.detailPrice.priceComponents[0].value }} 
+            | {{ dataService.detailPrice.price_components[0].value }} 
             | {{ dataService.currency.toUpperCase() }}
         
         div(class="d-flex justify-space-between" )
           div( style="font-size: 12px;" ) Quality Control Price
           div( style="font-size: 12px;" )
-            | {{ dataService.detailPrice.additionalPrices[0].value }} 
+            | {{ dataService.detailPrice.additional_prices[0].value }} 
             | {{ dataService.currency.toUpperCase() }}
 
       div(class="d-flex justify-end me-3" style="font-size: 12px") +
@@ -165,7 +165,7 @@ export default {
     if (this.lastOrder) {
       this.detailOrder = await getOrdersData(this.api, this.lastOrder)
       this.status = this.detailOrder.status
-      this.orderId = this.detailOrder.id.toString()
+      this.orderId = this.detailOrder.id
     }
 
     if (this.stakingData) {
@@ -210,7 +210,11 @@ export default {
         this.showPayRemainingDialog = true
         return
       }
+
+      console.log("=======")
+      console.log(this.showPayRemainingDialog)
       this.showReceipt = true 
+      console.log(this.showReceipt)
     },
 
     onContinue() {
