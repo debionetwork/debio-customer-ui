@@ -55,7 +55,7 @@ export default {
     publicKey: null,
     secretKey: null,
     result: null,
-    message: "Loading EMR document file, please wait",
+    message: "Please wait",
     selected: 0,
     emrDocuments: [
       {
