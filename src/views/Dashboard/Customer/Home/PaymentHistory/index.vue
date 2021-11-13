@@ -20,7 +20,7 @@
               ui-debio-icon(slot="icon-append" size="20" @click="onSearchInput(searchQuery)" role="button" :icon="searchIcon" stroke)
         template(v-slot:[`item.serviceInfo.name`]="{ item }")
           .payment-history__name-details
-            ui-debio-avatar(:src="'https://picsum.photos/200'" size="41" rounded)
+            ui-debio-avatar(:src="item.serviceInfo.image" size="41" rounded)
             .payment-history__item-details
               .payment-history__item-name {{ item.serviceInfo.name }}
               .payment-history__item-speciment {{ item.dnaSampleTrackingId }}

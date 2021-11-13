@@ -3,7 +3,13 @@
     ui-debio-modal(:show="show" :show-cta="false" :show-title="false" disable-dismiss)
       .modal-bounty__wrapper
         .modal-bounty__illustration
-          ui-debio-icon(:icon="doctorsIllustration" view-box="0 0 281 173" width="295" height="188")
+          ui-debio-icon(
+            :class="{ 'ui-debio-icon--animated': loading }"
+            :icon="doctorsIllustration"
+            view-box="0 0 281 173"
+            width="295"
+            height="188"
+          )
         .modal-bounty__body
           .modal-bounty__title {{ computeModalText }}
           .modal-bounty__progress(v-if="loading")
@@ -87,6 +93,44 @@ export default {
         border-radius: 1rem
         animation: loading infinite 1s
 
+    &::v-deep
+      .ui-debio-modal__card
+        border-radius: 14px
+        padding: 0
+
+      .ui-debio-icon--animated
+        animation: illustrationAnimation 3s
+        
+        #paper
+          animation: illustrationAnimation ease-in-out infinite 1.5s alternate
+          animation-delay: .3s
+
+        #thumb
+          animation: illustrationAnimation ease-in-out infinite 1.5s alternate
+          animation-delay: .8s
+
+        #heart
+          animation: illustrationAnimation ease-in-out infinite 1.5s alternate
+          animation-delay: .5s
+
+        #plusicon
+          animation: illustrationAnimation ease-in-out infinite 1.5s alternate
+          animation-delay: .2s
+
+        #bottle
+          animation: illustrationAnimation ease-in-out infinite 1.5s alternate
+          animation-delay: .7s
+
+                
+    @keyframes illustrationAnimation
+      0%
+        opacity: 0
+        transform: translateY(-3px)
+      50%
+        transform: translateY(8px)
+      100%
+        transform: translateY(0px)
+    
     @keyframes loading
       0%
         width: 0%
@@ -100,9 +144,4 @@ export default {
       100%
         width: 100%
         transform: translateX(100%)
-    
-    &::v-deep
-      .ui-debio-modal__card
-        border-radius: 14px
-        padding: 0
 </style>

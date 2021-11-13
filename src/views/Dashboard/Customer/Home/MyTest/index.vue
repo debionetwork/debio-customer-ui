@@ -1,5 +1,33 @@
 <template lang="pug">
   .customer-test
+    modalBounty(
+      :show="isShowModalBounty"
+      :title="computeModalTitle"
+      :sub-title="computeModalSubtitle"
+      :link="computeModalLink"
+      :loading="modalBountyLoading"
+    )
+      .modal-bounty__cta.d-flex.mt-8.justify-center
+        Button(
+          v-if="!!isBountyError"
+          color="secondary"
+          block
+          outlined
+          @click="isBountyError = null"
+        ) Try again
+
+        Button(
+          v-else-if="isSuccessBounty"
+          color="secondary"
+          width="100"
+          outlined
+          @click="isShowModalBounty = false"
+        ) Ok
+
+        template(v-else)
+          Button(outlined color="secondary" width="100" @click="isShowModalBounty = false") Cancel
+          Button(color="secondary" width="100" @click="downloadFile") Yes
+
     ui-debio-banner(
       title="My Test"
       subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymousely to expert and scientist!"
@@ -64,6 +92,7 @@
                       width="50%"
                       color="secondary"
                       :disabled="!isReady"
+                      @click="isShowModalBounty = true"
                     ) Add as Bounty
 
                 template(v-slot:[`item.status`]="{item}")
@@ -77,8 +106,8 @@
 <script>
 import { layersIcon, noteIllustration } from "@/common/icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
+import modalBounty from "./modalBounty.vue"
 import DataTable from "@/common/components/DataTable"
-import store from "@/store"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
@@ -98,6 +127,7 @@ export default {
   components: {
     StakingServiceTab,
     DataTable,
+    modalBounty,
     Button
   },
 
@@ -105,6 +135,10 @@ export default {
     layersIcon,
     noteIllustration,
     cardBlock: false,
+    isSuccessBounty: false,
+    isShowModalBounty: false,
+    modalBountyLoading: false,
+    isBountyError: null,
     publicKey: null,
     secretKey: null,
     documents: null,
@@ -129,18 +163,50 @@ export default {
     ]
   }),
 
+  computed: {
+    ...mapState({
+      walletBalance: (state) => state.substrate.walletBalance,
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      lastEventData: (state) => state.substrate.lastEventData,
+      mnemonicData: (state) => state.substrate.mnemonicData
+    }),
+
+    userAddress() {
+      return JSON.parse(localStorage.getKeystore()) ["Address"]
+    },
+
+    computeModalTitle() {
+      const title = this.isSuccessBounty
+        ? "Great! Your data has been placed on marketplace successfully!"
+        : "Do you want to add your test result as a data bounty?"
+
+      return this.isBountyError ? this.isBountyError : title
+    },
+
+    computeModalSubtitle() {
+      const subtitle = this.isSuccessBounty
+        ? "Congratulations! You get XX $DBIO as reward!"
+        : "You can learn more about data bounty by seeing the information"
+
+      return this.isBountyError ? "Something went wrong, please try again" : subtitle
+    },
+
+    computeModalLink() {
+      return this.isSuccessBounty || this.isBountyError ? null : "/"
+    }
+  },
+
   mounted() {
     this.onSearchInput();
   },
 
   async created() {
     await this.initialData()
-    await this.downloadFile()
   },
 
   methods: {
     async initialData() {
-      await store.dispatch("substrate/getEncryptedAccountData", { password: "5t4r3e2w1q" })
       const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
 
       this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
@@ -191,34 +257,26 @@ export default {
     },
 
     async downloadFile() {
-      const pair = {
-        secretKey: this.secretKey,
-        publicKey: this.publicKey
+      this.modalBountyLoading = true
+      try {
+        const pair = {
+          secretKey: this.secretKey,
+          publicKey: this.publicKey
+        }
+
+        await syncDecryptedFromIPFS(
+          "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG", // TODO: (Testing purpose) Update when my test ready
+          pair,
+          "file.vcf",
+          "text/vCard"
+        )
+
+        await getSignedUrl(getSignedUrl, "file.vcf")
+        await createSyncEvent(createSyncEvent, { filename: "file.vcf"})
+      } catch (e) {
+        this.isBountyError = e?.message
+        this.modalBountyLoading = false
       }
-
-      await syncDecryptedFromIPFS(
-        "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG", // TODO: (Testing purpose) Update when my test ready
-        pair,
-        "file.vcf",
-        "text/vCard"
-      )
-
-      await getSignedUrl(getSignedUrl, "file.vcf")
-      await createSyncEvent(createSyncEvent, { filename: "file.vcf"})
-    }
-  },
-
-  computed: {
-    ...mapState({
-      walletBalance: (state) => state.substrate.walletBalance,
-      api: (state) => state.substrate.api,
-      wallet: (state) => state.substrate.wallet,
-      lastEventData: (state) => state.substrate.lastEventData,
-      mnemonicData: (state) => state.substrate.mnemonicData
-    }),
-
-    userAddress() {
-      return JSON.parse(localStorage.getKeystore()) ["Address"]
     }
   }
 }
@@ -255,4 +313,7 @@ export default {
   &__title-detail
     margin: 0 5px 0 0
     border-radius: 5px
+
+.modal-bounty__cta
+  gap: 40px
 </style>

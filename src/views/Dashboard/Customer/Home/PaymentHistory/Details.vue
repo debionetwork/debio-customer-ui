@@ -18,7 +18,7 @@
           .payment-details__wrapper
 
             .payment-details__product
-              ui-debio-avatar.product__image(src="https://picsum.photos/150" size="150" rounded)
+              ui-debio-avatar.product__image(:src="payment.serviceInfo.image" size="150" rounded)
               .product__details
                 .product__name {{ payment.serviceInfo.name }}
                 ui-debio-rating.product__lab-rating(:rating="4" :total-reviews="800" size="15")
