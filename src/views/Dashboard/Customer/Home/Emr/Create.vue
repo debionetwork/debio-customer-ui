@@ -3,7 +3,7 @@
     ui-debio-modal(
       :show="showLoadingFiles"
       title="File Upload"
-      disableDismiss
+      disable-dismiss
     )
       template(v-if="computeFiles.length")
         .modal-files-upload__wrapper
@@ -44,6 +44,7 @@
     ui-debio-modal(
       :show="showModalPassword"
       title="Encrypt EMR files by input your password"
+      disable-dismiss
       @onClose="showModalPassword = false; wrongPassword = false"
     )
       ui-debio-input(
@@ -67,18 +68,20 @@
           outlined
           width="100"
           color="secondary"
+          :disabled="isLoading"
           @click="showModalPassword = false; wrongPassword = false"
         ) Cancel
 
         Button(
           width="100"
+          :loading="isLoading"
           color="secondary"
           @click="finalSubmit"
         ) Submit
 
     ui-debio-modal(
       :show="showModal"
-      :title="isEdit ? "Edit EMR File" : "Add EMR File""
+      :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
       cta-title="Submit"
       :cta-action="handleNewFile"
       :cta-outlined="false"
@@ -165,7 +168,10 @@
         .customer-create-emr__files
           .customer-create-emr__files-title Uploaded Files
           .customer-create-emr__files-items
-            .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(v-if="!computeFiles.length")
+            .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(
+              v-if="!computeFiles.length"
+              @click="showModal = true"
+            )
               .customer-create-emr__file-details.mt-0
                 .customer-create-emr__file-details--left
                   ui-debio-icon.customer-create-emr__file-icon(
@@ -238,16 +244,18 @@
 /* eslint-disable no-unused-vars */
 import { mapGetters, mapState } from "vuex"
 
-import store from "@/store/index"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import store from "@/store"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/emr"
 import {
-  addElectronicMedicalRecordInfo,
+  addElectronicMedicalRecordFile,
   registerElectronicMedicalRecord
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 import { queryGetEMRList } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
-import { hexToU8a } from "@polkadot/util"
+import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
@@ -271,8 +279,9 @@ export default {
     showModalConfirm: null,
     showModalPassword: false,
     wrongPassword: false,
+    isLoading: false,
     showLoadingFiles: false,
-    registerEMR: false,
+    registerId: null,
     clearFile: false,
     countFileAdded: 0,
     password: "",
@@ -292,10 +301,6 @@ export default {
   }),
 
   computed: {
-    ...mapGetters({
-      pair: "substrate/wallet"
-    }),
-
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
@@ -329,27 +334,33 @@ export default {
   },
 
   watch: {
-    async lastEventData() {
-      if (this.lastEventData != null) {
-        const dataEvent = JSON.parse(this.lastEventData.data.toString())
-        if (this.lastEventData.method === "ElectronicMedicalRecordInfoAdded") {
-          if (dataEvent[0].owner_id === this.wallet.address) {
+    lastEventData(event) {
+      if (event !== null) {
+        const dataEvent = JSON.parse(event.data.toString())
+        if (event.method === "ElectronicMedicalRecordFileAdded") {
+          if (dataEvent[1] === this.wallet.address) {
             this.countFileAdded += 1
+
             if (this.countFileAdded === this.emr.files.length) {
               this.showLoadingFiles = false
+              this.registerId = null
               this.resetState()
             } else {
-              await this.handleUpload(this.emr.files[this.countFileAdded], this.countFileAdded)
+              this.handleUpload(this.registerId, this.emr.files[this.countFileAdded], this.countFileAdded)
             }
           }
-        } else if (
-          this.lastEventData.method === "ElectronicMedicalRecordAdded"
-        ) {
-          if (dataEvent[0].owner_id === this.wallet.address && this.registerEMR) {
-            this.prosesFiles()
+        } else if (event.method === "ElectronicMedicalRecordAdded") {
+          this.isLoading = false
+          this.registerId = dataEvent[0].id
+          if (dataEvent[0].ownerId === this.wallet.address && this.registerId) {
+            this.processFiles(this.registerId)
           }
         }
       }
+    },
+
+    mnemonicData(val) {
+      if (val) this.initialDataKey()
     }
   },
 
@@ -371,18 +382,20 @@ export default {
   },
 
   async created() {
-    this.initialData()
     this.fetchCategories()
+    if (this.mnemonicData) this.initialDataKey()
   },
 
   methods: {
-    async fetchCategories() {
-      this.categories = await getEMRCategories()
+    initialDataKey() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
     },
 
-    initialData() {
-      this.publicKey = hexToU8a(this.mnemonicData.publicKey)
-      this.secretKey = hexToU8a(this.mnemonicData.privateKey)
+    async fetchCategories() {
+      this.categories = await getEMRCategories()
     },
 
     resetState() {
@@ -463,7 +476,6 @@ export default {
       this.showModal = false
       Object.assign(this.document, { title: "", description: "", file: null })
       this.clearFile = true
-      this.isEdit = false
     },
 
     onDelete(id) {
@@ -476,38 +488,31 @@ export default {
       this.showModalPassword = true
     },
 
-    async prosesFiles() {
+    async processFiles(registerId) {
       if (this.emr.files.length > 0) {
-        await this.handleUpload(this.emr.files[0], 0)
+        await this.handleUpload(registerId, this.emr.files[0], 0)
       }
     },
 
     async finalSubmit() {
+      this.isLoading = true
       try {
-        this.wallet.decodePkcs8(this.password)
+        await this.wallet.decodePkcs8(this.password)
+
         if (this.emr.files.length > 0) {
-          const listEMR = await queryGetEMRList(this.api, this.wallet.address)
-          if (listEMR === null) {
-            this.registerEMR = true
-            await registerElectronicMedicalRecord(this.api, this.wallet)
-          } else {
-            await this.prosesFiles()
-          }
+          await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
         }
       } catch (e) {
-        console.error(e)
+        this.wrongPassword = true
+        this.isLoading = false
       }
     },
 
-    async handleUpload(dataFile, index) {
+    async handleUpload(id, dataFile, index) {
       this.wrongPassword = false
 
       try {
-        this.pair.unlock(this.password)
-
-        await store.dispatch("substrate/getEncryptedAccountData", {
-          password: this.password
-        })
+        this.wallet.unlock(this.password)
 
         const file = dataFile.file
         const context = this
@@ -524,12 +529,14 @@ export default {
             })
 
             const link = context.getFileIpfsUrl(uploaded)
+
             const dataBody = {
+              id: id,
               title: dataFile.title,
               description: dataFile.description,
-              record_link: link
+              recordLink: link
             }
-            await addElectronicMedicalRecordInfo(
+            await addElectronicMedicalRecordFile(
               context.api,
               context.wallet,
               dataBody
@@ -631,9 +638,11 @@ export default {
     },
 
     onRetry(file) {
+      // TODO: Add script later
     },
 
     onCancel(file) {
+      // TODO: Add script later
     }
   }
 }

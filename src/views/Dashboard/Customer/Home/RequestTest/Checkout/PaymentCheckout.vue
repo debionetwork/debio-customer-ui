@@ -5,9 +5,8 @@
 
     template
       v-row.mt-10(class="d-flex justify-center")
-        LabDetailCard(:prefillService="prefillService")
+        LabDetailCard
         PaymentDetailCard(
-          :prefillService="prefillService"
           @onContinue="onContinue"
         )
 
@@ -21,10 +20,6 @@ import PaymentDetailCard from "../PaymentDetailCard.vue"
 
 export default {
   name: "PaymentCheckout",
-
-  props: {
-    prefillService: { type: Object, default: () => {} }
-  },
 
   components: {
     LabDetailCard,

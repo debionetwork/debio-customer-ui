@@ -2,35 +2,35 @@
   v-container.container-card
     v-card.menu-card
       .menu-card__service
-        v-icon(v-if="!avatar" color="#BA8DBB" :size="90") {{ prefillService.lab.service_image || selectedService.serviceImage }}
+        v-icon(v-if="!avatar" color="#BA8DBB" :size="90") {{ dataService.serviceImage }}
         v-avatar.ml-2(v-else :src="avatar")
       
         .menu-card__body
-          b.menu-card__service-title {{ prefillService.lab.service_name || selectedService.serviceName }}
+          b.menu-card__service-title {{ dataService.serviceName }}
             v-row(class="ml-1 mt-2")
               div(
-                v-for="i in prefillService.lab.service_rating || selectedService.serviceRate"
+                v-for="i in dataService.serviceRate"
                 :key="i")
                 v-icon(style="font-size: 14px;" color="primary") mdi-star
 
               div(
-                v-for="i in (5 - prefillService.lab.service_rating || selectedService.serviceRate)"
+                v-for="i in (5 - dataService.serviceRate)"
                 :key="i")
                 v-icon(style="font-size: 14px;" color="primary") mdi-star-outline 
 
-              span(class="ml-2" style="font-size: 9px;") ({{ prefillService.lab.service_rating || selectedService.countServiceRate }})
+              span(class="ml-2" style="font-size: 9px;") ({{ dataService.countServiceRate }})
 
             v-row
               v-col(cols="5.5")
                 b.menu-card__service-sub-title Price
                 .menu-card__service-description
-                  | {{ prefillService.lab.price || selectedService.detailPrice.price_components[0].value }} 
-                  | {{ prefillService.lab.currency || selectedService.currency.toUpperCase() }}
+                  | {{ dataService.detailPrice.price_components[0].value }} 
+                  | {{ dataService.currency.toUpperCase() }}
               v-col(cols="6.5") 
                 b.menu-card__service-sub-title Duration
                 .menu-card__service-description
-                  | {{ prefillService.lab.duration || selectedService.duration }} 
-                  | {{ prefillService.lab.duration_type || selectedService.durationType }}
+                  | {{ dataService.duration }} 
+                  | {{ dataService.durationType }}
 
       hr(class="ml-3 me-3")
       
@@ -39,23 +39,23 @@
         v-avatar.ml-2(v-else :src="avatar")
             
         .menu-card__lab-detail(class="mb-1")
-          b.mt-5.menu-card__service-title {{ prefillService.lab.name || selectedService.labName }}
+          b.mt-5.menu-card__service-title {{ dataService.labName }}
             v-row(class="ml-1 mt-2 mb-1")
               div(
-                v-for="i in prefillService.lab.lab_rating || selectedService.labRate"
+                v-for="i in dataService.labRate"
                 :key="i")
                 v-icon(style="font-size: 14px;" color="primary") mdi-star
 
               div(
-                v-for="i in (5 - prefillService.lab.lab_rating || selectedService.labRate)"
+                v-for="i in (5 - dataService.labRate)"
                 :key="i")
                 v-icon(style="font-size: 14px;" color="primary") mdi-star-outline 
 
-              span(class="ml-2" style="font-size: 9px;") ({{ prefillService.lab.lab_rating || selectedService.countRateLab }})
+              span(class="ml-2" style="font-size: 9px;") ({{ dataService.countRateLab }})
         
             div.description(
               class="ml-1 mb-5 me-8 text-caption grey--text text--darken-1"
-            ) {{ prefillService.lab.address || selectedService.labAddress }}
+            ) {{ dataService.labAddress }}
       
 
 
@@ -69,10 +69,6 @@ import { mapState } from "vuex"
 export default {
   name: "LabDetailCard",
 
-  props: {
-    prefillService: { type: Object, default: () => {} }
-  },
-
   data: () =>  ({
     rate: 3,
     icon: "mdi-hospital",
@@ -83,7 +79,7 @@ export default {
   computed: {
     ...mapState({
       mnemonicData: (state) => state.substrate.mnemonicData,
-      selectedService: (state) => state.testRequest.products
+      dataService: (state) => state.testRequest.products
     })  
   }
 }

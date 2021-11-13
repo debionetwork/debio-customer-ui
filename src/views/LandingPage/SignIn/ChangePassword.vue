@@ -22,7 +22,7 @@
                 class="password-field"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
-                :rules="[val => !!val || 'Password is required']"
+                :rules="passwordRules"
                 :disabled="isLoading"
                 @click:append="showPassword = !showPassword"
                 @keyup.enter="onPasswordSet"
@@ -84,6 +84,14 @@ export default {
         return true
       }
       return false
+    },
+
+    passwordRules() {
+      return [
+        val => !!val || "Password is required",
+        val => (val && val.length >= 8) || "Password Min 8 Character",
+        val => /^[a-zA-Z0-9-_]+$/.test(val) || "Password must a-z, A-Z,"
+      ]
     },
 
     passwordConfirmRule() {

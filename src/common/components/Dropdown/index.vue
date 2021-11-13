@@ -43,7 +43,7 @@
 <script>
 import { alertIcon } from "@/common/icons"
 import { validateInput } from "@/common/lib/validate"
-import { generateUUID } from "@/common/utils/uuid"
+import { generateUUID } from "@/common/lib/utils"
 
 export default {
   name: "UiDebioDropdown",

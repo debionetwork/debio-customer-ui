@@ -1,13 +1,13 @@
-export async function registerElectronicMedicalRecord(api, pair) {
+export async function registerElectronicMedicalRecord(api, pair, data) {
   const result = await api.tx.electronicMedicalRecord
-    .addElectronicMedicalRecord()
+    .addElectronicMedicalRecord(data.title, data.category)
     .signAndSend(pair, { nonce: -1 })
   return result.toHuman()
 }
 
-export async function addElectronicMedicalRecordInfo(api, pair, data) {
+export async function addElectronicMedicalRecordFile(api, pair, data) {
   const result = await api.tx.electronicMedicalRecord
-    .addElectronicMedicalRecordInfo(data.title, data.description, data.record_link)
+    .addElectronicMedicalRecordFile(data.id, data.title, data.description, data.recordLink)
     .signAndSend(pair, { nonce: -1 })
   return result.toHuman()
 }
@@ -19,9 +19,9 @@ export async function deregisterElectronicMedicalRecord(api, pair) {
   return result.toHuman()
 }
 
-export async function removeElectronicMedicalRecordInfo(api, pair, emrId) {
+export async function removeElectronicMedicalRecord(api, pair, emrId) {
   const result = await api.tx.electronicMedicalRecord
-    .removeElectronicMedicalRecordInfo(emrId)
+    .removeElectronicMedicalRecordFile(emrId)
     .signAndSend(pair, { nonce: -1 })
   return result.toHuman()
 }

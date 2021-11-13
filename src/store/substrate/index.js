@@ -1,4 +1,3 @@
-import types from "./types.json"
 import store from "@/store/index"
 import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util" // u8aToString, stringToU8a
@@ -108,8 +107,7 @@ export default {
         const PROVIDER_SOCKET = store.getters["auth/getConfig"].substrateWs
         const wsProvider = new WsProvider(PROVIDER_SOCKET)
         const api = await ApiPromise.create({
-          provider: wsProvider,
-          types: types
+          provider: wsProvider
         })
 
         // Example of how to subscribe to events via storage
@@ -174,8 +172,8 @@ export default {
           commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
           console.log("Is pair locked?", pair.isLocked)
           commit("SET_WALLET", pair)
-
-          localStorage.setLocalStorageByName("mnemonic_data", JSON.stringify(file[1]))
+          
+          localStorage.setLocalStorageByName("mnemonic_data", CryptoJS.AES.encrypt(file[1].mnemonic, password));	
           commit("SET_MNEMONIC_DATA", file[1])
           commit("SET_LOADING_WALLET", false)
 

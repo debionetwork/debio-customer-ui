@@ -16,7 +16,13 @@
                     span Lab Details
                   div.box
                     div.topBody
+                      ui-debio-avatar.dataIcon.box(
+                        v-if="!!myTest.lab_info.profile_image"
+                        :src="myTest.lab_info.profile_image"
+                        :size="92"
+                      )
                       ui-debio-icon.dataIcon.box(
+                        v-else
                         :icon="microscopeIcon"
                         :size="92"
                         stroke
@@ -32,7 +38,13 @@
                     span Product Details
                   div.box
                     div.topBody
+                      ui-debio-avatar.dataIcon.box(
+                        v-if="!!myTest.service_info.image"
+                        :src="myTest.service_info.image"
+                        :size="92"
+                      )
                       ui-debio-icon.dataIcon.box(
+                        v-else
                         :icon="selectedIcon"
                         :size="92"
                         stroke
@@ -57,7 +69,7 @@
                     )
                 div.statusSection
                   span.status {{ status['name'] }}
-                  span.detail {{ status['detail'] }}
+                  span.detail {{ setDetail }}
 
                 .progress
                   .step-indicator
@@ -98,7 +110,7 @@
                   v-btn(
                     v-else
                     @click="toViewResult"
-                    color="primary"
+                    color="secondary"
                     large
                     width="100%"
                     :disabled="myTest.status !== `ResultReady`"
@@ -114,10 +126,8 @@
                   ctaTitle="OK"
                 )
                   .content
-                    ol
-                      li Your sample has been contaminated by other suspicious particle.
-                      li We decide to reject the sample, and refund your service fee amount.
-                      li Please make sure you follow the instruction carefully.
+                    p {{ myTest.rejected_title || 'Title'}}
+                    p {{ myTest.rejected_description || 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}}
                   .content-detail
                     .border-bottom.ph15
                       p Details:
@@ -148,7 +158,8 @@ import {
   receivedBanner, //"-20 0 300 135" size 300
   wetworkBanner, //"-20 0 300 150" size 295
   resultReadyBanner, //"-20 0 300 150" size 295
-  qualityControlBanner //"-20 0 300 125" size 295
+  qualityControlBanner, //"-20 0 300 125" size 295
+  rejectedQCBanner
 } from "@/common/icons";
 export default {
   name: "OrderHistoryDetail",
@@ -167,6 +178,8 @@ export default {
     wetworkBanner,
     resultReadyBanner,
     qualityControlBanner,
+    rejectedQCBanner,
+    link: "https://www.degenics.com/",
     DnaSampleStatus: "Registered",
     banner: registeredBanner,
     selectedIcon: weightLifterIcon,
@@ -185,37 +198,44 @@ export default {
         status: "Registered",
         name: "Registered",
         detail:
-          "Your request has been registered, please send sample in 48 hours! see instruction here",
+          "Your request has been registered. You may send your sample to selected lab.",
         size: 185,
         viewBox: "0 0 182 135"
       },
       {
         status: "Received",
         name: "Received",
-        detail: "Your sample has been arrived at the lab",
+        detail: "Your chosen lab has received and confirmed your specimen. The lab will soon process your order.",
         size: 300,
         viewBox: "-20 0 300 135"
       },
       {
         status: "QualityControlled",
         name: "Quality Control",
-        detail: "Your sample has passed the quality control",
+        detail: "Your specimen is now being examined by the lab to see if it is sufficient enough to be analyzed in the next phase. The lab will perform several procedures such as examine the visual of your specimen, do extraction and amplification of your DNA.",
         size: 295,
         viewBox: "-20 0 300 125"
       },
       {
         status: "WetWork",
         name: "Wet Work",
-        detail: "Your sample is being analyzed by the Lab",
+        detail: "The lab is now analyzing your specimen.",
         size: 295,
         viewBox: "-20 0 300 150"
       },
       {
         status: "ResultReady",
         name: "Result Ready",
-        detail: "Your sample has been successfully analyzed",
+        detail: "Thank you for your patience. Your order has been fulfilled. You can click on this button below to see your result.",
         size: 295,
         viewBox: "-20 0 300 150"
+      },
+      {
+        status: "Rejected",
+        name: "Quality Control",
+        detail: `Your sample has failed quality control. Your service fee of XX DAI will be refunded to your account.`,
+        size: 295,
+        viewBox: "-20 0 300 125"
       }
     ]
   }),
@@ -224,7 +244,18 @@ export default {
     this.checkOrderDetail();
     this.iconSwitcher()
   },
+  computed: {
+    setDetail() {
+      const detail = `Your sample has failed quality control. Your service fee of ${this.myTest.prices[0].value - this.myTest.additional_prices[0].value} DAI will be refunded to your account.`
+      if (this.status.status === "Rejected") return detail
+      return this.status.detail
+    }
+  },
   methods: {
+    handleAction() {
+      window.open(this.link, "_blank")
+    },
+  
     toViewResult() {
       this.$router.push({ name: "test-result", params: {idOrder: this.myTest.id}})
     },
@@ -289,13 +320,13 @@ export default {
         this.e1 = 6
         break;
       case "Rejected":
-        this.status = this.orderDetail[0]
-        this.banner = registeredBanner;
+        this.status = this.orderDetail[5]
+        this.banner = rejectedQCBanner;
         this.e1 = 4
         break;
       default:
-        this.status = this.orderDetail[0]
-        this.banner = registeredBanner;
+        this.status = {};
+        this.banner = "";
         this.e1 = 1
         break;
       }
@@ -386,6 +417,7 @@ export default {
       font-size: 12px
       font-weight: 400
       line-height: 16px
+      min-height: 50px
   
   .button
     margin-top: 13px
@@ -394,7 +426,7 @@ export default {
     width: 100%
     min-width: 100px
     padding: 17px
-    margin-top: 50px
+    margin-top: 30px
   .step-indicator
     display: flex
     align-items: center

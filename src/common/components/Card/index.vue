@@ -98,6 +98,7 @@ export default {
 <style lang="sass">
 
 .ui-debio-card
+  z-index: 1
   text-decoration: none
   position: relative
   padding: 1.125rem

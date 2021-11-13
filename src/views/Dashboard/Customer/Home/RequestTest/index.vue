@@ -38,13 +38,6 @@ export default {
     ]
   }),
 
-
-  async mounted () {
-    if (!this.services.length) {
-      this.showNoLab = true
-    }
-  },
-
   methods: {
     handleBack() {
       this.$router.push({ name: "customer-dashboard"})

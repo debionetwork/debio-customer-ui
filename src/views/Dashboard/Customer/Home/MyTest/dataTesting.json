@@ -378,7 +378,7 @@
           }
         ],
         "seller_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU",
-        "status": "Paid"
+        "status": "OrderPaid"
       },
       "sort": [
         "1632283908000"
@@ -634,7 +634,7 @@
           }
         ],
         "seller_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU",
-        "status": "Cancelled"
+        "status": "Paid"
       },
       "sort": [
         "0x0000017bf1cb6560"
