@@ -60,6 +60,7 @@ export default {
         padding: 2.188rem 2rem 2.5rem
         border-radius: 0.25rem
         position: relative
+        overflow: hidden
 
     &__content
       display: flex
