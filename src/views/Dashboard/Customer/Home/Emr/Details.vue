@@ -1,11 +1,19 @@
 <template lang="pug">
   .customer-emr-details
-    .customer-emr-details__wrapper(v-if="selectedFiles")
+    ui-debio-modal(
+      :show="!!messageError"
+      :show-title="false"
+      :show-cta="false"
+      @onClose="$router.push({ name: 'customer-emr' })"
+    )
+      | {{ messageError }}
+
+    .customer-emr-details__wrapper(v-if="emrDocument")
       .customer-emr-details__emr
-        .customer-emr-details__emr-title List of {{ selectedFiles.title }}
+        .customer-emr-details__emr-title List of {{ emrDocument.title }}
         .customer-emr-details__emr-documents
           .customer-emr-details__document(
-            v-for="(document, idx) in selectedFiles.files"
+            v-for="(document, idx) in emrDocument.files"
             :key="idx"
             role="button"
             :title="document.title"
@@ -54,47 +62,11 @@ export default {
     isLoading: false,
     publicKey: null,
     secretKey: null,
+    messageError: null,
     result: null,
     message: "Please wait",
     selected: 0,
-    emrDocuments: [
-      {
-        id: 1,
-        title: "Covid 19",
-        category: "Vaccinations",
-        files: [
-          {
-            title: "Xray",
-            link: "QmWyTbp8Gw8FcUsGNudtf7WoUT6LAYCnnrzeceg5PnUjUK",
-            description: "My xray sample"
-          },
-          {
-            title: "Data vaccination",
-            link: "QmaacnLDGpXuaP3JX7uWau8r67wE8BmS96v24m6dAGSaeR",
-            description: "my vaccinations detail"
-          }
-        ],
-        createdAt: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
-      },
-      {
-        id: 2,
-        title: "Whole genome squencing",
-        category: "Vaccinations",
-        files: [
-          {
-            title: "Xray",
-            link: "QmQe4udiBTcQfuDgHtGLpvoDw2PkvftrisDBzPvDkzUYWW",
-            description: "My xray sample"
-          },
-          {
-            title: "Data vaccination",
-            link: "QmfNewKtBtGhET6RGLzDjEzspNAVADcdEQdrXkgujqRq1y",
-            description: "my vaccinations detail"
-          }
-        ],
-        createdAt: "2/7/2011"
-      }
-    ]
+    emrDocuments: {}
   }),
 
   computed: {
@@ -104,11 +76,7 @@ export default {
       mnemonicData: (state) => state.substrate.mnemonicData,
       lastEventData: (state) => state.substrate.lastEventData,
       loadingData: (state) => state.auth.loadingData
-    }),
-
-    selectedFiles() {
-      return this.emrDocuments[this.$route.params.id - 1]
-    }
+    })
   },
 
   watch: {
@@ -119,6 +87,14 @@ export default {
 
   created() {
     if (this.mnemonicData) this.initialData()
+    if (!this.$route.params.document) {
+      this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
+
+      return
+    }
+
+    this.emrDocument = this.$route.params.document
+    if (this.emrDocument?.files.length) this.parseResult(0, { recordLink: this.emrDocument?.files[0].recordLink })
   },
 
   methods: {
@@ -129,10 +105,10 @@ export default {
       this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
     },
 
-    async parseResult(idx, { link }) {
+    async parseResult(idx, { recordLink }) {
       this.selected = idx
 
-      const path = link
+      const path = recordLink
 
       const pair = {
         secretKey: this.secretKey,
