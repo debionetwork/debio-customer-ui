@@ -4,7 +4,7 @@
 
       v-row.pa-3
         v-col(cols="3")
-          ui-debio-avatar(src="https://picsum.photos/150" size="90" rounded)
+          ui-debio-avatar(:src="icon" size="90" rounded)
     
         v-col(cols="9")
           .menu-card__title

@@ -2,7 +2,7 @@
   v-container.container-card
     v-card.menu-card
       .menu-card__service
-        ui-debio-avatar.ma-1(src="https://picsum.photos/150" size="90" rounded)
+        ui-debio-avatar.ma-1(:src="dataService.serviceImage" size="90" rounded)
       
         .menu-card__body
           b.menu-card__service-title {{ dataService.serviceName }}
@@ -34,7 +34,7 @@
       hr(class="ml-3 me-3")
       
       div(class="d-flex")
-        ui-debio-avatar.ma-3(src="https://picsum.photos/150" size="90" rounded)
+        ui-debio-avatar.ma-3(:src="dataService.serviceImage" size="90" rounded)
             
         .menu-card__lab-detail
           b.mt-2.menu-card__service-title {{ dataService.labName }}

@@ -6,7 +6,7 @@
           v-icon mdi-close
 
       div.pa-5(class="d-flex justify-center")
-        ui-debio-avatar(src="https://picsum.photos/150" size="125" rounded)
+        ui-debio-avatar(:src="selectedService.serviceImage" size="125" rounded)
         
       div(class="d-flex justify-center pb-5 pt-1")
         .dialog-service__title
@@ -27,7 +27,7 @@
       
       v-row(class="pa-5")
         v-col(cols="3")
-          ui-debio-avatar(src="https://picsum.photos/150" size="90" rounded)
+          ui-debio-avatar(:src="selectedService.serviceImage" size="90" rounded)
         
         v-col(cols="6 mt-3")
           .dialog-service__sub-title
@@ -87,6 +87,7 @@ export default {
   }),
 
   mounted () {
+    console.log("==================")
     console.log(this.selectedService)
   },
 

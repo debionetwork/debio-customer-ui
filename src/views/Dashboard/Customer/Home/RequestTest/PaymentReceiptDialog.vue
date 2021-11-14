@@ -230,17 +230,17 @@ export default {
         const identity = await Kilt.Identity.buildFromMnemonic(decryptedMnemonic)
         const customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
 
-        if (this.status !== "Unpaid") {          
+        if (this.status !== "Unpaid") {
           await createOrder(
             this.api,
             this.wallet,
             this.selectedService.serviceId,
             customerBoxPublicKey,
-            this.selectedService.indexPrice
+            this.selectedService.indexPrice,
+            this.payOrder
           )
         }
-
-        this.payOrder()
+        // this.payOrder()
       } catch (err) {
         console.log(err)
         this.isLoading = false
@@ -250,6 +250,14 @@ export default {
     },
 
     async payOrder () {
+      // get last order id
+      this.lastOrder = await lastOrderByCustomer(
+        this.api,
+        this.wallet.address
+      )
+      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      this.status = this.detailOrder.status
+
       const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
       const totalPrice = this.selectedService.price
 

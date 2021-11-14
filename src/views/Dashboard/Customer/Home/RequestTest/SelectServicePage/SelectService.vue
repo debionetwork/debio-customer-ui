@@ -111,7 +111,8 @@ export default {
           address: labAddress,
           city,
           region,
-          country
+          country,
+          profile_image: labImage
         },
         info: {
           name: serviceName,
@@ -153,6 +154,7 @@ export default {
         labName,
         labRate,
         labAddress,
+        labImage,
         price,
         detailPrice,
         currency,
@@ -194,7 +196,8 @@ export default {
             name: labName,
             address: labAddress,
             city,
-            region
+            region,
+            profile_image: labImage
           },
           info: {
             name: serviceName,
@@ -239,6 +242,7 @@ export default {
           labName,
           labRate,
           labAddress,
+          labImage,
           price,
           detailPrice,
           currency,
@@ -256,8 +260,6 @@ export default {
           this.serviceList.push(service)
         }
       }
-
-      console.log("this service", this.serviceList)
 
       if (!this.serviceList.length) {
         this.showNoLab = true

@@ -210,11 +210,7 @@ export default {
         this.showPayRemainingDialog = true
         return
       }
-
-      console.log("=======")
-      console.log(this.showPayRemainingDialog)
       this.showReceipt = true 
-      console.log(this.showReceipt)
     },
 
     onContinue() {
