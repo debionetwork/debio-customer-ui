@@ -4,21 +4,38 @@
     :show="showModal"
     :show-title="false"
     disable-dismiss
-    @onClose="showModal = false"
   )
     ui-debio-icon(:icon="alertIcon" stroke size="80")
     h1 Delete
     p.modal-password__subtitle(v-if="selectedFile") Are you sure you want to delete {{ selectedFile.title }} EMR files?
 
+    ui-debio-input(
+      :rules="$options.rules.password"
+      :errorMessages="passwordErrorMessages"
+      v-model="password"
+      :error="!!error"
+      :disabled="isLoading"
+      @keyup.enter="onDelete"
+      type="password"
+      variant="small"
+      label="Delete your EMR files by input your password"
+      placeholder="Input your password"
+      block
+      outlined
+    )
+
     .modal-password__cta.d-flex(slot="cta")
       Button(
         outlined
+        :disabled="isLoading"
         color="secondary"
         @click="showModal = false; error = null"
       ) Cancel
 
       Button(
         color="secondary"
+        :loading="isLoading"
+        :disabled="!password"
         @click="onDelete"
       ) Delete
   ui-debio-banner(
@@ -71,6 +88,8 @@ import {
   queryElectronicMedicalRecordFileById,
   queryElectronicMedicalRecordById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
+import errorMessage from "@/common/constants/error-messages"
+import { validateForms } from "@/common/lib/validate"
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
@@ -81,7 +100,7 @@ import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskService
 
 export default {
   name: "CustomerEmr",
-  mixins: [metamaskServiceHandler],
+  mixins: [metamaskServiceHandler, validateForms],
 
   components: { DataTable, Button },
 
@@ -96,6 +115,9 @@ export default {
     cardBlock: false,
     showModal: false,
     selectedFile: null,
+    showModalPassword: false,
+    error: null,
+    password: null,
     publicKey: null,
     secretKey: null,
     headers: [
@@ -150,12 +172,11 @@ export default {
 
   watch: {
     lastEventData() {
-      if (this.lastEventData != null) {
+      if (this.lastEventData !== null) {
         const dataEvent = JSON.parse(this.lastEventData.data.toString())
-        if (this.lastEventData.method == "ElectronicMedicalRecordInfoRemoved") {
-          if (dataEvent[0].owner_id == this.wallet.address) {
-            this.getDocumentsHistory()
-          }
+
+        if (this.lastEventData.method === "ElectronicMedicalRecordRemoved") {
+          if (dataEvent[1] === this.wallet.address) this.getEMRHistory()
         }
       }
     },
@@ -172,9 +193,13 @@ export default {
     })
   },
 
-  created() {
+  async created() {
     if (this.mnemonicData) this.initialDataKey()
-    this.getDocumentsHistory()
+    await this.metamaskDispatchAction(this.getEMRHistory)
+  },
+
+  rules: {
+    password: [ val => !!val || errorMessage.PASSWORD(8) ]
   },
 
   methods: {
@@ -185,11 +210,9 @@ export default {
       this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
     },
 
-    async getDocumentsHistory() {
-      await this.metamaskDispatchAction(this.getEMRHistory)
-    },
-
     async getEMRHistory() {
+      this.emrDocuments = []
+
       const dataEMR = await this.metamaskDispatchAction(queryGetEMRList, this.api, this.wallet.address)
 
       if (dataEMR !== null) {
@@ -207,7 +230,7 @@ export default {
               listEMR[i]
             )
 
-            if (emrDetail != null) {
+            if (emrDetail !== null) {
               this.prepareEMRData(emrDetail)
             }
           }
@@ -218,8 +241,6 @@ export default {
         }
       }
     },
-
-
 
     async prepareEMRData(dataEMR) {
       let files = []
@@ -260,13 +281,12 @@ export default {
       const { id } = this.selectedFile
 
       try {
-        const pair = {
-          secretKey: this.secretKey,
-          publicKey: this.publicKey
-        }
+        await this.wallet.decodePkcs8(this.password)
 
-        await this.metamaskDispatchAction(deregisterElectronicMedicalRecord, this.api, pair, id)
+        await this.metamaskDispatchAction(deregisterElectronicMedicalRecord, this.api, this.wallet, id)
         this.showModal = false
+        this.error = null
+        this.selectedFile = null
       } catch (e) {
         this.error = e?.message
       }

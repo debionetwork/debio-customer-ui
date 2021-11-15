@@ -4,6 +4,7 @@
       :show="showLoadingFiles"
       title="File Upload"
       disable-dismiss
+      @close="showLoadingFiles = false"
     )
       template(v-if="computeFiles.length")
         .modal-files-upload__wrapper
@@ -53,6 +54,7 @@
         type="password"
         variant="small"
         placeholder="Input Password"
+        :disabled="isLoading"
         v-model="password"
         outlined
         block
@@ -241,12 +243,10 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
-import { mapGetters, mapState } from "vuex"
+import { mapState } from "vuex"
 
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-import store from "@/store"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/emr"
@@ -254,7 +254,6 @@ import {
   addElectronicMedicalRecordFile,
   registerElectronicMedicalRecord
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
-import { queryGetEMRList } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
 import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import errorMessage from "@/common/constants/error-messages"
@@ -345,6 +344,7 @@ export default {
               this.showLoadingFiles = false
               this.registerId = null
               this.resetState()
+              this.$router.push({ name: "customer-emr" })
             } else {
               this.handleUpload(this.registerId, this.emr.files[this.countFileAdded], this.countFileAdded)
             }
@@ -637,11 +637,11 @@ export default {
       return selected?.percent
     },
 
-    onRetry(file) {
+    onRetry() {
       // TODO: Add script later
     },
 
-    onCancel(file) {
+    onCancel() {
       // TODO: Add script later
     }
   }
