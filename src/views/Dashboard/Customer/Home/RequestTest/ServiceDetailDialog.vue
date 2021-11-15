@@ -1,12 +1,12 @@
 <template lang="pug">
-  v-dialog(:value="show" width="480" persistent )
+  v-dialog(:value="show" width="480" persistent rounded )
     v-card
       div.pa-5(class="d-flex justify-end") 
         v-btn.fixed-button(icon @click="closeDialog")
           v-icon mdi-close
 
       div.pa-5(class="d-flex justify-center")
-        v-icon(color="#BA8DBB" :size="125") {{ selectedService.serviceImage }}
+        ui-debio-avatar(:src="selectedService.serviceImage" size="125" rounded)
         
       div(class="d-flex justify-center pb-5 pt-1")
         .dialog-service__title
@@ -27,8 +27,7 @@
       
       v-row(class="pa-5")
         v-col(cols="3")
-          v-icon.ml-2(v-if="!avatar" color="#BA8DBB" size="90") mdi-hospital
-          v-img.ml-2(v-else :src="avatar" max-width="90" max-height="90")
+          ui-debio-avatar(:src="selectedService.serviceImage" size="90" rounded)
         
         v-col(cols="6 mt-3")
           .dialog-service__sub-title
@@ -86,6 +85,11 @@ export default {
     formatedDurationType: "",
     avatar: ""
   }),
+
+  mounted () {
+    console.log("==================")
+    console.log(this.selectedService)
+  },
 
   components: {
     Button
@@ -161,5 +165,3 @@ export default {
       
 
 </style>
-
-

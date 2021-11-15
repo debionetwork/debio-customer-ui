@@ -1,0 +1,62 @@
+{
+  "data": [
+    {
+      "country": "ID",
+      "blockMetaData": {
+        "blockNumber": 121,
+        "blockHash": "0x0f72612586082ae598ea71f5c2e95bc58f235de9432566452c19dae5c5d04560"
+      },
+      "city": "Jakarta",
+      "owner_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU",
+      "id": "0xe88f0531fea1654b6a24197ec1025fd7217bb8b19d619bd488105504ec244df8",
+      "region": "JK",
+      "info": {
+        "image": "mdi-dna",
+        "test_result_sample": "",
+        "prices_by_currency": [
+          {
+            "total_price": 20,
+            "currency": "DAI",
+            "price_components": [
+              {
+                "component": "testing_price",
+                "value": 15
+              }
+            ],
+            "additional_prices": [
+              {
+                "component": "qc_price",
+                "value": 5
+              }
+            ]
+          }
+        ],
+        "name": "Whole Genome Sequencing",
+        "expected_duration": {
+          "duration": 7,
+          "duration_type": "WorkingDays"
+        },
+        "description": "Analyze your entire genomic DNA sequence. Genomic information has been instrumental in identifying inherited disorders, characterizing the mutations that drive cancer progression, and tracking disease outbreaks.",
+        "long_description": null,
+        "category": "Whole Genome Sequencing"
+      },
+      "lab_detail": {
+        "box_public_key": "0xe2829ff8b96c52401dc9f89c5ce77df95868b5c9da2b7f70f04be1e9f8c39a74",
+        "name": "Laboratorium DNA Favourite",
+        "email": "email@labdnafavorit.com",
+        "country": "ID",
+        "region": "JK",
+        "city": "Jakarta",
+        "address": "Jakarta",
+        "phone_number": "",
+        "website": "",
+        "latitude": null,
+        "longitude": null,
+        "profile_image": null
+      },
+      "certifications": [],
+      "verification_status": "Verified",
+      "lab_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU"
+    }
+  ]
+}

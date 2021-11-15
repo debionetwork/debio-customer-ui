@@ -1,4 +1,4 @@
-import store from "../store"
+import store from "@/store"
 import appConfig from "./app-config"
 import * as EthUtil from "ethereumjs-util"
 import Transaction from "ethereumjs-tx"

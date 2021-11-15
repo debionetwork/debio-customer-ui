@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-dialog(:value="show" width="400" persistent )
+  v-dialog(:value="show" width="400" rounded persistent )
     v-card.pa-5
       v-app-bar(flat dense color="white")
         v-spacer
@@ -60,7 +60,6 @@
           :rules="[val => !!val || 'Password is required']"
           :disabled="isLoading"
           @click:append="showPassword = !showPassword"
-          @keyup.enter="onPasswordSet"
           outlined
         )
         
@@ -100,8 +99,13 @@ import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
-import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
+import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
+import localStorage from "@/common/lib/local-storage"
+import CryptoJS from "crypto-js"	
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
+
 
 
 export default {
@@ -129,7 +133,8 @@ export default {
     isLoading: false,
     dataEvent: null,
     lastOrder: null,
-    detailOrder: null
+    detailOrder: null,
+    status: ""
   }),
 
   computed: {
@@ -146,8 +151,10 @@ export default {
   },
 
   async mounted () {
-    if (this.lastEventData.method === "OrderCreated") {
-      this.dataEvent = JSON.parse(this.lastEventData.data.toString())[0]
+    if (this.lastEventData) {
+      if (this.lastEventData.method === "OrderCreated") {
+        this.dataEvent = JSON.parse(this.lastEventData.data.toString())[0]
+      }
     }
 
     // get last order id
@@ -156,8 +163,10 @@ export default {
       this.wallet.address
     )
 
-    this.detailOrder = await getOrdersData(this.api, this.lastOrder)
-    
+    if (this.lastOrder) {
+      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      this.status = this.detailOrder.status
+    }
   },
 
   methods: {
@@ -188,6 +197,11 @@ export default {
           return
         }
 
+        const dai = await getBalanceDAI(this.metamaskWalletAddress)
+
+        console.log("dai", dai)
+
+
         // check ETH Balance
         const balance = await getBalanceETH(this.metamaskWalletAddress)
         if (balance <= 0 ) {
@@ -210,21 +224,23 @@ export default {
           return
         }
 
-        const customerBoxPublicKey = this.mnemonicData.publicKey
+        const mnemonic = localStorage.getLocalStorageByName("mnemonic_data")
+        const decryptedMnemonic = CryptoJS.AES.decrypt(mnemonic, this.password).toString(CryptoJS.enc.Utf8)
+        
+        const identity = await Kilt.Identity.buildFromMnemonic(decryptedMnemonic)
+        const customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
 
-        console.log(this.detailOrder)
-        if (this.detailOrder.status !== "Unpaid") {          
+        if (this.status !== "Unpaid") {
           await createOrder(
             this.api,
             this.wallet,
             this.selectedService.serviceId,
             customerBoxPublicKey,
-            this.selectedService.indexPrice
+            this.selectedService.indexPrice,
+            this.payOrder
           )
         }
-
-        this.payOrder()     
-        
+        // this.payOrder()
       } catch (err) {
         console.log(err)
         this.isLoading = false
@@ -234,6 +250,14 @@ export default {
     },
 
     async payOrder () {
+      // get last order id
+      this.lastOrder = await lastOrderByCustomer(
+        this.api,
+        this.wallet.address
+      )
+      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      this.status = this.detailOrder.status
+
       const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
       const totalPrice = this.selectedService.price
 
@@ -242,15 +266,17 @@ export default {
           this.metamaskWalletAddress,
           totalPrice
         )
+ 
         await getTransactionReceiptMined(txHash)
       }
 
       const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)
+      
       await getTransactionReceiptMined(txHash)
 
       this.isLoading = false
       this.password = ""
-      this.$router.push({ name: "customer-success"})
+      this.$router.push({ name: "customer-request-test-success"})
       
       
     },

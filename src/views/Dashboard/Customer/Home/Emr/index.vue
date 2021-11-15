@@ -1,40 +1,24 @@
 <template lang="pug">
 .customer-emr
   ui-debio-modal(
-    :show="showModalPassword"
+    :show="showModal"
     :show-title="false"
     disable-dismiss
-    @onClose="showModalPassword = false; error = null"
+    @onClose="showModal = false"
   )
     ui-debio-icon(:icon="alertIcon" stroke size="80")
     h1 Delete
     p.modal-password__subtitle(v-if="selectedFile") Are you sure you want to delete {{ selectedFile.title }} EMR files?
 
-    ui-debio-input(
-      :rules="$options.rules.password"
-      :errorMessages="passwordErrorMessages"
-      :error="error"
-      v-model="password"
-      @keyup.enter="onDelete"
-      @blur="error = null"
-      type="password"
-      variant="small"
-      label="Delete your EMR files by input your password"
-      placeholder="Input your password"
-      block
-      outlined
-    )
-
     .modal-password__cta.d-flex(slot="cta")
       Button(
         outlined
         color="secondary"
-        @click="showModalPassword = false; error = null"
+        @click="showModal = false; error = null"
       ) Cancel
 
       Button(
         color="secondary"
-        :disabled="!password"
         @click="onDelete"
       ) Delete
   ui-debio-banner(
@@ -64,13 +48,12 @@
 
     template(v-slot:[`item.actions`]="{ item }")
       .customer-emr__actions
-        ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item.id)")
+        ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item)")
         ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="handleOpenModalDelete(item)")
 </template>
 
 <script>
 import { mapState } from "vuex"
-import { validateForms } from "@/common/lib/validate"
 import {
   layersIcon,
   analiticIllustration,
@@ -79,13 +62,18 @@ import {
   trashIcon,
   downloadIcon
 } from "@/common/icons"
-
-import errorMessage from "@/common/constants/error-messages"
+import {
+  deregisterElectronicMedicalRecord
+} from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 
 import {
   queryGetEMRList,
+  queryElectronicMedicalRecordFileById,
   queryElectronicMedicalRecordById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
+import CryptoJS from "crypto-js"
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
 
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
@@ -93,7 +81,7 @@ import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskService
 
 export default {
   name: "CustomerEmr",
-  mixins: [metamaskServiceHandler, validateForms],
+  mixins: [metamaskServiceHandler],
 
   components: { DataTable, Button },
 
@@ -106,10 +94,10 @@ export default {
     alertIcon,
 
     cardBlock: false,
-    showModalPassword: false,
+    showModal: false,
     selectedFile: null,
-    error: null,
-    password: "",
+    publicKey: null,
+    secretKey: null,
     headers: [
       {
         text: "EMR Title",
@@ -143,44 +131,7 @@ export default {
         align: "center"
       }
     ],
-    emrDocuments: [
-      {
-        id: 1,
-        title: "Covid 19",
-        category: "Vaccinations",
-        files: [
-          {
-            title: "Xray",
-            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
-            description: "My xray sample"
-          },
-          {
-            title: "Data vaccination",
-            link: "QmUv4n9iwJw75WbYy3P8D9LUzzAdzYzcgYEMH8Du35gumE",
-            description: "my vaccinations detail"
-          }
-        ],
-        createdAt: "Fri Nov 05 2021 16:29:50 GMT+0700 (Western Indonesia Time)"
-      },
-      {
-        id: 2,
-        title: "Whole genome squencing",
-        category: "Vaccinations",
-        files: [
-          {
-            title: "Xray",
-            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
-            description: "My xray sample"
-          },
-          {
-            title: "Data vaccination",
-            link: "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG",
-            description: "my vaccinations detail"
-          }
-        ],
-        createdAt: "2/7/2011"
-      }
-    ]
+    emrDocuments: []
   }),
 
   computed: {
@@ -207,6 +158,10 @@ export default {
           }
         }
       }
+    },
+
+    mnemonicData(val) {
+      if (val) this.initialDataKey()
     }
   },
 
@@ -217,15 +172,19 @@ export default {
     })
   },
 
-  rules: {
-    password: [ val => !!val || errorMessage.PASSWORD(8) ]
-  },
-
   created() {
+    if (this.mnemonicData) this.initialDataKey()
     this.getDocumentsHistory()
   },
 
   methods: {
+    initialDataKey() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
     async getDocumentsHistory() {
       await this.metamaskDispatchAction(this.getEMRHistory)
     },
@@ -262,51 +221,55 @@ export default {
 
 
 
-    prepareEMRData() {
-      // TODO: Data still not fetched properly. Need update later
-      // const title = dataEMR.title
-      // const description = dataEMR.description
-      // var d = new Date(parseInt(dataEMR.uploadedAt.replace(/,/g, "")))
-      // const timestamp = d.getTime().toString()
-      // const data = dataEMR
-      // const date = d.toLocaleString("en-US", {
-      //   day: "numeric", // numeric, 2-digit
-      //   year: "numeric", // numeric, 2-digit
-      //   month: "long" // numeric, 2-digit, long, short, narrow
-      // })
+    async prepareEMRData(dataEMR) {
+      let files = []
 
-      // const order = {
-      //   title,
-      //   description,
-      //   data,
-      //   date,
-      //   timestamp,
-      //   type: "emr"
-      // }
+      for (let i = 0; i < dataEMR.files?.length; i++) {
+        const file = await this.metamaskDispatchAction(queryElectronicMedicalRecordFileById,
+          this.api,
+          dataEMR.files[i]
+        )
 
-      // this.emrDocuments.push(order)
+        files.push({
+          ...file,
+          createdAt: new Date(+file.uploadedAt.replaceAll(",", "")),
+          recordLink: file.recordLink.replace("https://ipfs.io/ipfs/", "")})
+      }
+
+      const order = {
+        id: dataEMR.id,
+        title: dataEMR.title,
+        category: dataEMR.category,
+        createdAt: new Date(),
+        files: files?.slice(0, 3)
+      }
+
+      this.emrDocuments.push(order)
     },
 
-    onDetails(id) {
-      this.$router.push({ name: "customer-emr-details", params: { id }})
+    onDetails(emr) {
+      this.$router.push({ name: "customer-emr-details", params: { id: emr.id, document: emr }})
     },
 
     handleOpenModalDelete(item) {
       this.selectedFile = item
-      this.showModalPassword = true
+      this.showModal = true
     },
 
     async onDelete() {
       const { id } = this.selectedFile
-      try {
-        await this.wallet.decodePkcs8(this.password)
 
-        this.emrDocuments = this.emrDocuments.filter(document => document.id !== id)
-        this.showModalPassword = false
+      try {
+        const pair = {
+          secretKey: this.secretKey,
+          publicKey: this.publicKey
+        }
+
+        await this.metamaskDispatchAction(deregisterElectronicMedicalRecord, this.api, pair, id)
+        this.showModal = false
       } catch (e) {
-        this.error = e
+        this.error = e?.message
       }
-      // TODO: Update this when Backend is ready
     }
   }
 }

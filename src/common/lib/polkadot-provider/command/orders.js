@@ -1,8 +1,17 @@
-export async function createOrder(api, pair, serviceId, customerBoxPublicKey, priceIndex) {
-  const result = await api.tx.orders
+export async function createOrder(api, pair, serviceId, customerBoxPublicKey, priceIndex, callback = () => {}) {
+  const unsub = await api.tx.orders
     .createOrder(serviceId, priceIndex, customerBoxPublicKey)
-    .signAndSend(pair, { nonce: -1 })
-  return result.toHuman()
+    .signAndSend(pair, { nonce: -1 }, async ({ events = [], status }) => {
+      if(status.isFinalized) {
+        const eventList = events.filter(({ event }) =>
+          api.events.system.ExtrinsicSuccess.is(event)
+        )
+        if(eventList.length > 0){
+          callback()
+          unsub()
+        }
+      }
+    })
 }
 
 export async function fulfillOrder(api, pair, orderId) {

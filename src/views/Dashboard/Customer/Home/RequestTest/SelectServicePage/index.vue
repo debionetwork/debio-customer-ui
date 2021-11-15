@@ -13,6 +13,7 @@
         
         template
           SelectService(
+            :staking="staking"
             @onSubmit="toPaymentCheckout"
           )
                     
@@ -35,8 +36,26 @@ export default {
       { number: 2, title: "Select Service", active: true },
       { number: 3, title: "Checkout & Payment", active: false },
       { number: 4, title: "Success", active: false }
-    ]
+    ],
+    isSelectLocation: true,
+    isSelectService: false,
+    itosPaymentCheckout: false,
+    isSuccessPage: false,
+    showNoLab: false,
+    staking: false
   }),
+
+
+  async mounted () {
+    if (this.$route.params.flag === "staking") {
+      this.staking = true
+    }
+
+    if (!this.services.length) {
+      this.showNoLab = true
+    }
+
+  },
 
   methods: {
     handleBack() {

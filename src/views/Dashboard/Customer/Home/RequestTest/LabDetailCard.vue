@@ -2,12 +2,11 @@
   v-container.container-card
     v-card.menu-card
       .menu-card__service
-        v-icon(v-if="!avatar" color="#BA8DBB" :size="90") {{ dataService.serviceImage }}
-        v-avatar.ml-2(v-else :src="avatar")
+        ui-debio-avatar.ma-1(:src="dataService.serviceImage" size="90" rounded)
       
         .menu-card__body
           b.menu-card__service-title {{ dataService.serviceName }}
-            v-row(class="ml-1 mt-2")
+            v-row(class="ml-1 mt-1")
               div(
                 v-for="i in dataService.serviceRate"
                 :key="i")
@@ -35,12 +34,11 @@
       hr(class="ml-3 me-3")
       
       div(class="d-flex")
-        v-icon.ml-2(v-if="!avatar" color="#BA8DBB" :size="90") {{ icon }}
-        v-avatar.ml-2(v-else :src="avatar")
+        ui-debio-avatar.ma-3(:src="dataService.serviceImage" size="90" rounded)
             
-        .menu-card__lab-detail(class="mb-1")
-          b.mt-5.menu-card__service-title {{ dataService.labName }}
-            v-row(class="ml-1 mt-2 mb-1")
+        .menu-card__lab-detail
+          b.mt-2.menu-card__service-title {{ dataService.labName }}
+            v-row(class="ml-1 mt-1 mb-1")
               div(
                 v-for="i in dataService.labRate"
                 :key="i")
@@ -54,7 +52,7 @@
               span(class="ml-2" style="font-size: 9px;") ({{ dataService.countRateLab }})
         
             div.description(
-              class="ml-1 mb-5 me-8 text-caption grey--text text--darken-1"
+              class="mb-5 me-8 text-caption grey--text text--darken-1"
             ) {{ dataService.labAddress }}
       
 

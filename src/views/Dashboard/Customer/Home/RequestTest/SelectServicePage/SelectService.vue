@@ -1,7 +1,7 @@
 <template lang="pug">
   .customer-select-service
     .customer-select-service__title 
-      b Select your preferred Laboratory
+      b Select your preferred Service
 
     template(v-if="showNoLab")
       NoLab
@@ -22,6 +22,7 @@
             :currency="service.currency"
             :city="service.city"
             :region="service.region"
+            :country="service.country"
             @click="getDetailService(service)"
           )
       
@@ -51,6 +52,7 @@ import MenuCard from "../MenuCard.vue"
 import AlertDialog from "@/common/components/Dialog/AlertDialog"
 import ServiceDetailDialog from "../ServiceDetailDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
+import mockData from "./service-mock.json"
 
 
 export default {
@@ -61,6 +63,10 @@ export default {
     MenuCard,
     ServiceDetailDialog,
     AlertDialog
+  },
+
+  props: {
+    staking: Boolean
   },
 
   data: () => ({
@@ -79,13 +85,98 @@ export default {
       country: (state) => state.lab.country,
       city: (state) => state.lab.city,
       category: (state) => state.lab.category,
-      services: (state) => state.lab.services,
-      rate: (state) => state.rating.rate
+      dataServices: (state) => state.lab.services
     })
   },
 
   async mounted () {
+    
+    if (this.$route.params.flag === "staking") {
+      this.services = mockData.data
+    }
+
+    if (!this.$route.params.flag) {
+      this.services = this.dataServices
+    }
+ 
     this.getServices()
+
+    for (let i = 0; i < this.services.length; i++) {
+
+      let { 
+        id: serviceId, 
+        lab_id: labId,
+        lab_detail: {
+          name: labName,
+          address: labAddress,
+          city,
+          region,
+          country,
+          profile_image: labImage
+        },
+        info: {
+          name: serviceName,
+          category: serviceCategory,
+          description: serviceDescription,
+          image: serviceImage,
+          expected_duration: {
+            duration,
+            duration_type: durationType
+          },
+          prices_by_currency: [
+            {
+              currency,
+              total_price : price
+            }
+          ]
+        },
+        verification_status:  verificationStatus
+      } = this.services[i]
+
+      let labRate = 0
+      let countRateLab = 0
+      let serviceRate = 0
+      let countServiceRate = 0
+      let detailPrice = this.services[i].info.prices_by_currency[0]
+
+      if (durationType === "WorkingDays") {
+        durationType = "Working Days"
+      }
+
+      const service = {
+        serviceId,
+        serviceName,
+        serviceRate,
+        serviceImage,
+        serviceCategory,
+        serviceDescription,
+        labId,
+        labName,
+        labRate,
+        labAddress,
+        labImage,
+        price,
+        detailPrice,
+        currency,
+        country,
+        city,
+        region,
+        countRateLab,
+        countServiceRate,
+        duration,
+        durationType,
+        verificationStatus
+      }
+
+      if (service.verificationStatus === "Verified") {
+        this.serviceList.push(service)
+      }
+    }
+
+    if (!this.serviceList.length) {
+      this.showNoLab = true
+    }
+
   },
 
   methods: {
@@ -105,7 +196,8 @@ export default {
             name: labName,
             address: labAddress,
             city,
-            region
+            region,
+            profile_image: labImage
           },
           info: {
             name: serviceName,
@@ -126,19 +218,14 @@ export default {
           verification_status:  verificationStatus
         } = this.services[i]
 
-        let labRate = 0
-        let countRateLab = 0
-        let serviceRate = 0
-        let countServiceRate = 0
-        let detailPrice = this.services[i].info.prices_by_currency[0]
 
-        if (this.rate[labId]) {
-          const servicesRate = this.rate[labId].services
-          labRate = this.rate[labId].rating_lab
-          countRateLab = this.rate[labId].count_rating_lab
-          serviceRate = servicesRate[serviceId].rating_service
-          countServiceRate = servicesRate[serviceId].count_rating_service
-        }
+        const labRateData = await this.$store.dispatch("rating/getLabRate", labId)
+        const labRate = labRateData.rating
+        const countRateLab = labRateData.count
+        const serviceData = await this.$store.dispatch("rating/getServiceRate", serviceId)
+        const serviceRate = serviceData.rating_service
+        const countServiceRate = serviceData.count_rating_service
+        const detailPrice = this.services[i].info.pricesByCurrency[0]
 
         if (durationType === "WorkingDays") {
           durationType = "Working Days"
@@ -155,6 +242,7 @@ export default {
           labName,
           labRate,
           labAddress,
+          labImage,
           price,
           detailPrice,
           currency,
@@ -185,13 +273,13 @@ export default {
         this.wallet.address
       )
 
-      const detailOrder = await getOrdersData(this.api, this.lastOrder)
-
-      if (detailOrder.status === "Unpaid") {
-        this.showAlert = true
-        return
+      if (this.lastOrder) {
+        const detailOrder = await getOrdersData(this.api, this.lastOrder)        
+        if (detailOrder.status === "Unpaid") {
+          this.showAlert = true
+          return
+        }
       }
-
       this.setProductsToRequest(service)
       this.showServiceDetailDialog = true
     },

@@ -4,8 +4,7 @@
 
       v-row.pa-3
         v-col(cols="3")
-          v-icon.ml-2(v-if="!avatar" color="#BA8DBB" size="90") {{ icon }}
-          v-img.ml-2(v-else :src="avatar" max-width="90" max-height="90")
+          ui-debio-avatar(:src="icon" size="90" rounded)
     
         v-col(cols="9")
           .menu-card__title
@@ -29,7 +28,7 @@
           .menu-card__name  
             b {{ labName }}
 
-          .menu-card__address {{ city }}, {{ city }}
+          .menu-card__address {{ city }}, {{ state }}
         
 
 
@@ -37,13 +36,20 @@
 
 <script>
 
+import { getStates } from "@/common/lib/location"
+
 export default {
   name: "MenuCard",
+
+  data: () => ({
+    state: ""
+  }),
 
   props: {
     title: String,
     icon: String,
     labName: String,
+    country: String,
     city: String,
     region: String,
     price: Number,
@@ -53,9 +59,19 @@ export default {
     countRate: Number
   },
 
+  async mounted() {
+    await this.getStateData()
+  },
+
   methods: {
     onClick() {
       this.$emit("click")
+    },
+
+    async getStateData() {
+      const {data: {data}} = await getStates(this.country)
+      const states = data
+      this.state = states.filter((s) => s.state_code === this.region)[0].name
     }
   }
 }

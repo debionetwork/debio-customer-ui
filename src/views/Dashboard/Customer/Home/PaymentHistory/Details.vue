@@ -18,25 +18,25 @@
           .payment-details__wrapper
 
             .payment-details__product
-              ui-debio-avatar.product__image(:src="payment.serviceInfo.image" size="150" rounded)
+              ui-debio-avatar.product__image(:src="payment.service_info.image" size="150" rounded)
               .product__details
-                .product__name {{ payment.serviceInfo.name }}
+                .product__name {{ payment.service_info.name }}
                 ui-debio-rating.product__lab-rating(:rating="4" :total-reviews="800" size="15")
-                .product__lab-name {{ payment.labInfo.name }}
+                .product__lab-name {{ payment.lab_info.name }}
                 .product__lab-address
                   span.address__title Address
-                  p.address__text.mb-0 {{ payment.labInfo.address }}, {{ payment.labInfo.city }}
+                  p.address__text.mb-0 {{ payment.lab_info.address }}, {{ payment.lab_info.city }}
 
             .payment-details__status
               .payment-details__field
                 .test__title Test status
-                .test__status {{ payment.testStatus || "-" }}
+                .test__status {{ payment.test_status || "-" }}
               .payment-details__field
                 .payment__title Payment Status
                 .payment__status {{ payment.status }}
               .payment-details__field
                 .speciment__title Specimen number
-                .speciment__status {{ payment.dnaSampleTrackingId }}
+                .speciment__status {{ payment.dna_sample_tracking_id }}
 
             .payment-details__instruction(v-if="payment.status === 'Paid'")
               ui-debio-icon.payment-details__instruction-icon(:icon="alertIcon" size="15" color="#52C41B" stroke)
@@ -50,14 +50,14 @@
                   .service__field-title Service Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ payment.serviceInfo.pricesByCurrency[0].totalPrice }}
-                    | {{ payment.serviceInfo.pricesByCurrency[0].currency }}
-                .service__field(v-if="payment.serviceInfo.pricesByCurrency[0].additionalPrices.length")
+                    | {{ payment.service_info.prices_by_currency[0].total_price }}
+                    | {{ payment.service_info.prices_by_currency[0].currency }}
+                .service__field(v-if="payment.service_info.prices_by_currency[0].additional_prices.length")
                   .service__field-title Quality Control Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ payment.serviceInfo.pricesByCurrency[0].additionalPrices[0].value }}
-                    | {{ payment.serviceInfo.pricesByCurrency[0].currency }}
+                    | {{ payment.service_info.prices_by_currency[0].additional_prices[0].value }}
+                    | {{ payment.service_info.prices_by_currency[0].currency }}
                 .service__field(v-if="payment.status === 'Refunded'")
                   .service__field-title Refund amount
                   .service__refund -
@@ -127,9 +127,9 @@ export default {
     async fetchDetails() {
       try {
         const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
-        const data = await queryDnaSamples(this.api, dataPayment.dnaSampleTrackingId)
+        const data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
 
-        this.payment = { ...dataPayment, testStatus: data?.status }
+        this.payment = { ...dataPayment, test_status: data?.status }
       } catch(e) {
         if (e.response.status === 404)
           this.messageError = "Oh no! We can't find your selected order. Please select another one"

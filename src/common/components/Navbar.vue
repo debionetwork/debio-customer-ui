@@ -70,7 +70,7 @@
                   .navbar__settings
                     .settings-item(role="button")
                       .settings-item__wrapper(@click="signOut")
-                        .settings-item__title(aria-label="Signout") Signout
+                        .settings-item__title(aria-label="Signout") Sign Out
                         ui-debio-icon.settings-item__icon(:icon="logoutIcon" size="24" stroke color="#C400A5")
 
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'polkadot' || getActiveMenu.type === 'metamask'")

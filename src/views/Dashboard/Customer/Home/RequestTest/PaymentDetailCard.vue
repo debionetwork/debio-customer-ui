@@ -32,17 +32,31 @@
             | {{ dataService.price }} 
             | {{ dataService.currency.toUpperCase()}}
 
+
+      div(class="ml-5 text-start me-10" v-if="stakingFlow")
+        div(class="d-flex justify-space-between mb-2" )
+          div( style=" font-size: 12px;" ) Staking Amount
+          div( style="font-size: 12px;" ) {{ stakingAmount }} {{ selectedService.currency.toUpperCase()}}
+      
+      hr(class="ml-3 me-3 mb-1" v-if="stakingFlow")
+
+      div(class="ml-5 text-start me-10" v-if="stakingFlow")
+        div(class="d-flex justify-space-between mb-2" )
+          div( style=" font-size: 12px;" ) Remaining Amount
+          div( style="font-size: 12px;" ) {{ remainingStaking }} {{ selectedService.currency.toUpperCase()}}
+
+
       div(class="ml-4 text-center" v-if="!isCancelled")
         div(v-if="!success" class="d-flex justify-space-between align-center")
           Button(
-            class="mt-8"
+            :class="setMargin"
             color="secondary"
             width="300"
             height="35"
             @click="onSubmit"
             ) Submit Order
 
-        div(v-if="success && detailOrder.status === 'Paid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
+        div(v-if="success && status === 'Paid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
           Button(
             color="secondary" 
             width="46%"
@@ -60,7 +74,7 @@
             @click="toEtherscan"
             ) View Etherscan
 
-        div(v-if="success && detailOrder.status === 'Unpaid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
+        div(v-if="success && status === 'Unpaid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
           Button(
             color="secondary" 
             width="46%"
@@ -87,22 +101,26 @@
 
       CancelDialog(
         :show="cancelDialog"
-        @click="cancelOrder"
+        :orderId="orderId"
+        @cancel="isCancelled = true"
         @close="cancelDialog = false"
       )
-              
       
+      PayRemainingDialog(
+        :show="showPayRemainingDialog"
+        @onContinue="onContinue"
+        @close="showPayRemainingDialog = false"
+      )       
+
 </template>
 
 <script>
-
 import { mapState } from "vuex"
 import Button from "@/common/components/Button"
 import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
-import { cancelOrder } from "@/common/lib/polkadot-provider/command/orders.js"
-
+import PayRemainingDialog from "./PayRemainingDialog.vue"
 
 export default {
   name: "PaymentDetailCard",
@@ -110,10 +128,9 @@ export default {
   components: {
     Button,
     PaymentReceiptDialog,
-    CancelDialog
+    CancelDialog,
+    PayRemainingDialog
   },
-
-
 
   data: () => ({
     showReceipt: false,
@@ -121,10 +138,23 @@ export default {
     lastOrder: null,
     detailOrder: null,
     cancelDialog: false,
-    isCancelled: false
+    isCancelled: false,
+    status: "Unpaid",
+    labDetail: null,
+    stakingFlow: false,
+    stakingAmount: 0,
+    remainingStaking: 0,
+    showPayRemainingDialog: false,
+    orderId: 0
   }),
 
   async mounted () {
+    this.stakingFlow = false
+
+    if (this.$route.params.id) {
+      this.success = true
+      this.orderId = this.$route.params.id.toString()
+    }
 
     // get last order id
     this.lastOrder = await lastOrderByCustomer(
@@ -132,7 +162,17 @@ export default {
       this.wallet.address
     )
 
-    this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+    if (this.lastOrder) {
+      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      this.status = this.detailOrder.status
+      this.orderId = this.detailOrder.id
+    }
+
+    if (this.stakingData) {
+      this.stakingFlow = true
+      this.stakingAmount = this.stakingData.amount
+      this.remainingStaking = this.selectedService.price - this.stakingAmount
+    }
   },
 
 
@@ -146,8 +186,17 @@ export default {
       wallet: (state) => state.substrate.wallet,
       mnemonicData: (state) => state.substrate.mnemonicData,
       dataService: (state) => state.testRequest.products,
-      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress
-    })
+      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
+      selectedService: (state) => state.testRequest.products,
+      stakingData: (state) => state.lab.stakingData
+    }),
+
+    setMargin() {
+      if (this.stakingFlow) {
+        return "mt-2"
+      }
+      return "mt-12"
+    }
   },
 
   methods: {
@@ -157,7 +206,11 @@ export default {
     },
 
     onSubmit () {
-      this.showReceipt = true
+      if (this.remainingStaking && this.remainingStaking > 0) {
+        this.showPayRemainingDialog = true
+        return
+      }
+      this.showReceipt = true 
     },
 
     onContinue() {
@@ -170,16 +223,6 @@ export default {
 
     showCancelConfirmation () {
       this.cancelDialog = true
-    },
-
-    async cancelOrder() {
-      await cancelOrder(
-        this.api,
-        this.wallet,
-        this.detailOrder.id
-      )
-      this.isCancelled = true
-      this.cancelDialog = false
     }
   }
 }

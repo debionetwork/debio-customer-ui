@@ -95,7 +95,7 @@ export default {
     },
     
     computeAvatarImage() {
-      return this.src ? this.src : require("@/assets/user-profile-sample.png")
+      return this.src ? this.src : require("@/assets/image-placeholder.png")
     },
 
     computeStyle() {

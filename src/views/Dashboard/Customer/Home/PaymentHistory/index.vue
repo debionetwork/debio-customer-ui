@@ -18,17 +18,17 @@
               @keydown.enter="onSearchInput(searchQuery)"
             )
               ui-debio-icon(slot="icon-append" size="20" @click="onSearchInput(searchQuery)" role="button" :icon="searchIcon" stroke)
-        template(v-slot:[`item.serviceInfo.name`]="{ item }")
+        template(v-slot:[`item.service_info.name`]="{ item }")
           .payment-history__name-details
-            ui-debio-avatar(:src="item.serviceInfo.image" size="41" rounded)
+            ui-debio-avatar(:src="item.service_info.image" size="41" rounded)
             .payment-history__item-details
-              .payment-history__item-name {{ item.serviceInfo.name }}
-              .payment-history__item-speciment {{ item.dnaSampleTrackingId }}
+              .payment-history__item-name {{ item.service_info.name }}
+              .payment-history__item-speciment {{ item.dna_sample_tracking_id }}
 
-        template(v-slot:[`item.serviceInfo.pricesByCurrency[0].totalPrice`]="{ item }")
+        template(v-slot:[`item.service_info.prices_by_currency[0].total_price`]="{ item }")
           .payment-history__price-details
-            | {{ item.serviceInfo.pricesByCurrency[0].totalPrice }}
-            | {{ item.serviceInfo.pricesByCurrency[0].currency }}
+            | {{ item.service_info.prices_by_currency[0].total_price }}
+            | {{ item.service_info.prices_by_currency[0].currency }}
 
         template(v-slot:[`item.reward`]="{ item }")
           span N/A
@@ -67,10 +67,10 @@ export default {
 
     searchQuery: "",
     paymentHeaders: [
-      { text: "Service Name", value: "serviceInfo.name", sortable: true },
-      { text: "Lab Name", value: "labInfo.name", sortable: true },
-      { text: "Order Date", value: "createdAt", sortable: true },
-      { text: "Price", value: "serviceInfo.pricesByCurrency[0].totalPrice", sortable: true },
+      { text: "Service Name", value: "service_info.name", sortable: true },
+      { text: "Lab Name", value: "lab_info.name", sortable: true },
+      { text: "Order Date", value: "created_at", sortable: true },
+      { text: "Price", value: "service_info.prices_by_currency[0].total_price", sortable: true },
       { text: "Reward", value: "reward", align: "right", sortable: true },
       { text: "Status", value: "status", align: "right", sortable: true },
       {
@@ -94,8 +94,8 @@ export default {
       this.payments = results.map(result => ({
         ...result._source,
         id: result._id,
-        createdAt: new Date(parseInt(result._source.createdAt)).toLocaleDateString(),
-        timestamp: parseInt(result._source.createdAt)
+        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
+        timestamp: parseInt(result._source.created_at)
       }))
     },
 

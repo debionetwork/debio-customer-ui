@@ -145,8 +145,7 @@ export default {
       this.setCategory(category)
       await this.$store.dispatch("lab/setCountryRegionCity", {country, region, city})
       await this.$store.dispatch("lab/getServicesByCategory", {category, status})
-      await this.$store.dispatch("rating/getRate")
-  
+
       this.$emit("click")
     }
   }

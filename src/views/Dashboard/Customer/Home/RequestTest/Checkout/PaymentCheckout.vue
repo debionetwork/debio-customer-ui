@@ -1,7 +1,9 @@
 <template lang="pug">
   .customer-payment-checkout
     .customer-payment-checkout__title 
-      b Checkout your order !
+      b(v-if="!isCancelled") Checkout your order !
+      b(v-if="isCancelled") You have cancelled your order!
+
 
     template
       v-row.mt-10(class="d-flex justify-center")
@@ -15,8 +17,11 @@
 
 <script>
 
+import { mapState } from "vuex"
 import LabDetailCard from "../LabDetailCard.vue"
 import PaymentDetailCard from "../PaymentDetailCard.vue"
+import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
+
 
 export default {
   name: "PaymentCheckout",
@@ -24,6 +29,23 @@ export default {
   components: {
     LabDetailCard,
     PaymentDetailCard
+  },
+
+  computed: {
+    ...mapState({
+      api: (state) => state.substrate.api
+    })
+  },
+
+  data: () => ({
+    isCancelled: false
+  }),
+
+  async mounted () {
+    const detailOrder = await getOrdersData(this.api, this.$route.params.id)
+    if (detailOrder.status === "Cancelled") {
+      this.isCancelled = true
+    }
   },
 
   methods: {

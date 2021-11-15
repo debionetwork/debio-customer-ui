@@ -40,7 +40,7 @@
             div.pop-up-title Backup your account
             h3 We will give you 12 words that allows you to recover an account
             p You need to carefully save the  words. Copy-paste it, screenshot it, write it down, and keep it safe. If you lose it, we won't be able to help you recover it.
-            v-checkbox(v-model="agreeConditions"): template(v-slot:label): div#checkboxLabel I understand wiht DeBio 
+            v-checkbox(v-model="agreeConditions"): template(v-slot:label): div#checkboxLabel I understand with DeBio 
               v-tooltip(bottom)
                 template(v-slot:activator="{ on }")
                   a(target="_blank"

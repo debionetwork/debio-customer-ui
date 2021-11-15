@@ -134,11 +134,11 @@
       .mx-8.pt-2.pb-2(v-for="(item, key) in items" :key="key")
         Button.btn-drawer(
           :class="customClass(item.active)"
-          text
-          @click="goLink(item.route)"
-          block
+          :to="{ name: item.route }"
           :height="'50px'"
           :color="'none'"
+          text
+          block
         )
           ui-debio-icon.btnDrawerIcon(
             :icon="item.icon"
@@ -189,10 +189,6 @@ export default {
   }),
 
   methods: {
-    goLink(route){
-      this.$router.push({ name: route })
-    },
-
     openHref(href){
       window.open(href, "_blank").focus()
     },
