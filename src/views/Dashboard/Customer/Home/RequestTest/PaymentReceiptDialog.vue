@@ -99,7 +99,7 @@ import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
-import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
+import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
 import localStorage from "@/common/lib/local-storage"
 import CryptoJS from "crypto-js"	
@@ -134,7 +134,8 @@ export default {
     dataEvent: null,
     lastOrder: null,
     detailOrder: null,
-    status: ""
+    status: "",
+    orderId: ""
   }),
 
   computed: {
@@ -197,11 +198,6 @@ export default {
           return
         }
 
-        const dai = await getBalanceDAI(this.metamaskWalletAddress)
-
-        console.log("dai", dai)
-
-
         // check ETH Balance
         const balance = await getBalanceETH(this.metamaskWalletAddress)
         if (balance <= 0 ) {
@@ -239,8 +235,9 @@ export default {
             this.selectedService.indexPrice,
             this.payOrder
           )
+        } else {
+          this.payOrder()
         }
-        // this.payOrder()
       } catch (err) {
         console.log(err)
         this.isLoading = false
@@ -256,7 +253,6 @@ export default {
         this.wallet.address
       )
       this.detailOrder = await getOrdersData(this.api, this.lastOrder)
-      this.status = this.detailOrder.status
 
       const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
       const totalPrice = this.selectedService.price
@@ -266,19 +262,15 @@ export default {
           this.metamaskWalletAddress,
           totalPrice
         )
- 
         await getTransactionReceiptMined(txHash)
       }
 
-      const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)
-      
+      const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
       await getTransactionReceiptMined(txHash)
 
       this.isLoading = false
       this.password = ""
-      this.$router.push({ name: "customer-request-test-success"})
-      
-      
+      this.$router.push({ name: "customer-request-test-success"}) 
     },
 
     closeDialog(){

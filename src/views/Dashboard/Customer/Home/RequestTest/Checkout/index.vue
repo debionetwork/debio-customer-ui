@@ -53,21 +53,22 @@ export default {
 
     if (data?.status !== "Unpaid") this.$router.push({ name: "customer-payment-history" })
 
-    let durationType = data?.serviceInfo.expectedDuration.duration_type
+    let durationType = data?.service_info.expected_duration.durationType
 
     if (durationType === "WorkingDays") {
       durationType = "Working Days"
     }
 
     this.prefillService = {
-      serviceId: data?.id,
+      serviceId: data?.service_id,
       serviceName: data?.service_info.name,
       serviceRate: 0,
       serviceImage: data?.service_info.image,
       serviceCategory: data?.service_info.category,
       serviceDescription: data?.service_info.description,
       labName: data?.lab_info.name,
-      labId: data?.lab_info.id,
+      labId: data?.seller_id,
+      labImage: data?.lab_info.profile_image,
       labRate: 0,
       labAddress: data?.lab_info.address,
       price: data?.service_info.prices_by_currency[0].total_price,
