@@ -52,6 +52,11 @@
     :loading="isLoading"
     :items="emrDocuments"
   )
+    template(slot="prepend")
+      .customer-emr__nav
+        .customer-emr__nav-text
+          h2.customer-emr__title My EMR List
+          p.customer-emr__subtitle.mb-0 Your Electronic Medical Records
     template(v-slot:[`item.documentTitle`]="{ item }")
       .d-flex.flex-column
         span(v-for="file in item.files") {{ file.title }}
