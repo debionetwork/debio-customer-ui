@@ -264,7 +264,6 @@ import {
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
-import { queryBalance } from "@/common/lib/polkadot-provider/query/balance"
 import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
 import { fileTextIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
@@ -458,7 +457,7 @@ export default {
           })
 
         } catch(e) {
-          console.error(e)
+          this.error = e.message
         }
       }
 
@@ -506,28 +505,11 @@ export default {
       this.showPassword = !this.showPassword
     },
 
-    async fetchWalletBalance() {
-      try {
-        return await queryBalance(this.api, this.wallet.address)
-      } catch (err) {
-        console.error(err.message)
-      }
-    },
-
     async finalSubmit() {
       this.isLoading = true
 
       try {
-        const balance = await this.fetchWalletBalance()
-
         await this.wallet.decodePkcs8(this.password)
-
-        if (balance < 10) {
-          this.error = "DBIO balance on your account is too low"
-          this.isLoading = false
-
-          return
-        }
 
         if (this.emr.files.length > 0) {
           await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
@@ -572,7 +554,7 @@ export default {
               dataBody
             )
           } catch (err) {
-            console.error(err)
+            this.error = err.message
           }
         }
 
