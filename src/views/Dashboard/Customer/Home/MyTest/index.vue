@@ -188,29 +188,40 @@ export default {
 <style lang="sass" scoped>
   .customer-test
     &::v-deep
-      .banner__subtitle
-        max-width: 36.188rem !important
+      
 
   .customer-my-test
     width: 100%
     height: 100%
     background: #FFFFFF
-    margin-top: 35px
 
+    &__tabs
+      padding: 2px
+    
     &__table
-      padding: 1px
+      padding-top: 0px !important
+      margin-top: 0px !important
 
     &__actions
-      padding: 35px
+      padding: 25px
       display: flex
       align-items: center
-      gap: 30px
-      margin: 5px
-
-    &__status
-      color: #48A868
-
+      gap: 20px
+      margin: 3px 20px
+    
     &__title-detail
-      margin: 0 5px 0 0
-      border-radius: 5px
+      margin: 0 10px 0 0
+      border-radius: 10px
+    
+    &__title-number
+      color: #8C8C8C
+
+  .modal-bounty__cta
+    justify-content: space-around !important
+  
+  .degenics-datatable-card
+    padding-top: 0px !important
+    
+  .degenics-data-table
+    margin-top: 0px !important
 </style>
