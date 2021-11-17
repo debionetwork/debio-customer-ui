@@ -163,6 +163,7 @@ export default {
     padding: 0.875rem 1.125rem
     font-size: 1rem
     color: black
+    text-overflow: ellipsis
     @include body-text-medium-3
 
     &:focus

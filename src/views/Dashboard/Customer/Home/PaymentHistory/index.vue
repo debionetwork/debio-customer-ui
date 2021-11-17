@@ -8,7 +8,7 @@
           .payment-history__nav
             .payment-history__nav-text
               h2.payment-history__title Payment History
-              p.payment-history__subtitle.mb-0 List of all request service payment
+              p.payment-history__subtitle.mb-0 List of all request test payment
             ui-debio-input.payment-history__search-bar(
               v-model="searchQuery"
               variant="small"
