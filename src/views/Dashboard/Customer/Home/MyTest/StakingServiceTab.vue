@@ -14,14 +14,14 @@
         template(v-slot:[`item.category`]="{ item }")
           div {{ item.serviceCategory }}
 
-        template(v-slot:[`item.orderDate`]="{ item }")
+        template(v-slot:[`item.stakingDate`]="{ item }")
           span 11/11/2021
 
         template(v-slot:[`item.stakeStatus`]="{ item }")
-          span(:style="setButtonBackground(item.status)") {{ getStatusName(item.status)}} 
+          span(:style="setButtonBackground(item.status)") {{ getStatusName(item.status) }} 
 
         template(v-slot:[`item.amount`]="{ item }")
-          span(:style="setButtonBackground(item.status)") {{ item.stakingAmount/1000000000000000000 }}
+          span(:style="setButtonBackground(item.status)") {{ setAmount(item.stakingAmount) }}
 
         template(v-slot:[`item.actions`]="{ item }")
           .customer-staking-tab__actions(v-if="item.status !== 'WaitingForUnstaked'" )
@@ -31,17 +31,17 @@
               style="font-size: 1em"
               color="primary"
               @click="getUnstakingDialog(item.hash_)"
-              :disabled="item.stakeStatus === 'Unstaked' || item.stakeStatus === 'Process'"
+              :disabled="item.status === 'Unstaked' || item.status === 'Process'"
             ) Unstake
 
             Button.pa-4(
-              v-if="item.stakeStatus === 'Open' || item.stakeStatus === 'Claimed'" 
+              v-if="item.status === 'Open' || item.status === 'Claimed'" 
               height="25px"
               style="font-size: 1em"
               width="100px"
               color="secondary"
               @click="toRequestTest(item)"
-              :disabled="item.stakeStatus === 'Open'"
+              :disabled="item.status === 'Open'"
             ) Proceed
 
           .customer-staking-tab__actions(v-else)
@@ -102,8 +102,8 @@ export default {
         sortable: true
       },
       {
-        text: "Order Date",
-        value: "orderDate",
+        text: "Staking Date",
+        value: "stakingDate",
         sortable: true
       },
       {
@@ -134,7 +134,8 @@ export default {
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
-      pair: (state) => state.substrate.wallet
+      pair: (state) => state.substrate.wallet,
+      web3: (state) => state.metamask.web3
     })
   },
 
@@ -158,10 +159,21 @@ export default {
       // TODO : get service request
     },
 
+    setAmount(amount) {
+      const formatedAmount = this.web3.utils.fromWei(String(amount), "ether")
+      return formatedAmount
+    },
+
     setRemainingStakingDate(date) {
-      const day = new Date(parseInt(date)).getDate() + 6 - new Date().getDate()
-      const hours = new Date(parseInt(date)).getHours() + 24 - new Date().getHours()
-      const minutes = new Date(parseInt(date)).getMinutes() + 60 - new Date().getMinutes()
+      let day = new Date(parseInt(date)).getDate() + 6 - new Date().getDate()
+      let hours = new Date(parseInt(date)).getHours() + 23 - new Date().getHours()
+      let minutes = new Date(parseInt(date)).getMinutes() + 59 - new Date().getMinutes()
+
+      if (minutes > 60 ) {
+        hours-=1
+        minutes-=60
+      }
+
       return `${day}D:${hours}H:${minutes}M`      
     },
 
@@ -223,6 +235,7 @@ export default {
         this.pair,
         this.requestId
       )
+      this.showDialog = false
     }
   }
 }
