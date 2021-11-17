@@ -77,6 +77,7 @@
                   .customer-my-test__status
                   span(:style="{color: setStatusColor(item.status)}") {{ item.status }}
           v-tab-item
+            .customer-my-test__table
             StakingServiceTab
 
       modalBounty(
