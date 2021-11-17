@@ -70,6 +70,7 @@
                   .customer-my-test__status
                   span(:style="setStatusColor(item.status)") {{ item.status }}
           v-tab-item
+            .customer-my-test__table
             StakingServiceTab
 
 </template>
@@ -192,15 +193,12 @@ export default {
 
   .customer-my-test
     width: 100%
-    height: 200px 
+    height: 100%
     background: #FFFFFF
-    margin-top: 30px
-
-    &__tabs
-      padding: 3px
+    margin-top: 35px
 
     &__table
-      padding: 10px
+      padding: 1px
 
     &__actions
       padding: 35px
