@@ -2,7 +2,6 @@
   .ui-debio-dropdown(:class="classes" :style="computeStyle" v-click-outside="handleBlur")
     .ui-debio-dropdown__label(:aria-label="label")
       span {{ label }}
-      ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
     .ui-debio-dropdown__wrapper(@click="openOptions")
       .ui-debio-dropdown__value-wrapper
         ui-debio-input.ui-debio-dropdown__searchbox(
@@ -489,7 +488,6 @@ export default {
       .ui-debio-dropdown__wrapper
         border-color: #C400A5 !important
 
-      .ui-debio-dropdown__label,
       .ui-debio-dropdown__value-wrapper,
       .ui-debio-dropdown__value-wrapper i
         color: #C400A5 !important

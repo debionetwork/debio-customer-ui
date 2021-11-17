@@ -2,7 +2,6 @@
   .ui-debio-input(:class="classes" :style="computeStyle")
     .ui-debio-input__label(for="ui-debio-input" v-if="label")
       span(:aria-label="label") {{ label }}
-      ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
 
     .ui-debio-input__wrapper
       .ui-debio-input__icon.ui-debio-input__icon--prepend(v-if="$slots['icon-prepend']")
@@ -264,9 +263,6 @@ export default {
     
     .ui-debio-input__wrapper
       border-color: #C400A5 !important
-
-    .ui-debio-input__label
-      color: #C400A5 !important
 
     .ui-debio-input__icon > svg
       color: #C400A5 !important

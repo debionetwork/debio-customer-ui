@@ -2,7 +2,6 @@
   .ui-debio-textarea(:class="classes" :style="computeStyle")
     .ui-debio-textarea__label(for="ui-debio-textarea" v-if="label" :aria-label="label")
       span {{ label }}
-      ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
 
     .ui-debio-textarea__wrapper
       textarea.ui-debio-textarea__input(
@@ -239,7 +238,4 @@ export default {
     
     .ui-debio-textarea__wrapper
       border-color: #C400A5 !important
-
-    .ui-debio-textarea__label
-      color: #C400A5 !important
 </style>
