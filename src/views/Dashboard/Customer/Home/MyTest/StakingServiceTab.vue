@@ -71,7 +71,7 @@ import stakingStatus from "@/common/constants/staking-status"
 import dataStaking from "./stakingData.json"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
-
+import { getServiceRequestByCustomer } from "@/common/lib/service-request"
 
 
 export default {
@@ -149,7 +149,9 @@ export default {
     }),
 
     async fetchData () {
-      this.items = dataStaking.data
+      this.items = dataStaking.data // TO REMOVE when the indexer is working
+      await getServiceRequestByCustomer(this.pair.address)
+      
     },
 
     async getServiceRequest() {
