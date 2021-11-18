@@ -217,24 +217,17 @@ export default {
     },
 
     closingDialog() {
-      console.log("close di sini")
       this.showDialog = false
     },
 
     getStatusName(status) {
       for (const key in stakingStatus) {
-        if (key === status.toUpperCase()) {
-          return stakingStatus[key]
-        }
+        if (key === status.toUpperCase()) return stakingStatus[key]
       }
     },
 
     async unstakeService () {
-      await unstakeRequest(
-        this.api,
-        this.pair,
-        this.requestId
-      )
+      await unstakeRequest(this.api, this.pair, this.requestId)
       this.showDialog = false
     }
   }
