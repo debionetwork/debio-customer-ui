@@ -138,6 +138,7 @@ export default {
     }),
 
     async setWallet(walletName) {
+      this.ethAccount = null
       this.loading = true
       this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
 
@@ -176,7 +177,11 @@ export default {
       this.loading = false
       this.putWallet = true
       this.inputPassword = false
-      this.$emit("close")
+      if (this.ethAccount) {
+        this.$emit("success")
+      } else {
+        this.$emit("close")
+      }
     },
     
     async copyToClipboard(text) {
