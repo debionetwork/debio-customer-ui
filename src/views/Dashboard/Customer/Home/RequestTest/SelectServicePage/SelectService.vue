@@ -120,7 +120,7 @@ export default {
           image: serviceImage,
           expected_duration: {
             duration,
-            duration_type: durationType
+            durationType
           },
           prices_by_currency: [
             {
