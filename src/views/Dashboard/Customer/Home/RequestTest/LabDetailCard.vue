@@ -34,10 +34,11 @@
       hr(class="ml-3 me-3")
       
       div(class="d-flex")
-        ui-debio-avatar.ma-3(:src="dataService.serviceImage" size="90" rounded)
+        div(class="mt-8 ml-5" )
+          ui-debio-avatar(:src="dataService.labImage" size="90" rounded)
             
         .menu-card__lab-detail
-          b.mt-2.menu-card__service-title {{ dataService.labName }}
+          b.mt-2.me-4.menu-card__service-title {{ dataService.labName }}
             v-row(class="ml-1 mt-1 mb-1")
               div(
                 v-for="i in dataService.labRate"
@@ -53,7 +54,7 @@
         
             div.description(
               class="mb-5 me-8 text-caption grey--text text--darken-1"
-            ) {{ dataService.labAddress }}
+            ) {{ dataService.labAddress }}, {{ dataService.city }}, {{ country }}
       
 
 
@@ -63,22 +64,36 @@
 <script>
 
 import { mapState } from "vuex"
+import { getLocations } from "@/common/lib/location"
+
 
 export default {
   name: "LabDetailCard",
 
-  data: () =>  ({
-    rate: 3,
-    icon: "mdi-hospital",
-    avatar: false,
-    lab: {}
+  data: () => ({
+    countries: []
   }),
+
+  async mounted () {
+    await this.getCountries()
+  },
 
   computed: {
     ...mapState({
       mnemonicData: (state) => state.substrate.mnemonicData,
       dataService: (state) => state.testRequest.products
-    })  
+    }),
+
+    country () {
+      return this.countries.filter((c) => c.iso2 === this.dataService.country)[0].name
+    }
+  },
+
+  methods: {
+    async getCountries() {
+      const { data : { data }} = await getLocations()
+      this.countries = data
+    }
   }
 }
 </script>
@@ -101,7 +116,7 @@ export default {
 
     &__service
       display: flex
-      margin: 35px 10px 5px 10px
+      margin: 35px 0px 10px 10px
 
     &__service-title
       @include body-text-2-opensans
@@ -114,7 +129,9 @@ export default {
       @include body-text-medium-2-opensans
     
     &__lab-detail
-      margin: 20px 5px 0px 10px
+      display: flex
+      margin-top: 20px
+      margin-left: 5px
     
   .description 
     font-size: 10px
