@@ -16,6 +16,7 @@ import usersIcon from "./users"
 import labIllustration from "./labIllustration"
 import particleIllustration from "./particleIllustration"
 import analiticIllustration from "./analiticIllustration"
+import Illustration404 from "./404"
 import eyeIcon from "./eye"
 import eyeOffIcon from "./eyeOff"
 import logoutIcon from "./logout"
@@ -82,6 +83,7 @@ export {
   noteIllustration,
   particleIllustration,
   analiticIllustration,
+  Illustration404,
   researchIllustration,
   doctorsIllustration,
   defaultIcon,
