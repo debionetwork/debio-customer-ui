@@ -1,7 +1,6 @@
 <template lang="pug">
   .ui-debio-textarea(:class="classes" :style="computeStyle")
-    .ui-debio-textarea__label(for="ui-debio-textarea" v-if="label" :aria-label="label")
-      span {{ label }}
+    label.ui-debio-textarea__label(:for="uuid" v-if="label" :aria-label="label") {{ label }}
 
     .ui-debio-textarea__wrapper
       textarea.ui-debio-textarea__input(
@@ -12,7 +11,7 @@
         :disabled="disabled"
         @click="focus = true"
         @blur="handleBlur"
-        id="ui-debio-textarea"
+        :id="uuid"
         ref="input"
         :readOnly="readOnly"
       )
@@ -36,7 +35,6 @@ export default {
     label: { type: String, default: null },
     width: { type: [Number, String], default: 200 },
     variant: { type: String, default: "default" },
-    errorMessages: { type: Array, default: () => [] },
 
     validateOnBlur: Boolean,
     outlined: Boolean,
@@ -52,7 +50,7 @@ export default {
       return [
         { "ui-debio-textarea--disabled": this.disabled },
         { "ui-debio-textarea--outlined": this.outlined },
-        { "ui-debio-textarea--errored": this.isError && this.isError?.length },
+        { "ui-debio-textarea--errored": (this.isError && this.isError?.length) || (this.error && this.errorMessages) },
         { "ui-debio-textarea--default": this.variant === "default" },
         { "ui-debio-textarea--small": this.variant === "small" },
         { "ui-debio-textarea--large": this.variant === "large" },
@@ -80,7 +78,7 @@ export default {
   watch: {
     "$attrs.value": {
       handler(newVal, oldVal) {
-        if (this.validateOnBlur && !!oldVal) return
+        if (this.validateOnBlur && !!oldVal && !this.isError?.length) return
         else this._handleError(newVal)
       }
     },

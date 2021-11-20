@@ -49,7 +49,7 @@
       @onClose="showModalPassword = false; error = null"
     )
       ui-debio-input(
-        :errorMessages="passwordErrorMessages"
+        :errorMessages="error"
         :rules="$options.rules.password"
         :type="showPassword ? 'text' : 'password'"
         variant="small"
@@ -95,11 +95,10 @@
       cta-title="Submit"
       :cta-action="handleNewFile"
       :cta-outlined="false"
-      :cta-disabled="disabledDocumentForm"
       @onClose="onCloseModalDocument"
     )
       ui-debio-input(
-        :errorMessages="errorMessages"
+        :error="isDirty.document && isDirty.document.title"
         :rules="$options.rules.document.title"
         variant="small"
         label="Document Title"
@@ -111,7 +110,7 @@
         @isError="handleError"
       )
       ui-debio-textarea(
-        :errorMessages="errorMessages"
+        :error="isDirty.document && isDirty.document.description"
         :rules="$options.rules.document.description"
         variant="small"
         label="Description"
@@ -124,7 +123,7 @@
       )
       ui-debio-file(
         v-model="document.file"
-        :errorMessages="errorMessages"
+        :error="isDirty.document && isDirty.document.file"
         :rules="$options.rules.document.file"
         variant="small"
         accept=".pdf"
@@ -138,10 +137,10 @@
       .customer-create-emr__title Upload EMR
       .customer-create-emr__forms
         ui-debio-input(
-          :errorMessages="errorMessages"
           :rules="$options.rules.emr.title"
           variant="small"
           label="EMR Title"
+          :error="isDirty.emr && isDirty.emr.title"
           placeholder="Type EMR Title"
           v-model="emr.title"
           outlined
@@ -152,7 +151,7 @@
 
         ui-debio-dropdown(
           :items="categories"
-          :errorMessages="errorMessages"
+          :error="isDirty.emr && isDirty.emr.category"
           :rules="$options.rules.emr.category"
           variant="small"
           label="EMR Category"
@@ -172,7 +171,7 @@
           height="2.5rem"
           block
           outlined
-          @click="showModal = true; isEdit = false"
+          @click="handleAddFile"
         ) Add file
 
         .customer-create-emr__files
@@ -245,7 +244,6 @@
           color="secondary"
           height="2.5rem"
           @click="handleModalPassword"
-          :disabled="disabledSubmit"
           block
         ) Submit
 </template>
@@ -325,17 +323,9 @@ export default {
     disabledDocumentForm() {
       return this.document.title === "" || this.document.description === "" || this.document.file === null
     },
-
-    disabledSubmit() {
-      return this.emr.title === "" || this.emr.category === null || !this.emr.files.length
-    },
     
     disabledFinish() {
       return this.computeFiles?.some(file => file.percent !== 100)
-    },
-
-    passwordErrorMessages() {
-      return this.errorMessages || this.error
     }
   },
 
@@ -374,7 +364,9 @@ export default {
   rules: {
     password: [ val => !!val || errorMessage.PASSWORD(8) ],
     emr: {
-      title: [ val => !!val || errorMessage.REQUIRED ],
+      title: [
+        val => !!val || errorMessage.REQUIRED
+      ],
       category: [ val => !!val || errorMessage.REQUIRED ]
     },
     document: {
@@ -418,6 +410,10 @@ export default {
     },
     
     handleNewFile() {
+      this._touchForms("document")
+      const { title: docTitle, description: docDescription, file: docFile } = this.isDirty?.document
+      if (docTitle || docDescription || docFile) return
+
       const context = this
       const fr = new FileReader()
       const { createdAt, title, description, file } = this.document
@@ -490,7 +486,18 @@ export default {
       this.emr.files = this.emr.files.filter(file => file.createdAt !== id)
     },
 
+    handleAddFile() {
+      this.showModal = true
+      this.isEdit = false
+    },
+
     handleModalPassword() {
+      this._touchForms("emr")
+      const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
+      const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
+
+      if (!isEMRValid || !isDocumentValid) return
+
       this.clearFile = true
       this.showModalPassword = true
     },

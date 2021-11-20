@@ -10,7 +10,8 @@
     )
       ui-debio-input(
         v-if="!success"
-        :errorMessages="passwordErrorMessages"
+        :error="!!error"
+        :errorMessages="!!error ? error.message : null"
         :rules="$options.rules.password"
         :type="showPassword ? 'text' : 'password'"
         variant="small"
@@ -18,7 +19,6 @@
         v-model="password"
         outlined
         block
-        :error="error"
         validate-on-blur
         @keyup.enter="handleSubmitPassword"
         @blur="error = null"
@@ -131,10 +131,6 @@ export default {
 
     computeButtonActive() {
       return !/(\/customer\/request-test)/.test(this.$route.path)
-    },
-
-    passwordErrorMessages() {
-      return this.errorMessages || this.error
     }
   },
 

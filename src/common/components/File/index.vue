@@ -2,7 +2,6 @@
   .ui-debio-file(:class="classes" @click="active = true" v-click-outside="{ handler: handleBlur, closeConditional }")
     .ui-debio-file__label(v-if="label" :aria-label="label")
       span {{ label }}
-      ui-debio-icon(v-if="computeErrorMessage" :icon="alertIcon" stroke size="15" color="#C400A5")
 
     .ui-debio-file__wrapper
       input.ui-debio-file__input(type="file" ref="input-file" :accept="accept" @change="handleFileChange")
@@ -26,7 +25,6 @@ export default {
 
   props: {
     accept: { type: [Array, String], default: () => [".docx", ".pdf", ".doc"] },
-    errorMessages: { type: Array, default: () => [] },
     label: { type: String, default: null },
     placeholder: { type: String, default: "Choose File" },
     variant: { type: String, default: "default" },
@@ -42,7 +40,7 @@ export default {
         { "ui-debio-file--default": this.variant === "default" },
         { "ui-debio-file--small": this.variant === "small" },
         { "ui-debio-file--large": this.variant === "large" },
-        { "ui-debio-file--errored": this.isError && this.isError?.length }
+        { "ui-debio-file--errored": (this.isError && this.isError?.length) || (this.error && this.errorMessages) }
       ]
     },
 
@@ -61,7 +59,7 @@ export default {
 
   watch: {
     selectedFile(newVal, oldVal) {
-      if (this.validateOnBlur && !!oldVal) return
+      if (this.validateOnBlur && !!oldVal && !this.isError?.length) return
       else this._handleError(newVal)
     },
 
@@ -190,9 +188,6 @@ export default {
 
     &--errored
       animation: shake .10s cubic-bezier(.7, -0.04, .61, 1.14)
-
-      .ui-debio-file__label
-        color: #C400A5 !important
 
       .ui-debio-input__wrapper
         border-color: #C400A5 !important

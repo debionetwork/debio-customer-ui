@@ -1,7 +1,6 @@
 <template lang="pug">
   .ui-debio-dropdown(:class="classes" :style="computeStyle" v-click-outside="handleBlur")
-    .ui-debio-dropdown__label(:aria-label="label")
-      span {{ label }}
+    label.ui-debio-dropdown__label(:for="uuid" @click="openOptions" :aria-label="label") {{ label }}
     .ui-debio-dropdown__wrapper(@click="openOptions")
       .ui-debio-dropdown__value-wrapper
         ui-debio-input.ui-debio-dropdown__searchbox(
@@ -13,7 +12,7 @@
           @click="searchFocus = true"
           block
           ref="searchbox"
-          id="searchbox"
+          :id="uuid"
         )
         label.ui-debio-dropdown__value(v-show="!active" for="searchbox") {{ selectedOption }}
         v-icon(:class="{ 'ui-debio-dropdown__chevron--active': active }") mdi-chevron-down
@@ -50,7 +49,6 @@ export default {
 
   props: {
     items: { type: Array, default: () => [] },
-    errorMessages: { type: Array, default: () => [] },
     itemValue: { type: String, default: "" },
     width: { type: [String, Number], default: 200 },
     itemText: { type: String, default: "" },
@@ -86,7 +84,7 @@ export default {
         { "ui-debio-dropdown--large": this.variant === "large" },
         { "ui-debio-dropdown--outlined": this.outlined },
         { "ui-debio-dropdown--active": this.active },
-        { "ui-debio-dropdown--errored": this.isError && this.isError?.length }
+        { "ui-debio-dropdown--errored": (this.isError && this.isError?.length) || (this.error && this.errorMessages) }
       ]
     },
 
@@ -129,7 +127,7 @@ export default {
 
   watch: {
     selectedOption(newVal) {
-      if (this.validateOnBlur && (newVal === this.placeholder)) return
+      if (this.validateOnBlur && (newVal === this.placeholder) && !this.isError?.length) return
       else this._handleError(newVal)
     },
 
