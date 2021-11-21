@@ -2,17 +2,22 @@
   div#app: v-app
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
     div(v-if="isLoadingSubstrateApi") Loading...
+    NoAccessMobile(v-else-if="isMobileDevice")
     router-view(v-else)
 </template>
   
 <script>
 import { mapState, mapActions } from "vuex"
+import NoAccessMobile from "@/views/NoAccessMobile.vue"
 
 export default {
   name: "App",
 
+  components: { NoAccessMobile },
+
   data: () => ({
-    address: ""
+    address: "",
+    isMobileDevice: false
   }),
 
   computed: {
@@ -23,11 +28,25 @@ export default {
     })
   },
 
+  mounted() {``
+    const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+    this.handleChangeDevices(mobileDevices)
+
+    window.addEventListener("resize", () => {
+      this.handleChangeDevices(mobileDevices)
+    })
+  },
+
   methods: {
     ...mapActions({
       initWeb3: "metamask/initWeb3",
       initContracts: "metamask/contracts/initContracts"
-    })
+    }),
+
+    handleChangeDevices(device) {
+      if(device.test(navigator.userAgent)) this.isMobileDevice = true
+      else this.isMobileDevice = false
+    }
   }
 }
 </script>
