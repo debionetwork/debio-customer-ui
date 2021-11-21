@@ -5,7 +5,7 @@
       h5.no-access__title We are truly sorry
       p.no-access__subtitle Signing in mobile is currently unavailable
       p.no-access__text To access DeBio, you need to use desktop browser
-      Button.no-access__cta(color="primary") Visit DeBio Network
+      a.no-access__cta(color="primary" href="https://www.debio.network/") Visit DeBio Network
 </template>
 
 <script>
@@ -50,7 +50,15 @@ export default {
     &__subtitle
       margin-bottom: 4.75rem !important
 
+    &__text
+      margin: 0 !important
+
     &__cta
+      background: #C400A5
+      color: #FFFFFF !important
+      text-decoration: none
+      border-radius: 5px
+      padding: 7px 16px
       font-size: 0.75rem !important
       text-transform: capitalize
       margin-top: 4.75rem
