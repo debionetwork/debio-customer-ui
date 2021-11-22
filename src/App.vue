@@ -44,7 +44,7 @@ export default {
     }),
 
     handleChangeDevices(device, width) {
-      if(device.test(navigator.userAgent) && width <= 646) this.isMobileDevice = true
+      if(device.test(navigator.userAgent) && width <= 768) this.isMobileDevice = true
       else this.isMobileDevice = false
     }
   }
