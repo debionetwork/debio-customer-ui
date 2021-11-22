@@ -10,7 +10,7 @@
 import { constructIllustration } from "@/common/icons"
 
 export default {
-  name: "ErrorPageLayout",
+  name: "maintenancePageLayout",
 
   props: {
     error: { type: Object, default: () => {} }

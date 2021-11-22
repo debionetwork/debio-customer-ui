@@ -60,7 +60,7 @@
     Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
     .layout-dashboard__main
       transition(name="transition-slide-x" mode="out-in")
-        errorPageLayout(v-if="pageError" :error="pageError")
+        maintenancePageLayout(v-if="pageError" :error="pageError")
         router-view(v-else @onPageError="handlePageError")
 </template>
 
@@ -82,7 +82,7 @@ import {
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import ErrorPageLayout from "@/views/Dashboard/Customer/ErrorPageLayout"
+import maintenancePageLayout from "@/views/Dashboard/Customer/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 
 export default {
@@ -90,7 +90,7 @@ export default {
 
   mixins: [validateForms],
 
-  components: { NavigationDrawer, Navbar, Button, ErrorPageLayout },
+  components: { NavigationDrawer, Navbar, Button, maintenancePageLayout },
 
   data: () => ({
     checkCircleIcon,
