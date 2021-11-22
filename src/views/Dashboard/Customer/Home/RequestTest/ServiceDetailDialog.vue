@@ -27,28 +27,29 @@
       
       v-row(class="pa-5")
         v-col(cols="3")
-          ui-debio-avatar(:src="selectedService.serviceImage" size="90" rounded)
+          ui-debio-avatar(:src="selectedService.labImage" size="90" rounded)
         
         v-col(cols="6 mt-3")
           .dialog-service__sub-title
             b {{ selectedService.labName }}
 
           .dialog-service__description          
-            span {{ selectedService.labAddress }}
+            span {{ selectedService.labAddress }}, {{ selectedService.city }}, {{ country }}
 
-
-        v-col(cols="3")
-          v-row(class="ml-1 mt-1 mb-1")
+        v-col
+          v-row(class="ml-1 mt-1")
             div(
               v-for="i in selectedService.labRate"
               :key="i")
-              v-icon(color="primary" size="10") mdi-star
+              v-icon(style="font-size: 10px;" color="primary") mdi-star
 
             div(
               v-for="i in ( 5 - selectedService.labRate )"
               :key="i")
-              v-icon(color="primary" size="10" ) mdi-star-outline 
-            span.ml-2( style="font-size: 10px;") ({{ selectedService.countRateLab }})
+              v-icon(style="font-size: 10px;" color="primary") mdi-star-outline 
+
+            div 
+              span( class="ml-2" style="font-size: 10px;" ) ({{ selectedService.countRateLab }})
 
       .dialog-service__button
         Button(
@@ -77,18 +78,20 @@ import { mapState } from "vuex"
 import Button from "@/common/components/Button"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { hexToU8a } from "@polkadot/util"
+import { getLocations } from "@/common/lib/location"
 
 
 export default {
   name: "ServiceDetailDialog",
+  
   data: () => ({
     formatedDurationType: "",
-    avatar: ""
+    avatar: "",
+    countries: []
   }),
 
-  mounted () {
-    console.log("==================")
-    console.log(this.selectedService)
+  async mounted () {
+    await this.getCountries()
   },
 
   components: {
@@ -103,10 +106,20 @@ export default {
     ...mapState({
       mnemonicData: (state) => state.substrate.mnemonicData,
       selectedService: (state) => state.testRequest.products
-    })  
+    }),
+
+    country () {
+      return this.countries.filter((c) => c.iso2 === this.selectedService.country)[0].name
+    }
   },
 
   methods: {
+
+    async getCountries() {
+      const { data : { data }} = await getLocations()
+      this.countries = data
+    },
+
     closeDialog() {
       this.$emit("close")
     },
@@ -156,7 +169,6 @@ export default {
       justify-content: space-between
       padding: 0 35px 40px 35px
       gap: 10px
-    
     
   .fixed-button
     position: fixed

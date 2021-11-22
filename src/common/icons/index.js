@@ -16,6 +16,7 @@ import usersIcon from "./users"
 import labIllustration from "./labIllustration"
 import particleIllustration from "./particleIllustration"
 import analiticIllustration from "./analiticIllustration"
+import Illustration404 from "./404"
 import eyeIcon from "./eye"
 import eyeOffIcon from "./eyeOff"
 import logoutIcon from "./logout"
@@ -44,6 +45,7 @@ import weightLifterIcon from "./weightLifter"
 import fileSearchIcon from "./fileSearch"
 import hairIcon from "./hair"
 import familyTreeIcon from "./familyTree"
+import debioFullIcon from "./debioFull"
 import dnaIcon from "./dna"
 import foodAppleIcon from "./foodApple"
 import pillIcon from "./pill"
@@ -82,6 +84,7 @@ export {
   noteIllustration,
   particleIllustration,
   analiticIllustration,
+  Illustration404,
   researchIllustration,
   doctorsIllustration,
   defaultIcon,
@@ -103,6 +106,7 @@ export {
   fileSearchIcon,
   hairIcon,
   familyTreeIcon,
+  debioFullIcon,
   dnaIcon,
   foodAppleIcon,
   pillIcon,

@@ -9,7 +9,11 @@ Vue.use(VueRouter)
 
 const routes = [
   ...indexRoutes,
-  ...customerRoutes
+  ...customerRoutes,
+  {
+    path: "*",
+    component: () => import(/* webpackChunkName */ "@/views/404")
+  }
 ]
 
 const router = new VueRouter({

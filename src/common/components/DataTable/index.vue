@@ -87,9 +87,6 @@ export default {
       this.entriesPerPage = val
     },
 
-    computedLoadingText() {
-      return this.loadingText ? this.loadingText : "Loading.. Please wait"
-    },
     defaultFilter(value, search /*item*/) {
       return value != null &&
       search != null &&
@@ -126,6 +123,10 @@ export default {
     },
     pageCount() {
       return Math.ceil(this.items.length / this.entriesPerPage)
+    },
+
+    computedLoadingText() {
+      return this.loadingText ? this.loadingText : "Loading.. Please wait"
     }
 
   }
