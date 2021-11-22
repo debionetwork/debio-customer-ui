@@ -120,7 +120,7 @@ import localStorage from "@/common/lib/local-storage"
 import { queryBalance } from "@/common/lib/polkadot-provider/query/balance"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile"
 import { getBalanceDAI } from "@/common/lib/metamask/wallet"
-
+import { fromEther } from "@/common/lib/balance-format"
 
 
 export default {
@@ -216,7 +216,8 @@ export default {
     this.fetchWalletBalance()
     this.checkMetamaskAddress()
 
-    if (this.loginStatus) {
+    if (this.metamaskWalletAddress) {
+      this.loginStatus = true
       this.menus.find(menu => menu.type === "metamask").active = true
     }
   },
@@ -237,13 +238,15 @@ export default {
       this.handleHideDropdown(this.computeMouseLeave)
     },
 
-    handleHover(e, idx) {
+    async handleHover(e, idx) {
       this.menus.forEach(menu => menu.active = false)
       const selectedMenu = this.menus[idx]
       
       if (selectedMenu.type === "polkadot") {
         this.walletAddress = this.wallet.address
-        this.activeBalance = this.walletBalance
+        // console.log(await fromEther(this.walletBalance))
+        const formatedBalance = await fromEther(this.walletBalance)
+        this.activeBalance = Number(formatedBalance).toFixed(3)
       }
 
       if (selectedMenu.type === "metamask" && !this.loginStatus) return
