@@ -28,7 +28,7 @@ export default {
     })
   },
 
-  mounted() {``
+  mounted() {
     const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
     this.handleChangeDevices(mobileDevices)
 
