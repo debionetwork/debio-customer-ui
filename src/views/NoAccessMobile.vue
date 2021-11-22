@@ -17,13 +17,7 @@ export default {
 
   components: { Button },
 
-  data: () => ({ debioFullIcon }),
-
-  methods: {
-    handleVisitDebio() {
-      
-    }
-  }
+  data: () => ({ debioFullIcon })
 }
 </script>
 

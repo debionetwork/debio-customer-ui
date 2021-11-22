@@ -30,10 +30,10 @@ export default {
 
   mounted() {
     const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
-    this.handleChangeDevices(mobileDevices)
+    this.handleChangeDevices(mobileDevices, window.innerWidth)
 
     window.addEventListener("resize", () => {
-      this.handleChangeDevices(mobileDevices)
+      this.handleChangeDevices(mobileDevices, window.innerWidth)
     })
   },
 
@@ -43,8 +43,8 @@ export default {
       initContracts: "metamask/contracts/initContracts"
     }),
 
-    handleChangeDevices(device) {
-      if(device.test(navigator.userAgent)) this.isMobileDevice = true
+    handleChangeDevices(device, width) {
+      if(device.test(navigator.userAgent) && width <= 646) this.isMobileDevice = true
       else this.isMobileDevice = false
     }
   }
