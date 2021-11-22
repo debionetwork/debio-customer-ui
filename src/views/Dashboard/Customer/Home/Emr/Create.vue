@@ -4,6 +4,7 @@
       :show="showLoadingFiles"
       title="File Upload"
       disable-dismiss
+      @close="showLoadingFiles = false"
     )
       template(v-if="computeFiles.length")
         .modal-files-upload__wrapper
@@ -45,23 +46,32 @@
       :show="showModalPassword"
       title="Encrypt EMR files by input your password"
       disable-dismiss
-      @onClose="showModalPassword = false; wrongPassword = false"
+      @onClose="showModalPassword = false; error = null"
     )
       ui-debio-input(
         :errorMessages="passwordErrorMessages"
         :rules="$options.rules.password"
-        type="password"
+        :type="showPassword ? 'text' : 'password'"
         variant="small"
         placeholder="Input Password"
+        :disabled="isLoading"
         v-model="password"
         outlined
         block
-        :error="wrongPassword"
+        :error="!!error"
         validate-on-blur
         @keyup.enter="finalSubmit"
-        @blur="wrongPassword = false"
+        @blur="error = null"
         @isError="handleError"
       )
+        ui-debio-icon(
+          slot="icon-append"
+          role="button"
+          size="18"
+          @click="handleShowPassword"
+          :icon="showPassword ? eyeIcon : eyeOffIcon"
+          stroke
+        )
 
       .modal-password__cta.d-flex(slot="cta")
         Button(
@@ -69,7 +79,7 @@
           width="100"
           color="secondary"
           :disabled="isLoading"
-          @click="showModalPassword = false; wrongPassword = false"
+          @click="showModalPassword = false; error = null"
         ) Cancel
 
         Button(
@@ -241,12 +251,10 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
-import { mapGetters, mapState } from "vuex"
+import { mapState } from "vuex"
 
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-import store from "@/store"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/emr"
@@ -254,12 +262,11 @@ import {
   addElectronicMedicalRecordFile,
   registerElectronicMedicalRecord
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
-import { queryGetEMRList } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
 import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
-import { fileTextIcon, pencilIcon, trashIcon } from "@/common/icons"
+import { fileTextIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
 
 export default {
   name: "CustomerEmrCreate",
@@ -273,16 +280,19 @@ export default {
     fileTextIcon,
     pencilIcon,
     trashIcon,
+    eyeOffIcon,
+    eyeIcon,
 
     isEdit: false,
     showModal: false,
+    showPassword: false,
     showModalConfirm: null,
     showModalPassword: false,
-    wrongPassword: false,
+    error: null,
     isLoading: false,
     showLoadingFiles: false,
-    registerId: null,
     clearFile: false,
+    registerId: null,
     countFileAdded: 0,
     password: "",
     publicKey: null,
@@ -308,10 +318,6 @@ export default {
       mnemonicData: (state) => state.substrate.mnemonicData
     }),
 
-    disableAdd() {
-      return this.computeError
-    },
-
     computeFiles() {
       return this.emr.files.map(file => ({ ...file, percent: 0 })).reverse()
     },
@@ -329,7 +335,7 @@ export default {
     },
 
     passwordErrorMessages() {
-      return this.errorMessages || (this.wrongPassword ? "Password not match" : "")
+      return this.errorMessages || this.error
     }
   },
 
@@ -345,6 +351,7 @@ export default {
               this.showLoadingFiles = false
               this.registerId = null
               this.resetState()
+              this.$router.push({ name: "customer-emr" })
             } else {
               this.handleUpload(this.registerId, this.emr.files[this.countFileAdded], this.countFileAdded)
             }
@@ -450,7 +457,7 @@ export default {
           })
 
         } catch(e) {
-          console.error(e)
+          this.error = e.message
         }
       }
 
@@ -494,8 +501,13 @@ export default {
       }
     },
 
+    handleShowPassword() {
+      this.showPassword = !this.showPassword
+    },
+
     async finalSubmit() {
       this.isLoading = true
+
       try {
         await this.wallet.decodePkcs8(this.password)
 
@@ -503,13 +515,13 @@ export default {
           await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
         }
       } catch (e) {
-        this.wrongPassword = true
+        this.error = e?.message
         this.isLoading = false
       }
     },
 
     async handleUpload(id, dataFile, index) {
-      this.wrongPassword = false
+      this.error = null
 
       try {
         this.wallet.unlock(this.password)
@@ -542,7 +554,7 @@ export default {
               dataBody
             )
           } catch (err) {
-            console.error(err)
+            this.error = err.message
           }
         }
 
@@ -550,8 +562,8 @@ export default {
 
         this.showModalPassword = false
         this.showLoadingFiles = true
-      } catch {
-        this.wrongPassword = true
+      } catch (e) {
+        this.error = e?.message
       }
     },
 
@@ -637,11 +649,11 @@ export default {
       return selected?.percent
     },
 
-    onRetry(file) {
+    onRetry() {
       // TODO: Add script later
     },
 
-    onCancel(file) {
+    onCancel() {
       // TODO: Add script later
     }
   }
@@ -715,6 +727,10 @@ export default {
       @include body-text-1
 
     &__file-name
+      max-width: 320px
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
       @include body-text-5
 
     &__file-description

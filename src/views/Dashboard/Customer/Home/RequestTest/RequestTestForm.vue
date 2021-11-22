@@ -56,6 +56,7 @@
         outlined)
 
       Button(
+        :disabled="disable"
         color="secondary" 
         width="100%"
         height="38"
@@ -93,7 +94,12 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       configApp: (state) => state.auth.configApp
-    })
+    }),
+
+    disable() {
+      const {country, state, city, category} = this
+      return !(country && state && city && category)
+    }
   },
   
   async mounted() {

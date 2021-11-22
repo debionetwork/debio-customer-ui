@@ -12,6 +12,6 @@ export async function getSignedUrl(fileName, action = 'read') {
 }
 
 export async function createSyncEvent(fileName) {
-  const { data } = await axios.post(`${process.env.VUE_APP_BACKEND_API}gcs/create_sync_event`, fileName)
+  const { data } = await axios.post(`${process.env.VUE_APP_BACKEND_API}gcs/create_sync_event`, { filename: fileName })
   return data
 }

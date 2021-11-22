@@ -144,4 +144,9 @@ export default {
       100%
         width: 100%
         transform: translateX(100%)
+    
+    &::v-deep
+      .ui-debio-modal__card
+        border-radius: 14px
+        padding: 0
 </style>

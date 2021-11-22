@@ -75,7 +75,8 @@ export default {
     serviceList: [],
     showServiceDetailDialog: false,
     lastOrder: null,
-    showAlert: false
+    showAlert: false,
+    services: null
   }),
 
   computed: {
@@ -98,8 +99,6 @@ export default {
     if (!this.$route.params.flag) {
       this.services = this.dataServices
     }
- 
-    this.getServices()
 
     for (let i = 0; i < this.services.length; i++) {
 

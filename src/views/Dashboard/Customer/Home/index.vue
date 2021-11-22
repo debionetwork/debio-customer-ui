@@ -59,18 +59,18 @@
             :showFooter="false"
 
           )
-            template(class="status" v-slot:[`item.service_info.name`]="{item}")
+            template(class="status" v-slot:[`item.serviceInfo.name`]="{item}")
               div(class="d-flex align-center")
                 ui-debio-avatar.serviceImage(
-                  :src="'https://picsum.photos/200'"
+                  :src="item.serviceInfo.image"
                   size="41"
                   rounded
                 )
                 div(class="fluid")
                   div
-                    span {{ item.service_info.name }}
+                    span {{ item.serviceInfo.name }}
                   div
-                    span {{ item.dna_sample_tracking_id}}
+                    span {{ item.dnaSampleTrackingId}}
 
             template(class="status" v-slot:[`item.status`]="{item}") {{ item.status }}
 
@@ -111,18 +111,18 @@
             :showFooter="false"
           )
 
-            template(class="status" v-slot:[`item.service_info.name`]="{item}")
+            template(class="status" v-slot:[`item.serviceInfo.name`]="{item}")
               div(class="d-flex align-center")
                 ui-debio-avatar.serviceImage(
-                  :src="'https://picsum.photos/200/300'"
+                  :src="item.serviceInfo.image"
                   size="41"
                   rounded
                 )
                 div(class="fluid")
                   div
-                    span {{ item.service_info.name }}
+                    span {{ item.serviceInfo.name }}
                   div
-                    span {{ item.dna_sample_tracking_id}}
+                    span {{ item.dnaSampleTrackingId}}
 
 
             template(v-slot:[`item.actions`]="{item}")
@@ -140,7 +140,6 @@ import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator
 
 import Banner from "@/common/components/Banner"
 import DataTable from "@/common/components/DataTable"
-// import dataTesting from "./MyTest/dataTesting.json"
 import Button from "@/common/components/Button"
 import {
   ordersByCustomer,
@@ -153,7 +152,6 @@ import {
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
-// import { fetchPaymentHistories } from "@/common/lib/orders" //
 import { mapState } from "vuex"
 import { SUCCESS } from "@/common/constants/specimen-status";
 
@@ -175,9 +173,9 @@ export default {
     paymentHistory: [],
     isLoadingTestResults: false,
     headers: [
-      { text: "Service Name", value: "service_info.name",sortable: true },
-      { text: "Lab Name", value: "lab_info.name", sortable: true },
-      { text: "Date", value: "created_at", sortable: true },
+      { text: "Service Name", value: "serviceInfo.name",sortable: true },
+      { text: "Lab Name", value: "labInfo.name", sortable: true },
+      { text: "Date", value: "createdAt", sortable: true },
       { text: "Status", value: "status", sortable: true },
       {
         text: "Actions",
@@ -197,13 +195,13 @@ export default {
   },
 
   async created() {
-    await this.getPaymentHistory()
+    await this.getTestHistoryData()
     await this.checkOrderLenght()
     await this.getDataOrderHistory()
   },
 
   methods: {
-    async getPaymentHistory() {
+    async getTestHistoryData() {
       this.isLoadingTestResults = true;
       try {
         this.testHistory = [];
@@ -211,7 +209,6 @@ export default {
         const address = this.wallet.address
         // Get specimens
         const specimens = await queryDnaTestResultsByOwner(this.api, address)
-        console.log(specimens, "<==== specimens")
         if (specimens != null) {
           specimens.reverse();
           if (specimens.length < maxResults) {
@@ -225,17 +222,17 @@ export default {
             if (dnaTestResults != null) {
               const detaillab = await queryLabsById(
                 this.api,
-                dnaTestResults.lab_id
+                dnaTestResults.labId
               );
               const detailOrder = await getOrdersData(
                 this.api,
-                dnaTestResults.order_id
+                dnaTestResults.orderId
               );
               const detailService = await queryServicesById(
                 this.api,
-                detailOrder.service_id
+                detailOrder.serviceId
               );
-              this.preparePaymentHistory(dnaTestResults, detaillab, detailService);
+              this.preparePaymentHistory(dnaTestResults, detaillab, detailService); //this should prepare test history
             }
           }
         }
@@ -249,12 +246,15 @@ export default {
     async getDataOrderHistory() {
       try {
         const address = this.wallet.address
+        let maxResults = 5;
         const listOrderId = await ordersByCustomer(this.api, address)
-
-        for (let i = 0; i < listOrderId.length; i++) {
+        if (listOrderId.length < maxResults) {
+          maxResults = listOrderId.length
+        }
+        for (let i = 0; i < maxResults; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
-          const detaillab = await queryLabsById(this.api, detailOrder.seller_id)
-          const detailService = await queryServicesById(this.api, detailOrder.service_id);
+          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
+          const detailService = await queryServicesById(this.api, detailOrder.serviceId);
           this.prepareOrderData(detailOrder, detaillab, detailService)
         }
 
@@ -353,22 +353,46 @@ export default {
     },
 
     preparePaymentHistory(dnaTestResults, detaillab, detailService) {
-      const title = detailService.info.name;
-
-      const labName = detaillab.info.name;
+      const title = detailService.info.name
+      const description = detailService.info.description
+      const serviceImage = detailService.info.image
+      const category = detailService.info.category
+      const testResultSample = detailService.info.testResultSample 
+      const pricesByCurrency = detailService.info.pricesByCurrency 
+      const expectedDuration = detailService.info.expectedDuration 
+      const serviceId = detailService.id 
+      const dnaCollectionProcess = detailService.info.dnaCollectionProcess 
+      const serviceInfo = { 
+        name: title,
+        description: description,
+        image: serviceImage,
+        category: category,
+        testResultSample: testResultSample,
+        pricesByCurrency: pricesByCurrency,
+        expectedDuration: expectedDuration,
+        dnaCollectionProcess: dnaCollectionProcess
+      }
+      const labName = detaillab.info.name
+      const address = detaillab.info.address
+      const labImage = detaillab.info.profileImage
+      const labId = detaillab.info.boxPublicKey 
+      const labInfo = { 
+        name: labName,
+        address: address,
+        profileImage: labImage
+      }
       let icon = "mdi-needle";
       if (detailService.info.image != null) {
         icon = detailService.info.image;
       }
 
-      let dateSet = new Date();
-      let timestamp = dateSet.getTime().toString();
-      if (dnaTestResults.updated_at != null) {
-        dateSet = new Date(
-          parseInt(dnaTestResults.updated_at.replace(/,/g, ""))
-        );
-        timestamp = dateSet.getTime().toString();
-      }
+      const dateSet = new Date(
+        parseInt(dnaTestResults.createdAt.replace(/,/g, ""))
+      )
+      const dateUpdate = new Date(
+        parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
+      )
+      const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-US", {
         weekday: "short", // long, short, narrow
         day: "numeric", // numeric, 2-digit
@@ -378,17 +402,32 @@ export default {
         minute: "numeric"
       });
 
-      const number = dnaTestResults.tracking_id;
+      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
+      const createdAt = dateSet.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
+      const number = dnaTestResults.trackingId;
       const status = SUCCESS;
 
       const order = {
         icon,
-        title,
         number,
-        labName,
         timestamp,
         status,
-        orderDate
+        orderDate,
+        serviceId,
+        serviceInfo,
+        labId,
+        labInfo,
+        createdAt,
+        updatedAt,
+        labName
       };
 
       this.testHistory.push(order);

@@ -32,8 +32,9 @@
                 sm="3"
               )
                 v-text-field(
-                  placeholder="DBIO"
+                  value="DBIO"
                   outlined
+                  disabled 
                 )
 
         v-checkbox(class="mt-5" v-model="agree")
@@ -76,10 +77,11 @@ export default {
     transactionStep: "",
     agreement: true
   }),
+
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
-      pair: (state) => state.substrate.pair,
+      pair: (state) => state.substrate.wallet,
       country: state => state.lab.country,
       region: state => state.lab.region,
       city: state => state.lab.city,

@@ -51,7 +51,7 @@ export default {
     },
 
     onSubmit() {
-      this.$submit("click")
+      this.$emit("click")
     }
   }
 }

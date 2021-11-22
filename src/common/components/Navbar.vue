@@ -94,7 +94,7 @@
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
-    WalletBinding(:show="showMetamaskDialog" @close="closeDialog")
+    WalletBinding(:show="showMetamaskDialog" @close="closeDialog" @success="walletBound")
 </template>
 
 <script>
@@ -153,7 +153,7 @@ export default {
     showMetamaskDialog: false,
     balance: 0,
     walletAddress: "",
-    activeBalance: "",
+    activeBalance: 0,
     menus: [
       {
         id: 1,
@@ -316,6 +316,11 @@ export default {
     },
 
     closeDialog () {
+      this.loginStatus = false
+      this.showMetamaskDialog = false
+    },
+
+    walletBound () {
       this.loginStatus = true
       this.showMetamaskDialog = false
     },
