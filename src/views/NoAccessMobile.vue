@@ -37,6 +37,11 @@ export default {
     &__title
       font-size: 0.875rem
 
+    &__title,
+    &__subtitle,
+    &__text
+      text-align: center
+
     &__subtitle,
     &__text
       font-size: 0.75rem
