@@ -315,9 +315,6 @@ export default {
     &::v-deep
       .banner__subtitle
         max-width: 36.188rem !important
-      .banner-illustration
-        position: absolute
-        bottom: -100px
 
       .ui-debio-modal__card
         gap: 20px
