@@ -13,13 +13,13 @@
         div(class="d-flex justify-space-between mb-2" )
           div( style="font-size: 12px;" ) Service Price
           div( style="font-size: 12px;" )
-            | {{ dataService.detailPrice.price_components[0].value }} 
+            | {{ formatPrice(dataService.detailPrice.price_components[0].value) }} 
             | {{ dataService.currency.toUpperCase() }}
         
         div(class="d-flex justify-space-between" )
           div( style="font-size: 12px;" ) Quality Control Price
           div( style="font-size: 12px;" )
-            | {{ dataService.detailPrice.additional_prices[0].value }} 
+            | {{ formatPrice(dataService.detailPrice.additional_prices[0].value) }} 
             | {{ dataService.currency.toUpperCase() }}
 
       div(class="d-flex justify-end me-3" style="font-size: 12px") +
@@ -29,7 +29,7 @@
         div(class="d-flex justify-space-between mb-2" )
           b( style=" font-size: 12px;" ) Total Price
           b( style="font-size: 12px;" )
-            | {{ dataService.price }} 
+            | {{ formatPrice(dataService.price) }} 
             | {{ dataService.currency.toUpperCase()}}
 
 
@@ -188,7 +188,8 @@ export default {
       dataService: (state) => state.testRequest.products,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
       selectedService: (state) => state.testRequest.products,
-      stakingData: (state) => state.lab.stakingData
+      stakingData: (state) => state.lab.stakingData,
+      web3: (state) => state.metamask.web3
     }),
 
     setMargin() {
@@ -223,6 +224,10 @@ export default {
 
     showCancelConfirmation () {
       this.cancelDialog = true
+    },
+
+    formatPrice (price) {
+      return this.web3.utils.fromWei(String(price), "ether")
     }
   }
 }

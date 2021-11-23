@@ -23,7 +23,7 @@
               v-col(cols="5.5")
                 b.menu-card__service-sub-title Price
                 .menu-card__service-description
-                  | {{ dataService.detailPrice.price_components[0].value }} 
+                  | {{ formatPrice(dataService.detailPrice.price_components[0].value) }} 
                   | {{ dataService.currency.toUpperCase() }}
               v-col(cols="6.5") 
                 b.menu-card__service-sub-title Duration
@@ -54,7 +54,7 @@
         
             div.description(
               class="mb-5 me-8 text-caption grey--text text--darken-1"
-            ) {{ dataService.labAddress }}, {{ dataService.city }}, {{ country }}
+            ) {{ dataService.labAddress }}, {{ dataService.city }}, {{ country(dataService.country ) }}
       
 
 
@@ -81,18 +81,23 @@ export default {
   computed: {
     ...mapState({
       mnemonicData: (state) => state.substrate.mnemonicData,
-      dataService: (state) => state.testRequest.products
-    }),
-
-    country () {
-      return this.countries.filter((c) => c.iso2 === this.dataService.country)[0].name
-    }
+      dataService: (state) => state.testRequest.products,
+      web3: (state) => state.metamask.web3
+    })
   },
 
   methods: {
     async getCountries() {
       const { data : { data }} = await getLocations()
       this.countries = data
+    },
+
+    formatPrice(price) {
+      return this.web3.utils.fromWei(String(price), "ether")
+    },
+
+    country (country) {
+      return this.countries.filter((c) => c.iso2 === country)[0].name
     }
   }
 }
@@ -116,7 +121,7 @@ export default {
 
     &__service
       display: flex
-      margin: 35px 0px 10px 10px
+      margin: 20px 0px 10px 10px
 
     &__service-title
       @include body-text-2-opensans

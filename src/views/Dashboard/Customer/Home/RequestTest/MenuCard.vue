@@ -11,7 +11,7 @@
             .menu-card__name 
               b {{ title }}
             .menu-card__price 
-              b {{ price }} {{ currency.toUpperCase() }}
+              b {{ formatPrice(price) }} {{ currency.toUpperCase() }}
 
           v-row(class="ml-1 mt-1 mb-1")
             div(
@@ -36,6 +36,7 @@
 
 <script>
 
+import { mapState } from "vuex"
 import { getStates } from "@/common/lib/location"
 
 export default {
@@ -52,11 +53,17 @@ export default {
     country: String,
     city: String,
     region: String,
-    price: Number,
+    price: String,
     avatar: String,
     currency: String,
     rate: Number,
     countRate: Number
+  },
+
+  computed: {
+    ...mapState({
+      web3: (state) => state.metamask.web3
+    })
   },
 
   async mounted() {
@@ -72,6 +79,10 @@ export default {
       const {data: {data}} = await getStates(this.country)
       const states = data
       this.state = states.filter((s) => s.state_code === this.region)[0].name
+    },
+
+    formatPrice(price) {
+      return this.web3.utils.fromWei(String(price), "ether")
     }
   }
 }

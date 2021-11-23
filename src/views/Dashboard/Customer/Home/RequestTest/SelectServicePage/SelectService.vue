@@ -164,7 +164,8 @@ export default {
         countServiceRate,
         duration,
         durationType,
-        verificationStatus
+        verificationStatus,
+        indexPrice:0
       }
 
       if (service.verificationStatus === "Verified") {

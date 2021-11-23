@@ -27,13 +27,13 @@
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
             div( style="font-size: 12px;" )
-              | {{ selectedService.detailPrice.price_components[0].value }} 
+              | {{ formatPrice(selectedService.detailPrice.price_components[0].value) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
             div( style="font-size: 12px;" )
-              | {{ selectedService.detailPrice.additional_prices[0].value }} 
+              | {{ formatPrice(selectedService.detailPrice.additional_prices[0].value) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
        
@@ -45,7 +45,7 @@
           div(class="d-flex justify-space-between mb-2" )
             b( style=" font-size: 12px;" ) Total Price
             b( style="font-size: 12px;" )
-              | {{  selectedService.price }} 
+              | {{  formatPrice(selectedService.price) }} 
               | {{ selectedService.currency.toUpperCase()}}
 
 
@@ -147,8 +147,21 @@ export default {
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
       metamaskWalletBalance: (state) => state.metamask.metamaskWalletBalance,
       mnemonicData: state => state.substrate.mnemonicData,
-      walletBalance: (state) => state.substrate.walletBalance
+      walletBalance: (state) => state.substrate.walletBalance,
+      web3: (state) => state.metamask.web3
     })
+  },
+
+  watch: {
+    lastEventData() {
+      if (this.lastEventData) {
+        if (this.lastEventData.method === "OrderPaid") {
+          this.isLoading = false
+          this.password = ""
+          this.$router.push({ name: "customer-request-test-success"}) 
+        }
+      }      
+    }
   },
 
   async mounted () {
@@ -227,11 +240,13 @@ export default {
         const customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
 
         if (this.status !== "Unpaid") {
+          const serviceFlow = "RequestTest"
           await createOrder(
             this.api,
             this.wallet,
             this.selectedService.serviceId,
             customerBoxPublicKey,
+            serviceFlow,
             this.selectedService.indexPrice,
             this.payOrder
           )
@@ -242,7 +257,7 @@ export default {
         console.log(err)
         this.isLoading = false
         this.password = ""
-        this.error = "The password you entered is wrong"
+        this.error = err
       } 
     },
 
@@ -267,10 +282,10 @@ export default {
 
       const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
       await getTransactionReceiptMined(txHash)
+    },
 
-      this.isLoading = false
-      this.password = ""
-      this.$router.push({ name: "customer-request-test-success"}) 
+    formatPrice(price) {
+      return this.web3.utils.fromWei(String(price), "ether")
     },
 
     closeDialog(){

@@ -95,8 +95,8 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
       customerEthAddress,
       sellerEthAddress,
       dnaSampleTrackingId,
-      web3.utils.toWei(String(testingPrice), "ether"),
-      web3.utils.toWei(String(qcPrice), "ether"),
+      testingPrice.replace(/,/g, ""),
+      qcPrice.replace(/,/g, ""),
       web3.utils.toWei(String(payAmount), "ether")
     )
     .encodeABI()

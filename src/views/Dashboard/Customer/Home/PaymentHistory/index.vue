@@ -27,7 +27,7 @@
 
         template(v-slot:[`item.service_info.prices_by_currency[0].total_price`]="{ item }")
           .payment-history__price-details
-            | {{ item.service_info.prices_by_currency[0].total_price }}
+            | {{ formatPrice(item.service_info.prices_by_currency[0].total_price) }}
             | {{ item.service_info.prices_by_currency[0].currency }}
 
         template(v-slot:[`item.reward`]="{ item }")
@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { searchIcon } from "@/common/icons"
@@ -84,6 +85,12 @@ export default {
     payments: []
   }),
 
+  computed: {
+    ...mapState({
+      web3: (state) => state.metamask.web3
+    })
+  },
+
   async created() {
     await this.metamaskDispatchAction(this.onSearchInput)
   },
@@ -109,6 +116,10 @@ export default {
       })
 
       return colors[status.toUpperCase()]
+    },
+
+    formatPrice(price) {
+      return this.web3.utils.fromWei(String(price), "ether")
     },
 
     handleDetails(item) {
