@@ -43,7 +43,7 @@
         )
 
     .customer-my-test
-      .customer-my-test__tabs(@click="isShowModalBounty = true")
+      .customer-my-test__tabs
         template
           v-tabs(v-model="tabs")
             v-tab Test List
@@ -121,7 +121,7 @@ import CryptoJS from "crypto-js"
 import localStorage from "@/common/lib/local-storage"
 import { u8aToHex } from "@polkadot/util"
 import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
-import { getSignedUrl, createSyncEvent } from "@/common/lib/ipfs/gcs"
+import { createSyncEvent } from "@/common/lib/ipfs/gcs"
 import {
   ordersByCustomer,
   getOrdersData
@@ -422,6 +422,8 @@ export default {
     },
 
     async downloadFile() {
+      if (!this.selectedBounty) return
+
       this.modalBountyLoading = true
       try {
         const pair = {
@@ -432,12 +434,11 @@ export default {
         await syncDecryptedFromIPFS(
           "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG", // TODO: (Testing purpose) Update when my test ready
           pair,
-          "file.vcf",
+          `${this.selectedBounty?.dnaSampleTrackingId}.vcf`,
           "text/vCard"
         )
 
-        await getSignedUrl("file.vcf")
-        await createSyncEvent("file.vcf")
+        await createSyncEvent(`${this.selectedBounty?.dnaSampleTrackingId}.vcf`)
 
         this.selectedBounty = null
         this.isSuccessBounty = true
