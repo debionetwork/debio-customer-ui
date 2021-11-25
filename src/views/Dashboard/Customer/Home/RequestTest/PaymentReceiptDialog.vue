@@ -203,8 +203,6 @@ export default {
           return
         }
         
-        console.log("metamask wallet address ")
-        console.log(this.metamaskWalletAddress)
         // cek kalo udah binding wallet
         if (!this.metamaskWalletAddress) {
           this.isLoading = false
