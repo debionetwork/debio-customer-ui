@@ -17,13 +17,14 @@
             div(
               v-for="i in rate"
               :key="i")
-              v-icon(style="font-size: 10px;" color="primary") mdi-star
+              v-icon(style="font-size: 14px;" color="primary") mdi-star
 
             div(
               v-for="i in ( 5 - rate)"
               :key="i")
-              v-icon(style="font-size: 10px;" color="primary") mdi-star-outline 
-            span.ml-2( style="font-size: 10px;") ({{ countRate }})
+              v-icon(style="font-size: 14px;" color="primary") mdi-star-outline 
+            div.ml-2
+              span( style="font-size: 10px;") ({{ countRate }})
 
           .menu-card__name  
             b {{ labName }}

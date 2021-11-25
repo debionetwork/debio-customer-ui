@@ -2,7 +2,7 @@
   v-container.container-card
     v-card.menu-card
       .menu-card__service
-        ui-debio-avatar.ma-1(:src="dataService.serviceImage" size="90" rounded)
+        ui-debio-avatar.ma-1.ml-2(:src="dataService.serviceImage" size="90" rounded)
       
         .menu-card__body
           b.menu-card__service-title {{ dataService.serviceName }}
@@ -131,12 +131,12 @@ export default {
 
     &__service-description
       color: #C400A5
-      @include body-text-medium-2-opensans
+      @include body-text-medium-3-opensans
     
     &__lab-detail
       display: flex
       margin-top: 20px
-      margin-left: 5px
+      margin-left: 10px
     
   .description 
     font-size: 10px
