@@ -3,12 +3,12 @@ import generateAccountRoutes from "./generateAccount"
 
 const landingPageRoutes = [{
   path: "/landing-page",
-  component: () => import(/* webpackChunkName */ "../../views/LandingPage/Layout"),
+  component: () => import(/* webpackChunkName */ "@/views/LandingPage/Layout"),
   children: [
     {
       path: "/landing-page",
       name: "landing-page",
-      component: () => import(/* webpackChunkName */ "../../views/LandingPage")
+      component: () => import(/* webpackChunkName */ "@/views/LandingPage")
     },
 
     ...generateAccountRoutes,
