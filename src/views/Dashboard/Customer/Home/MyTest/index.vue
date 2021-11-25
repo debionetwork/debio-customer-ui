@@ -30,7 +30,7 @@
 
     ui-debio-banner.customer-test__banner(
       title="My Test"
-      subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymousely to expert and scientist!"
+      subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymously to expert and scientist!"
       with-decoration
       gradientColor="tertiary"
     )
@@ -491,6 +491,7 @@ export default {
       
 
   .customer-my-test
+    margin: 35px 0 0 0
     width: 100%
     height: 100% 
     background: #FFFFFF
@@ -523,6 +524,7 @@ export default {
   
   .degenics-datatable-card
     padding-top: 0px !important
+    padding: 0.75rem !important
     
   .degenics-data-table
     margin-top: 0px !important

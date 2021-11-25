@@ -1,5 +1,5 @@
 export default {
-  data: () => ({ formErrors: [], errorMessages: null }),
+  data: () => ({ formErrors: [], errorMessages: null, isDirty: {} }),
   
   computed: {
     computeError() {
@@ -11,6 +11,31 @@ export default {
     }
   },
 
+  created() {
+    Object.entries(this.$options.rules).forEach(([key, parentValue]) => {
+      if (key === "isDirty") return
+
+      if (Array.isArray(parentValue)) {
+        this.isDirty = {
+          ...this.isDirty,
+          [key]: null
+        }
+
+        return
+      }
+
+      Object.entries(parentValue).forEach(([childKey]) => {
+        this.isDirty = {
+          ...this.isDirty,
+          [key]: {
+            ...this.isDirty[key],
+            [childKey]: null
+          }
+        }
+      })
+    })
+  },
+
   methods: {
     handleError(name, val) {
       this.formErrors = this.formErrors?.filter(error => error.name !== name)
@@ -18,12 +43,15 @@ export default {
       this.formErrors.push({ name: name, status: val })
     },
 
-    _touchForms() {
-      const computeErrors = (objectKey, objectValue) => {
+    _touchForms(field) {
+      const computeErrors = (objectKey, objectValue, parentKey) => {
         const context = this
 
         return objectValue.reduce((filtered, rule) => {
-          const isError = rule.call(this, context[objectKey])
+          const isError = rule.call(
+            this,
+            parentKey ? context._data[parentKey][objectKey] : context._data[objectKey]
+          )
 
           if (typeof isError !== "boolean") filtered.push({ message: isError })
 
@@ -31,15 +59,46 @@ export default {
         }, [])
       }
 
-      Object.entries(this.$options.rules).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          this.errorMessages = computeErrors(key, value)
+      if (field) {
+        const selectedField = this.$options.rules[field]
+
+        Object.entries(selectedField).forEach(([key, value]) => {
+          this.isDirty = {
+            ...this.isDirty,
+            [field]: {
+              ...(
+                this.isDirty
+                  ? this.isDirty[field]
+                  : null
+              ),
+              [key]: Boolean(computeErrors(key, value, field)?.length)
+            }
+          }
+        })
+
+        return
+      }
+
+      Object.entries(this.$options.rules).forEach(([key, parentValue]) => {
+        if (key === "isDirty") return
+
+        if (Array.isArray(parentValue)) {
+          this.isDirty = {
+            ...this.isDirty,
+            [key]: Boolean(computeErrors(key, parentValue)?.length)
+          }
 
           return
         }
 
-        Object.entries(value).forEach(([key, value]) => {
-          this.errorMessages = computeErrors(key, value)
+        Object.entries(parentValue).forEach(([childKey, value]) => {
+          this.isDirty = {
+            ...this.isDirty,
+            [key]: {
+              ...this.isDirty[key],
+              [childKey]: Boolean(computeErrors(childKey, value, key)?.length)
+            }
+          }
         })
       })
     }

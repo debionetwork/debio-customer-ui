@@ -21,6 +21,9 @@
   text-align: left
   padding-left: 0%
   justify-content: left
+  
+  &::before
+    background-color: #FFFFFF
 
 .btnDrawerIcon
   margin: 0 16px 0 0

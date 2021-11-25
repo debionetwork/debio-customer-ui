@@ -10,7 +10,8 @@
     )
       ui-debio-input(
         v-if="!success"
-        :errorMessages="passwordErrorMessages"
+        :error="!!error"
+        :errorMessages="!!error ? error.message : null"
         :rules="$options.rules.password"
         :type="showPassword ? 'text' : 'password'"
         variant="small"
@@ -18,7 +19,6 @@
         v-model="password"
         outlined
         block
-        :error="error"
         validate-on-blur
         @keyup.enter="handleSubmitPassword"
         @blur="error = null"
@@ -57,10 +57,11 @@
         color="primary"
       ) Upload EMR
 
-    Navbar.layout-dashboard__navbar(:notifications="localListNotification")
+    Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
     .layout-dashboard__main
       transition(name="transition-slide-x" mode="out-in")
-        router-view
+        maintenancePageLayout(v-if="pageError" :error="pageError")
+        router-view(v-else @onPageError="handlePageError")
 </template>
 
 <script>
@@ -81,6 +82,7 @@ import {
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
+import maintenancePageLayout from "@/views/Dashboard/Customer/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 
 export default {
@@ -88,7 +90,7 @@ export default {
 
   mixins: [validateForms],
 
-  components: { NavigationDrawer, Navbar, Button },
+  components: { NavigationDrawer, Navbar, Button, maintenancePageLayout },
 
   data: () => ({
     checkCircleIcon,
@@ -96,6 +98,7 @@ export default {
     eyeOffIcon,
 
     showModalPassword: false,
+    pageError: null,
     showPassword: false,
     success: false,
     error: null,
@@ -131,14 +134,14 @@ export default {
 
     computeButtonActive() {
       return !/(\/customer\/request-test)/.test(this.$route.path)
-    },
-
-    passwordErrorMessages() {
-      return this.errorMessages || this.error
     }
   },
 
   watch: {
+    $route() {
+      this.pageError = null
+    },
+
     lastEventData(event) {
       if (event !== null) {
         this.$store.dispatch("substrate/addListNotification", {
@@ -160,6 +163,10 @@ export default {
   },
 
   methods: {
+    handlePageError(error) {
+      this.pageError = error
+    },
+
     async getListNotification() {
       await this.$store.dispatch("substrate/getListNotification", {
         address: this.wallet.address,

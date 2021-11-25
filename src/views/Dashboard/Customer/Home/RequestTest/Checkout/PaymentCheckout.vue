@@ -42,9 +42,11 @@ export default {
   }),
 
   async mounted () {
-    const detailOrder = await getOrdersData(this.api, this.$route.params.id)
-    if (detailOrder.status === "Cancelled") {
-      this.isCancelled = true
+    if (this.$route.params.id) {
+      const detailOrder = await getOrdersData(this.api, this.$route.params.id)
+      if (detailOrder.status === "Cancelled") {
+        this.isCancelled = true
+      }
     }
   },
 

@@ -1,6 +1,6 @@
-export async function createOrder(api, pair, serviceId, customerBoxPublicKey, priceIndex, callback = () => {}) {
+export async function createOrder(api, pair, serviceId, customerBoxPublicKey, serviceFlow, priceIndex, callback = () => {}) {
   const unsub = await api.tx.orders
-    .createOrder(serviceId, priceIndex, customerBoxPublicKey)
+    .createOrder(serviceId, priceIndex, customerBoxPublicKey, serviceFlow)
     .signAndSend(pair, { nonce: -1 }, async ({ events = [], status }) => {
       if(status.isFinalized) {
         const eventList = events.filter(({ event }) =>

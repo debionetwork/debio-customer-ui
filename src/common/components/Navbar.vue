@@ -2,7 +2,7 @@
   .navbar(@mouseleave.prevent="handleHideDropdown(computeMouseLeave)")
     .navbar__wrapper
       .navbar__breadcrumbs(@mouseenter.prevent="handleHideDropdown(computeMouseLeave)")
-        ui-debio-breadcrumbs
+        ui-debio-breadcrumbs(v-if="!error")
 
       .navbar__user-menu(ref="menu" :class="{ 'navbar__user-menu--settings': !!getActiveMenu && getActiveMenu.type === 'settings' }")
         template(v-for="(menu, idx) in menus")
@@ -129,7 +129,8 @@ export default {
   components: { WalletBinding },
 
   props: {
-    notifications: { type: Array, default: () => [] }
+    notifications: { type: Array, default: () => [] },
+    error: { type: Object, default: () => {} }
   },
 
   data: () => ({

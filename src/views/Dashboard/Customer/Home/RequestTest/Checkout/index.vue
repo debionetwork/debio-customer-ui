@@ -75,6 +75,7 @@ export default {
       detailPrice: data?.service_info.prices_by_currency[0],
       currency: data?.service_info.prices_by_currency[0].currency,
       city: data?.lab_info.city,
+      country: data?.lab_info.country,
       region: data?.lab_info.region,
       countRateLab: 0,
       countServiceRate: 0,

@@ -40,6 +40,7 @@ import boxIcon from "./box"
 import databaseIcon from "./database"
 import phoneIcon from "./phone"
 import doctorDashboardIllustrator from "./doctorDashboardIllustrator"
+import constructIllustration from "./constructIllustration"
 import microscopeIcon from "./microscope"
 import weightLifterIcon from "./weightLifter"
 import fileSearchIcon from "./fileSearch"
@@ -101,6 +102,7 @@ export {
   databaseIcon,
   phoneIcon,
   doctorDashboardIllustrator,
+  constructIllustration,
   microscopeIcon,
   weightLifterIcon,
   fileSearchIcon,
