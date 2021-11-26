@@ -5,6 +5,8 @@ export default {
   props: {
     icon: { type: String, default: null },
     size: { type: [String, Number], default: 40 },
+    width: { type: [String, Number], default: null },
+    height: { type: [String, Number], default: null },
     viewBox: { type: String, default: "0 0 40 40" },
     strokeWidth: { type: [String, Number], default: "2" },
     color: { type: String, default: "#C400A5" },
@@ -35,20 +37,21 @@ export default {
 </script>
 
 <template lang="pug">
-  svg.ui-debio-icon(
-    :width="size"
-    :height="size"
-    v-html="icon"
-    xmlns="http://www.w3.org/2000/svg"
-    :viewBox="viewBox"
-    :fill="fillColor"
-    :stroke="strokeColor"
-    :stroke-width="computeStrokeWidth"
-    :style="computeStyle"
-    v-on="$listeners"
-    aria-hidden="true"
-    role="presentation"
-  )
+  .ui-debio-icon
+    svg(
+      :width="width ? width : size"
+      :height="height ? height : size"
+      v-html="icon"
+      xmlns="http://www.w3.org/2000/svg"
+      :viewBox="viewBox"
+      :fill="fillColor"
+      :stroke="strokeColor"
+      :stroke-width="computeStrokeWidth"
+      :style="computeStyle"
+      v-on="$listeners"
+      aria-hidden="true"
+      role="presentation"
+    )
 </template>
 
 <style lang="sass">

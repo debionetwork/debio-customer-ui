@@ -1,7 +1,7 @@
 <template lang="pug">
   .customer-payment-checkout
     .customer-payment-checkout__title 
-      b(v-if="!isCancelled") Checkout your order !
+      b(v-if="!isCancelled") Checkout your order!
       b(v-if="isCancelled") You have cancelled your order!
 
 
