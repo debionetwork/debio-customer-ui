@@ -1,10 +1,10 @@
 <template lang="pug">
   v-container.container-card
     v-card.menu-card
-      div(class="mt-5 mb-5 text-center" )
+      div(class="mt-5 mb-3 text-center" )
         b Order Summary
 
-      div(class="ml-5 mb-2 text-start" style="font-size: 12px;")
+      div(class="ml-5 mb-1 text-start" style="font-size: 12px;")
         b Details
 
       hr(class="ml-3 me-3 mb-3")
@@ -22,7 +22,7 @@
             | {{ formatPrice(dataService.detailPrice.additional_prices[0].value) }} 
             | {{ dataService.currency.toUpperCase() }}
 
-      div(class="d-flex justify-end me-3" style="font-size: 12px") +
+      span(class="d-flex justify-end me-3" style="font-size: 12px") +
       hr(class="ml-3 me-3 mb-2")
 
       div(class="ml-5 text-start me-10")
@@ -34,16 +34,17 @@
 
 
       div(class="ml-5 text-start me-10" v-if="stakingFlow")
-        div(class="d-flex justify-space-between mb-2" )
+        div(class="d-flex justify-space-between" )
           div( style=" font-size: 12px;" ) Staking Amount
-          div( style="font-size: 12px;" ) {{ stakingAmount }} {{ selectedService.currency.toUpperCase()}}
+          div( style="font-size: 12px;" ) {{ formatPrice(stakingAmount) }} {{ selectedService.currency.toUpperCase()}}
       
+      span(v-if="stakingFlow" class="d-flex justify-end me-3" style="font-size: 12px") -
       hr(class="ml-3 me-3 mb-1" v-if="stakingFlow")
 
-      div(class="ml-5 text-start me-10" v-if="stakingFlow")
-        div(class="d-flex justify-space-between mb-2" )
-          div( style=" font-size: 12px;" ) Remaining Amount
-          div( style="font-size: 12px;" ) {{ remainingStaking }} {{ selectedService.currency.toUpperCase()}}
+      div(class="ml-5 text-start me-10 mb-1" v-if="stakingFlow")
+        div(class="d-flex justify-space-between" )
+          b( style=" font-size: 12px;" ) Remaining Amount
+          b( style="font-size: 12px;" ) {{ formatPrice(remainingStaking) }} {{ selectedService.currency.toUpperCase()}}
 
 
       div(class="ml-4 text-center" v-if="!isCancelled")
@@ -107,6 +108,7 @@
       )
       
       PayRemainingDialog(
+        :amount="remainingDbio"
         :show="showPayRemainingDialog"
         @onContinue="onContinue"
         @close="showPayRemainingDialog = false"
@@ -121,6 +123,7 @@ import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
+import { getDbioBalance } from "@/common/lib/debio-balance"
 
 export default {
   name: "PaymentDetailCard",
@@ -144,6 +147,7 @@ export default {
     stakingFlow: false,
     stakingAmount: 0,
     remainingStaking: 0,
+    remainingDbio: 0,
     showPayRemainingDialog: false,
     orderId: 0
   }),
@@ -168,10 +172,14 @@ export default {
       this.orderId = this.detailOrder.id
     }
 
+    console.log("staking data", this.stakingData)
+
     if (this.stakingData) {
       this.stakingFlow = true
-      this.stakingAmount = this.stakingData.amount
+      const debioBalance = await getDbioBalance()
+      this.stakingAmount = this.stakingData.staking_amount * debioBalance.dai
       this.remainingStaking = this.selectedService.price - this.stakingAmount
+      this.remainingDbio = Number(this.formatPrice(this.remainingStaking / debioBalance.dai)).toFixed(3)
     }
   },
 

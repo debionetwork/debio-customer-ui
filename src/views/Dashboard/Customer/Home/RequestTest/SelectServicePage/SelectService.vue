@@ -52,7 +52,6 @@ import MenuCard from "../MenuCard.vue"
 import AlertDialog from "@/common/components/Dialog/AlertDialog"
 import ServiceDetailDialog from "../ServiceDetailDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
-import mockData from "./service-mock.json"
 
 
 export default {
@@ -91,15 +90,7 @@ export default {
   },
 
   async mounted () {
-    
-    if (this.$route.params.flag === "staking") {
-      this.services = mockData.data
-    }
-
-    if (!this.$route.params.flag) {
-      this.services = this.dataServices
-    }
-
+    this.services = this.dataServices
     for (let i = 0; i < this.services.length; i++) {
 
       let { 

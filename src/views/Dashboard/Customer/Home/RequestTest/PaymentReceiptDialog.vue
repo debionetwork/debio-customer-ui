@@ -235,7 +235,6 @@ export default {
 
         const mnemonic = localStorage.getLocalStorageByName("mnemonic_data")
         const decryptedMnemonic = CryptoJS.AES.decrypt(mnemonic, this.password).toString(CryptoJS.enc.Utf8)
-        
         const identity = await Kilt.Identity.buildFromMnemonic(decryptedMnemonic)
         const customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
 

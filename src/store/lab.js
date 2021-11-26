@@ -4,7 +4,8 @@ const defaultState = {
   services: [],
   country: null,
   city: null,
-  category: null
+  category: null,
+  stakingData: null
 }
 
 export default {
@@ -33,6 +34,10 @@ export default {
 
     SET_SERVICES(state, services) {
       state.services = services
+    },
+
+    SET_STAKING_SERVICE(state, stakingService)  {
+      state.stakingData = stakingService
     }
   },
   actions: {
@@ -43,10 +48,9 @@ export default {
     },
 
     async getServicesByCategory({ commit }, datas) {
+      console.log("datas di lab", datas)
       const { category, status } = datas
       const { data : data } = await getServicesByCategory (category, status)
-
-
       commit("SET_SERVICES", data.result)
       commit("SET_CATEGORY", category)
     }
