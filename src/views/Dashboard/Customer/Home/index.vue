@@ -142,7 +142,7 @@ import Banner from "@/common/components/Banner"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import {
-  ordersByCustomer, //temporary off
+  ordersByCustomer,
   getOrdersData
 } from "@/common/lib/polkadot-provider/query/orders"
 import {
@@ -152,7 +152,7 @@ import {
 } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
-// import localStorage from "@/common/lib/local-storage" //temporary off
+import localStorage from "@/common/lib/local-storage"
 import { mapState } from "vuex"
 import {
   REGISTERED,
@@ -174,8 +174,7 @@ export default {
     labIllustration,
     eyeIcon,
     cardBlock: false,
-    testResult: [],// orderHistory
-    // testResult: [],
+    testResult: [],
     titlePaymentWording: "",
     titleTestWording: "",
     doctorDashboardIllustrator,
@@ -206,7 +205,7 @@ export default {
   async created() {
     await this.getTestResultsData()
     await this.getDataPaymentHistory()
-    
+
     await this.checkPaymentLength()
     await this.checkTestLength()
   },
@@ -217,12 +216,10 @@ export default {
       try {
         this.testResult = [];
         let maxResults = 5;
-        // const address = this.wallet.address // use this for actual data
-        
-        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25" // this for testing only
+        const address = this.wallet.address // use this for actual data
 
         // Get specimens
-        const specimens = await queryDnaTestResultsByOwner(this.api, dummyAddress)// change to address
+        const specimens = await queryDnaTestResultsByOwner(this.api, address)
         if (specimens != null) {
           specimens.reverse();
           if (specimens.length < maxResults) {
@@ -247,12 +244,10 @@ export default {
     },
 
     async getDataPaymentHistory() {
-      console.log("get order data history")
       try {
-        // const address = this.wallet.address
-        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25" // this for testing only
+        const address = this.wallet.address
         let maxResults = 5;
-        let listOrderId = await ordersByCustomer(this.api, dummyAddress)
+        let listOrderId = await ordersByCustomer(this.api, address)
         if (listOrderId != null) {
           listOrderId = listOrderId.reverse()
         }
@@ -360,10 +355,6 @@ export default {
       }
       this.paymentHistory.push(order)
     },
-
-
-
-
 
     prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample) {
       const feedback = {
