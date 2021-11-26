@@ -21,24 +21,26 @@
             h2.customer-data-bounty__title Data Bounty
             p.customer-data-bounty__subtitle.mb-0 Your data bounty history
 
-        template(v-slot:[`item.name`]="{ item }")
+        template(v-slot:[`item._source.service_info.name`]="{ item }")
           .customer-data-bounty__item-wrapper
-            ui-debio-avatar.customer-data-bounty__item-image(:src="item.avatar" rounded)
+            ui-debio-avatar.customer-data-bounty__item-image(:src="item._source.service_info.image" rounded)
             .customer-data-bounty__item-details
-              .customer-data-bounty__item-name {{ item.name }}
-              .customer-data-bounty__item-speciment {{ item.speciment }}
+              .customer-data-bounty__item-name {{ item._source.service_info.name }}
+              .customer-data-bounty__item-speciment {{ item._source.dna_sample_tracking_id }}
 
-        template(v-slot:[`item.hash`]="{ item }")
+        template(v-slot:[`item._id`]="{ item }")
           .customer-data-bounty__hash.d-flex.align-center
-            .customer-data-bounty__item-hash {{ item.hash }}
-            Button.customer-data-bounty__copy(color="primary" width="60" height="22" @click="handleCopy($event, item.hash)") Copy
+            .customer-data-bounty__item-hash {{ item._id }}
+            Button.customer-data-bounty__copy(color="primary" width="60" height="22" @click="handleCopy($event, item._id)") Copy
               
 </template>
 
 <script>
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
+import { fetchBountyLists } from "@/common/lib/orders"
 import { researchIllustration } from "@/common/icons" 
+import { mapState } from "vuex"
 
 export default {
   name: "CustomerDataBounty",
@@ -48,41 +50,21 @@ export default {
   data: () => ({
     researchIllustration,
 
-    bounties: [
-      {
-        name: "Covid-19 Testing",
-        speciment: "AYEY6073POOH",
-        labName: "GSI Lab",
-        avatar: "https://picsum.photos/40",
-        desc: "Result from covid-19 test gen contain badai sitokin and low hemoglobin it’s hapen mostly in tropis region",
-        reward: "100 DBIO",
-        hash: "F6325D9FE1CAC14BA1AS3832NC"
-      },
-      {
-        name: "Covid-19 Testing2",
-        speciment: "AYEY6073POOH",
-        labName: "GSI Lab",
-        avatar: "https://picsum.photos/40",
-        desc: "Result from covid-19 test gen contain badai sitokin and low hemoglobin it’s hapen mostly in tropis region",
-        reward: "100 DBIO",
-        hash: "A6325D9FE1CAC14BA1AS3832NC"
-      }
-    ],
-
+    bounties: [],
     headers: [
       {
         text: "Service Name",
-        value: "name",
+        value: "_source.service_info.name",
         sortable: true
       },
       {
         text: "Lab Name",
-        value: "labName",
+        value: "_source.lab_info.name",
         sortable: true
       },
       {
         text: "Description",
-        value: "desc",
+        value: "_source.service_info.description",
         width: "350",
         sortable: true
       },
@@ -93,7 +75,7 @@ export default {
       },
       {
         text: "Hashcode",
-        value: "hash",
+        value: "_id",
         align: "center",
         sortable: false
       }
@@ -101,11 +83,22 @@ export default {
     cardBlock: false
   }),
 
+  computed: {
+    ...mapState({
+      wallet: (state) => state.substrate.wallet
+    })
+  },
+
   mounted() {
     window.addEventListener("resize", () => {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
     })
+  },
+
+  async created() {
+    const data = await fetchBountyLists(this.wallet.address)
+    this.bounties = data
   },
 
   methods: {
