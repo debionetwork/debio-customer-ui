@@ -7,6 +7,10 @@
 .drawer
   background: unset !important
   border: unset !important
+  position: relative
+  margin: 0 !important
+  height: unset !important
+  min-width: max-content
 
 .v-navigation-drawer__content
   overflow: unset !important
@@ -27,7 +31,9 @@
 
 .btnDrawerIcon
   margin: 0 16px 0 0
-  
+
+.drawer-item
+  margin: 0 1.563rem
 
 .navTitle
   font-size: 15px
@@ -40,7 +46,7 @@
   border-color: #FF56E0 !important
 
 .footerDrawer
-  margin: 65px 0 0 25px
+  margin: 65px 0 0
 
 .footerDrawer div 
   display: flex
@@ -134,7 +140,7 @@
                   width="9"
                 )
     v-flex
-      .mx-8.pt-2.pb-2(v-for="(item, key) in items" :key="key")
+      .drawer-item.pt-2.pb-2(v-for="(item, key) in items" :key="key")
         Button.btn-drawer(
           :class="customClass(item.active)"
           :to="{ name: item.route }"
@@ -152,7 +158,7 @@
           span.navTitle {{ item.text }}
       
       v-divider.lineDivider
-      .d-flex.flex-column.mx-8
+      .d-flex.flex-column.align-center
         slot
         v-spacer
 
