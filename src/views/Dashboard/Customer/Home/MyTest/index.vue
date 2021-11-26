@@ -113,6 +113,7 @@
 import { layersIcon, noteIllustration, medicalResearchIllustration } from "@/common/icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
 import modalBounty from "./modalBounty.vue"
+import { queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
@@ -283,7 +284,8 @@ export default {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
           const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
           const detailService = await queryServicesById(this.api, detailOrder.serviceId)
-          this.prepareOrderData(detailOrder, detaillab, detailService)
+          const detailsProcess = await queryDnaTestResults(this.api, detailOrder.dnaSampleTrackingId)
+          this.prepareOrderData(detailOrder, detaillab, detailService, detailsProcess)
         }
         
         this.orderHistory.sort(
@@ -300,7 +302,7 @@ export default {
       }
     },
 
-    prepareOrderData(detailOrder, detaillab, detailService) {
+    prepareOrderData(detailOrder, detaillab, detailService, detailsProcess) {
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -363,7 +365,7 @@ export default {
         month: "long" // numeric, 2-digit, long, short, narrow
       });
       const status = detailOrder.status
-      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId 
+      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
       const order = {
         icon,
         number,
@@ -376,6 +378,7 @@ export default {
         labId,
         labInfo,
         updatedAt,
+        detailsProcess,
         createdAt
       }
 
@@ -408,8 +411,8 @@ export default {
       }
     },
 
-    handleSelectedBounty(val) {
-      this.selectedBounty = val
+    async handleSelectedBounty(val) {
+      this.selectedBounty = val.detailsProcess
       this.isShowModalBounty = true
     },
 
@@ -432,13 +435,24 @@ export default {
         }
 
         await syncDecryptedFromIPFS(
-          "QmPMyww3BkaDYHspBvaFxA2JJQTULQfeyJLRhoSh4c98fG", // TODO: (Testing purpose) Update when my test ready
+          this.selectedBounty.resultLink.replace("https://ipfs.io/ipfs/",""),
           pair,
-          `${this.selectedBounty?.dnaSampleTrackingId}.vcf`,
+          `${this.selectedBounty?.trackingId}.vcf`,
           "text/vCard"
         )
 
-        await createSyncEvent(`${this.selectedBounty?.dnaSampleTrackingId}.vcf`)
+        await createSyncEvent(`${this.selectedBounty?.trackingId}.vcf`)
+
+        this.$store.dispatch("substrate/addAnyNotification", {
+          address: this.wallet.address,
+          dataAdd: {
+            message: "Great! Your data has been placed on marketplace successfully!",
+            data: null,
+            route: null,
+            params: null
+          },
+          role: "customer"
+        })
 
         this.selectedBounty = null
         this.isSuccessBounty = true
