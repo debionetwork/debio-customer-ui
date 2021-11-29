@@ -1,5 +1,6 @@
 import ipfsWorker from "./ipfs-worker"
 import store from "@/store/index"
+import axios from "axios"
 import { getSignedUrl } from './gcs'
 
 export function upload({ fileChunk, fileName, fileType }) {

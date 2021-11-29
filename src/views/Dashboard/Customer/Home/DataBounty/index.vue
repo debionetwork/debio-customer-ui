@@ -60,6 +60,7 @@ export default {
       {
         text: "Lab Name",
         value: "_source.lab_info.name",
+        width: "300",
         sortable: true
       },
       {
@@ -71,6 +72,7 @@ export default {
       {
         text: "Reward",
         value: "reward",
+        width: "100",
         sortable: true
       },
       {
@@ -98,7 +100,7 @@ export default {
 
   async created() {
     const data = await fetchBountyLists(this.wallet.address)
-    this.bounties = data
+    this.bounties = data.map(d => ({ ...d, reward: "1 DBIO" }))
   },
 
   methods: {

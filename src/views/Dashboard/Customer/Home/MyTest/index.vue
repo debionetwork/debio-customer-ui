@@ -92,8 +92,6 @@
                     ) Instruction
 
                     Button(
-                      v-if="item.status != 'Registered'"
-                      v-show="item.status == 'ResultReady'"
                       height="25px"
                       width="50%"
                       dark
@@ -228,6 +226,25 @@ export default {
     }
   },
 
+  watch: {
+    lastEventData(event) {
+      if (event === null) return
+      const dataEvent = JSON.parse(event.data.toString())
+      if (event.method === "DataStaked") {
+        this.$store.dispatch("substrate/addAnyNotification", {
+          address: this.wallet.address,
+          dataAdd: {
+            message: "Great! Your data has been placed on ocean marketplace successfully! You have recieve xx DBIO",
+            data: dataEvent,
+            route: "customer-data-bounty",
+            params: null
+          },
+          role: "customer"
+        })
+      }
+    }
+  },
+
   async created() {
     await this.initialData()
   },
@@ -296,7 +313,7 @@ export default {
         if (status) this.orderHistory[0].status = status
         
       } catch (error) {
-        console.log(error)
+        console.error(error)
       } finally {
         this.isLoadingOrderHistory = false
       }
@@ -442,17 +459,6 @@ export default {
         )
 
         await createSyncEvent(`${this.selectedBounty?.trackingId}.vcf`)
-
-        this.$store.dispatch("substrate/addAnyNotification", {
-          address: this.wallet.address,
-          dataAdd: {
-            message: "Great! Your data has been placed on marketplace successfully!",
-            data: null,
-            route: null,
-            params: null
-          },
-          role: "customer"
-        })
 
         this.selectedBounty = null
         this.isSuccessBounty = true

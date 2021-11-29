@@ -1,5 +1,5 @@
 <template lang="pug">
-  div.layout-dashboard
+  .layout-dashboard
     ui-debio-modal(
       :show="showModalPassword"
       title="Unlock Wallet by Input your password"
@@ -209,12 +209,14 @@ export default {
 
 <style lang="sass" scoped>
   .layout-dashboard
+    width: 100%
     min-height: 100vh
     background: #F5F7F9
     display: flex
 
     &__wrapper
-      width: 100%
+      width: 70%
+      flex: 1
       display: flex
       flex-direction: column
 
@@ -223,12 +225,6 @@ export default {
 
     &__main
       padding: 1.563rem !important
-
-    &__sidebar
-
-      Button
-       font-weight: 500 !important
-       font-size: 13px
 
   .modal-password
     &__cta
