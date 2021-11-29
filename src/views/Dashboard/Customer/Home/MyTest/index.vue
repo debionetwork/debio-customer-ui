@@ -27,7 +27,7 @@
             .customer-my-test__table
               DataTable(
                 :headers="headers"
-                :items="orderHistory"
+                :items="testResult"
               )
                 template(class="titleSection" v-slot:[`item.serviceInfo.name`]="{item}")
                   div(class="detailLab d-flex align-center")
@@ -54,7 +54,7 @@
                     ) Detail
                     
                     Button(
-                      v-if="item.status != 'ResultReady'"
+                      v-if="item.status != 'Result Ready'"
                       v-show="item.status == 'Registered'"
                       height="25px"
                       width="50%"
@@ -65,7 +65,7 @@
 
                     Button(
                       v-if="item.status != 'Registered'"
-                      v-show="item.status == 'ResultReady'"
+                      v-show="item.status == 'Result Ready'"
                       height="25px"
                       width="50%"
                       dark
@@ -130,7 +130,19 @@ import dataTesting from "./dataTesting.json"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
-
+import {
+  queryDnaTestResultsByOwner,
+  queryDnaTestResults,
+  queryDnaSamples
+} from "@/common/lib/polkadot-provider/query/genetic-testing"
+import {
+  REGISTERED,
+  REJECTED,
+  ARRIVED,
+  QUALITY_CONTROLLED,
+  WET_WORK,
+  RESULT_READY
+} from "@/common/constants/specimen-status"
 
 export default {
   name: "MyTest",
@@ -177,13 +189,17 @@ export default {
     BUCCAL_COLLECTION,
     medicalResearchIllustration,
     isLoadingOrderHistory: false,
-    isLoding: false
+    isLoding: false,
+    isLoadingTestResults: false,
+    testResult: []
   }),
 
   async mounted() {
-    await this.getOrderHistory()
-    console.log(this.orderHistory, "<=== order history")
+    // await this.getOrderHistory()
+    // console.log(this.orderHistory, "<=== order history")
     // this.onSearchInput()
+    await this.getTestResultData()
+    console.log(this.testResult, "<= test result")
   },
 
   methods: {
@@ -243,7 +259,40 @@ export default {
       }
     },
 
-    prepareOrderData(detailOrder, detaillab, detailService) {
+    async getTestResultData(){
+      this.isLoadingTestResults = true
+      try {
+        this.testResult = []
+        const dummyAddress = "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU"
+        // const address = this.wallet.address,
+        const speciment = await queryDnaTestResultsByOwner(this.api, dummyAddress)
+        console.log(speciment, "<=== speciment sebelum reverse")
+        if (speciment != null) {
+          speciment.reverse()
+          for (let i = 0; i < speciment.length; i++) {
+            const dnaTestResults = await queryDnaTestResults(this.api, speciment[i])
+            console.log(dnaTestResults, "<== dna test result")
+            if (dnaTestResults != null) {
+              const dnaSample = await queryDnaSamples(this.api, dnaTestResults.trackingId)
+              const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
+              const detailOrder = await getOrdersData(this.api, dnaTestResults.orderId)
+              const detailService = await queryServicesById(this.api, detailOrder.serviceId)
+              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample)
+            }
+          }
+        }
+        this.isLoadingTestResults = false
+      } catch (error) {
+        console.log(error)
+        this.isLoadingTestResults = false
+      }
+    },
+
+    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample) {
+      const feedback = {
+        rejectedTitle: dnaSample.rejectedTitle,
+        rejectedDescription: dnaSample.rejectedDescription
+      }
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -263,12 +312,105 @@ export default {
         expectedDuration: expectedDuration,
         dnaCollectionProcess: dnaCollectionProcess
       }
-
       const labName = detaillab.info.name
       const address = detaillab.info.address
       const labImage = detaillab.info.profileImage
       const labId = detaillab.info.boxPublicKey 
       const labInfo = { 
+        name: labName,
+        address: address,
+        profileImage: labImage
+      }
+      let icon = "mdi-needle";
+      if (detailService.info.image != null) {
+        icon = detailService.info.image;
+      }
+
+      const dateSet = new Date(
+        parseInt(dnaTestResults.createdAt.replace(/,/g, ""))
+      )
+      const dateUpdate = new Date(
+        parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
+      )
+      const timestamp = dateSet.getTime().toString();
+      const orderDate = dateSet.toLocaleString("en-US", {
+        weekday: "short", // long, short, narrow
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long", // numeric, 2-digit, long, short, narrow
+        hour: "numeric", // numeric, 2-digit
+        minute: "numeric"
+      });
+
+      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
+      const createdAt = dateSet.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
+      const dnaSampleTrackingId = dnaTestResults.trackingId
+      const status = this.checkSatus(dnaSample.status)
+      
+      const result = {
+        icon,
+        dnaSampleTrackingId,
+        timestamp,
+        status,
+        orderDate,
+        serviceId,
+        serviceInfo,
+        labId,
+        labInfo,
+        createdAt,
+        updatedAt,
+        labName,
+        feedback
+      }
+      this.testResult.push(result)
+    },
+
+    checkSatus(status) {
+      if (status == "Registered") return REGISTERED
+      if (status == "Arrived") return ARRIVED
+      if (status == "Rejected") return REJECTED
+      if (status == "QualityControlled") return QUALITY_CONTROLLED
+      if (status == "WetWork") return WET_WORK
+      if (status == "ResultReady") return RESULT_READY
+    },
+
+
+
+
+    prepareOrderData(detailOrder, detaillab, detailService) {
+      const title = detailService.info.name
+      const description = detailService.info.description
+      const serviceImage = detailService.info.image
+      const category = detailService.info.category
+      const testResultSample = detailService.info.testResultSample
+      const pricesByCurrency = detailService.info.pricesByCurrency
+      const expectedDuration = detailService.info.expectedDuration
+      const serviceId = detailService.id
+      const dnaCollectionProcess = detailService.info.dnaCollectionProcess
+      const serviceInfo = {
+        name: title,
+        description: description,
+        image: serviceImage,
+        category: category,
+        testResultSample: testResultSample,
+        pricesByCurrency: pricesByCurrency,
+        expectedDuration: expectedDuration,
+        dnaCollectionProcess: dnaCollectionProcess
+      }
+
+      const labName = detaillab.info.name
+      const address = detaillab.info.address
+      const labImage = detaillab.info.profileImage
+      const labId = detaillab.info.boxPublicKey
+      const labInfo = {
         name: labName,
         address: address,
         profileImage: labImage
@@ -295,18 +437,18 @@ export default {
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
       })
-      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+      const updatedAt = dateUpdate.toLocaleString("en-US", {
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       })
-      const createdAt = dateSet.toLocaleString("en-US", { 
+      const createdAt = dateSet.toLocaleString("en-US", {
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       });
       const status = detailOrder.status
-      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId 
+      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
       const order = {
         icon,
         number,
@@ -396,12 +538,12 @@ export default {
 <style lang="sass" scoped>
   .customer-test
     &::v-deep
-      
+
 
   .customer-my-test
     margin: 35px 0 0 0
     width: 100%
-    height: 100% 
+    height: 100%
     background: #FFFFFF
 
 

@@ -17,8 +17,8 @@
                   div.box
                     div.topBody
                       ui-debio-avatar.dataIcon.box(
-                        v-if="!!myTest.lab_info.profile_image"
-                        :src="myTest.lab_info.profile_image"
+                        v-if="!!myTest.labInfo.profileImage"
+                        :src="myTest.labInfo.profileImage"
                         :size="92"
                       )
                       ui-debio-icon.dataIcon.box(
@@ -31,16 +31,16 @@
                         view-box="0 0 47 52"
                       )
                       div.topContentWraper
-                        span {{ myTest.lab_info.name }}
-                        span {{ myTest.lab_info.address }}
+                        span {{ myTest.labInfo.name }}
+                        span {{ myTest.labInfo.address }}
                 div.middleRow
                   div.topHead
                     span Product Details
                   div.box
                     div.topBody
                       ui-debio-avatar.dataIcon.box(
-                        v-if="!!myTest.service_info.image"
-                        :src="myTest.service_info.image"
+                        v-if="!!myTest.serviceInfo.image"
+                        :src="myTest.serviceInfo.image"
                         :size="92"
                       )
                       ui-debio-icon.dataIcon.box(
@@ -53,11 +53,11 @@
                         :view-box="selectedIcon == dnaIcon? '0 0 32 40' : '0 0 55 55'"
                       )
                       div.topContentWraper
-                        span {{ myTest.service_info.name }}
-                        span {{ myTest.service_info.description }}
+                        span {{ myTest.serviceInfo.name }}
+                        span {{ myTest.serviceInfo.description }}
                 div.bottomRow
                   span Specimen Number
-                  span {{ myTest.dna_sample_tracking_id }}
+                  span {{ myTest.dnaSampleTrackingId }}
             v-col
               div.rightSection.box
                 div
@@ -126,8 +126,8 @@
                   ctaTitle="OK"
                 )
                   .content
-                    p {{ myTest.rejected_title || 'Title'}}
-                    p {{ myTest.rejected_description || 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}}
+                    p {{ myTest.rejectedTitle || 'Title'}}
+                    p {{ myTest.rejectedDescription || 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}}
                   .content-detail
                     .border-bottom.ph15
                       p Details:
@@ -137,10 +137,10 @@
                         p {{ myTest.prices[0].value }} {{ myTest.currency.toUpperCase() }}
                       .flex
                         p Quality Control Price
-                        p {{ myTest.additional_prices[0].value }} {{ myTest.currency.toUpperCase() }}
+                        p {{ myTest.additionalPrices[0].value }} {{ myTest.currency.toUpperCase() }}
                     .mt10.ph15.flex
                       p Amount to refund
-                      p {{ myTest.prices[0].value - myTest.additional_prices[0].value }} {{ myTest.currency.toUpperCase() }}
+                      p {{ myTest.prices[0].value - myTest.additionalPrices[0].value }} {{ myTest.currency.toUpperCase() }}
 </template>
 
 <script>
@@ -270,7 +270,7 @@ export default {
     },
 
     iconSwitcher() {
-      switch (this.myTest.service_info.name) {
+      switch (this.myTest.serviceInfo.name) {
       case "Covid-19 Testing":
         this.selectedIcon = virusIcon;
         break;
