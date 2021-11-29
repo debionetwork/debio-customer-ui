@@ -1,7 +1,7 @@
 export default {
   OPEN : "Staked",
   CLAIMED: "Service Available",
-  PROCESS: "Request Test",
+  PROCESSED: "Request Test",
   WAITINGFORUNSTAKED: "Waiting For Unstaked",
   UNSTAKED: "Unstaked"
 }

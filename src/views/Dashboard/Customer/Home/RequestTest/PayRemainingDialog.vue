@@ -22,8 +22,9 @@
                 sm="9"
               )
                 v-text-field(
-                  v-model="amount"
+                  :placeholder="amount"
                   outlined
+                  disabled 
                 )
               
               v-col(
@@ -53,32 +54,47 @@
 
 <script>
 import { mapState } from "vuex"
+import { startApp } from "@/common/lib/metamask"
+import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
+import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
+import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
+import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
+import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
+import localStorage from "@/common/lib/local-storage"
+import CryptoJS from "crypto-js"	
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
 
 export default {
   name: "PayRemainingDialog",
 
   props: {
-    show: Boolean
+    show: Boolean,
+    amount: Number
   },
 
   data: () => ({
-    currencyList: ["DBIO"], 
     currencyType: "DBIO",
     agree: false,
-    amount: 10,
     dialogAlert: false,
     isLoading: false,
     transactionStep: "",
-    agreement: true
+    agreement: true,
+    error: "",
+    password: ""
   }),
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
-      pair: (state) => state.substrate.pair,
+      pair: (state) => state.substrate.wallet,
       country: state => state.lab.country,
       region: state => state.lab.region,
       city: state => state.lab.city,
-      category: state => state.lab.category
+      category: state => state.lab.category,
+      stakingData: (state) => state.lab.stakingData,
+      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
+      selectedService: (state) => state.testRequest.products
+      
     })
   },
   
@@ -88,7 +104,83 @@ export default {
     },
 
     async onSubmit() {
+      this.isLoading = true
+      this.error = ""
+
+      this.ethAccount = await startApp()
+      if (this.ethAccount.currentAccount === "no_install") {
+        this.isLoading = false
+        this.error = "Please install MetaMask!"
+        return
+      }
+
+      // cek kalo udah binding wallet
+      if (!this.metamaskWalletAddress) {
+        this.isLoading = false
+        this.password = ""
+        this.error = "Metamask has no address ETH."
+        return
+      }
+
+      // check ETH Balance
+      const balance = await getBalanceETH(this.metamaskWalletAddress)
+      if (balance <= 0 ) {
+        this.isLoading = false
+        this.password = ""
+        this.error = "ETH balance is 0"
+        return
+      }
+
+      // Seller has no ETH address
+      this.ethSellerAddress = await ethAddressByAccountId(
+        this.api,
+        this.stakingData.lab_address
+      )
+
+      if (this.ethSellerAddress === null) {
+        this.isLoading = false
+        this.password = ""
+        this.error = "The seller has no ETH Address."
+        return
+      }
+
+      const mnemonic = localStorage.getLocalStorageByName("mnemonic_data")
+      const decryptedMnemonic = CryptoJS.AES.decrypt(mnemonic, "cocacola").toString(CryptoJS.enc.Utf8)
+      const identity = await Kilt.Identity.buildFromMnemonic(decryptedMnemonic)
+      const customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
+      const serviceFlow = "StakingRequestService"
+      await createOrder(
+        this.api,
+        this.pair,
+        this.selectedService.serviceId,
+        customerBoxPublicKey,
+        serviceFlow,
+        this.selectedService.indexPrice,
+        this.processService
+      )
       this.$router.push({ name: "customer-request-test-success"})
+    },
+
+    async processService () {
+      this.lastOrder = await lastOrderByCustomer(
+        this.api,
+        this.pair.address
+      )
+      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      const orderId = this.detailOrder.id
+      const dnaSampleTrackingId = this.detailOrder.dnaSampleTrackingId
+      const additional = this.detailOrder.additionalPrices
+
+      await processRequest(
+        this.api,
+        this.pair,
+        this.stakingData.lab_address,
+        this.stakingData.hash,
+        orderId,
+        dnaSampleTrackingId,
+        additional
+      )
+      this.isLoading = false
     }
   }
 }
