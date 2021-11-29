@@ -27,16 +27,14 @@ export default {
 
     async getLabRate({ commit }, address ) {
       const rate = await axios.get(`${baseUrl}/rating/lab/${address}`)
-      console.log("rate ==>", rate)
       commit("SET_LAB_RATE", rate.data)
       return rate.data
     },
 
     async getServiceRate({ commit }, address) {
       const rate = await axios.get(`${baseUrl}/rating/service/${address}`)
-      console.log("service rate", rate)
-      commit("SET_SERVICE_RATE", rate.data.data)
-      return rate.data.data
+      commit("SET_SERVICE_RATE", rate.data)
+      return rate.data
     }
   },
 
