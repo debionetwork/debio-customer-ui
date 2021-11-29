@@ -106,6 +106,7 @@ export default {
           profile_image: labImage
         },
         info: {
+          dna_collection_process: dnaCollectionProcess,
           name: serviceName,
           category: serviceCategory,
           description: serviceDescription,
@@ -157,7 +158,8 @@ export default {
         duration,
         durationType,
         verificationStatus,
-        indexPrice:0
+        indexPrice:0,
+        dnaCollectionProcess
       }
 
       if (service.verificationStatus === "Verified") {
@@ -196,6 +198,7 @@ export default {
             category: serviceCategory,
             description: serviceDescription,
             image: serviceImage,
+            dna_collection_process: dnaCollectionProcess,
             expected_duration: {
               duration,
               duration_type: durationType
@@ -245,7 +248,8 @@ export default {
           duration,
           durationType,
           verificationStatus,
-          indexPrice: 0
+          indexPrice: 0,
+          dnaCollectionProcess
         }
               
         if (service.verificationStatus === "Verified") {

@@ -57,11 +57,12 @@
         color="primary"
       ) Upload EMR
 
-    Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
-    .layout-dashboard__main
-      transition(name="transition-slide-x" mode="out-in")
-        maintenancePageLayout(v-if="pageError" :error="pageError")
-        router-view(v-else @onPageError="handlePageError")
+    .layout-dashboard__wrapper
+      Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
+      .layout-dashboard__main
+        transition(name="transition-slide-x" mode="out-in")
+          maintenancePageLayout(v-if="pageError" :error="pageError")
+          router-view(v-else @onPageError="handlePageError")
 </template>
 
 <script>
@@ -208,26 +209,22 @@ export default {
 
 <style lang="sass" scoped>
   .layout-dashboard
-    width: 100vw
     min-height: 100vh
     background: #F5F7F9
-    display: grid
-    grid-template-rows: 5.688rem calc(100% - 6.563rem) calc(100% - 21.375rem)
-    grid-template-columns: 16.563rem calc(100% - 16.563rem)
-    grid-template-areas: "sidebar navbar" "sidebar main"
+    display: flex
+
+    &__wrapper
+      width: 100%
+      display: flex
+      flex-direction: column
 
     &__navbar
-      padding: 2.5rem 1.25rem !important
-      padding-right: 2.5rem !important
-      grid-area: navbar
+      padding: 2.5rem 1.563rem 0.563rem !important
 
     &__main
-      padding: 1.25rem !important
-      padding-right: 2.5rem !important
-      grid-area: main
+      padding: 1.563rem !important
 
     &__sidebar
-      grid-area: sidebar
 
       Button
        font-weight: 500 !important

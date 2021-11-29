@@ -82,7 +82,8 @@ export default {
       duration: data?.service_info.expected_duration.duration,
       durationType,
       verificationStatus: "Verified",
-      indexPrice: 0
+      indexPrice: 0,
+      dnaCollectionProcess: data?.service_info.dna_collection_process
     }
     this.setProductsToRequest(this.prefillService)
   },
@@ -131,6 +132,7 @@ export default {
     &__main
       padding-bottom: 100px
       width: 100%
+      height: 100%
       display: flex
       flex-direction: column
       align-items: center

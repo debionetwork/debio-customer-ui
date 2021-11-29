@@ -99,5 +99,4 @@ const indexRoutes = [{
     }
   ]
 }]
-  
-export default indexRoutes 
+export default indexRoutes
