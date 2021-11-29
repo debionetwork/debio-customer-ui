@@ -61,7 +61,7 @@
             color="secondary" 
             width="46%"
             height="35"
-            @click="toInstruction"
+            @click="toInstruction(selectedService.dnaCollectionProcess)"
             style="font-size: 10px;"
             outlined 
             ) View Instruction
@@ -121,6 +121,14 @@ import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
+import {
+  COVID_19,
+  DRIED_BLOOD,
+  URINE_COLLECTION,
+  FECAL_COLLECTION,
+  SALIVA_COLLECTION,
+  BUCCAL_COLLECTION
+} from "@/common/constants/instruction-step.js"
 
 export default {
   name: "PaymentDetailCard",
@@ -145,7 +153,13 @@ export default {
     stakingAmount: 0,
     remainingStaking: 0,
     showPayRemainingDialog: false,
-    orderId: 0
+    orderId: 0,
+    COVID_19,
+    DRIED_BLOOD,
+    URINE_COLLECTION,
+    FECAL_COLLECTION,
+    SALIVA_COLLECTION,
+    BUCCAL_COLLECTION
   }),
 
   async mounted () {
@@ -218,8 +232,25 @@ export default {
       this.$emit("onContinue")
     },
 
-    toInstruction () {
-      // TODO : to instruction page
+    toInstruction (dnaCollectionProcess) {
+      if (dnaCollectionProcess === "Covid 19 Saliva Test") {
+        window.open(this.COVID_19, "_blank")
+      }
+      if (dnaCollectionProcess === "Blood Cells - Dried Blood Spot Collection Process") {
+        window.open(this.DRIED_BLOOD, "_blank")
+      }
+      if (dnaCollectionProcess === "Epithelial Cells - Buccal Swab Collection Process") {
+        window.open(this.BUCCAL_COLLECTION, "_blank")
+      }
+      if (dnaCollectionProcess === "Fecal Matters - Stool Collection Process") {
+        window.open(this.FECAL_COLLECTION, "_blank")
+      }
+      if (dnaCollectionProcess === "Saliva - Saliva Collection Process") {
+        window.open(this.SALIVA_COLLECTION, "_blank")
+      }
+      if (dnaCollectionProcess === "Urine - Clean Catch Urine Collection Process") {
+        window.open(this.URINE_COLLECTION, "_blank")
+      }
     },
 
     showCancelConfirmation () {

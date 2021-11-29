@@ -5,6 +5,8 @@ export default {
   props: {
     icon: { type: String, default: null },
     size: { type: [String, Number], default: 40 },
+    width: { type: [String, Number], default: null },
+    height: { type: [String, Number], default: null },
     viewBox: { type: String, default: "0 0 40 40" },
     strokeWidth: { type: [String, Number], default: "2" },
     color: { type: String, default: "#C400A5" },
@@ -37,8 +39,8 @@ export default {
 <template lang="pug">
   .ui-debio-icon
     svg(
-      :width="size"
-      :height="size"
+      :width="width ? width : size"
+      :height="height ? height : size"
       v-html="icon"
       xmlns="http://www.w3.org/2000/svg"
       :viewBox="viewBox"

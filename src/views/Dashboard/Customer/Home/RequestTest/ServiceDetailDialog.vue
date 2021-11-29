@@ -48,8 +48,8 @@
               :key="i")
               v-icon(style="font-size: 10px;" color="primary") mdi-star-outline 
 
-            div 
-              span( class="ml-2" style="font-size: 10px;" ) ({{ selectedService.countRateLab }})
+            div.ml-2
+              span(style="font-size: 10px;" ) ({{ selectedService.countRateLab }})
 
       .dialog-service__button
         Button(
