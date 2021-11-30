@@ -1,56 +1,55 @@
 <template lang="pug">
-  .customer-staking-tab
-    .customer-staking-tab__table
-      DataTable(
-        :headers="headers"
-        :items="items"
-      )
-        template(v-slot:[`item.country`]="{ item }")
-          div {{ item.country }}
+  div
+    DataTable(
+      :headers="headers"
+      :items="items"
+    )
+      template(v-slot:[`item.country`]="{ item }")
+        div {{ item.request.country }}
 
-        template(v-slot:[`item.city`]="{ item }")
-          div {{ item.city }}
+      template(v-slot:[`item.city`]="{ item }")
+        div {{ item.request.city }}
 
-        template(v-slot:[`item.category`]="{ item }")
-          div {{ item.serviceCategory }}
+      template(v-slot:[`item.category`]="{ item }")
+        div {{ item.request.service_category }}
 
-        template(v-slot:[`item.stakingDate`]="{ item }")
-          span 11/11/2021
+      template(v-slot:[`item.stakingDate`]="{ item }")
+        span {{ new Date(parseInt(item.request.created_at)).toLocaleDateString() }}
 
-        template(v-slot:[`item.stakeStatus`]="{ item }")
-          span(:style="setButtonBackground(item.status)") {{ getStatusName(item.status) }} 
+      template(v-slot:[`item.stakeStatus`]="{ item }")
+        span(:style="setButtonBackground(item.request.status)") {{ getStatusName(item.request.status) }} 
 
-        template(v-slot:[`item.amount`]="{ item }")
-          span(:style="setButtonBackground(item.status)") {{ setAmount(item.stakingAmount) }}
+      template(v-slot:[`item.amount`]="{ item }")
+        span(:style="setButtonBackground(item.request.status)") {{ setAmount(item.request.staking_amount) }}
 
-        template(v-slot:[`item.actions`]="{ item }")
-          .customer-staking-tab__actions(v-if="item.status !== 'WaitingForUnstaked'" )
-            Button.pa-4(
-              height="25px"
-              width="100px"
-              style="font-size: 1em"
-              color="primary"
-              @click="getUnstakingDialog(item.hash_)"
-              :disabled="item.status === 'Unstaked' || item.status === 'Process'"
-            ) Unstake
+      template(v-slot:[`item.actions`]="{ item }")
+        .customer-staking-tab__actions(v-if="item.request.status !== 'WaitingForUnstaked'" )
+          Button.pa-4(
+            height="25px"
+            width="100px"
+            style="font-size: 1em"
+            color="primary"
+            @click="getUnstakingDialog(item.request.hash)"
+            :disabled="item.request.status === 'Unstaked' || item.request.status === 'Processed'"
+          ) Unstake
 
-            Button.pa-4(
-              v-if="item.status === 'Open' || item.status === 'Claimed'" 
-              height="25px"
-              style="font-size: 1em"
-              width="100px"
-              color="secondary"
-              @click="toRequestTest(item)"
-              :disabled="item.status === 'Open'"
-            ) Proceed
+          Button.pa-4(
+            v-if="item.request.status === 'Open' || item.request.status === 'Claimed'" 
+            height="25px"
+            style="font-size: 1em"
+            width="100px"
+            color="secondary"
+            @click="toRequestTest(item)"
+            :disabled="item.request.status === 'Open'"
+          ) Proceed
 
-          .customer-staking-tab__actions(v-else)
-            Button.pa-4(
-              style="font-size: 1em"
-              height="25px"
-              width="100px"
-              color="#F5F5F5"
-            ) {{ setRemainingStakingDate(item.unstakedAt) }}
+        .customer-staking-tab__actions(v-else)
+          Button.pa-4(
+            style="font-size: 1em"
+            height="25px"
+            width="100px"
+            color="#F5F5F5"
+              ) {{ setRemainingStakingDate(item.request.unstaked_at) }}
     
     ConfirmationDialog(
       :show="showDialog"
@@ -68,7 +67,6 @@ import { mapState, mapMutations } from "vuex"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import stakingStatus from "@/common/constants/staking-status"
-import dataStaking from "./stakingData.json"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { getServiceRequestByCustomer } from "@/common/lib/service-request"
@@ -150,13 +148,8 @@ export default {
     }),
 
     async fetchData () {
-      this.items = dataStaking.data // TO REMOVE when the indexer is working
-      await getServiceRequestByCustomer(this.pair.address)
-      
-    },
-
-    async getServiceRequest() {
-      // TODO : get service request
+      const { data } = await getServiceRequestByCustomer(this.pair.address)
+      this.items = data
     },
 
     setAmount(amount) {
@@ -165,37 +158,30 @@ export default {
     },
 
     setRemainingStakingDate(date) {
-      let day = new Date(parseInt(date)).getDate() + 6 - new Date().getDate()
-      let hours = new Date(parseInt(date)).getHours() + 23 - new Date().getHours()
-      let minutes = new Date(parseInt(date)).getMinutes() + 59 - new Date().getMinutes()
+      const formatedDate = new Date(parseInt(date.replace(/,/g, "")))
+      const dueDate = formatedDate.setDate(formatedDate.getDate() + 7)
+      const now = new Date().getTime()
+      const distance = dueDate - now
 
-      if (minutes > 60 ) {
-        hours-=1
-        minutes-=60
-      }
+      let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 
-      return `${day}D:${hours}H:${minutes}M`      
+      return `${days}D:${hours}H:${minutes}M`      
     },
 
-    async toRequestTest() {
-      this.setStakingService(this.service)
-      this.$router.push({ 
-        name: "customer-request-test-service",
-        params: { flag: "staking" }
-      })
-
-      const country = this.service.country
-      const region = this.service.state
-      const city = this.service.city
-      const category = this.service.category
-      const flow = "StakingRequestService"
-
+    async toRequestTest(service) {
+      const request = service.request
+      const country = request.country
+      const region = request.region
+      const city = request.city
+      const category = request.service_category
+      const status = "StakingRequestService"
+      this.setStakingService(request)
       this.setCategory(category)
-
       await this.$store.dispatch("lab/setCountryRegionCity", {country, region, city})
-      await this.$store.dispatch("lab/getServicesByCategory", {category, flow})
-      await this.$store.dispatch("rating/getRate")
-
+      await this.$store.dispatch("lab/getServicesByCategory", {category, status})
+      
       this.$router.push({ name: "customer-request-test-service"})
     },
 
@@ -208,7 +194,7 @@ export default {
       const colors = Object.freeze({
         "OPEN": "#F60689",
         "CLAIMED": "#5640A5",
-        "PROCESS": "#4CBB65",
+        "PROCESSED": "#4CBB65",
         "WAITINGFORUNSTAKED": "#FAAD15",
         "UNSTAKED": "#E32319"
       })

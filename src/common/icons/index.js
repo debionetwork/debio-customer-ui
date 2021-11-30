@@ -39,6 +39,7 @@ import gridIcon from "./grid"
 import boxIcon from "./box"
 import databaseIcon from "./database"
 import phoneIcon from "./phone"
+import bookIcon from "./book";
 import doctorDashboardIllustrator from "./doctorDashboardIllustrator"
 import constructIllustration from "./constructIllustration"
 import microscopeIcon from "./microscope"
@@ -101,6 +102,7 @@ export {
   boxIcon,
   databaseIcon,
   phoneIcon,
+  bookIcon,
   doctorDashboardIllustrator,
   constructIllustration,
   microscopeIcon,

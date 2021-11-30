@@ -9,7 +9,7 @@
         :items="countries"
         item-text="name"
         item-value="iso2"
-        placeholder="Select country"
+        placeholder="Select Country"
         @change="onCountryChange"
         autocomplete="off"
         outlined)
