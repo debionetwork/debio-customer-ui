@@ -217,7 +217,7 @@ export default {
   methods: {
 
     toEtherscan () {
-      window.open(`https://rinkeby.etherscan.io/address/${this.metamaskWalletAddress}`, "_blank")
+      window.open(`https://rinkeby.etherscan.io/tx/${this.$route.params.hash}`, "_blank")
     },
 
     onSubmit () {

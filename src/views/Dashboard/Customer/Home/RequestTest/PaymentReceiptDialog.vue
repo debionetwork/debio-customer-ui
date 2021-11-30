@@ -135,7 +135,8 @@ export default {
     lastOrder: null,
     detailOrder: null,
     status: "",
-    orderId: ""
+    orderId: "",
+    txHash: ""
   }),
 
   computed: {
@@ -158,7 +159,12 @@ export default {
         if (this.lastEventData.method === "OrderPaid") {
           this.isLoading = false
           this.password = ""
-          this.$router.push({ name: "customer-request-test-success"}) 
+          this.$router.push({ 
+            name: "customer-request-test-success",
+            params: {
+              hash: this.txHash
+            }
+          })
         }
       }      
     }
@@ -280,8 +286,8 @@ export default {
         await getTransactionReceiptMined(txHash)
       }
 
-      const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
-      await getTransactionReceiptMined(txHash)
+      this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
+      await getTransactionReceiptMined(this.txHash)
     },
 
     formatPrice(price) {
