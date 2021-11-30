@@ -164,16 +164,17 @@
 
         div.footerDrawer
           a(
-              href="https://docs.debio.network/getting-started/how-to-install-metamask"
+              href="https://docs.debio.network/"
               target="_blank"
               style="text-decoration: none"
           )
             div
               ui-debio-icon.btnDrawerIcon(
-                :icon="phoneIcon"
+                :icon="bookIcon"
                 size="16"
                 stroke
                 :color="'#757274'"
+                viewBox="0 0 18 18"
               )
               span Customer Care
 </template>
@@ -181,7 +182,7 @@
 <script>
 
 import Button from "@/common/components/Button"
-import { phoneIcon } from "@/common/icons"
+import { bookIcon } from "@/common/icons"
 
 export default {
   name: "NavigationDrawer",
@@ -194,7 +195,7 @@ export default {
   },
 
   data: () => ({
-    phoneIcon
+    bookIcon
   }),
 
   methods: {

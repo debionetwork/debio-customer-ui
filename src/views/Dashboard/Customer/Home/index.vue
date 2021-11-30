@@ -39,7 +39,7 @@
               v-row
                 span.topHead Recent Payments
               v-row
-                span.botomHead {{ titleWording }}
+                span.botomHead {{ titlePaymentWording }}
             v-col(cols="3")
               Button.btnHead(
                 :width="'75px'"
@@ -90,9 +90,9 @@
           v-row
             v-col(cols="9")
               v-row
-                span.topHead Recent Test
+                span.topHead Recent Tests
               v-row
-                span.botomHead {{ titleWording }}
+                span.botomHead {{ titleTestWording }}
             v-col(cols="3")
               Button.btnHead(
                 width="75px"
@@ -105,7 +105,7 @@
         div
           DataTable.content(
             :headers="headers"
-            :items="orderHistory"
+            :items="testResult"
             :sortBy="['timestamp']"
             :disableSort="true"
             :showFooter="false"
@@ -147,13 +147,21 @@ import {
 } from "@/common/lib/polkadot-provider/query/orders"
 import {
   queryDnaTestResultsByOwner,
-  queryDnaTestResults
+  queryDnaTestResults,
+  queryDnaSamples
 } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
 import { mapState } from "vuex"
-import { SUCCESS } from "@/common/constants/specimen-status";
+import {
+  REGISTERED,
+  REJECTED,
+  ARRIVED,
+  QUALITY_CONTROLLED,
+  WET_WORK,
+  RESULT_READY
+} from "@/common/constants/specimen-status";
 
 export default {
   name: "CustomerHome",
@@ -166,9 +174,9 @@ export default {
     labIllustration,
     eyeIcon,
     cardBlock: false,
-    orderHistory: [],
-    testHistory: [],
-    titleWording: "",
+    testResult: [],
+    titlePaymentWording: "",
+    titleTestWording: "",
     doctorDashboardIllustrator,
     paymentHistory: [],
     isLoadingTestResults: false,
@@ -195,18 +203,21 @@ export default {
   },
 
   async created() {
-    await this.getTestHistoryData()
-    await this.checkOrderLenght()
-    await this.getDataOrderHistory()
+    await this.getTestResultsData()
+    await this.getDataPaymentHistory()
+
+    await this.checkPaymentLength()
+    await this.checkTestLength()
   },
 
   methods: {
-    async getTestHistoryData() {
+    async getTestResultsData() {
       this.isLoadingTestResults = true;
       try {
-        this.testHistory = [];
+        this.testResult = [];
         let maxResults = 5;
-        const address = this.wallet.address
+        const address = this.wallet.address // use this for actual data
+
         // Get specimens
         const specimens = await queryDnaTestResultsByOwner(this.api, address)
         if (specimens != null) {
@@ -215,24 +226,13 @@ export default {
             maxResults = specimens.length;
           }
           for (let i = 0; i < maxResults; i++) {
-            const dnaTestResults = await queryDnaTestResults(
-              this.api,
-              specimens[i]
-            );
+            const dnaTestResults = await queryDnaTestResults(this.api, specimens[i])
             if (dnaTestResults != null) {
-              const detaillab = await queryLabsById(
-                this.api,
-                dnaTestResults.labId
-              );
-              const detailOrder = await getOrdersData(
-                this.api,
-                dnaTestResults.orderId
-              );
-              const detailService = await queryServicesById(
-                this.api,
-                detailOrder.serviceId
-              );
-              this.preparePaymentHistory(dnaTestResults, detaillab, detailService); //this should prepare test history
+              const dnaSample = await queryDnaSamples(this.api, dnaTestResults.trackingId)
+              const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
+              const detailOrder = await getOrdersData(this.api, dnaTestResults.orderId)
+              const detailService = await queryServicesById(this.api, detailOrder.serviceId)
+              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample); //this should prepare test history
             }
           }
         }
@@ -243,11 +243,14 @@ export default {
       }
     },
 
-    async getDataOrderHistory() {
+    async getDataPaymentHistory() {
       try {
         const address = this.wallet.address
         let maxResults = 5;
-        const listOrderId = await ordersByCustomer(this.api, address)
+        let listOrderId = await ordersByCustomer(this.api, address)
+        if (listOrderId != null) {
+          listOrderId = listOrderId.reverse()
+        }
         if (listOrderId.length < maxResults) {
           maxResults = listOrderId.length
         }
@@ -255,22 +258,23 @@ export default {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
           const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
           const detailService = await queryServicesById(this.api, detailOrder.serviceId);
-          this.prepareOrderData(detailOrder, detaillab, detailService)
+          
+          this.preparePaymentData(detailOrder, detaillab, detailService)
         }
 
-        this.orderHistory.sort(
+        this.paymentHistory.sort(
           (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
         )
   
         const status = localStorage.getLocalStorageByName("lastOrderStatus")
-        if (status) this.orderHistory[0].status = status
+        if (status) this.paymentHistory[0].status = status
         
       } catch (error) {
         console.log(error)
       }
     },
 
-    prepareOrderData(detailOrder, detaillab, detailService) {
+    preparePaymentData(detailOrder, detaillab, detailService) {
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -333,7 +337,8 @@ export default {
         month: "long" // numeric, 2-digit, long, short, narrow
       });
       const status = detailOrder.status
-      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId 
+      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
+
       const order = {
         icon,
         number,
@@ -348,11 +353,14 @@ export default {
         updatedAt,
         createdAt
       }
-
-      this.orderHistory.push(order)
+      this.paymentHistory.push(order)
     },
 
-    preparePaymentHistory(dnaTestResults, detaillab, detailService) {
+    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample) {
+      const feedback = {
+        rejectedTitle: dnaSample.rejectedTitle,
+        rejectedDescription: dnaSample.rejectedDescription
+      }
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -412,12 +420,12 @@ export default {
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       })
-      const number = dnaTestResults.trackingId;
-      const status = SUCCESS;
-
-      const order = {
+      const dnaSampleTrackingId = dnaTestResults.trackingId
+      const status = this.checkSatus(dnaSample.status)
+      
+      const result = {
         icon,
-        number,
+        dnaSampleTrackingId,
         timestamp,
         status,
         orderDate,
@@ -427,10 +435,10 @@ export default {
         labInfo,
         createdAt,
         updatedAt,
-        labName
-      };
-
-      this.testHistory.push(order);
+        labName,
+        feedback
+      }
+      this.testResult.push(result)
     },
 
     goToMyTest() {
@@ -449,12 +457,29 @@ export default {
       this.$router.push({ name: "customer-payment-details", params: item }) //go to payment detail
     },
 
-    async checkOrderLenght() {
-      if (!this.orderHistory.length) {
-        this.titleWording = "You haven’t made any order."
+    async checkPaymentLength() {
+      if (!this.paymentHistory.length) {
+        this.titlePaymentWording = "You dont have made any order."
         return
       }
-      this.titleWording = "Quick Actions to view your recent orders"
+      this.titlePaymentWording = "Your recent payments"
+    },
+
+    async checkTestLength() {
+      if (!this.testResult.length) {
+        this.titleTestWording = "You dont have any test result."
+        return
+      }
+      this.titleTestWording = "Your recent test"
+    },
+
+    checkSatus(status) {
+      if (status == "Registered") return REGISTERED
+      if (status == "Arrived") return ARRIVED
+      if (status == "Rejected") return REJECTED
+      if (status == "QualityControlled") return QUALITY_CONTROLLED
+      if (status == "WetWork") return WET_WORK
+      if (status == "ResultReady") return RESULT_READY
     }
   },
 
