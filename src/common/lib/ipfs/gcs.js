@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export async function getSignedUrl(fileName, action = 'read') {
-  const { data: signedUrl } = await axios.get(`${process.env.VUE_APP_BACKEND_API}gcs/signed-url`, {
+  const { data: { signedUrl } } = await axios.get(`${process.env.VUE_APP_BACKEND_API}gcs/signed-url`, {
     params: {
       filename: fileName,
       action: action

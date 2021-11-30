@@ -64,7 +64,7 @@ export async function syncDecryptedFromIPFS(path, pair, fileName, type) {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         }
-      },
+      }
     )
   }
 }

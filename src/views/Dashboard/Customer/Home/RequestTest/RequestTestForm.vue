@@ -113,7 +113,7 @@ export default {
     }),
 
     async getServiceCategory() {
-      const { data : data } = await getCategories()
+      const data = await getCategories()
       this.categories = data
     },
       

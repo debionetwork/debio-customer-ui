@@ -121,6 +121,7 @@ import localStorage from "@/common/lib/local-storage"
 import { u8aToHex } from "@polkadot/util"
 import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { createSyncEvent } from "@/common/lib/ipfs/gcs"
+import { getCategories } from "@/common/lib/categories"
 import {
   ordersByCustomer,
   getOrdersData
@@ -242,11 +243,15 @@ export default {
           role: "customer"
         })
       }
+    },
+
+    mnemonicData(val) {
+      if (val) this.initialData()
     }
   },
 
   async created() {
-    await this.initialData()
+    if (this.mnemonicData) await this.initialData()
   },
 
   async mounted() {
@@ -429,8 +434,7 @@ export default {
     },
 
     async handleSelectedBounty(val) {
-      console.log("handleSelectedBounty ===> ", val);
-      this.selectedBounty = val.detailsProcess
+      this.selectedBounty = { ...val.detailsProcess, ...val }
       this.isShowModalBounty = true
     },
 
@@ -459,9 +463,14 @@ export default {
           "text/vCard"
         )
 
+        const serviceCategories = await getCategories()
+        const service = serviceCategories.find(
+          service => service.name === this.selectedBounty.serviceInfo.category
+        )
+
         await createSyncEvent({
-          orderId: 2,
-          serviceCategoryId: 5,
+          orderId: this.selectedBounty?.orderId,
+          serviceCategoryId: service.id,
           fileName: `${this.selectedBounty?.trackingId}.vcf`
         })
 
