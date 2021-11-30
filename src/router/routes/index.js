@@ -2,13 +2,20 @@ import { checkIsLoggedIn } from "@/common/lib/route-guard"
 
 const indexRoutes = [{
   path: "/",
+  name: "dashboard",
+  beforeEnter: checkIsLoggedIn,
+  redirect: { name: "customer-dashboard" },
+  component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout")
+},
+{
+  path: "/customer",
   component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout"),
   beforeEnter: checkIsLoggedIn,
   name: "customer",
   redirect: { name: "customer-dashboard" },
   children: [
     {
-      path: "/customer",
+      path: "/",
       name: "customer-dashboard",
       meta: { pageHeader: "Home" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home")
