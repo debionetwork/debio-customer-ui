@@ -429,6 +429,7 @@ export default {
     },
 
     async handleSelectedBounty(val) {
+      console.log("handleSelectedBounty ===> ", val);
       this.selectedBounty = val.detailsProcess
       this.isShowModalBounty = true
     },
@@ -458,7 +459,11 @@ export default {
           "text/vCard"
         )
 
-        await createSyncEvent(`${this.selectedBounty?.trackingId}.vcf`)
+        await createSyncEvent({
+          orderId: 2,
+          serviceCategoryId: 5,
+          fileName: `${this.selectedBounty?.trackingId}.vcf`
+        })
 
         this.selectedBounty = null
         this.isSuccessBounty = true
