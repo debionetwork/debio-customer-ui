@@ -22,6 +22,7 @@
             | {{ formatPrice((dataService.detailPrice.additional_prices[0].value).replace(/,/g, "")) }} 
             | {{ dataService.currency.toUpperCase() }}
 
+      span(class="d-flex justify-end me-3" style="font-size: 12px") +
       hr(class="ml-3 me-3 mb-2")
 
       div(class="ml-5 text-start me-10")
@@ -37,6 +38,7 @@
           div( style=" font-size: 12px;" ) Staking Amount
           div( style="font-size: 12px;" ) {{ stakingAmount }} {{ selectedService.currency.toUpperCase()}}
       
+      span(class="d-flex justify-end me-3" style="font-size: 12px" v-if="stakingFlow") -
       hr(class="ml-3 me-3 mb-1" v-if="stakingFlow")
 
       div(class="ml-5 text-start me-10 mb-5" v-if="stakingFlow")
@@ -101,7 +103,7 @@
       CancelDialog(
         :show="cancelDialog"
         :orderId="orderId"
-        @cancel="isCancelled = true"
+        @cancel="setCancelled"
         @close="cancelDialog = false"
       )
       
@@ -264,6 +266,11 @@ export default {
 
     formatPrice (price) {
       return this.web3.utils.fromWei(String(price), "ether")
+    },
+
+    setCancelled() {
+      this.isCancelled = true
+      this.$emit("cancel")
     }
   }
 }

@@ -12,7 +12,7 @@
             b.mt-5.pa-5 Do you want to cancel ?
           
           .dialog-cancel__message
-            p.mt-5(class="text-h6" ) By clicking cancel, your request test process will be cancelled
+            p.mt-5.pl-12.pr-12(class="text-h6" ) Your request test process will be cancelled
 
           div(class="d-flex justify-space-between align-center pa-10")
             Button(
