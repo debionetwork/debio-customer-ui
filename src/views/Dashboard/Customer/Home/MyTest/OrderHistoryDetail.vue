@@ -113,7 +113,7 @@
                     color="secondary"
                     large
                     width="100%"
-                    :disabled="myTest.status !== `ResultReady`"
+                    :disabled="myTest.status !== `Result Ready`"
                   ) View Result
 
                 ui-debio-modal(
@@ -134,13 +134,13 @@
                     .border-bottom.mt10.ph15
                       .flex
                         p Service Price
-                        p {{ myTest.prices[0].value }} {{ myTest.currency.toUpperCase() }}
+                        p {{ myTest.serviceInfo.pricesByCurrency[0].priceComponents[0].value }} {{ myTest.serviceInfo.pricesByCurrency[0].currency.toUpperCase() }}
                       .flex
                         p Quality Control Price
-                        p {{ myTest.additionalPrices[0].value }} {{ myTest.currency.toUpperCase() }}
+                        p {{ myTest.serviceInfo.pricesByCurrency[0].additionalPrices[0].value }} {{ myTest.serviceInfo.pricesByCurrency[0].currency.toUpperCase() }}
                     .mt10.ph15.flex
                       p Amount to refund
-                      p {{ myTest.prices[0].value - myTest.additionalPrices[0].value }} {{ myTest.currency.toUpperCase() }}
+                      p {{ myTest.serviceInfo.pricesByCurrency[0].priceComponents[0].value - myTest.serviceInfo.pricesByCurrency[0].additionalPrices[0].value }} {{ myTest.serviceInfo.pricesByCurrency[0].currency.toUpperCase() }}
 </template>
 
 <script>
@@ -200,53 +200,54 @@ export default {
         detail:
           "Your request has been registered. You may send your sample to selected lab.",
         size: 185,
-        viewBox: "0 0 182 135"
+        viewBox: "-10 -13 182 182"
       },
       {
         status: "Received",
         name: "Received",
         detail: "Your chosen lab has received and confirmed your specimen. The lab will soon process your order.",
         size: 300,
-        viewBox: "-20 0 300 135"
+        viewBox: "-18 -20 295 295"
       },
       {
         status: "QualityControlled",
         name: "Quality Control",
         detail: "Your specimen is now being examined by the lab to see if it is sufficient enough to be analyzed in the next phase. The lab will perform several procedures such as examine the visual of your specimen, do extraction and amplification of your DNA.",
         size: 295,
-        viewBox: "-20 0 300 125"
+        viewBox: "-18 -15 275 275"
       },
       {
         status: "WetWork",
         name: "Wet Work",
         detail: "The lab is now analyzing your specimen.",
         size: 295,
-        viewBox: "-20 0 300 150"
+        viewBox: "-15 -5 285 285"
       },
       {
         status: "ResultReady",
         name: "Result Ready",
         detail: "Thank you for your patience. Your order has been fulfilled. You can click on this button below to see your result.",
         size: 295,
-        viewBox: "-20 0 300 150"
+        viewBox: "-5 -5 295 295"
       },
       {
         status: "Rejected",
         name: "Quality Control",
         detail: `Your sample has failed quality control. Your service fee of XX DAI will be refunded to your account.`,
         size: 295,
-        viewBox: "-20 0 300 125"
+        viewBox: "-15 -5 260 260"
       }
     ]
   }),
   mounted() {
-    this.myTest = this.$route.params;
-    this.checkOrderDetail();
+    this.myTest = this.$route.params
+    console.log(this.myTest, "<==== my test")
+    this.checkOrderDetail()
     this.iconSwitcher()
   },
   computed: {
     setDetail() {
-      const detail = `Your sample has failed quality control. Your service fee of ${this.myTest.prices[0].value - this.myTest.additional_prices[0].value} DAI will be refunded to your account.`
+      const detail = `Your sample has failed quality control. Your service fee of ${this.myTest.serviceInfo.pricesByCurrency[0].priceComponents[0].value - this.myTest.serviceInfo.pricesByCurrency[0].additionalPrices[0].value} ${this.myTest.serviceInfo.pricesByCurrency[0].currency} will be refunded to your account.`
       if (this.status.status === "Rejected") return detail
       return this.status.detail
     }
@@ -257,7 +258,7 @@ export default {
     },
   
     toViewResult() {
-      this.$router.push({ name: "test-result", params: {idOrder: this.myTest.id}})
+      this.$router.push({ name: "test-result", params: {idOrder: this.myTest.orderId}})
     },
 
     isRejected(border) {
@@ -270,6 +271,8 @@ export default {
     },
 
     iconSwitcher() {
+      console.log("masuk icon switcher")
+      console.log(this.myTest.serviceInfo.name, "service info name")
       switch (this.myTest.serviceInfo.name) {
       case "Covid-19 Testing":
         this.selectedIcon = virusIcon;
@@ -304,7 +307,7 @@ export default {
         this.banner = receivedBanner;
         this.e1 = 3
         break;
-      case "QualityControlled":
+      case "Quality Controlled":
         this.status = this.orderDetail[2]
         this.banner = qualityControlBanner;
         this.e1 = 4
@@ -314,7 +317,7 @@ export default {
         this.banner = wetworkBanner;
         this.e1 = 5
         break;
-      case "ResultReady":
+      case "Result Ready":
         this.status = this.orderDetail[4]
         this.banner = resultReadyBanner;
         this.e1 = 6
@@ -331,11 +334,11 @@ export default {
         break;
       }
     }
-  },
-  beforeMount() {
-    if (!Object.keys(this.$route.params).length)
-      this.$router.push({ name: "my-test" });
   }
+  // beforeMount() {
+  //   if (!Object.keys(this.$route.params).length)
+  //     this.$router.push({ name: "my-test" });
+  // } //temporary disable
 };
 </script>
 

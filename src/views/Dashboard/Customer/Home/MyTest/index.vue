@@ -235,7 +235,7 @@ export default {
               const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
               const detailOrder = await getOrdersData(this.api, dnaTestResults.orderId)
               const detailService = await queryServicesById(this.api, detailOrder.serviceId)
-              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample)
+              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder)
             }
           }
         }
@@ -246,11 +246,14 @@ export default {
       }
     },
 
-    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample) {
+    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder) {
+      console.log(detailOrder, "detail order =========")
       const feedback = {
         rejectedTitle: dnaSample.rejectedTitle,
         rejectedDescription: dnaSample.rejectedDescription
       }
+
+      const orderId = detailOrder.id
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -314,6 +317,7 @@ export default {
       const status = this.checkSatus(dnaSample.status)
       
       const result = {
+        orderId,
         icon,
         dnaSampleTrackingId,
         timestamp,

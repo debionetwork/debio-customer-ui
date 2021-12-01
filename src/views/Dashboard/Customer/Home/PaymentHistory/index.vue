@@ -123,8 +123,12 @@ export default {
     },
 
     handleDetails(item) {
-      const { id } = item
-
+      let id = ""
+      if (item.id) {
+        id = item.id
+      } else {
+        id = item.orderId
+      }
       if (item.status === "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: { id } })
       else this.$router.push({ name: "customer-payment-details", params: { id } })
     }

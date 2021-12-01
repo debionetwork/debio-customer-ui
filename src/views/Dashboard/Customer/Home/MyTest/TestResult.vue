@@ -176,7 +176,11 @@ export default {
   async mounted() {
     this.resultLoading = true;
     this.idOrder = this.$route.params.idOrder;
+    console.log(this.idOrder, "id order")
     this.privateKey = hexToU8a(this.mnemonicData.privateKey);
+    console.log(this.mnemonicData, "mnemonic data");
+    console.log(this.mnemonicData.privateKey);
+    console.log(this.privateKey, "private key")
     this.ownerAddress = this.wallet.address;
     await this.getRatingTestResult();
     await this.getTestResult();
@@ -189,6 +193,7 @@ export default {
     async getRatingTestResult() {
       try {
         const data = await getRatingByOrderId(this.idOrder);
+        console.log(data, "data di test result")
         this.ratingTestResult = data.rating;
         this.ratingTitle = `Rating ${this.ratingTestResult},0`;
         this.ratingSubTitle = data.review;
