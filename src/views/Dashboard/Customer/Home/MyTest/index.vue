@@ -194,7 +194,6 @@ export default {
 
   async mounted() {
     await this.getTestResultData()
-    console.log(this.testResult, "<= test result")
   },
 
   methods: {
@@ -221,15 +220,12 @@ export default {
       this.isLoadingTestResults = true
       try {
         this.testResult = []
-        const dummyAddress = "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU"
-        // const address = this.wallet.address,
-        const speciment = await queryDnaTestResultsByOwner(this.api, dummyAddress)
-        console.log(speciment, "<=== speciment sebelum reverse")
+        const address = this.wallet.address
+        const speciment = await queryDnaTestResultsByOwner(this.api, address)
         if (speciment != null) {
           speciment.reverse()
           for (let i = 0; i < speciment.length; i++) {
             const dnaTestResults = await queryDnaTestResults(this.api, speciment[i])
-            console.log(dnaTestResults, "<== dna test result")
             if (dnaTestResults != null) {
               const dnaSample = await queryDnaSamples(this.api, dnaTestResults.trackingId)
               const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
@@ -247,7 +243,6 @@ export default {
     },
 
     prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder) {
-      console.log(detailOrder, "detail order =========")
       const feedback = {
         rejectedTitle: dnaSample.rejectedTitle,
         rejectedDescription: dnaSample.rejectedDescription

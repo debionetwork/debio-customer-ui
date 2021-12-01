@@ -241,7 +241,6 @@ export default {
   }),
   mounted() {
     this.myTest = this.$route.params
-    console.log(this.myTest, "<==== my test")
     this.checkOrderDetail()
     this.iconSwitcher()
   },
@@ -271,8 +270,6 @@ export default {
     },
 
     iconSwitcher() {
-      console.log("masuk icon switcher")
-      console.log(this.myTest.serviceInfo.name, "service info name")
       switch (this.myTest.serviceInfo.name) {
       case "Covid-19 Testing":
         this.selectedIcon = virusIcon;
