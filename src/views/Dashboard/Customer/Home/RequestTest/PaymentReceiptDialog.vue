@@ -83,11 +83,6 @@
           height="38"
           @click="onSubmit"
         ) Pay
-
-  
-            
-      
-
 </template>
 
 <script>
@@ -105,6 +100,7 @@ import localStorage from "@/common/lib/local-storage"
 import CryptoJS from "crypto-js"	
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
+import { errorHandler } from "@/common/lib/error-handler"
 
 
 
@@ -171,6 +167,7 @@ export default {
   },
 
   async mounted () {
+
     if (this.lastEventData) {
       if (this.lastEventData.method === "OrderCreated") {
         this.dataEvent = JSON.parse(this.lastEventData.data.toString())[0]
@@ -260,10 +257,9 @@ export default {
           this.payOrder()
         }
       } catch (err) {
-        console.log(err)
         this.isLoading = false
         this.password = ""
-        this.error = err
+        this.error = await errorHandler(err.message)
       } 
     },
 
