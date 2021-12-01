@@ -78,7 +78,19 @@
                   span(:style="{color: setStatusColor(item.status)}") {{ item.status }}
           v-tab-item
             .customer-my-test__table
-            StakingServiceTab
+            StakingServiceTab(
+              @unstake="showDialog = true"
+            )
+            ConfirmationDialog(
+              :show="showDialog"
+              :loading="isLoading"
+              title="Are you sure you want to unstake?"
+              message="If you wish to proceed, you won't be able to continue the request service process and no DBIO reward will be given. Your staking amount will be returned after 144 hours or 6 days"
+              @click="unstakeService"
+              this.isLoding = true
+              @close="showDialog=false"
+            )
+            
 
       modalBounty(
         :show="isBounty"
@@ -115,6 +127,10 @@ import {
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
 import dataTesting from "./dataTesting.json"
+import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
+import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
+
+
 
 export default {
   name: "MyTest",
@@ -123,7 +139,8 @@ export default {
     StakingServiceTab,
     DataTable,
     Button,
-    modalBounty
+    modalBounty,
+    ConfirmationDialog
   },
 
   data: () => ({ 
@@ -137,6 +154,7 @@ export default {
     isLoading: false,
     orderHistory: [],
     btnLabel: "",
+    showDialog: false,
     headers: [
       { text: "Service Name", value: "serviceInfo.name", sortable: true },
       { text: "Lab Name", value: "labInfo.name", sortable: true },
@@ -158,7 +176,8 @@ export default {
     SALIVA_COLLECTION,
     BUCCAL_COLLECTION,
     medicalResearchIllustration,
-    isLoadingOrderHistory: false
+    isLoadingOrderHistory: false,
+    isLoding: false
   }),
 
   async mounted() {
@@ -342,6 +361,17 @@ export default {
 
     cancelBounty() {
       this.isBounty = false
+    },
+
+    async unstakeService () {
+      this.isLoading = true
+      const requestId = this.stakingId
+      await unstakeRequest(this.api, this.wallet, requestId)
+      this.isLoading = false
+      this.showDialog = false
+      this.$router.push({
+        name: "customer-dashboard"
+      })
     }
   },
 
@@ -350,7 +380,8 @@ export default {
       walletBalance: (state) => state.substrate.walletBalance,
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
-      lastEventData: (state) => state.substrate.lastEventData
+      lastEventData: (state) => state.substrate.lastEventData,
+      stakingId: (state) => state.lab.stakingId
     }),
 
     userAddress() {

@@ -1,63 +1,54 @@
 <template lang="pug">
-  div
-    DataTable(
-      :headers="headers"
-      :items="items"
-    )
-      template(v-slot:[`item.country`]="{ item }")
-        div {{ item.request.country }}
+  DataTable(
+    :headers="headers"
+    :items="items"
+  )
+    template(v-slot:[`item.country`]="{ item }")
+      div {{ country(item.request.country) }}
 
-      template(v-slot:[`item.city`]="{ item }")
-        div {{ item.request.city }}
+    template(v-slot:[`item.city`]="{ item }")
+      div {{ item.request.city }}
 
-      template(v-slot:[`item.category`]="{ item }")
-        div {{ item.request.service_category }}
+    template(v-slot:[`item.category`]="{ item }")
+      div {{ item.request.service_category }}
 
-      template(v-slot:[`item.stakingDate`]="{ item }")
-        span {{ new Date(parseInt(item.request.created_at)).toLocaleDateString() }}
+    template(v-slot:[`item.stakingDate`]="{ item }")
+      span {{ formatDate(item.request.created_at) }}
 
-      template(v-slot:[`item.stakeStatus`]="{ item }")
-        span(:style="setButtonBackground(item.request.status)") {{ getStatusName(item.request.status) }} 
+    template(v-slot:[`item.stakeStatus`]="{ item }")
+      span(:style="setButtonBackground(item.request.status)") {{ getStatusName(item.request.status) }} 
 
-      template(v-slot:[`item.amount`]="{ item }")
-        span(:style="setButtonBackground(item.request.status)") {{ setAmount(item.request.staking_amount) }}
+    template(v-slot:[`item.amount`]="{ item }")
+      span(:style="setButtonBackground(item.request.status)") {{ setAmount(item.request.staking_amount) }}
 
-      template(v-slot:[`item.actions`]="{ item }")
-        .customer-staking-tab__actions(v-if="item.request.status !== 'WaitingForUnstaked'" )
-          Button.pa-4(
-            height="25px"
-            width="100px"
-            style="font-size: 1em"
-            color="primary"
-            @click="getUnstakingDialog(item.request.hash)"
-            :disabled="item.request.status === 'Unstaked' || item.request.status === 'Processed'"
-          ) Unstake
+    template(v-slot:[`item.actions`]="{ item }")
+      .customer-staking-tab__actions(v-if="item.request.status !== 'WaitingForUnstaked'" )
+        Button.pa-4(
+          height="25px"
+          width="100px"
+          style="font-size: 1em"
+          color="primary"
+          @click="getUnstakingDialog(item.request.hash)"
+          :disabled="item.request.status === 'Unstaked' || item.request.status === 'Processed'"
+        ) Unstake
 
-          Button.pa-4(
-            v-if="item.request.status === 'Open' || item.request.status === 'Claimed'" 
-            height="25px"
-            style="font-size: 1em"
-            width="100px"
-            color="secondary"
-            @click="toRequestTest(item)"
-            :disabled="item.request.status === 'Open'"
-          ) Proceed
+        Button.pa-4(
+          v-if="item.request.status === 'Open' || item.request.status === 'Claimed'" 
+          height="25px"
+          style="font-size: 1em"
+          width="100px"
+          color="secondary"
+          @click="toRequestTest(item)"
+          :disabled="item.request.status === 'Open'"
+        ) Proceed
 
-        .customer-staking-tab__actions(v-else)
-          Button.pa-4(
-            style="font-size: 1em"
-            height="25px"
-            width="100px"
-            color="#F5F5F5"
-              ) {{ setRemainingStakingDate(item.request.unstaked_at) }}
-    
-    ConfirmationDialog(
-      :show="showDialog"
-      title="Are you sure you want to unstake?"
-      message="If you wish to proceed, you won't be able to continue the request service process and no DBIO reward will be given. Your staking amount will be returned after 144 hours or 6 days"
-      @click="unstakeService"
-      @close="closingDialog"
-    )
+      .customer-staking-tab__actions(v-else)
+        Button.pa-4(
+          style="font-size: 1em"
+          height="25px"
+          width="100px"
+          color="#F5F5F5"
+            ) {{ setRemainingStakingDate(item.request.unstaked_at) }}
 
 </template>
 
@@ -68,8 +59,8 @@ import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import stakingStatus from "@/common/constants/staking-status"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
-import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { getServiceRequestByCustomer } from "@/common/lib/service-request"
+import { getLocations } from "@/common/lib/location"
 
 
 export default {
@@ -126,7 +117,8 @@ export default {
     documents: null,
     tabs: null,
     showDialog: false,
-    requestId: ""
+    requestId: "",
+    countries: []
   }),
 
   computed: {
@@ -139,12 +131,14 @@ export default {
 
   async mounted () {
     await this.fetchData ()
+    await this.getCountries()
   },
 
   methods: {
     ...mapMutations({
       setCategory: "lab/SET_CATEGORY",
-      setStakingService: "lab/SET_STAKING_SERVICE"
+      setStakingService: "lab/SET_STAKING_SERVICE",
+      setStakingId: "lab/SET_STAKING_ID"
     }),
 
     async fetchData () {
@@ -153,8 +147,17 @@ export default {
     },
 
     setAmount(amount) {
-      const formatedAmount = this.web3.utils.fromWei(String(amount), "ether")
+      const formatedAmount = this.web3.utils.fromWei(String(amount.replace(/,/g, "")), "ether")
       return formatedAmount
+    },
+
+    async getCountries() {
+      const { data : { data }} = await getLocations()
+      this.countries = data
+    },
+
+    country (country) {
+      return this.countries.filter((c) => c.iso2 === country)[0].name
     },
 
     setRemainingStakingDate(date) {
@@ -186,7 +189,9 @@ export default {
     },
 
     getUnstakingDialog(id) {
-      this.showDialog = true
+      this.setStakingId(id)
+      this.$emit("unstake")
+
       this.requestId = id
     },
 
@@ -202,19 +207,17 @@ export default {
       return { color: colors[status.toUpperCase()] }
     },
 
-    closingDialog() {
-      this.showDialog = false
-    },
-
     getStatusName(status) {
       for (const key in stakingStatus) {
         if (key === status.toUpperCase()) return stakingStatus[key]
       }
     },
 
-    async unstakeService () {
-      await unstakeRequest(this.api, this.pair, this.requestId)
-      this.showDialog = false
+    formatDate(date) {
+      const formattedDate = new Date(parseInt(date)).toLocaleDateString("en-GB", {
+        day: "numeric", month: "short", year: "numeric"
+      })
+      return formattedDate
     }
   }
 }
@@ -236,9 +239,10 @@ export default {
       padding: 0px 30px
 
     &__actions
-      padding: 25px
+      padding: 0 10px
+      align-content: center
+      margin: 0 10%
       display: flex
       align-items: center
       gap: 20px
-      margin: 3px 20px
 </style>

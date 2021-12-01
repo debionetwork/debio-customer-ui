@@ -50,13 +50,13 @@
                   .service__field-title Service Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ payment.service_info.prices_by_currency[0].total_price }}
+                    | {{ formatPrice(payment.service_info.prices_by_currency[0].total_price) }}
                     | {{ payment.service_info.prices_by_currency[0].currency }}
                 .service__field(v-if="payment.service_info.prices_by_currency[0].additional_prices.length")
                   .service__field-title Quality Control Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ payment.service_info.prices_by_currency[0].additional_prices[0].value }}
+                    | {{ formatPrice(payment.service_info.prices_by_currency[0].additional_prices[0].value) }}
                     | {{ payment.service_info.prices_by_currency[0].currency }}
                 .service__field(v-if="payment.status === 'Refunded'")
                   .service__field-title Refund amount
@@ -101,7 +101,8 @@ export default {
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
-      rating: (state) => state.rating.rate
+      rating: (state) => state.rating.rate,
+      web3: (state) => state.metamask.web3
     }),
 
     computeDetailsTitle() {
@@ -141,6 +142,10 @@ export default {
     handleShowPopup(val) {
       if (val === "enter") this.rewardPopup = true
       else this.rewardPopup = false
+    },
+
+    formatPrice(price) {
+      return this.web3.utils.fromWei(String(price), "ether")
     }
   }
 }
