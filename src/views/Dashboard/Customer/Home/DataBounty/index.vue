@@ -60,26 +60,7 @@ export default {
   data: () => ({
     researchIllustration,
 
-    bounties: [
-      {
-        name: "Covid-19 Testing",
-        speciment: "AYEY6073POOH",
-        labName: "GSI Lab",
-        avatar: "https://picsum.photos/40",
-        desc: "Result from covid-19 test gen contain badai sitokin and low hemoglobin it’s hapen mostly in tropis region",
-        reward: "100 DBIO",
-        hash: "F6325D9FE1CAC14BA1AS3832NC"
-      },
-      {
-        name: "Covid-19 Testing2",
-        speciment: "AYEY6073POOH",
-        labName: "GSI Lab",
-        avatar: "https://picsum.photos/40",
-        desc: "Result from covid-19 test gen contain badai sitokin and low hemoglobin it’s hapen mostly in tropis region",
-        reward: "100 DBIO",
-        hash: "A6325D9FE1CAC14BA1AS3832NC"
-      }
-    ],
+    bounties: [],
 
     headers: [
       {

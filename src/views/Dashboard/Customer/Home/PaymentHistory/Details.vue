@@ -41,8 +41,8 @@
             .payment-details__instruction(v-if="payment.status === 'Paid'")
               ui-debio-icon.payment-details__instruction-icon(:icon="alertIcon" size="15" color="#52C41B" stroke)
               p.payment-details__instruction-text.mb-0
-                | Please proceed to send sample, see instruction
-                | <router-link to="/" class="payment-details__instruction-link">here!</router-link> 
+                | Please proceed to send sample, see instruction 
+                span(class="payment-details__instruction-link" @click="handleSampleInstruction()") here!
 
             .payment-details__service
               .service__table
@@ -86,6 +86,15 @@ import { fetchPaymentDetails } from "@/common/lib/orders";
 import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { mapState } from "vuex"
 
+import {
+  COVID_19,
+  DRIED_BLOOD,
+  URINE_COLLECTION,
+  FECAL_COLLECTION,
+  SALIVA_COLLECTION,
+  BUCCAL_COLLECTION
+} from "@/common/constants/instruction-step.js"
+
 import Button from "@/common/components/Button"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
@@ -96,7 +105,19 @@ export default {
 
   components: { Button },
 
-  data: () => ({ alertIcon, messageError: null, rewardPopup: false, payment: {} }),
+  data: () => ({
+    COVID_19,
+    DRIED_BLOOD,
+    URINE_COLLECTION,
+    FECAL_COLLECTION,
+    SALIVA_COLLECTION,
+    BUCCAL_COLLECTION,
+
+    alertIcon,
+    messageError: null,
+    rewardPopup: false,
+    payment: {}
+  }),
 
   computed: {
     ...mapState({
@@ -139,6 +160,29 @@ export default {
       }
     },
 
+    handleSampleInstruction() {
+      const dnaCollectionProcess = this.payment.service_info.dna_collection_process
+
+      if (dnaCollectionProcess === "Covid 19 Saliva Test") {
+        window.open(this.COVID_19, "_blank")
+      }
+      if (dnaCollectionProcess === "Blood Cells - Dried Blood Spot Collection Process") {
+        window.open(this.DRIED_BLOOD, "_blank")
+      }
+      if (dnaCollectionProcess === "Epithelial Cells - Buccal Swab Collection Process") {
+        window.open(this.BUCCAL_COLLECTION, "_blank")
+      }
+      if (dnaCollectionProcess === "Fecal Matters - Stool Collection Process") {
+        window.open(this.FECAL_COLLECTION, "_blank")
+      }
+      if (dnaCollectionProcess === "Saliva - Saliva Collection Process") {
+        window.open(this.SALIVA_COLLECTION, "_blank")
+      }
+      if (dnaCollectionProcess === "Urine - Clean Catch Urine Collection Process") {
+        window.open(this.URINE_COLLECTION, "_blank")
+      }
+    },
+
     handleShowPopup(val) {
       if (val === "enter") this.rewardPopup = true
       else this.rewardPopup = false
@@ -160,7 +204,7 @@ export default {
 
     &__content
       min-width: 575px
-      max-width: 700px
+      max-width: 800px
       padding: 30px
       margin-top: 60px
       border: 1px solid #E9E9E9
@@ -194,6 +238,8 @@ export default {
       color: #52C41B
 
     &__instruction-link
+      cursor: pointer
+      text-decoration: underline
       color: #A568FF
 
   .product
