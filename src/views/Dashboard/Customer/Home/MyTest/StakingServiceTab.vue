@@ -214,7 +214,7 @@ export default {
     },
 
     formatDate(date) {
-      const formattedDate = new Date(parseInt(date)).toLocaleDateString("en-GB", {
+      const formattedDate = new Date(parseInt(date.replace(/,/g, ""))).toLocaleDateString("en-GB", {
         day: "numeric", month: "short", year: "numeric"
       })
       return formattedDate
