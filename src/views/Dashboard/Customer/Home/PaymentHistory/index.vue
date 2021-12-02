@@ -91,8 +91,19 @@ export default {
     })
   },
 
+  watch: {
+    searchQuery(newVal, oldVal) {
+      if (newVal === "" && oldVal) this.metamaskDispatchAction(this.onSearchInput)
+    }
+  },
+
   async created() {
-    await this.metamaskDispatchAction(this.onSearchInput)
+    if (this.$route.params.id) {
+      this.searchQuery = this.$route.params.id
+      await this.metamaskDispatchAction(this.onSearchInput, this.searchQuery)
+    }
+
+    else await this.metamaskDispatchAction(this.onSearchInput)
   },
 
   methods: {
@@ -101,7 +112,11 @@ export default {
       this.payments = results.map(result => ({
         ...result._source,
         id: result._id,
-        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
+        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString("id", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        }),
         timestamp: parseInt(result._source.created_at)
       }))
     },
@@ -124,11 +139,10 @@ export default {
 
     handleDetails(item) {
       let id = ""
-      if (item.id) {
-        id = item.id
-      } else {
-        id = item.orderId
-      }
+
+      if (item.id) id = item.id
+      else id = item.orderId
+
       if (item.status === "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: { id } })
       else this.$router.push({ name: "customer-payment-details", params: { id } })
     }

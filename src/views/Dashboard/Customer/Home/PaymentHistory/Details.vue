@@ -151,7 +151,7 @@ export default {
         const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
         const data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
 
-        this.payment = { ...dataPayment, test_status: data?.status }
+        this.payment = { ...dataPayment, test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim() }
       } catch(e) {
         if (e.response.status === 404)
           this.messageError = "Oh no! We can't find your selected order. Please select another one"

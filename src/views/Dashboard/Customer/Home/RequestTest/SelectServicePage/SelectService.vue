@@ -207,7 +207,7 @@ export default {
     },
 
     toPaymentHistory () {
-      this.$router.push({ name: "customer-payment-details"})
+      this.$router.push({ name: "customer-payment-history", params: { id: this.lastOrder } })
     }
   }
 }

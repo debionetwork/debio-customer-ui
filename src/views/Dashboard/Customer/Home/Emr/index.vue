@@ -66,7 +66,7 @@
         span(v-for="file in item.files") {{ file.description }}
 
     template(v-slot:[`item.createdAt`]="{ item }")
-      span {{ new Date(item.createdAt).toLocaleDateString() }}
+      span {{ item.createdAt }}
 
     template(v-slot:[`item.actions`]="{ item }")
       .customer-emr__actions
@@ -256,9 +256,19 @@ export default {
           dataEMR.files[i]
         )
 
+        dataEMR.createdAt = new Date(+file.uploadedAt.replaceAll(",", "")).toLocaleDateString("id", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        }),
+
         files.push({
           ...file,
-          createdAt: new Date(+file.uploadedAt.replaceAll(",", "")),
+          createdAt: new Date(+file.uploadedAt.replaceAll(",", "")).toLocaleDateString("id", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+          }),
           recordLink: file.recordLink.replace("https://ipfs.io/ipfs/", "")})
       }
 
@@ -266,7 +276,7 @@ export default {
         id: dataEMR.id,
         title: dataEMR.title,
         category: dataEMR.category,
-        createdAt: new Date(),
+        createdAt: dataEMR.createdAt,
         files: files?.slice(0, 3)
       }
 
