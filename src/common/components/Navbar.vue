@@ -79,7 +79,7 @@
                         ui-debio-icon.settings-item__icon(:icon="logoutIcon" size="24" stroke color="#C400A5")
 
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'polkadot' || getActiveMenu.type === 'metamask'")
-                  ui-debio-input(label="Your Address" ref="polkadot" disabled :value="walletAddress" block)
+                  ui-debio-input(label="Your Address" :data-wallet="walletAddress" ref="polkadot" disabled :value="walletAddress" block)
                     ui-debio-icon(
                       slot="icon-append"
                       :icon="copyIcon"
@@ -247,6 +247,13 @@ export default {
 
     async handleCopy(text) {
       await navigator.clipboard.writeText(text)
+
+
+      this.$refs.polkadot.$el.querySelector("input").value = "Address Copied!"
+
+      setTimeout(() => {
+        this.$refs.polkadot.$el.querySelector("input").value = this.$refs.polkadot.$attrs["data-wallet"]
+      }, 1000)
     },
 
     handleAvatar() {
