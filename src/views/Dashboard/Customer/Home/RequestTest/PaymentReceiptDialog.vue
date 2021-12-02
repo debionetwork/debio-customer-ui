@@ -27,13 +27,13 @@
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
             div( style="font-size: 12px;" )
-              | {{ formatPrice(selectedService.detailPrice.price_components[0].value) }} 
+              | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replace(/,/g, "")) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
             div( style="font-size: 12px;" )
-              | {{ formatPrice(selectedService.detailPrice.additional_prices[0].value) }} 
+              | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replace(/,/g, "")) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
        
@@ -45,7 +45,7 @@
           div(class="d-flex justify-space-between mb-2" )
             b( style=" font-size: 12px;" ) Total Price
             b( style="font-size: 12px;" )
-              | {{  formatPrice(selectedService.price) }} 
+              | {{  formatPrice((selectedService.price).replace(/,/g, "")) }} 
               | {{ selectedService.currency.toUpperCase()}}
 
 
@@ -83,11 +83,6 @@
           height="38"
           @click="onSubmit"
         ) Pay
-
-  
-            
-      
-
 </template>
 
 <script>
@@ -105,6 +100,7 @@ import localStorage from "@/common/lib/local-storage"
 import CryptoJS from "crypto-js"	
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
+import { errorHandler } from "@/common/lib/error-handler"
 
 
 
@@ -135,7 +131,8 @@ export default {
     lastOrder: null,
     detailOrder: null,
     status: "",
-    orderId: ""
+    orderId: "",
+    txHash: ""
   }),
 
   computed: {
@@ -158,13 +155,19 @@ export default {
         if (this.lastEventData.method === "OrderPaid") {
           this.isLoading = false
           this.password = ""
-          this.$router.push({ name: "customer-request-test-success"}) 
+          this.$router.push({ 
+            name: "customer-request-test-success",
+            params: {
+              hash: this.txHash
+            }
+          })
         }
       }      
     }
   },
 
   async mounted () {
+
     if (this.lastEventData) {
       if (this.lastEventData.method === "OrderCreated") {
         this.dataEvent = JSON.parse(this.lastEventData.data.toString())[0]
@@ -254,10 +257,9 @@ export default {
           this.payOrder()
         }
       } catch (err) {
-        console.log(err)
         this.isLoading = false
         this.password = ""
-        this.error = err
+        this.error = await errorHandler(err.message)
       } 
     },
 
@@ -280,8 +282,8 @@ export default {
         await getTransactionReceiptMined(txHash)
       }
 
-      const txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
-      await getTransactionReceiptMined(txHash)
+      this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
+      await getTransactionReceiptMined(this.txHash)
     },
 
     formatPrice(price) {

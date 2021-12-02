@@ -59,7 +59,7 @@
                       v-for="(notif, idx) in notifications"
                       :class="{ 'notification-item--new': !notif.read }"
                       :key="idx"
-                      @mouseenter.native="handleNotificationRead(notif)"
+                      @click.native="handleNotificationRead(notif)"
                       :to="{ name: notif.route, params: notif.params }"
                     )
                       .notification-item__wrapper

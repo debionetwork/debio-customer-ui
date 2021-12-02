@@ -221,10 +221,10 @@ export default {
       flex-direction: column
 
     &__navbar
-      padding: 2.5rem 1.563rem 0.563rem !important
+      padding: 2.5rem 1.563rem 1.563rem !important
 
     &__main
-      padding: 1.563rem !important
+      padding: 0 1.563rem 1.563rem !important
 
   .modal-password
     &__cta

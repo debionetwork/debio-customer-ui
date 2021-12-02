@@ -55,7 +55,7 @@
             .customer-my-test__table
               DataTable(
                 :headers="headers"
-                :items="orderHistory"
+                :items="testResult"
               )
                 template(class="titleSection" v-slot:[`item.serviceInfo.name`]="{item}")
                   div(class="detailLab d-flex align-center")
@@ -82,8 +82,8 @@
                     ) Detail
                     
                     Button(
-                      v-if="item.status != 'ResultReady'"
-                      v-show="item.status == 'Registered'"
+                      v-if="item.status !== 'ResultReady'"
+                      v-show="item.status === 'Registered'"
                       height="25px"
                       width="50%"
                       dark
@@ -92,6 +92,8 @@
                     ) Instruction
 
                     Button(
+                      v-if="item.status !== 'Registered'"
+                      v-show="item.status === 'ResultReady'"
                       height="25px"
                       width="50%"
                       dark
@@ -101,17 +103,27 @@
 
                 template(v-slot:[`item.status`]="{item}")
                   .customer-my-test__status
-                  span(:style="{color: setStatusColor(item.status)}") {{ item.status }}
+                  span(:style="{color: setStatusColor(item.status)}") {{ item.status.replace(/([A-Z])/g, ' $1').trim() }}
           v-tab-item
             .customer-my-test__table
-            StakingServiceTab
+            StakingServiceTab(
+              @unstake="showDialog = true"
+            )
+            ConfirmationDialog(
+              :show="showDialog"
+              :loading="isLoading"
+              title="Are you sure you want to unstake?"
+              message="If you wish to proceed, you won't be able to continue the request service process and no DBIO reward will be given. Your staking amount will be returned after 144 hours or 6 days"
+              @click="unstakeService"
+              this.isLoding = true
+              @close="showDialog=false"
+            )
 </template>
 
 <script>
 import { layersIcon, noteIllustration, medicalResearchIllustration } from "@/common/icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
 import modalBounty from "./modalBounty.vue"
-import { queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
@@ -123,7 +135,6 @@ import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { createSyncEvent } from "@/common/lib/ipfs/gcs"
 import { getCategories } from "@/common/lib/categories"
 import {
-  ordersByCustomer,
   getOrdersData
 } from "@/common/lib/polkadot-provider/query/orders"
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
@@ -136,8 +147,15 @@ import {
   SALIVA_COLLECTION,
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
-import dataTesting from "./dataTesting.json"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
+import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
+import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
+
+import {
+  queryDnaTestResultsByOwner,
+  queryDnaTestResults,
+  queryDnaSamples
+} from "@/common/lib/polkadot-provider/query/genetic-testing"
 
 export default {
   name: "MyTest",
@@ -148,7 +166,8 @@ export default {
     StakingServiceTab,
     DataTable,
     Button,
-    modalBounty
+    modalBounty,
+    ConfirmationDialog
   },
 
   data: () => ({
@@ -169,12 +188,13 @@ export default {
     isLoading: false,
     orderHistory: [],
     btnLabel: "",
+    showDialog: false,
     headers: [
       { text: "Service Name", value: "serviceInfo.name", sortable: true },
       { text: "Lab Name", value: "labInfo.name", sortable: true },
       { text: "Order Date", value: "createdAt", sortable: true },
       { text: "Last Update", value: "updatedAt", sortable: true },
-      { text: "Test Status", value: "status", sortable: true },
+      { text: "Test Status", value: "status", width: "115", sortable: true },
       {
         text: "Actions",
         value: "actions",
@@ -190,7 +210,10 @@ export default {
     SALIVA_COLLECTION,
     BUCCAL_COLLECTION,
     medicalResearchIllustration,
-    isLoadingOrderHistory: false
+    isLoadingOrderHistory: false,
+    isLoding: false,
+    isLoadingTestResults: false,
+    testResult: []
   }),
 
   computed: {
@@ -199,7 +222,8 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       lastEventData: (state) => state.substrate.lastEventData,
-      mnemonicData: (state) => state.substrate.mnemonicData
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      stakingId: (state) => state.lab.stakingId
     }),
 
     userAddress() {
@@ -251,12 +275,9 @@ export default {
   },
 
   async created() {
-    if (this.mnemonicData) await this.initialData()
-  },
+    await this.getTestResultData()
 
-  async mounted() {
-    await this.getOrderHistory()
-    this.onSearchInput();
+    if (this.mnemonicData) await this.initialData()
   },
 
   methods: {
@@ -269,16 +290,6 @@ export default {
 
     toRequestTest() {
       this.$router.push({ name: "customer-request-test-select-lab"})
-    },
-
-    async onSearchInput() {
-      this.orderHistory = dataTesting.data.map(result => ({
-        ...result._source,
-        id: result._id,
-        updatedAt: new Date(parseInt(result._source.updatedAt)).toLocaleDateString(),
-        createdAt: new Date(parseInt(result._source.createdAt)).toLocaleDateString(),
-        timestamp: parseInt(result._source.createdAt)
-      }))
     },
 
     setStatusColor(status) { //change color for each order status
@@ -296,27 +307,27 @@ export default {
       return colors[status.toUpperCase()]
     },
 
-    async getOrderHistory() {//this for get order from substrate
+    async getTestResultData(){
+      this.isLoadingTestResults = true
       try {
-        this.isLoadingOrderHistory = true
+        this.testResult = []
         const address = this.wallet.address
-        const listOrderId = await ordersByCustomer(this.api, address)
   
-        for (let i = 0; i < listOrderId.length; i++) {
-          const detailOrder = await getOrdersData(this.api, listOrderId[i])
-          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
-          const detailService = await queryServicesById(this.api, detailOrder.serviceId)
-          const detailsProcess = await queryDnaTestResults(this.api, detailOrder.dnaSampleTrackingId)
-          this.prepareOrderData(detailOrder, detaillab, detailService, detailsProcess)
+        const speciment = await queryDnaTestResultsByOwner(this.api, address)
+        if (speciment != null) {
+          speciment.reverse()
+          for (let i = 0; i < speciment.length; i++) {
+            const dnaTestResults = await queryDnaTestResults(this.api, speciment[i])
+            if (dnaTestResults != null) {
+              const dnaSample = await queryDnaSamples(this.api, dnaTestResults.trackingId)
+              const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
+              const detailOrder = await getOrdersData(this.api, dnaTestResults.orderId)
+              const detailService = await queryServicesById(this.api, detailOrder.serviceId)
+              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder)
+            }
+          }
         }
-        
-        this.orderHistory.sort(
-          (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
-        )
-  
-        const status = localStorage.getLocalStorageByName("lastOrderStatus")
-        if (status) this.orderHistory[0].status = status
-        
+        this.isLoadingTestResults = false
       } catch (error) {
         console.error(error)
       } finally {
@@ -324,7 +335,13 @@ export default {
       }
     },
 
-    prepareOrderData(detailOrder, detaillab, detailService, detailsProcess) {
+    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder) {
+      const feedback = {
+        rejectedTitle: dnaSample.rejectedTitle,
+        rejectedDescription: dnaSample.rejectedDescription
+      }
+
+      const orderId = detailOrder.id
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -344,7 +361,6 @@ export default {
         expectedDuration: expectedDuration,
         dnaCollectionProcess: dnaCollectionProcess
       }
-
       const labName = detaillab.info.name
       const address = detaillab.info.address
       const labImage = detaillab.info.profileImage
@@ -354,18 +370,16 @@ export default {
         address: address,
         profileImage: labImage
       }
-
       let icon = "mdi-needle";
       if (detailService.info.image != null) {
         icon = detailService.info.image;
       }
 
-      const number = detailOrder.id
       const dateSet = new Date(
-        parseInt(detailOrder.createdAt.replace(/,/g, ""))
+        parseInt(dnaTestResults.createdAt.replace(/,/g, ""))
       )
       const dateUpdate = new Date(
-        parseInt(detailOrder.updatedAt.replace(/,/g, ""))
+        parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
       )
       const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-US", {
@@ -375,7 +389,8 @@ export default {
         month: "long", // numeric, 2-digit, long, short, narrow
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
-      })
+      });
+
       const updatedAt = dateUpdate.toLocaleString("en-US", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
@@ -386,25 +401,28 @@ export default {
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       });
-      const status = detailOrder.status
+      const status = dnaSample.status
       const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
-      const order = {
+      
+      const result = {
+        orderId,
         icon,
-        number,
+        dnaSampleTrackingId,
         timestamp,
         status,
-        dnaSampleTrackingId,
         orderDate,
         serviceId,
         serviceInfo,
         labId,
         labInfo,
+        createdAt,
         updatedAt,
-        detailsProcess,
-        createdAt
+        dnaTestResults,
+        labName,
+        feedback
       }
 
-      this.orderHistory.push(order)
+      this.testResult.push(result)
     },
 
     checkLastOrder() {
@@ -434,7 +452,7 @@ export default {
     },
 
     async handleSelectedBounty(val) {
-      this.selectedBounty = { ...val.detailsProcess, ...val }
+      this.selectedBounty = { ...val.dnaTestResults, ...val }
       this.isShowModalBounty = true
     },
 
@@ -481,6 +499,21 @@ export default {
         this.isBountyError = e?.message
         this.modalBountyLoading = false
       }
+    },
+
+    cancelBounty() {
+      this.isBounty = false
+    },
+
+    async unstakeService () {
+      this.isLoading = true
+      const requestId = this.stakingId
+      await unstakeRequest(this.api, this.wallet, requestId)
+      this.isLoading = false
+      this.showDialog = false
+      this.$router.push({
+        name: "customer-dashboard"
+      })
     }
   }
 }
@@ -522,12 +555,12 @@ export default {
   gap: 40px
   .customer-test
     &::v-deep
-      
+
 
   .customer-my-test
     margin: 35px 0 0 0
     width: 100%
-    height: 100% 
+    height: 100%
     background: #FFFFFF
 
 

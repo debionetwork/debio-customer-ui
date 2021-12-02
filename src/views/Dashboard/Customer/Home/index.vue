@@ -81,7 +81,7 @@
                 size="20"
                 color="#C400A5"
                 stroke
-                @click="goToPaymentDetail(item.id)"
+                @click="goToPaymentDetail(item)"
                 )
 
 
@@ -205,7 +205,6 @@ export default {
   async created() {
     await this.getTestResultsData()
     await this.getDataPaymentHistory()
-
     await this.checkPaymentLength()
     await this.checkTestLength()
   },
@@ -219,7 +218,7 @@ export default {
         const address = this.wallet.address // use this for actual data
 
         // Get specimens
-        const specimens = await queryDnaTestResultsByOwner(this.api, address)
+        const specimens = await queryDnaTestResultsByOwner(this.api, address)// change to address
         if (specimens != null) {
           specimens.reverse();
           if (specimens.length < maxResults) {
@@ -232,7 +231,7 @@ export default {
               const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
               const detailOrder = await getOrdersData(this.api, dnaTestResults.orderId)
               const detailService = await queryServicesById(this.api, detailOrder.serviceId)
-              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample); //this should prepare test history
+              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder); //this should prepare test history
             }
           }
         }
@@ -275,6 +274,7 @@ export default {
     },
 
     preparePaymentData(detailOrder, detaillab, detailService) {
+      const orderId = detailOrder.id
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -340,6 +340,7 @@ export default {
       const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
 
       const order = {
+        orderId,
         icon,
         number,
         timestamp,
@@ -356,11 +357,13 @@ export default {
       this.paymentHistory.push(order)
     },
 
-    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample) {
+    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder) {
       const feedback = {
         rejectedTitle: dnaSample.rejectedTitle,
         rejectedDescription: dnaSample.rejectedDescription
       }
+
+      const orderId = detailOrder.id
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -424,6 +427,7 @@ export default {
       const status = this.checkSatus(dnaSample.status)
       
       const result = {
+        orderId,
         icon,
         dnaSampleTrackingId,
         timestamp,
@@ -454,12 +458,13 @@ export default {
     },
 
     goToPaymentDetail(item) {
-      this.$router.push({ name: "customer-payment-details", params: item }) //go to payment detail
+      const id = item.orderId
+      this.$router.push({ name: "customer-payment-details", params: { id } }) //go to payment detail
     },
 
     async checkPaymentLength() {
       if (!this.paymentHistory.length) {
-        this.titlePaymentWording = "You dont have made any order."
+        this.titlePaymentWording = "You dont have made any order"
         return
       }
       this.titlePaymentWording = "Your recent payments"
@@ -467,10 +472,10 @@ export default {
 
     async checkTestLength() {
       if (!this.testResult.length) {
-        this.titleTestWording = "You dont have any test result."
+        this.titleTestWording = "You dont have any test result"
         return
       }
-      this.titleTestWording = "Your recent test"
+      this.titleTestWording = "Your recent tests"
     },
 
     checkSatus(status) {

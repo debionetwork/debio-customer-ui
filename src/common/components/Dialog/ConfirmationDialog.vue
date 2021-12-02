@@ -26,6 +26,12 @@
             height="35px"
             @click="onSubmit"
           ) Yes
+    
+          v-progress-circular.mb-5(
+            v-if="loading"
+            indeterminate
+            color="primary"
+          )
       
 </template>
 
@@ -42,7 +48,8 @@ export default {
   props: {
     show: Boolean,
     message:String,
-    title: String
+    title: SVGFESpecularLightingElement,
+    loading:Boolean
   },
 
   methods: {

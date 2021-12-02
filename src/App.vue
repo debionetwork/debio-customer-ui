@@ -29,7 +29,7 @@ export default {
   },
 
   mounted() {
-    const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+    const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Apple Safari|Safari/i
     this.handleChangeDevices(mobileDevices, window.innerWidth)
 
     window.addEventListener("resize", () => {

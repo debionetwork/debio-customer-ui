@@ -9,6 +9,7 @@
       v-row.mt-10(class="d-flex justify-center")
         LabDetailCard
         PaymentDetailCard(
+          @cancel="isCancelled = true"
           @onContinue="onContinue"
         )
 

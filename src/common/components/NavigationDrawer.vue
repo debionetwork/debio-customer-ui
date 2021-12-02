@@ -108,7 +108,7 @@
   )
     div.dbioLogo
       a(
-        href="https://www.degenics.com/"
+        @click.stop="goToDashboard"
         target="_blank"
         style="text-decoration: none"
       )
@@ -164,9 +164,9 @@
 
         div.footerDrawer
           a(
-              href="https://docs.debio.network/"
-              target="_blank"
-              style="text-decoration: none"
+            href="https://docs.debio.network/"
+            target="_blank"
+            style="text-decoration: none"
           )
             div
               ui-debio-icon.btnDrawerIcon(
@@ -208,6 +208,10 @@ export default {
         return "font-weight-bold sidebar-text primary--text activeButton"
       }
       return "font-weight-bold sidebar-text"
+    },
+
+    goToDashboard() {
+      this.$router.push({ path: "/customer" });
     }
   }
 }

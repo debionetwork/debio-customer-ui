@@ -38,13 +38,13 @@
 
         template(v-slot:[`item.actions`]="{ item }")
           Button(
-            :color="item.status === 'unpaid' ? 'secondary' : 'primary'"
+            :color="item.status === 'Unpaid' ? 'secondary' : 'primary'"
             width="80"
             height="25"
             dark
             @click="handleDetails(item)"
             block
-          ) {{ item.status === 'unpaid' ? 'Pay' : 'Details' }}
+          ) {{ item.status === 'Unpaid' ? 'Pay' : 'Details' }}
 </template>
 
 <script>
@@ -123,8 +123,12 @@ export default {
     },
 
     handleDetails(item) {
-      const { id } = item
-
+      let id = ""
+      if (item.id) {
+        id = item.id
+      } else {
+        id = item.orderId
+      }
       if (item.status === "Unpaid") this.$router.push({ name: "customer-request-test-checkout", params: { id } })
       else this.$router.push({ name: "customer-payment-details", params: { id } })
     }

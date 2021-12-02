@@ -5,7 +5,8 @@ const defaultState = {
   country: null,
   city: null,
   category: null,
-  stakingData: null
+  stakingData: null,
+  stakingId: ""
 }
 
 export default {
@@ -36,8 +37,12 @@ export default {
       state.services = services
     },
 
-    SET_STAKING_SERVICE(state, stakingService)  {
+    SET_STAKING_SERVICE(state, stakingService) {
       state.stakingData = stakingService
+    },
+
+    SET_STAKING_ID(state, stakingId) {
+      state.stakingId = stakingId
     }
   },
   actions: {
