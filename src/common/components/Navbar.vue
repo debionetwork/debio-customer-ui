@@ -155,6 +155,7 @@ export default {
     searchQuery: "",
     contentHover: false,
     loginStatus: false,
+    debounce: null,
     arrowPosition: "",
     showMetamaskDialog: false,
     balance: 0,
@@ -248,12 +249,14 @@ export default {
     async handleCopy(text) {
       await navigator.clipboard.writeText(text)
 
-
       this.$refs.polkadot.$el.querySelector("input").value = "Address Copied!"
 
-      setTimeout(() => {
+      if (this.debounce) clearTimeout(this.debounce)
+
+      this.debounce = setTimeout(() => {
         this.$refs.polkadot.$el.querySelector("input").value = this.$refs.polkadot.$attrs["data-wallet"]
       }, 1000)
+
     },
 
     handleAvatar() {
