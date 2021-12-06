@@ -27,7 +27,7 @@
 
         template(v-slot:[`item.service_info.prices_by_currency[0].total_price`]="{ item }")
           .payment-history__price-details
-            | {{ formatPrice(item.service_info.prices_by_currency[0].total_price.replaceAll(",", "")) }}
+            | {{ formatPrice(item.service_info.prices_by_currency[0].total_price) }}
             | {{ item.service_info.prices_by_currency[0].currency }}
 
         template(v-slot:[`item.reward`]="{ item }")
@@ -134,7 +134,7 @@ export default {
     },
 
     formatPrice(price) {
-      return this.web3.utils.fromWei(String(price), "ether")
+      return this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether")
     },
 
     handleDetails(item) {

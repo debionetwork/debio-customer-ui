@@ -189,7 +189,7 @@ export default {
     },
 
     formatPrice(price) {
-      return this.web3.utils.fromWei(String(price), "ether")
+      return this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether")
     }
   }
 }
