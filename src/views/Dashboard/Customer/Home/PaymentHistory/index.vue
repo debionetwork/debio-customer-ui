@@ -98,12 +98,7 @@ export default {
   },
 
   async created() {
-    if (this.$route.params.id) {
-      this.searchQuery = this.$route.params.id
-      await this.metamaskDispatchAction(this.onSearchInput, this.searchQuery)
-    }
-
-    else await this.metamaskDispatchAction(this.onSearchInput)
+    await this.metamaskDispatchAction(this.onSearchInput)
   },
 
   methods: {

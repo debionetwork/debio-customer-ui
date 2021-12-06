@@ -192,7 +192,7 @@ export default {
       )
 
       if (this.lastOrder) {
-        const detailOrder = await getOrdersData(this.api, this.lastOrder)        
+        const detailOrder = await getOrdersData(this.api, this.lastOrder)
         if (detailOrder.status === "Unpaid") {
           this.showAlert = true
           return
@@ -207,7 +207,7 @@ export default {
     },
 
     toPaymentHistory () {
-      this.$router.push({ name: "customer-payment-history", params: { id: this.lastOrder } })
+      this.$router.push({ name: "customer-payment-history" })
     }
   }
 }
