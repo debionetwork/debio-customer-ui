@@ -340,7 +340,6 @@ export default {
         rejectedTitle: dnaSample.rejectedTitle,
         rejectedDescription: dnaSample.rejectedDescription
       }
-
       const orderId = detailOrder.id
       const title = detailService.info.name
       const description = detailService.info.description
@@ -376,10 +375,10 @@ export default {
       }
 
       const dateSet = new Date(
-        parseInt(dnaTestResults.createdAt.replace(/,/g, ""))
+        parseInt(dnaSample.createdAt.replace(/,/g, ""))
       )
       const dateUpdate = new Date(
-        parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
+        parseInt(dnaSample.updatedAt.replace(/,/g, ""))
       )
       const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-US", {
@@ -396,7 +395,7 @@ export default {
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       })
-      const createdAt = dateSet.toLocaleString("en-US", { 
+      const createdAt = dateSet.toLocaleString("en-US", {
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
