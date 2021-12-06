@@ -83,11 +83,19 @@
           height="38"
           @click="onSubmit"
         ) Pay
+
+    ErrorDialog(
+      :show="showError"
+      :title="errorTitle"
+      :message="errorMsg"
+      @close="showError = false"
+    )
 </template>
 
 <script>
 
 import Button from "@/common/components/Button"
+import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import { mapState, mapMutations } from "vuex"
 import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
@@ -108,7 +116,8 @@ export default {
   name: "PaymentReceiptDialog",
 
   components: {
-    Button
+    Button,
+    ErrorDialog
   },
 
   mixins: [serviceHandlerMixin],
@@ -132,7 +141,9 @@ export default {
     detailOrder: null,
     status: "",
     orderId: "",
-    txHash: ""
+    txHash: "",
+    showError: false,
+    errorTitle: ""
   }),
 
   computed: {
@@ -259,7 +270,11 @@ export default {
       } catch (err) {
         this.isLoading = false
         this.password = ""
-        this.error = await errorHandler(err.message)
+        this.showError = true
+        const error = await errorHandler(err.message)
+        this.error = error.message
+        this.errorTitle = error.title
+        this.errorMsg = error.message
       } 
     },
 
