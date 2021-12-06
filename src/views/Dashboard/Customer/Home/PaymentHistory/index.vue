@@ -107,7 +107,7 @@ export default {
       this.payments = results.map(result => ({
         ...result._source,
         id: result._id,
-        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString("id", {
+        created_at: new Date(parseInt(result._source.created_at.replaceAll(",", ""))).toLocaleDateString("id", {
           day: "2-digit",
           month: "short",
           year: "numeric"
