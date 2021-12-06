@@ -111,6 +111,16 @@
           "identity": "owner_id"
         }
       },
+      "rewards": {
+        "RewardFunds": {
+          "message": "Congrats! You’ve got ",
+          "value": 0,
+          "value_message": 1,
+          "route": "",
+          "params": "",
+          "identity": 0
+        }
+      },
       "electronicMedicalRecord": null
     },
     "lab": {

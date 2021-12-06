@@ -34,6 +34,14 @@ const handler = {
     const finalText = await toFormatDebioCoin(data[valueMessage])
     const wording = finalText + " DBIO!"
     return { data, id, params, wording }
+  },
+  rewards: async (dataEvent, value, valueMessage) => {
+    const data = dataEvent;
+    const id = data[value];
+    const params = null;
+    const finalText = await toFormatDebioCoin(data[valueMessage])
+    const wording = `${finalText} DBIO from wallet binding`;
+    return { data, id, params, wording }
   }
 }
 

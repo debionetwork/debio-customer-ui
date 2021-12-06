@@ -115,7 +115,7 @@ export default {
           console.log(`\nReceived ${events.length} events:`)
           events.forEach((record) => {
             const { event, phase } = record
-            if (event.section == "orders" || event.section == "geneticTesting" || event.section == "balances" || event.section == "electronicMedicalRecord") {
+            if (event.section == "rewards" || event.section == "orders" || event.section == "geneticTesting" || event.section == "balances" || event.section == "electronicMedicalRecord") {
               console.log("Method :" + event.method)
               if (event.method === "OrderPaid") localStorage.removeLocalStorageByName("lastOrderStatus")
               console.log(`Phase: ${phase.toString()}`)
