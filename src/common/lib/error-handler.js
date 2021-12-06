@@ -14,6 +14,12 @@ export async function errorHandler(err) {
       message: "Your password is not correct, please try again ! "
     }
     break;
+  case "MetaMask Tx Signature: User denied transaction signature.":
+    error = {
+      title: "Transaction Rejected",
+      message: "Metamask failed to proceed your transaction, confirm the transaction and make sure you are paying enough transaction weight!"
+    }
+    break;
   default : error = {
     title: "500",
     message: "Internal Server Error"

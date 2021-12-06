@@ -9,7 +9,7 @@
 
         v-card-text(align="center")
 
-          div(class="d-flex justify-center pa-5 mb-8")
+          div(class="d-flex justify-center pa-4 mb-6")
             b.dialog-error__title {{ title }}
 
           div(class="d-flex justify-center pb-5 pt-2")

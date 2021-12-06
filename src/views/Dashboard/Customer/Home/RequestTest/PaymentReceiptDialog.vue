@@ -279,26 +279,38 @@ export default {
     },
 
     async payOrder () {
-      // get last order id
-      this.lastOrder = await lastOrderByCustomer(
-        this.api,
-        this.wallet.address
-      )
-      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
-
-      const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
-      const totalPrice = this.selectedService.price
-
-      if (stakingAmountAllowance < totalPrice ) {
-        const txHash = await approveDaiStakingAmount(
-          this.metamaskWalletAddress,
-          totalPrice
+      try {
+        // get last order id
+        this.lastOrder = await lastOrderByCustomer(
+          this.api,
+          this.wallet.address
         )
-        await getTransactionReceiptMined(txHash)
+        this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+
+        const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
+        const totalPrice = this.selectedService.price
+
+        if (stakingAmountAllowance < totalPrice ) {
+          const txHash = await approveDaiStakingAmount(
+            this.metamaskWalletAddress,
+            totalPrice
+          )
+          await getTransactionReceiptMined(txHash)
+        }
+
+        this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
+        await getTransactionReceiptMined(this.txHash)
+        
+      } catch (err) {
+        this.isLoading = false
+        this.password = ""
+        this.showError = true
+        const error = await errorHandler(err.message)
+        this.error = error.message
+        this.errorTitle = error.title
+        this.errorMsg = error.message
       }
 
-      this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
-      await getTransactionReceiptMined(this.txHash)
     },
 
     formatPrice(price) {
