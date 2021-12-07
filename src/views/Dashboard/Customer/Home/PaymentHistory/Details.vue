@@ -21,7 +21,11 @@
               ui-debio-avatar.product__image(:src="payment.service_info.image" size="150" rounded)
               .product__details
                 .product__name {{ payment.service_info.name }}
-                ui-debio-rating.product__lab-rating(:rating="4" :total-reviews="800" size="15")
+                ui-debio-rating.product__lab-rating(
+                  :rating="payment.rating.rating_service"
+                  :total-reviews="payment.rating.count_rating_service"
+                  size="15"
+                )
                 .product__lab-name {{ payment.lab_info.name }}
                 .product__lab-address
                   span.address__title Address
@@ -73,8 +77,7 @@
                         @mouseenter="handleShowPopup('enter')"
                       )
                       .reward__popup(v-if="rewardPopup")
-                        .reward__popup-text you will get the reward after your test status is result ready and payment status fulfilled
-                        Button.reward__popup-button.mt-6(color="secondary" height="30" width="100") Learn more
+                        .reward__popup-text You will get the reward after your request test from requested service is completed/fulfilled
                   .service__field-colon :
                   .service__field-value - DBIO
 
@@ -83,6 +86,7 @@
 <script>
 import { alertIcon } from "@/common/icons"
 import { fetchPaymentDetails } from "@/common/lib/orders";
+import { getRatingService } from "@/common/lib/rating"
 import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { mapState } from "vuex"
 
@@ -95,15 +99,12 @@ import {
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
 
-import Button from "@/common/components/Button"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "CustomerPaymentDetails",
 
   mixins: [metamaskServiceHandler],
-
-  components: { Button },
 
   data: () => ({
     COVID_19,
@@ -150,8 +151,13 @@ export default {
       try {
         const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
         const data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
+        const rating = await getRatingService(dataPayment.service_id);
 
-        this.payment = { ...dataPayment, test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim() }
+        this.payment = {
+          ...dataPayment,
+          test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim(),
+          rating
+        }
       } catch(e) {
         if (e.response.status === 404)
           this.messageError = "Oh no! We can't find your selected order. Please select another one"
@@ -344,8 +350,4 @@ export default {
 
     &__popup-text
       text-align: left
-
-    &__popup-button
-      text-transform: capitalize
-      font-size: 12px
 </style>
