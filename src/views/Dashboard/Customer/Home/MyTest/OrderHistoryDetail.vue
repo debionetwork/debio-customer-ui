@@ -113,7 +113,7 @@
                     color="secondary"
                     large
                     width="100%"
-                    :disabled="myTest.status !== `Result Ready`"
+                    :disabled="myTest.status !== `ResultReady`"
                   ) View Result
 
                 ui-debio-modal(
@@ -304,7 +304,7 @@ export default {
         this.banner = receivedBanner;
         this.e1 = 3
         break;
-      case "Quality Controlled":
+      case "QualityControlled":
         this.status = this.orderDetail[2]
         this.banner = qualityControlBanner;
         this.e1 = 4
@@ -314,7 +314,7 @@ export default {
         this.banner = wetworkBanner;
         this.e1 = 5
         break;
-      case "Result Ready":
+      case "ResultReady":
         this.status = this.orderDetail[4]
         this.banner = resultReadyBanner;
         this.e1 = 6
