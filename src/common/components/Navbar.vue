@@ -413,9 +413,10 @@ export default {
         height: 2.75rem !important
 
         .navbar__connect-icon
-          width: 1.563rem !important
-          height: 1.563rem !important
-          animation: animateMetamask .3s infinite alternate !important
+          svg
+            width: 1.563rem !important
+            height: 1.563rem !important
+            animation: animateMetamask .3s infinite alternate !important
 
       &--logged:hover
           margin-left: unset !important
