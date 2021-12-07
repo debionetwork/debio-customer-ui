@@ -17,11 +17,21 @@ export async function createRequest(api, pair, country, region, city, category, 
   return result.toHuman()
 }
 
-export async function unstakeRequest (api, pair, requestId) {
-  const result = await api.tx.serviceRequest
+export async function unstakeRequest (api, pair, requestId, callback = () => {}) {
+  const unsub = await api.tx.serviceRequest
     .unstake(requestId)
-    .signAndSend(pair, { nonce: -1})
-  return result.toHuman()
+    // .signAndSend(pair, { nonce: -1})
+    .signAndSend(pair, { nonce: -1 }, async ({ events = [], status }) => {
+      if(status.isFinalized) {
+        const eventList = events.filter(({ event }) =>
+          api.events.system.ExtrinsicSuccess.is(event)
+        )
+        if(eventList.length > 0){
+          callback()
+          unsub()
+        }
+      }
+    })
 }
 
 export async function retrieveUnstakedAmount (api, pair, requestId) {

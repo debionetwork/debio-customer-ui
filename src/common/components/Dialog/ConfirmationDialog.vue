@@ -1,6 +1,5 @@
 <template lang="pug">
-  v-dialog(:value="show" height="400" width="400"
-  persistent)
+  v-dialog(:value="show" height="400" width="400" persistent)
     v-card
       v-app-bar(flat dense color="white")
         v-toolbar-title(class="title d-flex justify-end align-center" style="width: 100%;")
@@ -26,12 +25,12 @@
             height="35px"
             @click="onSubmit"
           ) Yes
-    
-          v-progress-circular.mb-5(
-            v-if="loading"
-            indeterminate
-            color="primary"
-          )
+  
+      v-progress-linear(
+        v-if="loading"
+        indeterminate
+        color="primary"
+      )
       
 </template>
 
@@ -48,7 +47,7 @@ export default {
   props: {
     show: Boolean,
     message:String,
-    title: SVGFESpecularLightingElement,
+    title: String,
     loading:Boolean
   },
 

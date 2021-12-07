@@ -250,6 +250,7 @@ export default {
     lastEventData(event) {
       if (event === null) return
       const dataEvent = JSON.parse(event.data.toString())
+    
       if (event.method === "DataStaked") {
         this.$store.dispatch("substrate/addAnyNotification", {
           address: this.wallet.address,
@@ -260,8 +261,21 @@ export default {
             params: null
           },
           role: "customer"
+        })  
+      }
+
+      if(event.method === "Withdraw") {
+        this.isLoading = false
+        this.showDialog = false
+        this.$router.push({
+          name: "my-test",
+          params: {
+            page: 1
+          }
         })
       }
+
+      
     },
 
     mnemonicData(val) {
@@ -501,17 +515,10 @@ export default {
     },
 
     async unstakeService () {
-      this.isLoading = true
       const requestId = this.stakingId
+      this.isLoading = true
       await unstakeRequest(this.api, this.wallet, requestId)
-      this.isLoading = false
-      this.showDialog = false
-      this.$router.push({
-        name: "my-test",
-        params: {
-          page: 1
-        }
-      })
+      
     }
   }
 }
