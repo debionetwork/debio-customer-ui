@@ -268,10 +268,14 @@ export default {
       if (val) this.initialData()
     }
   },
-
-  async created() {
+  async mounted() {
+    if (this.$route.params.page) {
+      this.tabs = this.$route.params.page
+    }
     await this.getTestResultData()
-
+  },
+  
+  async created() {
     if (this.mnemonicData) await this.initialData()
   },
 
@@ -503,7 +507,10 @@ export default {
       this.isLoading = false
       this.showDialog = false
       this.$router.push({
-        name: "customer-dashboard"
+        name: "my-test",
+        params: {
+          page: 1
+        }
       })
     }
   }

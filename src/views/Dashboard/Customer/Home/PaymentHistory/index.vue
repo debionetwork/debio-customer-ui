@@ -27,7 +27,7 @@
 
         template(v-slot:[`item.service_info.prices_by_currency[0].total_price`]="{ item }")
           .payment-history__price-details
-            | {{ formatPrice(item.service_info.prices_by_currency[0].total_price) }}
+            | {{ formatPrice((item.service_info.prices_by_currency[0].total_price).replace(/,/g, "")) }}
             | {{ item.service_info.prices_by_currency[0].currency }}
 
         template(v-slot:[`item.reward`]="{ item }")
