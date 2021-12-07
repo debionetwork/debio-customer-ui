@@ -1,7 +1,5 @@
 <template lang="pug">
   .payment-history
-    ui-debio-modal(:show="isLoading" disable-dismiss :show-title="false" :show-cta="false")
-      | {{ loadingPlaceholder }}
     .payment-history__wrapper
       DataTable(:headers="paymentHeaders" :items="payments")
         template(slot="prepend")
