@@ -13,7 +13,7 @@
               width="270"
               placeholder="Service Name, Payment Status, Lab Name"
               outlined
-              @keydown.enter="onSearchInput(searchQuery)"
+              @input="onSearchInput(searchQuery)"
             )
               ui-debio-icon(slot="icon-append" size="20" @click="onSearchInput(searchQuery)" role="button" :icon="searchIcon" stroke)
         template(v-slot:[`item.service_info.name`]="{ item }")
@@ -50,6 +50,7 @@ import { mapState } from "vuex"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { searchIcon } from "@/common/icons"
+import { generalDebounce } from "@/common/lib/utils"
 import { fetchPaymentHistories } from "@/common/lib/orders";
 
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
@@ -100,7 +101,7 @@ export default {
   },
 
   methods: {
-    async onSearchInput(val) {
+    onSearchInput: generalDebounce(async function (val) {
       const results = await fetchPaymentHistories(val)
       this.payments = results.map(result => ({
         ...result._source,
@@ -112,7 +113,7 @@ export default {
         }),
         timestamp: parseInt(result._source.created_at)
       }))
-    },
+    }, 1000),
 
     setButtonBackground(status) {
       const colors = Object.freeze({
