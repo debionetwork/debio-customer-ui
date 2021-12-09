@@ -48,6 +48,20 @@
               | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase()}}
 
+          div(class="d-flex justify-space-between mb-2" )
+            div( style="font-size: 10px;" ) Estimated Transaction Weight 
+              v-tooltip.visible(bottom )
+                template(v-slot:activator="{ on, attrs }")
+                  v-icon(
+                    style="font-size: 12px;"
+                    color="primary"
+                    dark
+                    v-bind="attrs"
+                    v-on="on"
+                  ) mdi-alert-circle-outline 
+                span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
+            div( style="font-size: 10px;" ) {{ txWeight }} milli DBIO
+
 
 
       div(class="ml-3 mt-5 me-3 text-center")
@@ -109,6 +123,7 @@ import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import { errorHandler } from "@/common/lib/error-handler"
+import { getWeightTx } from "@/common/lib/polkadot-provider/command/info"
 
 
 
@@ -144,7 +159,8 @@ export default {
     txHash: "",
     showError: false,
     errorTitle: "",
-    errorMsg: ""
+    errorMsg: "",
+    txWeight: 0
   }),
 
   computed: {
@@ -179,6 +195,9 @@ export default {
   },
 
   async mounted () {
+    const txWeight = await getWeightTx(this.api, this.wallet, this.selectedService.labId)
+    this.txWeight = (txWeight.weight / 10000000)
+
 
     if (this.lastEventData) {
       if (this.lastEventData.method === "OrderCreated") {
@@ -339,4 +358,10 @@ export default {
   .address-detail
     margin-top: 2px
     font-size: 12px
+
+  .visible
+    height: 3em
+    width: 3em
+    background-color: white
+    font-color: black
 </style>
