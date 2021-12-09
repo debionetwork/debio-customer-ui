@@ -102,7 +102,7 @@ import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
-import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
+import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
 import localStorage from "@/common/lib/local-storage"
 import CryptoJS from "crypto-js"	
@@ -143,7 +143,8 @@ export default {
     orderId: "",
     txHash: "",
     showError: false,
-    errorTitle: ""
+    errorTitle: "",
+    errorMsg: ""
   }),
 
   computed: {
@@ -230,9 +231,19 @@ export default {
         if (balance <= 0 ) {
           this.isLoading = false
           this.password = ""
-          this.error = "ETH balance is 0"
+          this.error = "You don't have enough ETH"
           return
         }
+
+        // check DAI Balance 
+        const daiBalance = await getBalanceDAI(this.metamaskWalletAddress)
+        if (Number(daiBalance) < Number(this.web3.utils.fromWei(String(this.selectedService.price)))) {
+          this.isLoading = false
+          this.password = ""
+          this.error = "You don't have enough DAI"
+          return
+        }
+
 
         // Seller has no ETH address
         this.ethSellerAddress = await ethAddressByAccountId(
