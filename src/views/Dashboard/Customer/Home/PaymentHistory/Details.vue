@@ -77,6 +77,12 @@
                         Button.reward__popup-button.mt-6(color="secondary" height="30" width="100") Learn more
                   .service__field-colon :
                   .service__field-value - DBIO
+            Button.payment-details__etherscan-link(
+              color="secondary"
+              @click="handleViewEtherscan"
+              outlined
+              block
+            ) VIEW ON ETHERSCAN
 
 </template>
 
@@ -190,6 +196,17 @@ export default {
 
     formatPrice(price) {
       return this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether")
+    },
+
+    async handleViewEtherscan() {
+      const anchor = document.createElement("a")
+      const txHash = this.payment?.id
+
+      // NOTE: Use anchor tag with "noreferrer noopener" for security
+      anchor.href = `https://rinkeby.etherscan.io/tx/${txHash}`
+      anchor.target = "_blank"
+      anchor.rel = "noreferrer noopener"
+      anchor.click()
     }
   }
 }
@@ -197,6 +214,7 @@ export default {
 
 <style lang="sass" scoped>
   @import "@/common/styles/mixins.sass"
+  @import "@/common/styles/function.sass"
 
   .payment-history-details
     &__title
@@ -241,6 +259,9 @@ export default {
       cursor: pointer
       text-decoration: underline
       color: #A568FF
+
+    &__etherscan-link
+      margin-top: toRem(30px)
 
   .product
     &__details
