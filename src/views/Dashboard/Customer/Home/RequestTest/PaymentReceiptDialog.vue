@@ -43,7 +43,7 @@
       div(class="text-start")
         div(class="ml-5 text-start me-10")
           div(class="d-flex justify-space-between mb-2" )
-            b( style=" font-size: 12px;" ) Total Price
+            b( style=" font-size: 12px;" ) Total Pay
             b( style="font-size: 12px;" )
               | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase()}}
