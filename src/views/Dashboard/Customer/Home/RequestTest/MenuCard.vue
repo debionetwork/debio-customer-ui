@@ -12,26 +12,13 @@
               b {{ title }}
             .menu-card__price 
               b {{ formatPrice(price) }} {{ currency.toUpperCase() }}
-
-          v-row(class="ml-1 mt-1 mb-1")
-            div(
-              v-for="i in rate"
-              :key="i")
-              v-icon(style="font-size: 14px;" color="primary") mdi-star
-
-            div(
-              v-for="i in ( 5 - rate)"
-              :key="i")
-              v-icon(style="font-size: 14px;" color="primary") mdi-star-outline 
-            div.ml-2
-              span( style="font-size: 10px;") ({{ countRate }})
+          
+          ui-debio-rating.menu-card__service-rating(:rating="rate" :total-reviews="countRate" size="12")
 
           .menu-card__name  
             b {{ labName }}
 
           .menu-card__address {{ city }}, {{ state }}
-        
-
 
 </template>
 

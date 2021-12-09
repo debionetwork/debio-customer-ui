@@ -37,19 +37,9 @@
             span {{ selectedService.labAddress }}, {{ selectedService.city }}, {{ country }}
 
         v-col
-          v-row(class="ml-1 mt-1")
-            div(
-              v-for="i in selectedService.labRate"
-              :key="i")
-              v-icon(style="font-size: 10px;" color="primary") mdi-star
+          ui-debio-rating(:rating="selectedService.labRate" :total-reviews="selectedService.countRateLab" size="12")
 
-            div(
-              v-for="i in ( 5 - selectedService.labRate )"
-              :key="i")
-              v-icon(style="font-size: 10px;" color="primary") mdi-star-outline 
-
-            div.ml-2
-              span(style="font-size: 10px;" ) ({{ selectedService.countRateLab }})
+         
 
       .dialog-service__button
         Button(
