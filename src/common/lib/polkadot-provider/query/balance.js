@@ -3,6 +3,6 @@ export async function queryBalance(api, addr) {
   const { nonce, data: balance } = await api.query.system.account(
     addr
   )
-  const formatedBalance = balance.free.toHuman().replace(/,/g, "")
+  const formatedBalance = balance.free.toHuman().replaceAll(",", "")
   return formatedBalance
 }

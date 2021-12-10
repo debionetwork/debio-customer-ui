@@ -7,7 +7,7 @@ export async function getOrdersDetail(api, orderId) {
   let orderDetail = await getOrdersData(api, orderId)
   orderDetail["customerEthAddress"] = await ethAddressByAccountId(api, orderDetail.customerId)
   orderDetail["sellerEthAddress"] = await ethAddressByAccountId(api, orderDetail.sellerId)
-  orderDetail["createdAt"] = parseInt(orderDetail.createdAt.replace(/,/g, ""))
+  orderDetail["createdAt"] = parseInt(orderDetail.createdAt.replaceAll(",", ""))
 
   const dna = await queryDnaSamples(api, orderDetail.dnaSampleTrackingId)
   if (dna) {

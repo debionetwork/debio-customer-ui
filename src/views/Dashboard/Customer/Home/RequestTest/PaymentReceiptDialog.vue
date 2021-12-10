@@ -27,13 +27,13 @@
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
             div( style="font-size: 12px;" )
-              | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replace(/,/g, "")) }} 
+              | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
             div( style="font-size: 12px;" )
-              | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replace(/,/g, "")) }} 
+              | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
        
@@ -45,7 +45,7 @@
           div(class="d-flex justify-space-between mb-2" )
             b( style=" font-size: 12px;" ) Total Price
             b( style="font-size: 12px;" )
-              | {{  formatPrice((selectedService.price).replace(/,/g, "")) }} 
+              | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase()}}
 
 

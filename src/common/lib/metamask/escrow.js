@@ -81,8 +81,8 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const customerEthAddress = ethAccount
   const sellerEthAddress = sellerEth
   const dnaSampleTrackingId = currentData.dnaSampleTrackingId
-  const testingPrice = (currentData.prices[0].value).replace(/,/g, "")
-  const qcPrice = (currentData.additionalPrices[0].value).replace(/,/g, "")
+  const testingPrice = (currentData.prices[0].value).replaceAll(",", "")
+  const qcPrice = (currentData.additionalPrices[0].value).replaceAll(",", "")
   const payAmount = Number(testingPrice) + Number(qcPrice)
 
 
