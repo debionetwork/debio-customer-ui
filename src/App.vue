@@ -9,6 +9,7 @@
 <script>
 import { mapState, mapActions } from "vuex"
 import NoAccessMobile from "@/views/NoAccessMobile.vue"
+import { generalDebounce } from "@/common/lib/utils"
 
 export default {
   name: "App",
@@ -32,9 +33,14 @@ export default {
     const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Apple Safari|Safari/i
     this.handleChangeDevices(mobileDevices, window.innerWidth)
 
-    window.addEventListener("resize", () => {
-      this.handleChangeDevices(mobileDevices, window.innerWidth)
-    })
+    const handleResize = generalDebounce(
+      () => {
+        this.handleChangeDevices(mobileDevices, window.innerWidth)
+      },
+      150
+    )
+
+    window.addEventListener("resize", handleResize)
   },
 
   methods: {
