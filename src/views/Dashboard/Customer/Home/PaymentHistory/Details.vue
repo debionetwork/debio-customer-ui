@@ -8,9 +8,6 @@
     )
       | {{ messageError }}
 
-    ui-debio-modal(:show="isLoading" disable-dismiss :show-title="false" :show-cta="false")
-      | {{ loadingPlaceholder }}
-
     .payment-history-details__wrapper(v-if="hasPaymentDetails")
       ui-debio-card(block centered-content)
         h2.payment-history-details__title {{ computeDetailsTitle }}
