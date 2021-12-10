@@ -532,7 +532,6 @@ export default {
 
 .customer-my-test
   width: 100%
-  height: 200px
   background: #FFFFFF
   margin-top: 30px
 
