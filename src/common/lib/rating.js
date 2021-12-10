@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const submitRatingOrder = async (labId, serviceId, orderId, ratingBy, rating, review) => {
-  const result = await axios.post(`${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/rating`, {
+  const result = await axios.post(`${process.env.VUE_APP_BACKEND_API}/rating`, {
     lab_id: labId,
     service_id: serviceId,
     order_id: orderId,
@@ -14,7 +14,7 @@ export const submitRatingOrder = async (labId, serviceId, orderId, ratingBy, rat
 }
 
 export const getRatingByOrderId = async (orderId) => {
-  const result = await axios.get(`${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/${orderId}`, {});
+  const result = await axios.get(`${process.env.VUE_APP_BACKEND_API}/${orderId}`, {});
 
   return result.data;
 }
