@@ -7,18 +7,8 @@
         .menu-card__body
           b.menu-card__service-title {{ dataService.serviceName }}
             v-row(class="ml-1 mt-1")
-              div(
-                v-for="i in dataService.serviceRate"
-                :key="i")
-                v-icon(style="font-size: 14px;" color="primary") mdi-star
-
-              div(
-                v-for="i in (5 - dataService.serviceRate)"
-                :key="i")
-                v-icon(style="font-size: 14px;" color="primary") mdi-star-outline 
-
-              span(class="ml-2" style="font-size: 9px;") ({{ dataService.countServiceRate }})
-
+              ui-debio-rating(:rating="dataService.serviceRate" :total-reviews="dataService.countServiceRate" size="12")
+            
             v-row
               v-col(cols="5.5")
                 b.menu-card__service-sub-title Price
@@ -40,18 +30,8 @@
         .menu-card__lab-detail
           b.mt-2.me-4.menu-card__service-title {{ dataService.labName }}
             v-row(class="ml-1 mt-1 mb-1")
-              div(
-                v-for="i in dataService.labRate"
-                :key="i")
-                v-icon(style="font-size: 14px;" color="primary") mdi-star
+              ui-debio-rating(:rating="dataService.labRate" :total-reviews="dataService.countRateLab" size="12")
 
-              div(
-                v-for="i in (5 - dataService.labRate)"
-                :key="i")
-                v-icon(style="font-size: 14px;" color="primary") mdi-star-outline 
-
-              span(class="ml-2" style="font-size: 9px;") ({{ dataService.countRateLab }})
-        
             div.description(
               class="mb-5 me-8 text-caption grey--text text--darken-1"
             ) {{ dataService.labAddress }}, {{ dataService.city }}, {{ country(dataService.country ) }}

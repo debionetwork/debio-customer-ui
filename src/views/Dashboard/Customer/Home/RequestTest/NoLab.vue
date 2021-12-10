@@ -28,9 +28,9 @@
         :width="289"
         message="Your request has been submitted"
         imgPath="check-circle.png"
-        btn-message="Back to Dashboard"
+        btn-message="go to my stake service"
         @close="closingDialog"
-        @click="toHomePage"
+        @click="toStakeService"
         )
   
 </template>
@@ -83,8 +83,13 @@ export default {
       this.showSuccessDialog = true
     },
 
-    toHomePage () {
-      this.$router.push({ name: "customer-dashboard" })
+    toStakeService () {
+      this.$router.push({ 
+        name: "my-test",
+        params: {
+          page: 1
+        }
+      })
     }
   }
 

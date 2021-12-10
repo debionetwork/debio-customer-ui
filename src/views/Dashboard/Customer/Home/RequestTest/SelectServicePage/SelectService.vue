@@ -141,7 +141,7 @@ export default {
         const serviceRate = serviceData.rating_service
         const countServiceRate = serviceData.count_rating_service
         const detailPrice = this.services[i].info.prices_by_currency[0]
-        const price = this.services[i].info.prices_by_currency[0].total_price.replace(/,/g, "")
+        const price = this.services[i].info.prices_by_currency[0].total_price.replaceAll(",", "")
 
         if (durationType === "WorkingDays") {
           durationType = "Working Days"

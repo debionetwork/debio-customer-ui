@@ -27,13 +27,13 @@
           div(class="d-flex justify-space-between mb-2" )
             div( style="font-size: 12px;" ) Service Price
             div( style="font-size: 12px;" )
-              | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replace(/,/g, "")) }} 
+              | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
           div(class="d-flex justify-space-between" )
             div( style="font-size: 12px;" ) Quality Control Price
             div( style="font-size: 12px;" )
-              | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replace(/,/g, "")) }} 
+              | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase() }}
 
        
@@ -45,7 +45,7 @@
           div(class="d-flex justify-space-between mb-2" )
             b( style=" font-size: 12px;" ) Total Price
             b( style="font-size: 12px;" )
-              | {{  formatPrice((selectedService.price).replace(/,/g, "")) }} 
+              | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
               | {{ selectedService.currency.toUpperCase()}}
 
 
@@ -83,18 +83,26 @@
           height="38"
           @click="onSubmit"
         ) Pay
+
+    ErrorDialog(
+      :show="showError"
+      :title="errorTitle"
+      :message="errorMsg"
+      @close="showError = false"
+    )
 </template>
 
 <script>
 
 import Button from "@/common/components/Button"
+import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import { mapState, mapMutations } from "vuex"
 import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
-import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
+import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
 import localStorage from "@/common/lib/local-storage"
 import CryptoJS from "crypto-js"	
@@ -108,7 +116,8 @@ export default {
   name: "PaymentReceiptDialog",
 
   components: {
-    Button
+    Button,
+    ErrorDialog
   },
 
   mixins: [serviceHandlerMixin],
@@ -132,7 +141,10 @@ export default {
     detailOrder: null,
     status: "",
     orderId: "",
-    txHash: ""
+    txHash: "",
+    showError: false,
+    errorTitle: "",
+    errorMsg: ""
   }),
 
   computed: {
@@ -219,9 +231,19 @@ export default {
         if (balance <= 0 ) {
           this.isLoading = false
           this.password = ""
-          this.error = "ETH balance is 0"
+          this.error = "You don't have enough ETH"
           return
         }
+
+        // check DAI Balance 
+        const daiBalance = await getBalanceDAI(this.metamaskWalletAddress)
+        if (Number(daiBalance) < Number(this.web3.utils.fromWei(String(this.selectedService.price)))) {
+          this.isLoading = false
+          this.password = ""
+          this.error = "You don't have enough DAI"
+          return
+        }
+
 
         // Seller has no ETH address
         this.ethSellerAddress = await ethAddressByAccountId(
@@ -259,31 +281,47 @@ export default {
       } catch (err) {
         this.isLoading = false
         this.password = ""
-        this.error = await errorHandler(err.message)
+        this.showError = true
+        const error = await errorHandler(err.message)
+        this.error = error.message
+        this.errorTitle = error.title
+        this.errorMsg = error.message
       } 
     },
 
     async payOrder () {
-      // get last order id
-      this.lastOrder = await lastOrderByCustomer(
-        this.api,
-        this.wallet.address
-      )
-      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
-
-      const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
-      const totalPrice = this.selectedService.price
-
-      if (stakingAmountAllowance < totalPrice ) {
-        const txHash = await approveDaiStakingAmount(
-          this.metamaskWalletAddress,
-          totalPrice
+      try {
+        // get last order id
+        this.lastOrder = await lastOrderByCustomer(
+          this.api,
+          this.wallet.address
         )
-        await getTransactionReceiptMined(txHash)
+        this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+
+        const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
+        const totalPrice = this.selectedService.price
+
+        if (stakingAmountAllowance < totalPrice ) {
+          const txHash = await approveDaiStakingAmount(
+            this.metamaskWalletAddress,
+            totalPrice
+          )
+          await getTransactionReceiptMined(txHash)
+        }
+
+        this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
+        await getTransactionReceiptMined(this.txHash)
+        
+      } catch (err) {
+        this.isLoading = false
+        this.password = ""
+        this.showError = true
+        const error = await errorHandler(err.message)
+        this.error = error.message
+        this.errorTitle = error.title
+        this.errorMsg = error.message
       }
 
-      this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
-      await getTransactionReceiptMined(this.txHash)
     },
 
     formatPrice(price) {

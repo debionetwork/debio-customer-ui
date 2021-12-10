@@ -74,7 +74,6 @@ export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
 
 export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const contracEscrowInterface = store.getters["metamask/contracts/getEscrowContract"]
-  const web3 = store.getters["metamask/getWeb3"]
   const currentData = await getOrdersData(api, orderId)
   const serviceId = currentData.serviceId
   const customerSubstrateAddress = currentData.customerId
@@ -82,9 +81,10 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const customerEthAddress = ethAccount
   const sellerEthAddress = sellerEth
   const dnaSampleTrackingId = currentData.dnaSampleTrackingId
-  const testingPrice = currentData.prices[0].value
-  const qcPrice = currentData.additionalPrices[0].value
-  const payAmount = (parseFloat(testingPrice) + parseFloat(qcPrice)).toFixed(2)
+  const testingPrice = (currentData.prices[0].value).replaceAll(",", "")
+  const qcPrice = (currentData.additionalPrices[0].value).replaceAll(",", "")
+  const payAmount = Number(testingPrice) + Number(qcPrice)
+
 
   const txData = contracEscrowInterface.methods
     .payOrder(
@@ -95,9 +95,9 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
       customerEthAddress,
       sellerEthAddress,
       dnaSampleTrackingId,
-      testingPrice.replace(/,/g, ""),
-      qcPrice.replace(/,/g, ""),
-      web3.utils.toWei(String(payAmount), "ether")
+      testingPrice,
+      qcPrice,
+      String(payAmount)
     )
     .encodeABI()
 

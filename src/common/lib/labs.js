@@ -12,7 +12,7 @@ import store from "@/store/index"
  */
 
 export async function getServicesByCategory(category, flow) {
-  const baseUrl = process.env.VUE_APP_DEV_DEBIO_BACKEND_URL
+  const baseUrl = process.env.VUE_APP_BACKEND_API
   const { country, region, city} = store.getters["lab/getCountryRegionCity"]
 
   const params = {

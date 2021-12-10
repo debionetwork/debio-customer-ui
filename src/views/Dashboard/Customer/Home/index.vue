@@ -307,10 +307,10 @@ export default {
 
       const number = detailOrder.id
       const dateSet = new Date(
-        parseInt(detailOrder.createdAt.replace(/,/g, ""))
+        parseInt(detailOrder.createdAt.replaceAll(",", ""))
       )
       const dateUpdate = new Date(
-        parseInt(detailOrder.updatedAt.replace(/,/g, ""))
+        parseInt(detailOrder.updatedAt.replaceAll(",", ""))
       )
       const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-US", {

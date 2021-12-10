@@ -71,7 +71,7 @@ export default {
       labImage: data?.lab_info.profile_image,
       labRate: 0,
       labAddress: data?.lab_info.address,
-      price: (data?.service_info.prices_by_currency[0].total_price).replace(/,/g, ""),
+      price: (data?.service_info.prices_by_currency[0].total_price).replaceAll(",", ""),
       detailPrice: data?.service_info.prices_by_currency[0],
       currency: data?.service_info.prices_by_currency[0].currency,
       city: data?.lab_info.city,

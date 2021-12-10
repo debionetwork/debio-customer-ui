@@ -39,7 +39,7 @@ const indexRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Details")
     },
     {
-      path: "my-test",
+      path: "my-test/:page?",
       name: "my-test",
       meta: { pageHeader: "My Test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest")

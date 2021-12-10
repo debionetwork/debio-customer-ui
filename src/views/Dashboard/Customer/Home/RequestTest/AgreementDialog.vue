@@ -52,6 +52,12 @@
           :loading="isLoading"
         ) Continue
 
+        v-progress-linear(
+        v-if="isLoading"
+        indeterminate
+        color="primary"
+      )
+
 </template>
 
 <script>
@@ -85,8 +91,21 @@ export default {
       country: state => state.lab.country,
       region: state => state.lab.region,
       city: state => state.lab.city,
-      category: state => state.lab.category
+      category: state => state.lab.category,
+      lastEventData: (state) => state.substrate.lastEventData
     })
+  },
+
+  watch: {
+    lastEventData() {
+      if (this.lastEventData) {
+        if (this.lastEventData.method === "Endowed") {
+          this.isLoading = false
+          this.dialogAlert = true
+          this.$emit("click")
+        }
+      }      
+    }
   },
   
   methods: {
@@ -105,7 +124,7 @@ export default {
       }
 
       try {
-        await createRequest(
+        const resultCreate = await createRequest(
           this.api,
           this.pair,
           this.country,
@@ -149,9 +168,8 @@ export default {
         localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification))
         listNotification.reverse()
 
-        this.isLoading = false
-        this.dialogAlert = true
-        this.$emit("click")
+
+        console.log(resultCreate)
 
       } catch (err) {
         console.log(err)

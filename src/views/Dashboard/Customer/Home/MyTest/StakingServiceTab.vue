@@ -147,7 +147,7 @@ export default {
     },
 
     setAmount(amount) {
-      const formatedAmount = this.web3.utils.fromWei(String(amount.replace(/,/g, "")), "ether")
+      const formatedAmount = this.web3.utils.fromWei(String(amount.replaceAll(",", "")), "ether")
       return formatedAmount
     },
 
