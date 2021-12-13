@@ -495,7 +495,7 @@ export default {
     handleAddFile() {
       this.showModal = true
       this.isEdit = false
-      this.clearFile = false
+      this.clearFile = true
     },
 
     handleModalPassword() {
