@@ -120,6 +120,7 @@ export default {
             description: serviceDescription,
             image: serviceImage,
             dna_collection_process: dnaCollectionProcess,
+            test_result_sample: resultSample,
             expected_duration: {
               duration,
               durationType
@@ -170,7 +171,8 @@ export default {
           durationType,
           verificationStatus,
           indexPrice: 0,
-          dnaCollectionProcess
+          dnaCollectionProcess,
+          resultSample
         }
               
         if (service.verificationStatus === "Verified") {
