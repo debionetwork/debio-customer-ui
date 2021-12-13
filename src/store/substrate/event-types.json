@@ -16,48 +16,48 @@
           "message": "Payment Success",
           "value": "id",
           "value_message": "dna_sample_tracking_id",
-          "route": "order-history-detail",
-          "params": "number",
+          "route": "customer-payment-details",
+          "params": "id",
           "identity": "customer_id"
         },
         "OrderCancelled": {
           "message": "New order cancelled",
           "value": "id",
           "value_message": "dna_sample_tracking_id",
-          "route": "order-history-detail",
-          "params": "number",
+          "route": "customer-payment-details",
+          "params": "id",
           "identity": "customer_id"
         },
         "OrderCreated": {
           "message": "New order created",
           "value": "id",
           "value_message": "dna_sample_tracking_id",
-          "route": "order-history-detail",
-          "params": "number",
+          "route": "customer-payment-details",
+          "params": "id",
           "identity": "customer_id"
         },
         "OrderSuccess": {
           "message": "Order completed",
           "value": "id",
           "value_message": "dna_sample_tracking_id",
-          "route": "order-history-detail",
-          "params": "number",
+          "route": "customer-payment-details",
+          "params": "id",
           "identity": "customer_id"
         },
         "OrderRefunded": {
           "message": "Order rejected or returned",
           "value": "id",
           "value_message": "dna_sample_tracking_id",
-          "route": "order-history-detail",
-          "params": "number",
+          "route": "customer-payment-details",
+          "params": "id",
           "identity": "customer_id"
         },
         "OrderFailed": {
           "message": "Order failed to create",
           "value": "id",
           "value_message": "dna_sample_tracking_id",
-          "route": "order-history-detail",
-          "params": "number",
+          "route": "customer-payment-details",
+          "params": "id",
           "identity": "customer_id"
         }
       },
