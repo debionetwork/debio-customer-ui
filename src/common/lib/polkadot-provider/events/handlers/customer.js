@@ -43,7 +43,7 @@ const handler = {
     const params = null;
     const finalText = await toFormatDebioCoin(data[valueMessage])
     const coin = web3.utils.fromWei(finalText, "kwei")
-    const wording = `${coin} DBIO from wallet binding`;
+    const wording = `${coin} DBIO for registering in Debio Appchain`;
     return { data, id, params, wording }
   }
 }

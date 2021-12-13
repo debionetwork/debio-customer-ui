@@ -436,7 +436,6 @@ export default {
           const { chunks, fileName: encFileName, fileType: encFileType } = encrypted
 
           if (context.isEdit) {
-
             const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
 
             context.emr.files[index] = {
@@ -447,6 +446,7 @@ export default {
             }
 
             context.emr.files = context.emr.files.map(file => file)
+            context.isEdit = false
           }
 
           else context.emr.files.push({
@@ -482,7 +482,6 @@ export default {
     },
 
     onCloseModalDocument() {
-      this.isEdit = false
       this.showModal = false
       Object.assign(this.document, { title: "", description: "", file: null })
       this.clearFile = true
