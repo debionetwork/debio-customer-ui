@@ -482,6 +482,9 @@ export default {
     },
 
     onCloseModalDocument() {
+      setTimeout(() => {
+        this.isEdit = false
+      }, 350)
       this.showModal = false
       Object.assign(this.document, { title: "", description: "", file: null })
       this.clearFile = true
@@ -495,7 +498,7 @@ export default {
     handleAddFile() {
       this.showModal = true
       this.isEdit = false
-      this.clearFile = true
+      this.clearFile = false
     },
 
     handleModalPassword() {
