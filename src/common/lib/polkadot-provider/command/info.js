@@ -1,7 +1,6 @@
-export async function getWeightTx(api, pair, address) {
-  console.log(api, pair, address)
-  const info = await api.tx.balances
-    .transfer(address, 123)
+export async function getCreateOrderFee(api, pair, address, indexPrice, publicKey) {
+  const info = await api.tx.orders
+    .createOrder(address, indexPrice, publicKey, "RequestTest")
     .paymentInfo(pair)
   return info
 }

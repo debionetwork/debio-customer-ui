@@ -60,7 +60,7 @@
                     v-on="on"
                   ) mdi-alert-circle-outline 
                 span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
-            div( style="font-size: 10px;" ) {{ txWeight }} milli DBIO
+            div( style="font-size: 10px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
 
 
 
@@ -123,7 +123,7 @@ import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import { errorHandler } from "@/common/lib/error-handler"
-import { getWeightTx } from "@/common/lib/polkadot-provider/command/info"
+import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
 
 
 
@@ -195,9 +195,8 @@ export default {
   },
 
   async mounted () {
-    const txWeight = await getWeightTx(this.api, this.wallet, this.selectedService.labId)
-    this.txWeight = (txWeight.weight / 10000000)
-
+    const txWeight = await getCreateOrderFee(this.api, this.wallet, this.selectedService.labId, this.selectedService.indexPrice)
+    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
 
     if (this.lastEventData) {
       if (this.lastEventData.method === "OrderCreated") {
