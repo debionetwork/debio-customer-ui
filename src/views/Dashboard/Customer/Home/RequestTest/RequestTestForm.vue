@@ -1,8 +1,8 @@
 <template lang="pug">
   v-row(class="d-flex justify-center mt-16")
     v-col(cols="5")
-      label Country
-      v-autocomplete(
+      label.request-test-form Country
+      v-autocomplete.request-test-form(
         dense
         key="country"
         v-model="country"
@@ -14,8 +14,8 @@
         autocomplete="off"
         outlined)
 
-      label State/Province
-      v-autocomplete(
+      label.request-test-form State/Province
+      v-autocomplete.request-test-form(
         dense
         key="state"
         v-model="state"
@@ -28,8 +28,8 @@
         autocomplete="off"
         outlined)
 
-      label City
-      v-autocomplete(
+      label.request-test-form City
+      v-autocomplete.request-test-form(
         dense
         key="city"
         v-model="city"
@@ -42,8 +42,8 @@
         autocomplete="off"
         outlined)
 
-      label Category
-      v-select(
+      label.request-test-form Category
+      v-select.request-test-form(
         dense
         :items="categories"
         item-text="service_categories"
@@ -55,7 +55,7 @@
         autocomplete="off"
         outlined)
 
-      Button(
+      Button.request-test-button(
         :disabled="disable"
         color="secondary" 
         width="100%"
@@ -159,3 +159,15 @@ export default {
 
 
 </script>
+
+
+<style lang="sass">
+  @import "@/common/styles/mixins.sass"
+
+  .request-test-form
+    @include body-text-3-opensans
+  
+  .request-test-button
+    @include button-2
+
+</style>

@@ -1,36 +1,33 @@
 <template lang="pug">
   v-container.container-card
     v-card.menu-card
-      div(class="mt-5 mb-3 text-center" )
-        b Order Summary
+      .menu-card__title Order Summary
 
-      div(class="ml-5 mb-1 text-start" style="font-size: 12px;")
-        b Details
+      .menu-card__sub-title-medium Details
 
-      hr(class="ml-3 me-3 mb-3")
+      hr.menu-card__line
 
-      div(class="ml-5 text-start me-10")
-        div(class="d-flex justify-space-between mb-2" )
-          div( style="font-size: 12px;" ) Service Price
-          div( style="font-size: 12px;" )
-            | {{ formatPrice((dataService.detailPrice.price_components[0].value).replaceAll(",", "")) }} 
-            | {{ dataService.currency.toUpperCase() }}
-        
-        div(class="d-flex justify-space-between" )
-          div( style="font-size: 12px;" ) Quality Control Price
-          div( style="font-size: 12px;" )
-            | {{ formatPrice((dataService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
-            | {{ dataService.currency.toUpperCase() }}
+      .menu-card__details
+        .menu-card__sub-title Service Price
+        .menu-card__price 
+          | {{ formatPrice((dataService.detailPrice.price_components[0].value).replaceAll(",", "")) }}
+          | {{ dataService.currency.toUpperCase() }}
+    
 
-      span(class="d-flex justify-end me-3" style="font-size: 12px") +
-      hr(class="ml-3 me-3 mb-2")
+      .menu-card__details
+        .menu-card__sub-title Quality Control Price
+        .menu-card__price 
+          | {{ formatPrice((dataService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
+          | {{ dataService.currency.toUpperCase() }}
 
-      div(class="ml-5 text-start me-10")
-        div(class="d-flex justify-space-between mb-2" )
-          b( style=" font-size: 12px;" ) Total Price
-          b( style="font-size: 12px;" )
-            | {{ (formatPrice(dataService.price).replaceAll(",", "")) }} 
-            | {{ dataService.currency.toUpperCase()}}
+      .menu-card__operation +
+      hr.menu-card__line
+
+      .menu-card__details
+        .menu-card__sub-title-medium Total Price
+        .menu-card__price-medium
+          | {{ (formatPrice(dataService.price).replaceAll(",", "")) }} 
+          | {{ dataService.currency.toUpperCase()}}
 
 
       div(class="ml-5 text-start me-10" v-if="stakingFlow")
@@ -290,7 +287,42 @@ export default {
     height: 320px
 
     &__title
+      margin-top: 30px
+      margin-bottom: 25px
+      justify-content: center
       display: flex
-      margin: 35px 10px 5px 10px
+      @include h6-opensans
+
+    &__sub-title
+      margin-left: 38px
+      @include body-text-3-opensans
+    
+    &__sub-title-medium
+      margin-left: 38px
+      @include body-text-3-opensans-medium
+  
+    &__price
+      margin-right: 38px
+      @include body-text-3-opensans
+
+    &__price-medium
+      margin-right: 38px
+      @include body-text-3-opensans-medium
+
+    &__line
+      margin: 1px 35px
+
+    &__details
+      margin-top: 5px
+      display: flex
+      justify-content: space-between
+
+    &__operation
+      margin-top: 5px
+      margin-right: 38px
+      display: flex
+      justify-content: flex-end
+      @include body-text-3-opensans-medium
+
 </style>
 

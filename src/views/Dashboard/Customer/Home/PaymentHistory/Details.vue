@@ -253,7 +253,7 @@ export default {
       gap: 15px
 
     &__name
-      @include h3
+      @include h3-opensans
 
     &__lab
       width: 100%

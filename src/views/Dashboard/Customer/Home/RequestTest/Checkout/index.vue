@@ -56,7 +56,7 @@ export default {
     let durationType = data?.service_info.expected_duration.durationType
 
     if (durationType === "WorkingDays") {
-      durationType = "Working Days"
+      durationType = "Days"
     }
 
     this.prefillService = {

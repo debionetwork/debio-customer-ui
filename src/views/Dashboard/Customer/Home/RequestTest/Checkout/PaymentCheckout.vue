@@ -1,12 +1,10 @@
 <template lang="pug">
   .customer-payment-checkout
-    .customer-payment-checkout__title 
-      b(v-if="!isCancelled") Checkout your order!
-      b(v-if="isCancelled") You have cancelled your order!
-
+    .customer-payment-checkout__title(v-if="!isCancelled") Checkout your order!
+    .customer-payment-checkout__title(v-if="isCancelled") You have cancelled your order!
 
     template
-      v-row.mt-10(class="d-flex justify-center")
+      v-row.customer-payment-checkout__row
         LabDetailCard
         PaymentDetailCard(
           @cancel="isCancelled = true"
@@ -75,7 +73,14 @@ export default {
       display: flex
       flex-direction: column
       align-items: center
+      text-align: center
+      letter-spacing: 0.0044em !important
       margin-top:55px
-      @include h6
+      @include h6-opensans
+
+    &__row
+      margin-top: 3.5rem !important
+      display: flex
+      justify-content: center
 
 </style>

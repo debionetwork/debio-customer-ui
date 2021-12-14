@@ -100,7 +100,7 @@ export default {
       color: #363636
       z-index: 2
       transition: all cubic-bezier(.7,-0.04,.61,1.14) .3s
-      @include h3
+      @include h3-opensans
 
     &__title
       max-width: 8.25rem

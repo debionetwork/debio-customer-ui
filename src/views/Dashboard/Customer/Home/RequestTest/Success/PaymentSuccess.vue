@@ -1,12 +1,11 @@
 <template lang="pug">
   .customer-payment-success
-    .customer-payment-success__title 
-      b Thank you for your order!
+    .customer-payment-success__title Thank you for your order!
     .customer-payment-success__sub-title Please proceed to send sample
       
 
     template
-      v-row.mt-10(class="d-flex justify-center")
+      v-row.customer-payment-success__row
         LabDetailCard
         PaymentDetailCard(
           :success="isSuccess"
@@ -55,11 +54,18 @@ export default {
       display: flex
       flex-direction: column
       align-items: center
+      text-align: center
+      letter-spacing: 0.0044em !important
       margin-top:55px
-      @include h6
+      @include h6-opensans
 
     &__sub-title
       align-items: center
-      @include body-text-1    
+      @include body-text-1
+
+    &__row
+      margin-top: 3.5rem !important
+      display: flex
+      justify-content: center
 
 </style>

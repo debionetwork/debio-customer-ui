@@ -121,7 +121,7 @@ export default {
   .dialog-cancel
     &__title
       color: black
-      @include h2
+      @include h5-opensans
 
     &__message
       @include body-text-1

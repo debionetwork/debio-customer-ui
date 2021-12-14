@@ -57,7 +57,7 @@ export default {
 
   .dialog-error
     &__title
-      @include h6
+      @include h6-opensans
 
     &__desc
       @include body-text-2

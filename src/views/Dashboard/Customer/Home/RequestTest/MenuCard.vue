@@ -1,7 +1,6 @@
 <template lang="pug">
   .container-card(@click="onClick")
     v-card.menu-card
-
       v-row.pa-3
         v-col(cols="3")
           ui-debio-avatar(:src="icon" size="90" rounded)
@@ -13,9 +12,9 @@
             .menu-card__price 
               b {{ formatPrice(price) }} {{ currency.toUpperCase() }}
           
-          ui-debio-rating.menu-card__service-rating(:rating="rate" :total-reviews="countRate" size="12")
+          ui-debio-rating(:rating="rate" :total-reviews="countRate" size="12")
 
-          .menu-card__name  
+          .menu-card__lab-name
             b {{ labName }}
 
           .menu-card__address {{ city }}, {{ state }}
@@ -102,17 +101,22 @@ export default {
 
     &__name
       width: 240px
-      @include body-text-3
-    
+      @include body-text-3-opensans-medium
+  
     &__price
       margin-right: 5px
       color: #C400A5
-      @include body-text-3
+      @include body-text-3-opensans-medium
+
+    &__lab-name
+      margin-top: 9px
+      width: 240px
+      @include body-text-3-opensans-medium
 
     &__address
       width: 270px
       color: gray
-      @include body-text-5
+      @include tiny-reg
 
 </style>
 

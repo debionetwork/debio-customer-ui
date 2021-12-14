@@ -1,7 +1,6 @@
 <template lang="pug">
   .customer-select-location
-    .customer-select-location__title 
-      b Request a Test
+    .customer-select-location__title Request a Test
 
     .customer-select-location__form
       RequestTestForm(
@@ -40,7 +39,7 @@ export default {
       flex-direction: column
       align-items: center
       margin-top:55px
-      @include h6
+      @include h6-opensans
 
     &__form
       width:100%

@@ -1,87 +1,74 @@
 <template lang="pug">
-  v-dialog(:value="show" width="400" rounded persistent )
-    v-card.pa-5
+  v-dialog.dialog-payment(:value="show" width="400" rounded persistent )
+    v-card.dialog-payment__card
       v-app-bar(flat dense color="white")
         v-spacer
-        v-btn( class="mt-2" icon @click="closeDialog")
+        v-btn(icon @click="closeDialog")
           v-icon mdi-close
 
-      div(class="text-center")
-        div(class="text-h5")
-          b Payment
-
-      div(class="text-start ms-5 mt-5")
-        b.mb-2 {{ selectedService.labName }}
-
-      div(class="ml-5 text-start")
-        .address-detail {{ selectedService.labAddress}}
-        .address-detail {{ selectedService.city}}
-
-      div(class="ml-5 mb-2 mt-4 text-start" style="font-size: 12px;")
-        b Details
-
-      hr(class="ml-3 me-3 mb-3")
-
-      div(class="text-start")
-        div(class="ml-5 text-start me-10")
-          div(class="d-flex justify-space-between mb-2" )
-            div( style="font-size: 12px;" ) Service Price
-            div( style="font-size: 12px;" )
-              | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replaceAll(",", "")) }} 
-              | {{ selectedService.currency.toUpperCase() }}
-
-          div(class="d-flex justify-space-between" )
-            div( style="font-size: 12px;" ) Quality Control Price
-            div( style="font-size: 12px;" )
-              | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
-              | {{ selectedService.currency.toUpperCase() }}
-
-       
-      div(class="d-flex justify-end me-3" style="font-size: 12px") +
-      hr(class="ml-3 me-3 mb-2")
-
-      div(class="text-start")
-        div(class="ml-5 text-start me-10")
-          div(class="d-flex justify-space-between mb-2" )
-            b( style=" font-size: 12px;" ) Total Pay
-            b( style="font-size: 12px;" )
-              | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
-              | {{ selectedService.currency.toUpperCase()}}
-
-          div(class="d-flex justify-space-between mb-2" )
-            div( style="font-size: 10px;" ) Estimated Transaction Weight 
-              v-tooltip.visible(bottom )
-                template(v-slot:activator="{ on, attrs }")
-                  v-icon(
-                    style="font-size: 12px;"
-                    color="primary"
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                  ) mdi-alert-circle-outline 
-                span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
-            div( style="font-size: 10px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
-
-
-
-      div(class="ml-3 mt-5 me-3 text-center")
-        v-text-field(
-          label="Input Password"
-          v-model="password"
-          class="password-field"
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showPassword ? 'text' : 'password'"
-          :rules="[val => !!val || 'Password is required']"
-          :disabled="isLoading"
-          @click:append="showPassword = !showPassword"
-          outlined
-        )
+      .dialog-payment__title Payment
+      .dialog-payment__lab
+        .dialog-payment__lab-name {{ selectedService.labName }} 
+        .dialog-payment__lab-address {{ selectedService.labAddress }}
+        .dialog-payment__lab-address {{ selectedService.city }}
+        .dialog-payment__detail-medium Details
         
-        v-progress-circular.mb-5(
+        hr.dialog-payment__line
+      
+        .dialog-payment__desc
+          .dialog-payment__detail Service Price
+          .dialog-payment__detail
+            | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replaceAll(",", "")) }} 
+            | {{ selectedService.currency.toUpperCase() }}
+
+        .dialog-payment__desc
+          .dialog-payment__detail Quality Control Price
+          .dialog-payment__detail
+            | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
+            | {{ selectedService.currency.toUpperCase() }}
+       
+        .dialog-payment__operation +
+
+        hr.dialog-payment__line
+
+        .dialog-payment__desc
+          .dialog-payment__total Total Pay
+          .dialog-payment__total
+            | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
+            | {{ selectedService.currency.toUpperCase()}}
+
+        .dialog-payment__desc
+          .dialog-payment__trans-weight Estimated Transaction Weight
+            v-tooltip.visible(bottom)
+              template(v-slot:activator="{ on, attrs }")
+                v-icon.dialog-payment__icon(
+                  color="primary"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                ) mdi-alert-circle-outline 
+              span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
+          div( style="font-size: 10px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
+
+
+        .dialog-payment__desc
+          v-text-field(
+            label="Input Password"
+            v-model="password"
+            class="password-field"
+            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="showPassword ? 'text' : 'password'"
+            :rules="[val => !!val || 'Password is required']"
+            :disabled="isLoading"
+            @click:append="showPassword = !showPassword"
+            outlined
+          )
+
+        v-progress-linear(
           v-if="isLoading"
           indeterminate
           color="primary"
-          )
+        )
       
         v-alert.mt-5.mb-5(
           v-if="error" 
@@ -353,14 +340,72 @@ export default {
 }
 </script>
 
-<style lang="sass">
-  .address-detail
-    margin-top: 2px
-    font-size: 12px
+<style lang="sass" scoped>
+  @import "@/common/styles/mixins.sass"
 
   .visible
     height: 3em
     width: 3em
     background-color: white
-    font-color: black
+    font-color: white
+  
+  .dialog-payment
+    width: 400
+    height: 500
+    
+    &__card
+      background-color: white
+      padding-bottom: 51px
+    
+    &__title
+      display: flex
+      justify-content: center
+      margin-top: 21.25px
+      @include h6-opensans
+
+    &__lab
+      padding-left: 50px
+      padding-right: 50px
+
+    &__lab-name
+      padding-top: 30px
+      @include button-2
+
+    &__lab-address
+      max-width: 350px
+      @include body-text-3-opensans
+
+    &__detail-medium
+      margin-top: 35px
+      @include body-text-3-opensans-medium
+    
+    &__detail
+      @include body-text-3-opensans
+    
+    &__desc
+      margin-top: 5px
+      display: flex
+      justify-content: space-between
+
+    &__line
+      margin-top: 10px
+
+    
+    &__total
+      @include body-text-3-opensans-medium
+
+    &__operation
+      margin-top: 5px
+      display: flex
+      justify-content: flex-end
+      @include body-text-3-opensans-medium
+
+    &__trans-weight
+      margin-bottom: 20px
+      @include tiny-reg
+
+    &__icon
+      margin-left: 5px
+      @include body-text-3-opensans-medium
+
 </style>

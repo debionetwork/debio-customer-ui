@@ -1,7 +1,6 @@
 <template lang="pug">
   .customer-select-service
-    .customer-select-service__title 
-      b Select your preferred Service
+    .customer-select-service__title Select your preferred Service
 
     template(v-if="showNoLab")
       NoLab
@@ -144,7 +143,7 @@ export default {
         const price = this.services[i].info.prices_by_currency[0].total_price.replaceAll(",", "")
 
         if (durationType === "WorkingDays") {
-          durationType = "Working Days"
+          durationType = "Days"
         }
 
         const service = {
@@ -229,7 +228,7 @@ export default {
       flex-direction: column
       align-items: center
       margin-top:55px
-      @include h6
+      @include h6-opensans
 
     &__card
       width:1050px

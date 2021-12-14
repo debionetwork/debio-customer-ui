@@ -139,11 +139,11 @@ export default {
       gap: 2px
 
     &__item-name
-      @include body-text-3-opensans
+      @include body-text-3-opensans-medium
 
     &__item-speciment
       color: #8C8C8C
-      @include body-text-3-opensans
+      @include body-text-3-opensans-medium
     
     &__hash
       width: max-content

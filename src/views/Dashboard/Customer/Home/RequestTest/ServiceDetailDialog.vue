@@ -1,61 +1,53 @@
 <template lang="pug">
-  v-dialog(:value="show" width="480" persistent rounded )
-    v-card
-      div.pa-5(class="d-flex justify-end") 
+  v-dialog.dialog-service(:value="show" width="440" persistent rounded )
+    v-card.dialog-service__card
+      div.dialog-service__close
         v-btn.fixed-button(icon @click="closeDialog")
           v-icon mdi-close
 
-      div.pa-5(class="d-flex justify-center")
-        ui-debio-avatar(:src="selectedService.serviceImage" size="125" rounded)
+      div.dialog-service__service-image
+        ui-debio-avatar(:src="selectedService.serviceImage" size="120" rounded)
         
-      div(class="d-flex justify-center pb-5 pt-1")
-        .dialog-service__title
-          b {{ selectedService.serviceName }}
+      div.dialog-service__service-name
+        .dialog-service__title {{ selectedService.serviceName }}
 
-      div(class="pa-5")
-        div(class="pa-2")
-          .dialog-service__sub-title
-            b Description
-          .dialog-service__description
-            div  {{ selectedService.serviceDescription }}
+      div.dialog-service__service-body
+        div.dialog-service__service-description
+          .dialog-service__sub-title Description
+          .dialog-service__description {{ selectedService.serviceDescription }}
 
-        div(class="pa-2")
-          .dialog-service__sub-title
-            b Expected Duration
+        div.dialog-service__service-description
+          .dialog-service__sub-title Expected Duration
           .dialog-service__description          
             div {{ selectedService.duration }} {{ selectedService.durationType}}
       
-      v-row(class="pa-5")
+      v-row.dialog-service__lab-detail
         v-col(cols="3")
-          ui-debio-avatar(:src="selectedService.labImage" size="90" rounded)
+          ui-debio-avatar.dialog-service__lab-image(:src="selectedService.labImage" size="75" rounded)
         
-        v-col(cols="6 mt-3")
-          .dialog-service__sub-title
-            b {{ selectedService.labName }}
-
-          .dialog-service__description          
+        v-col(cols="6")
+          .dialog-service__sub-title {{ selectedService.labName }}
+          .dialog-service__address          
             span {{ selectedService.labAddress }}, {{ selectedService.city }}, {{ country }}
 
-        v-col
-          ui-debio-rating(:rating="selectedService.labRate" :total-reviews="selectedService.countRateLab" size="12")
+        v-col(cols="3")
+          ui-debio-rating(:rating="selectedService.labRate" :total-reviews="selectedService.countRateLab" size="10")
 
          
 
       .dialog-service__button
-        Button(
+        Button.dialog-service__button-text(
           color="secondary" 
           width="48%"
           height="38" 
-          style="font-size: 11px"
           outlined 
           @click="downloadFile"
         ) Download Sample Report
 
-        Button(
+        Button.dialog-service__button-text(
           color="secondary" 
           width="48%"
           height="38" 
-          style="font-size: 11px"
           @click="onSelect"
         ) Select This Service
 
@@ -139,18 +131,47 @@ export default {
   @import "@/common/styles/mixins.sass"
 
   .dialog-service
+    &__service-image
+      display: flex
+      justify-content: center
+      padding-top: 50px
+
+    &__service-name
+      margin-top: 1rem !important
+      display: flex
+      justify-content: center
+      align-content: center
+
+    &__service-body
+      margin: 0rem 2.25rem
+
+    &__service-description
+      margin-bottom: 1.125rem
+
     &__title
       display: flex
       align-items: center
       text-align: center
       letter-spacing: 0.0044rem
-      @include h6
+      margin-bottom: 1.25rem !important
+      margin-left: 2.25rem !important
+      margin-right: 2.25rem !important
+      @include h6-opensans
 
     &__sub-title
-      @include body-text-2-opensans
+      margin-bottom: 5px
+      letter-spacing: -0.0075em
+      @include button-2
 
     &__description
       @include body-text-3-opensans
+    
+    &__address
+      color: gray
+      @include body-text-3-opensans
+
+    &__lab-detail
+      padding: 10px 30px
 
     &__button
       margin-top: 15px
@@ -159,6 +180,14 @@ export default {
       justify-content: space-between
       padding: 0 35px 40px 35px
       gap: 10px
+
+    &__button-text
+      @include body-text-5-opensans
+
+    &__close
+      display: flex
+      justify-content: flex-end
+      padding: 1.013rem !important
     
   .fixed-button
     position: fixed
