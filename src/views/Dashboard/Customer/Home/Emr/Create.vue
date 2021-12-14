@@ -488,6 +488,7 @@ export default {
       this.showModal = false
       Object.assign(this.document, { title: "", description: "", file: null })
       this.clearFile = true
+      this._resetForms("document")
     },
 
     onDelete(id) {

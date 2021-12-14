@@ -22,6 +22,12 @@ export default {
       this.formErrors.push({ name: name, status: val })
     },
 
+    _resetForms(field) {
+      Object.entries(this.isDirty[field]).forEach(([key]) => {
+        this.isDirty[field][key] = null
+      })
+    },
+
     _touchForms(field) {
       const computeErrors = (objectKey, objectValue, parentKey) => {
         const context = this
