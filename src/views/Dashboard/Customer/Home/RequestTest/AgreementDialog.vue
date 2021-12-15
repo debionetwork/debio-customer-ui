@@ -1,76 +1,85 @@
 <template lang="pug">
-  v-dialog(:value="show" width="480" persistent rounded )
-    v-card
+  v-dialog.staking-dialog(:value="show" width="400" persistent rounded )
+    v-card.staking-dialog__dialog
       v-app-bar(flat dense color="white" )
-        v-toolbar-title(class="title mt-8" v-if="agreement") Staking Coin Agreement
-        v-toolbar-title(class="title mt-8" v-if="!agreement") Staking Coin Agreement
+        v-toolbar-title.staking-dialog__title Staking Coin
         v-spacer
-        v-btn( class="mt-8" icon @click="closeDialog")
+        v-btn(icon @click="closeDialog")
           v-icon mdi-close
-      v-card(class="ms-4 me-4" style="background-color: #F5F7F9; font-family: Raleway ")
-        v-card-text(class="mb-4 mt-10")
-          div(style="font-size: 12px" class="me-3" )
-            div 1. Your funds will be staked in smart contract.
-            div 2. You can unstake your funds at any moment. Your funds will be withdrawn to your wallet in 6 days or 144 hours from the moment you confirm an unstake request. 
-            div 3. You will receive DBIO as a reward upon a successful request test when the service is ready. DBIO reward percentage will be determined by DAOGenics.
 
-      v-card-text(class="mt-4 pb-0 text-subtitle-1")
-        div(class="text-body-1 mt-10")
-          div.mb-3 Enter your Amount
-            v-row
-              v-col(
-                cols="12"
-                sm="9"
-              )
-                v-text-field(
-                  v-model="amount"
-                  outlined
-                )
-              
-              v-col(
-                cols="12"
-                sm="3"
-              )
-                v-text-field(
-                  value="DBIO"
-                  outlined
-                  disabled 
-                )
+      .staking-dialog__card
+        .staking-dialog__card-text 
+          .staking-dialog__card-text-content 1. There's no locking period. Your fund can be unstaked anytime with your consent but there will be a period of 6 days to process it.
+          .staking-dialog__card-text-content 2. Upon receiving your test result, you will be rewarded with DBIO as a token of gratitude for using our service. By unstaking your fund, you will lose this privilege.
+          .staking-dialog__card-text-content 3. You will receive notification when requested service is available. You can proceed to request a test. If the staked amount is bigger than the service price, you will get refund for overpayment. If staked amount is smaller than the service price, to complete the purchase, you should pay for the outstanding amount to complete the purchase.
 
-        v-checkbox(class="mt-5" v-model="agree")
-          template(v-slot:label)
-            b I have read and agree to the <a> terms and conditions </a>
+      .staking-dialog__input
+        .staking-dialog__input-label Enter your Amount 
+        ui-debio-input.staking-dialog__input-field(
+          :rules="amountRules"
+          variant="small"
+          width="100%"
+          v-model="amount"
+          placeholder="Amount (DBIO)"
+          outlined
+        )
 
-      v-card-actions(class="px-6 pb-4")
-        v-btn(
+        .staking-dialog__trans-weight 
+          .staking-dialog__trans-weight-text Estimated transaction weight
+            v-tooltip.visible(bottom )
+              template(v-slot:activator="{ on, attrs }")
+                v-icon.staking-dialog__trans-weight-icon(
+                  style="font-size: 12px;"
+                  color="primary"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                ) mdi-alert-circle-outline 
+              span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
+
+          div( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
+
+        v-btn.staking-dialog__input-button(
           depressed
           color="secondary"
           large
           width="100%"
+          height="35" 
           @click="submitServiceRequestStaking"
-          :disabled="!agree || isLoading || !amount"
           :loading="isLoading"
-        ) Continue
+        ) Stake
 
         v-progress-linear(
         v-if="isLoading"
         indeterminate
         color="primary"
       )
+    ErrorDialog(
+      :show="showError"
+      :title="errorTitle"
+      :message="errorMsg"
+      @close="showError = false"
+    )
 
 </template>
 
 <script>
 import { mapState } from "vuex"
-import { startApp } from "@/common/lib/metamask"
+import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import localStorage from "@/common/lib/local-storage"
 import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
+import { getCreateRequestFee } from "@/common/lib/polkadot-provider/command/info"
+
 
 export default {
   name: "AgreementDialog",
 
   props: {
     show: Boolean
+  },
+
+  components: {
+    ErrorDialog
   },
 
   data: () => ({
@@ -81,7 +90,11 @@ export default {
     dialogAlert: false,
     isLoading: false,
     transactionStep: "",
-    agreement: true
+    agreement: true,
+    txWeight: 0,
+    showError: false,
+    errorTitle: "",
+    errorMsg: ""
   }),
 
   computed: {
@@ -92,8 +105,22 @@ export default {
       region: state => state.lab.region,
       city: state => state.lab.city,
       category: state => state.lab.category,
-      lastEventData: (state) => state.substrate.lastEventData
-    })
+      lastEventData: (state) => state.substrate.lastEventData,
+      web3: (state) => state.metamask.web3,
+      walletBalance: (state) => state.substrate.walletBalance
+    }),
+
+    amountRules() {
+      return [
+        val => !!val || "Amount stake is required",
+        val => !!/^[0-9]\d*(\.\d{0,9})?$/.test(val) || "This field can only contain Numbers (e.g. 20.005)"
+      ]
+    }
+  },
+
+  async mounted () {
+    const txWeight = await getCreateRequestFee(this.api, this.pair, this.country, this.region, this.city, this.category)
+    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
   },
 
   watch: {
@@ -114,17 +141,20 @@ export default {
     },
 
     async submitServiceRequestStaking() {
-      this.ethAccount = await startApp()
+      this.isLoading = true
 
-      if (this.ethAccount.currentAccount == "no_install") {
+      const balance = this.web3.utils.fromWei(String(this.walletBalance), "ether")
+
+      if (Number(this.amount) > Number(balance) || Number(this.txWeight) > Number(balance)) {
+        this.errorTitle = "Insufficient Balance"
+        this.errorMsg =  "Your transaction cannot succeed due to insufficient balance, check your account balance"
+        this.showError = true
         this.isLoading = false
-        this.password = ""
-        this.error = "Please install MetaMask!"
         return
       }
 
       try {
-        const resultCreate = await createRequest(
+        await createRequest(
           this.api,
           this.pair,
           this.country,
@@ -168,8 +198,7 @@ export default {
         localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification))
         listNotification.reverse()
 
-
-        console.log(resultCreate)
+        this.isLoading = false
 
       } catch (err) {
         console.log(err)
@@ -179,3 +208,70 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+  @import "@/common/styles/mixins.sass"
+  
+  .staking-dialog
+    &__title
+      display: flex
+      align-items: center
+      letter-spacing: 0.0075em
+      margin-left: 20px
+      margin-top: 10px
+      @include button-1
+    
+    &__dialog
+      padding-bottom: 20px
+
+    &__card
+      background-color: #F5F7F9
+      margin: 0px 30px
+
+    &__card-text
+      padding: 18px 12px
+      letter-spacing: -0.004em
+
+    &__card-text-content
+      @include body-text-3-opensans
+
+    &__input
+      margin: 11px 30px
+
+    &__input-label
+      display: flex
+      align-items: center
+      letter-spacing: -0.0075em
+      margin-bottom: 11px
+      @include button-2
+    
+    &__input-field
+      max-height: 18px
+      letter-spacing: -0.004em
+      margin-bottom: 50px
+      @include body-text-3-opensans
+   
+    &__trans-weight
+      margin-top: 20px
+      margin-bottom: 20px
+      display: flex
+      justify-content: space-between
+
+    &__trans-weight-text
+      letter-spacing: -0.004em
+      display: flex
+      align-items: center
+      @include body-text-3-opensans
+
+    &__input-button
+      display: flex
+      align-items: center
+      text-align: center
+      letter-spacing: -0.015em
+      margin-top: 20px
+      @include tiny-semi-bold
+
+    &__trans-weight-icon
+      margin-left: 5px
+
+</style>
