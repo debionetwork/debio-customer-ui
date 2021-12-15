@@ -145,7 +145,7 @@ export default {
 
       const balance = this.web3.utils.fromWei(String(this.walletBalance), "ether")
 
-      if (Number(this.amount) > Number(balance) || Number(this.txWeight) > Number(balance)) {
+      if ((Number(this.amount) + Number(this.txWeight)) > Number(balance)) {
         this.errorTitle = "Insufficient Balance"
         this.errorMsg =  "Your transaction cannot succeed due to insufficient balance, check your account balance"
         this.showError = true
