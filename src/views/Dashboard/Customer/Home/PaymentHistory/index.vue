@@ -51,7 +51,7 @@ import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { searchIcon } from "@/common/icons"
 import { generalDebounce } from "@/common/lib/utils"
-import { fetchPaymentHistories } from "@/common/lib/orders";
+import { fetchPaymentHistories } from "@/common/lib/api";
 
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 

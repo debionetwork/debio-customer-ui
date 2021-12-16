@@ -120,7 +120,7 @@ import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
-import { getDbioBalance } from "@/common/lib/debio-balance"
+import { getDbioBalance } from "@/common/lib/api"
 import {
   COVID_19,
   DRIED_BLOOD,

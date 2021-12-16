@@ -1,4 +1,4 @@
-import { getServicesByCategory } from "@/common/lib/labs"
+import { getServicesByCategory } from "@/common/lib/api"
 
 const defaultState = {
   services: [],

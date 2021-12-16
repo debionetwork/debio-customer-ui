@@ -1,4 +1,5 @@
 import axios from "axios"
+export * from "./apiCollection"
 
 const apiClientRequest = axios.create({
   baseURL: process.env.VUE_APP_BACKEND_API,

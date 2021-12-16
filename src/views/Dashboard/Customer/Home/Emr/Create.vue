@@ -255,7 +255,7 @@ import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
-import { getEMRCategories } from "@/common/lib/emr"
+import { getEMRCategories } from "@/common/lib/api"
 import {
   addElectronicMedicalRecordFile,
   registerElectronicMedicalRecord
