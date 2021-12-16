@@ -26,9 +26,9 @@
       Dialog(
         :show="showSuccessDialog"
         :width="289"
-        message="Your request has been submitted"
-        imgPath="check-circle.png"
-        btn-message="go to my stake service"
+        title="Request service submitted!"
+        message="Thanks for submitting request service! We are trying our best to find the nearest lab available. You can monitor your request here"
+        btn-message="ok"
         @close="closingDialog"
         @click="toStakeService"
         )

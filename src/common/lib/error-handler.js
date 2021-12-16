@@ -8,12 +8,6 @@ export async function errorHandler(err) {
       message: "Your transaction cannot succeed due to insufficient balance, check your account balance"
     }
     break;
-  case "Unable to decode using the supplied passphrase":
-    error = {
-      title: "Incorrect Password",
-      message: "Your password is not correct, please try again ! "
-    }
-    break;
   case "MetaMask Tx Signature: User denied transaction signature.":
     error = {
       title: "Transaction Rejected",
@@ -21,7 +15,7 @@ export async function errorHandler(err) {
     }
     break;
   default : error = {
-    title: "500",
+    title: "error",
     message: "Internal Server Error"
   }
     break

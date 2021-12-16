@@ -197,11 +197,8 @@ export default {
         listNotification.push(notification)
         localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification))
         listNotification.reverse()
-
-        this.isLoading = false
-
       } catch (err) {
-        console.log(err)
+        this.errorMsg = err.message
         this.isLoading = false
       }
     }
