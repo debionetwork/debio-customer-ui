@@ -507,7 +507,7 @@ export default {
       const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
       const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
 
-      if (!isEMRValid || !isDocumentValid) return
+      if (!isEMRValid || (!isDocumentValid && this.emr.files.length < 1)) return
 
       this.clearFile = true
       this.showModalPassword = true
