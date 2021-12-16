@@ -104,7 +104,6 @@
 import { mapGetters, mapState, mapActions } from "vuex"
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 import localStorage from "@/common/lib/local-storage"
-import Dialog from "@/common/components/Dialog"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"	
 import { u8aToHex } from "@polkadot/util"
@@ -113,8 +112,7 @@ export default {
   name: "InputPassword",
 
   components: {
-    LandingPagePopUp,
-    Dialog
+    LandingPagePopUp
   },
 
   data: () => ({
