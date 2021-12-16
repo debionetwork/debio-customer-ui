@@ -178,6 +178,7 @@
           .customer-create-emr__files-title Uploaded Files
           .customer-create-emr__files-items
             .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(
+              :class="{ 'customer-create-emr__file-item--error': fileEmpty }"
               v-if="!computeFiles.length"
               @click="showModal = true"
             )
@@ -289,6 +290,7 @@ export default {
     error: null,
     isLoading: false,
     showLoadingFiles: false,
+    fileEmpty: false,
     clearFile: false,
     registerId: null,
     countFileAdded: 0,
@@ -507,8 +509,13 @@ export default {
       const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
       const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
 
-      if (!isEMRValid || (!isDocumentValid && this.emr.files.length < 1)) return
+      if (!isEMRValid || (!isDocumentValid && this.emr.files.length < 1)) {
+        if (!this.emr.files.length) this.fileEmpty = true
 
+        return
+      }
+
+      this.fileEmpty = false
       this.clearFile = true
       this.showModalPassword = true
     },
@@ -614,6 +621,8 @@ export default {
               })
             }
           }
+
+          this.fileEmpty = false
         } catch (err) {
           reject(new Error(err.message))
         }
@@ -736,6 +745,16 @@ export default {
 
       &--no-file
         height: 64px
+
+      &--error
+        border-color: #c400a5
+
+        &::v-deep
+          .customer-create-emr__file-icon > svg
+            color: #c400a5 !important
+
+        .customer-create-emr__file-name
+          color: #c400a5
 
     &__file-title
       font-weight: 600
