@@ -1,8 +1,7 @@
-import axios from "axios"
-const baseUrl = process.env.VUE_APP_BACKEND_API
+import apiClientRequest from "@/common/lib/api"
 
 export const getCategories = async () => {
-  const { data: data } = await axios.get(`${baseUrl}/service-category`)
+  const { data: data } = await apiClientRequest.get("/service-category")
 
   return data
 }

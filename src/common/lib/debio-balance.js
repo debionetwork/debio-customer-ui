@@ -1,7 +1,7 @@
-import axios from "axios"
-const baseUrl = process.env.VUE_APP_BACKEND_API
+import apiClientRequest from "@/common/lib/api"
 
 export const getDbioBalance = async () => {
-  const dbioBalance = await axios.get(`${baseUrl}/set-dbio-balance`)
-  return dbioBalance.data
+  const { data } = await apiClientRequest.get("/set-dbio-balance")
+
+  return data
 }

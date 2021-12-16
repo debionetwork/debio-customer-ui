@@ -1,4 +1,4 @@
-import axios from "axios"
+import apiClientRequest from "@/common/lib/api"
 import store from "@/store/index"
 
 /**
@@ -12,7 +12,6 @@ import store from "@/store/index"
  */
 
 export async function getServicesByCategory(category, flow) {
-  const baseUrl = process.env.VUE_APP_BACKEND_API
   const { country, region, city} = store.getters["lab/getCountryRegionCity"]
 
   const params = {
@@ -23,7 +22,7 @@ export async function getServicesByCategory(category, flow) {
     service_flow: flow
   }
 
-  const services = await axios.get(`${baseUrl}/labs`, { params })
+  const services = await apiClientRequest.get("/labs", { params })
 
   return services
 }

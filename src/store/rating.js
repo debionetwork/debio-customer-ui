@@ -1,6 +1,4 @@
-import axios from "axios"
-
-const baseUrl = process.env.VUE_APP_BACKEND_API
+import apiClientRequest from "@/common/lib/api"
 
 const defaultState = {
   labRate: null,
@@ -24,15 +22,14 @@ export default {
     }
   },
   actions: {
-
     async getLabRate({ commit }, address ) {
-      const rate = await axios.get(`${baseUrl}/rating/lab/${address}`)
+      const rate = await apiClientRequest.get(`/rating/lab/${address}`)
       commit("SET_LAB_RATE", rate.data)
       return rate.data
     },
 
     async getServiceRate({ commit }, address) {
-      const rate = await axios.get(`${baseUrl}/rating/service/${address}`)
+      const rate = await apiClientRequest.get(`/rating/service/${address}`)
       commit("SET_SERVICE_RATE", rate.data)
       return rate.data
     }

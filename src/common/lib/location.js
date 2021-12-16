@@ -1,14 +1,13 @@
-import axios from "axios"
-const baseUrl = process.env.VUE_APP_BACKEND_API
+import apiClientRequest from "@/common/lib/api"
 
 export const getLocations = async () => {
-  return axios.get(`${baseUrl}/location`)
+  return apiClientRequest.get("/location")
 }
 
 export const getStates = async (countryCode) => {
-  return axios.get(`${baseUrl}/location?country_code=${countryCode}`)
+  return apiClientRequest.get(`/location?country_code=${countryCode}`)
 }
 
 export const getCities = async (countryCode, stateCode) => {
-  return axios.get(`${baseUrl}/location?country_code=${countryCode}&state_code=${stateCode}`)
+  return apiClientRequest.get(`/location?country_code=${countryCode}&state_code=${stateCode}`)
 }
