@@ -1,16 +1,6 @@
 {
   "role": {
     "customer": {
-      "balances": {
-        "Transfer": {
-          "message": "Congrats! You got ",
-          "value": 0,
-          "value_message": 2,
-          "route": "",
-          "params": "number",
-          "identity": 1
-        }
-      },
       "orders": {
         "OrderPaid": {
           "message": "Payment Success",
@@ -124,16 +114,6 @@
       "electronicMedicalRecord": null
     },
     "lab": {
-      "balances": {
-        "Transfer": {
-          "message": "Congrats! You got ",
-          "value": 0,
-          "value_message": 2,
-          "route": "",
-          "params": "number",
-          "identity": 1
-        }
-      },
       "orders": {
         "OrderPaid": {
           "message": "New order in.",
