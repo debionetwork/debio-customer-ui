@@ -1,7 +1,6 @@
 import ipfsWorker from "./ipfs-worker"
 import store from "@/store/index"
-import apiClientRequest from "@/common/lib/api"
-import { getSignedUrl } from './gcs'
+import apiClientRequest, { getSignedUrl } from "@/common/lib/api"
 
 export function upload({ fileChunk, fileName, fileType }) {
   const chunkSize = 10 * 1024 * 1024 // 10 MB
