@@ -1,26 +1,14 @@
 <template lang="pug">
-  v-dialog(:value="show" height="276" :width="width === null ? '500' : width"
-  persistent)
-    v-card
-      v-app-bar(flat dense color="white")
-        v-toolbar-title(class="title d-flex justify-end align-center" style="width: 100%;")
-          v-btn(icon @click="closeDialog")
-            v-icon(style="font-size: 20px;") mdi-close
-        v-spacer
-      
-      v-card-text.mt-5(align="center") {{ message}}
-
-        div(class="d-flex justify-center pb-5 pt-5")
-          v-img(v-bind:src="require('@/assets/'+imgPath)" max-width="66")
-      
-        div(class="d-flex justify-center pb-5 pt-5")
-          Button(
-            color="secondary" 
-            width="auto"
-            height="38"
-            outlined
-            @click="onSubmit"
-            ) {{ btnMessage}}
+  v-dialog(:value="show" height="276" :width="width === null ? '500' : width" persistent)
+    v-card.dialog-card
+      .dialog-card__title {{ title }}
+      .dialog-card__message {{ message }}
+      .dialog-card__button
+        Button(
+          color="secondary" 
+          width="auto"
+          @click="onSubmit"
+          ) {{ btnMessage }}
       
 </template>
 
@@ -37,8 +25,8 @@ export default {
   props: {
     show: Boolean,
     width: Number,
+    title: String,
     message:String,
-    imgPath: String,
     btnMessage: String
   },
 
@@ -53,3 +41,35 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+  @import "@/common/styles/mixins.sass"
+
+  .dialog-card
+    padding: 55px 1px
+    &__title
+      display: flex
+      align-items: center
+      text-align: center
+      letter-spacing: -0.0044em
+      margin: 0px 47px
+      @include body-text-medium-1
+
+    &__message
+      display: flex
+      align-items: center
+      text-align: center
+      letter-spacing: -0.004em
+      padding-top: 18px
+      margin: 18px 33px
+      @include body-text-3-opensans
+
+    &__button
+      display: flex      
+      justify-content: center      
+      align-items: center
+      text-align: center
+      padding-top: 37px
+
+
+</style>

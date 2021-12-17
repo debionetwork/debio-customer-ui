@@ -33,7 +33,7 @@
 
         .dialog-payment__desc
           .dialog-payment__total Total Pay
-          .dialog-payment__total
+          .dialog-payment__total-detail
             | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
             | {{ selectedService.currency.toUpperCase()}}
 
@@ -48,7 +48,7 @@
                   v-on="on"
                 ) mdi-alert-circle-outline 
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
-          div( style="font-size: 10px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
+          .dialog-payment__trans-weight-amount {{ Number(txWeight).toFixed(4) }} DBIO
 
 
         .dialog-payment__desc
@@ -286,9 +286,14 @@ export default {
       } catch (err) {
         this.isLoading = false
         this.password = ""
-        this.showError = true
         const error = await errorHandler(err.message)
-        this.error = error.message
+        
+        if (error.title === "error") {
+          this.error = err.message
+          return
+        } 
+
+        this.showError = true
         this.errorTitle = error.title
         this.errorMsg = error.message
       } 
@@ -380,27 +385,33 @@ export default {
       @include body-text-3-opensans-medium
     
     &__detail
+      margin-right: 15px
       @include body-text-3-opensans
     
     &__desc
       margin-top: 5px
       display: flex
       justify-content: space-between
-
-    &__line
-      margin-top: 10px
-
     
     &__total
       @include body-text-3-opensans-medium
 
+    &__total-detail
+      margin-right: 15px
+      @include body-text-3-opensans-medium
+
+
     &__operation
-      margin-top: 5px
       display: flex
       justify-content: flex-end
       @include body-text-3-opensans-medium
 
     &__trans-weight
+      margin-bottom: 20px
+      @include tiny-reg
+
+    &__trans-weight-amount
+      margin-right: 15px
       margin-bottom: 20px
       @include tiny-reg
 

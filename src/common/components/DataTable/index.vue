@@ -1,12 +1,6 @@
 <template lang="pug">
   v-card(class="degenics-datatable-card elevation-0")
     slot(name="prepend")
-    v-row
-      v-col
-        slot(name="top-left-slot")
-
-      v-col
-        slot(name="top-right-slot")
     //- <!-- Data Table -->
     v-data-table(
       class="degenics-data-table"
@@ -136,6 +130,7 @@ export default {
 <style lang="sass">
 @import '/src/common/styles/variables.scss'
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap')
+@import "@/common/styles/mixins.sass"
 
 .degenics-datatable-card 
   overflow: hidden !important
@@ -148,15 +143,14 @@ export default {
   overflow: hidden
   margin-top: 24px
 
-  font-size: 12px
-  line-height: 16px
   letter-spacing: 0.1px
+  @include body-text-3-opensans-medium
 
   thead 
     background-color: #f5f7f9 !important
     
     th.column.sortable i 
-      font-size: 12px
+      @include body-text-3-opensans
     th 
       padding-top: 12px !important
       padding-bottom: 12px !important
@@ -164,9 +158,8 @@ export default {
 
       * 
         color: black !important
-        font-size: 12px
-        line-height: 16px
         letter-spacing: -0.004em
+        @include body-text-3-opensans
       
       i.v-icon.notranslate.v-data-table-header__icon:not(:hover) 
         opacity: 0.5
@@ -190,8 +183,8 @@ export default {
     tr 
       margin: 10px 0 10px 0
       * 
-        font-size: 12px
         border-bottom: #f5f7f9 !important
+        font-size: 12px
         font-weight: 400
       
     

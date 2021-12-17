@@ -79,7 +79,7 @@
                       dark
                       color="primary"
                       :to="{ name: 'order-history-detail', params: item}"
-                    ) Detail
+                    ) Details
                     
                     Button(
                       v-if="item.status !== 'ResultReady'"
@@ -392,24 +392,24 @@ export default {
         parseInt(dnaSample.updatedAt.replace(/,/g, ""))
       )
       const timestamp = dateSet.getTime().toString();
-      const orderDate = dateSet.toLocaleString("en-US", {
+      const orderDate = dateSet.toLocaleString("en-GB", {
         weekday: "short", // long, short, narrow
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long", // numeric, 2-digit, long, short, narrow
+        month: "short", // numeric, 2-digit, long, short, narrow
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
       });
 
-      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+      const updatedAt = dateUpdate.toLocaleString("en-GB", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short" // numeric, 2-digit, long, short, narrow
       })
-      const createdAt = dateSet.toLocaleString("en-US", {
+      const createdAt = dateSet.toLocaleString("en-GB", {
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short" // numeric, 2-digit, long, short, narrow
       })
       const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
       const status = dnaSample.status
@@ -525,77 +525,51 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.customer-test
-  &::v-deep
-    .banner__subtitle
-      max-width: 36.188rem !important
+  @import "@/common/styles/mixins.sass"
 
-.customer-my-test
-  width: 100%
-  background: #FFFFFF
-  margin-top: 30px
 
-  &__tabs
-    padding: 3px
-
-  &__table
-    padding: 10px
-
-  &__actions
-    padding: 35px
-    display: flex
-    align-items: center
-    gap: 30px
-    margin: 5px
-
-  &__status
-    color: #48A868
-
-  &__title-detail
-    margin: 0 5px 0 0
-    border-radius: 5px
-
-.modal-bounty__cta
-  gap: 40px
   .customer-test
     &::v-deep
-
+      .banner__subtitle
+        max-width: 36.188rem !important
+        @include text-h2-banner
 
   .customer-my-test
-    margin: 35px 0 0 0
     width: 100%
-    height: 100%
     background: #FFFFFF
-
+    margin-top: 30px
 
     &__tabs
-      padding: 2px
-    
+      padding: 3px 20px
+
     &__table
-      padding-top: 0px !important
-      margin-top: 0px !important
+      padding: 0px
 
     &__actions
-      padding: 25px
+      padding: 35px
       display: flex
       align-items: center
-      gap: 20px
-      margin: 3px 20px
-    
+      gap: 30px
+      margin: 5px
+
+    &__status
+      color: #48A868
+
     &__title-detail
-      margin: 0 10px 0 0
-      border-radius: 10px
+      margin: 0 5px 0 0
+      border-radius: 5px
     
     &__title-number
-      color: #8C8C8C
-
+        color: #8C8C8C
 
   .modal-bounty__cta
-    justify-content: space-around !important
-  
+    gap: 40px
+    .customer-test
+      &::v-deep
+
   .degenics-datatable-card
-    padding-top: 0px !important
-    padding: 0.75rem !important
+    padding: 0 !important
+    margin: -24px 0 0 0
     
   .degenics-data-table
     margin-top: 0px !important
