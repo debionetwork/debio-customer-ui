@@ -290,11 +290,12 @@ export default {
         
         if (error.title === "error") {
           this.error = err.message
-        } else {
-          this.showError = true
-          this.errorTitle = error.title
-          this.errorMsg = error.message
-        }
+          return
+        } 
+
+        this.showError = true
+        this.errorTitle = error.title
+        this.errorMsg = error.message
       } 
     },
 
