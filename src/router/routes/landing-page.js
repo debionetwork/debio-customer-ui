@@ -8,6 +8,7 @@ const landingPageRoutes = [{
     {
       path: "/landing-page",
       name: "landing-page",
+      meta: { pageHeader: "Landing Page" },
       component: () => import(/* webpackChunkName */ "@/views/LandingPage")
     },
 

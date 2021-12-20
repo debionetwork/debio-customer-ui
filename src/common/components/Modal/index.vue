@@ -15,8 +15,14 @@
           slot(name="title" v-if="$slots['title'] || $scopedSlots['title']")
           span(v-else) {{ title }}
 
+        ui-debio-icon.ui-debio-modal__card-icon(
+          v-if="!$slots.default"
+          :icon="icon"
+          :view-box="iconViewBox"
+          :size="iconSize"
+          stroke
+        )
         slot
-        ui-debio-icon.ui-debio-modal__card-icon(v-if="!$slots.default" :icon="icon" :view-box="iconViewBox" size="80" stroke)
 
         .ui-debio-modal__card-cta(v-if="showCta")
           slot(name="cta" v-if="$slots['cta'] || $scopedSlots['cta']")
@@ -45,6 +51,7 @@ export default {
     title: { type: String, default: "Default title" },
     type: { type: String, default: "alert", validation: val => allowedType.test(val) },
     icon: { type: String, default: null },
+    iconSize: { type: [String, Number], default: 80 },
     iconViewBox: { type: String, default: "0 0 40 40" },
     ctaTitle: { type: String, default: "Default button" },
     ctaAction: { type: Function, default: () => {} },
