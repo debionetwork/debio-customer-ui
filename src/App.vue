@@ -29,7 +29,17 @@ export default {
     })
   },
 
+  watch: {
+    $route(val) {
+      this.formatTitle(val)
+    }
+  },
+
   mounted() {
+    document.title = "DeBio Network"
+
+    this.formatTitle(this.$route)
+
     const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Apple Safari|Safari/i
     this.handleChangeDevices(mobileDevices, window.innerWidth)
 
@@ -48,6 +58,22 @@ export default {
       initWeb3: "metamask/initWeb3",
       initContracts: "metamask/contracts/initContracts"
     }),
+
+    formatTitle(val) {
+      if (!val.meta.pageHeader) return
+
+      const routeChildren = this.$router.options.routes
+        .find(route => /^\/customer/.test(route.path))
+        .children
+
+      const parentRoute = routeChildren.find(route => route.name === val.meta?.parent)
+
+      const formatedTitle = parentRoute?.meta?.pageHeader
+        ? parentRoute.meta.pageHeader
+        : val.meta.pageHeader
+
+      document.title = `DeBio Network | ${formatedTitle}`
+    },
 
     handleChangeDevices(device, width) {
       if(device.test(navigator.userAgent) && width <= 768) this.isMobileDevice = true
