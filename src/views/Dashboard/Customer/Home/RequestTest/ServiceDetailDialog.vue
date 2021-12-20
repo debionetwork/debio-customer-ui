@@ -120,15 +120,14 @@ export default {
 
       const publicKey = u8aToHex(cred.boxKeyPair.publicKey)
       const privateKey = u8aToHex(cred.boxKeyPair.publicKey)
-      const baseUrl = "https://ipfs.io/ipfs/"
-      const path = this.selectedService.resultSample.replace(baseUrl, "")
-      const fileName = this.selectedService.serviceId + ".pdf"
+      const arr = this.selectedService.resultSample.split("/")
+      const path = arr[arr.length-1]
 
       await downloadDecryptedFromIPFS(
         path,
         privateKey,
         publicKey,
-        fileName,
+        `${this.selectedService.serviceId}.pdf`,
         "application/pdf"
       )
     }
