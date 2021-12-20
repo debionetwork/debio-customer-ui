@@ -69,7 +69,7 @@ export default {
     messageError: null,
     result: null,
     message: "Please wait",
-    selected: 0,
+    selected: null,
     emrDocument: {}
   }),
 
@@ -134,6 +134,8 @@ export default {
     },
 
     async parseResult(idx, { recordLink }) {
+      if (this.selected === idx) return
+
       this.selected = idx
 
       const path = recordLink
