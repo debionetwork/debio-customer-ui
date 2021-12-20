@@ -50,6 +50,10 @@ import { u8aToHex } from "@polkadot/util"
 import Button from "@/common/components/Button"
 import { fileTextIcon } from "@/common/icons"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
+import {
+  queryElectronicMedicalRecordById,
+  queryElectronicMedicalRecordFileById
+} from "@/common/lib/polkadot-provider/query/electronic-medical-record"
 
 export default {
   name: "CustomerEmrDetails",
@@ -66,7 +70,7 @@ export default {
     result: null,
     message: "Please wait",
     selected: 0,
-    emrDocuments: {}
+    emrDocument: {}
   }),
 
   computed: {
@@ -85,16 +89,8 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     if (this.mnemonicData) this.initialData()
-    if (!this.$route.params.document) {
-      this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
-
-      return
-    }
-
-    this.emrDocument = this.$route.params.document
-    if (this.emrDocument?.files.length) this.parseResult(0, { recordLink: this.emrDocument?.files[0].recordLink })
   },
 
   methods: {
@@ -103,6 +99,38 @@ export default {
 
       this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
       this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+
+      if (cred) await this.prepareData()
+    },
+
+    async prepareData() {
+      const { id } = this.$route.params
+      const data = await queryElectronicMedicalRecordById(this.api, id)
+      let files = []
+
+      if (!id || !data) {
+        this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
+
+        return
+      }
+
+      this.emrDocument = data
+
+      for (const file of data.files) {
+        const dataFile = await queryElectronicMedicalRecordFileById(this.api, file)
+
+        files.push(dataFile)
+      }
+
+      this.emrDocument.files = files.map(file => ({
+        ...file,
+        recordLink: file.recordLink.replace("https://ipfs.io/ipfs/", "")
+      }))
+
+      if (this.emrDocument?.files.length) this.parseResult(
+        0,
+        { recordLink: this.emrDocument?.files[0].recordLink }
+      )
     },
 
     async parseResult(idx, { recordLink }) {
