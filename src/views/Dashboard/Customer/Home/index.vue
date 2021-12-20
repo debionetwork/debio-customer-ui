@@ -313,23 +313,23 @@ export default {
         parseInt(detailOrder.updatedAt.replaceAll(",", ""))
       )
       const timestamp = dateSet.getTime().toString();
-      const orderDate = dateSet.toLocaleString("en-US", {
+      const orderDate = dateSet.toLocaleString("en-GB", {
         weekday: "short", // long, short, narrow
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long", // numeric, 2-digit, long, short, narrow
+        month: "short", // numeric, 2-digit, long, short, narrow
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
       })
-      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+      const updatedAt = dateUpdate.toLocaleString("en-GB", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short" // numeric, 2-digit, long, short, narrow
       })
-      const createdAt = dateSet.toLocaleString("en-US", { 
+      const createdAt = dateSet.toLocaleString("en-GB", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short" // numeric, 2-digit, long, short, narrow
       });
       const status = detailOrder.status
       const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
@@ -398,24 +398,24 @@ export default {
         parseInt(dnaSample.updatedAt.replace(/,/g, ""))
       )
       const timestamp = dateSet.getTime().toString();
-      const orderDate = dateSet.toLocaleString("en-US", {
+      const orderDate = dateSet.toLocaleString("en-GB", {
         weekday: "short", // long, short, narrow
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long", // numeric, 2-digit, long, short, narrow
+        month: "short", // numeric, 2-digit, long, short, narrow
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
       });
 
-      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+      const updatedAt = dateUpdate.toLocaleString("en-GB", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short" // numeric, 2-digit, long, short, narrow
       })
-      const createdAt = dateSet.toLocaleString("en-US", { 
+      const createdAt = dateSet.toLocaleString("en-GB", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short" // numeric, 2-digit, long, short, narrow
       })
       const dnaSampleTrackingId = dnaSample.trackingId
       const status = this.checkSatus(dnaSample.status)

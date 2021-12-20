@@ -59,8 +59,8 @@ import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import stakingStatus from "@/common/constants/staking-status"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
-import { getServiceRequestByCustomer } from "@/common/lib/service-request"
-import { getLocations } from "@/common/lib/location"
+import { getServiceRequestByCustomer } from "@/common/lib/api"
+import { getLocations } from "@/common/lib/api"
 
 
 export default {

@@ -60,7 +60,7 @@ import { mapState } from "vuex"
 import Button from "@/common/components/Button"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { hexToU8a } from "@polkadot/util"
-import { getLocations } from "@/common/lib/location"
+import { getLocations } from "@/common/lib/api"
 
 
 export default {

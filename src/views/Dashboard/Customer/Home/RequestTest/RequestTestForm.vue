@@ -66,8 +66,8 @@
 
 <script>
 import { mapState, mapMutations } from "vuex"
-import { getLocations, getStates, getCities } from "@/common/lib/location"
-import { getCategories } from "@/common/lib/categories"
+import { getLocations, getStates, getCities } from "@/common/lib/api"
+import { getCategories } from "@/common/lib/api"
 import Button from "@/common/components/Button"
 
 export default {

@@ -20,7 +20,7 @@
 
 import { mapState, mapMutations } from "vuex"
 import PaymentCheckout from "./PaymentCheckout"
-import { fetchPaymentDetails } from "@/common/lib/orders";
+import { fetchPaymentDetails } from "@/common/lib/api";
 
 export default {
   name: "Checkout",

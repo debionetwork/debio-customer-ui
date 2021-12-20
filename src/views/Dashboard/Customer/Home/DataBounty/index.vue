@@ -38,7 +38,7 @@
 <script>
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
-import { fetchBountyLists } from "@/common/lib/orders"
+import { fetchBountyLists } from "@/common/lib/api"
 import { researchIllustration } from "@/common/icons" 
 import { mapState } from "vuex"
 

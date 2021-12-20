@@ -1,4 +1,4 @@
-import axios from "axios";
+import apiClientRequest from "@/common/lib/api";
 import localStorage from "@/common/lib/local-storage";
 
 export async function fetchPaymentHistories(searchQuery) {
@@ -6,7 +6,7 @@ export async function fetchPaymentHistories(searchQuery) {
     data: {
       data
     }
-  } = await axios.get(`${process.env.VUE_APP_BACKEND_API}/orders/list/${localStorage.getAddress()}`, {
+  } = await apiClientRequest.get(`/orders/list/${localStorage.getAddress()}`, {
     params: {
       size: 1000,
       page: 1,
@@ -20,16 +20,16 @@ export async function fetchPaymentHistories(searchQuery) {
 export async function fetchPaymentDetails(hash) {
   const {
     data
-  } = await axios.get(
-    `${process.env.VUE_APP_BACKEND_API}/orders/${hash}`
+  } = await apiClientRequest.get(
+    `/orders/${hash}`
   );
 
   return data;
 }
 
 export async function fetchBountyLists(hash) {
-  const { data: { data } } = await axios.get(
-    `${process.env.VUE_APP_BACKEND_API}/orders/bounty_list/${hash}`
+  const { data: { data } } = await apiClientRequest.get(
+    `/orders/bounty_list/${hash}`
   );
 
   return data;

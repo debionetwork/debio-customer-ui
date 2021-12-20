@@ -24,7 +24,7 @@
 <script>
 
 import { mapState } from "vuex"
-import { getStates } from "@/common/lib/location"
+import { getStates } from "@/common/lib/api"
 
 export default {
   name: "MenuCard",
