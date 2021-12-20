@@ -1,7 +1,6 @@
 import ipfsWorker from "./ipfs-worker"
 import store from "@/store/index"
-import axios from "axios"
-import { getSignedUrl } from './gcs'
+import apiClientRequest, { getSignedUrl } from "@/common/lib/api"
 
 export function upload({ fileChunk, fileName, fileType }) {
   const chunkSize = 10 * 1024 * 1024 // 10 MB
@@ -57,7 +56,7 @@ export async function syncDecryptedFromIPFS(path, pair, fileName, type) {
     }
 
     const signedUrl = await getSignedUrl(fileName, 'write')
-    await axios.put(
+    await apiClientRequest.put(
       signedUrl,
       event.data,
       {

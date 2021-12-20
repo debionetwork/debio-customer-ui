@@ -120,7 +120,7 @@ import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs";
 import { getOrdersDetail } from "@/common/lib/polkadot-provider/query/orders";
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services";
 import { hexToU8a } from "@polkadot/util";
-import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/rating";
+import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/api";
 import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
 import errorMessage from "@/common/constants/error-messages"
 import Modal from "@/common/components/Modal";

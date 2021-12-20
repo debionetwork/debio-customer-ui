@@ -206,7 +206,8 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
-      metamaskWalletBalance: (state) => state.metamask.metamaskWalletBalance
+      metamaskWalletBalance: (state) => state.metamask.metamaskWalletBalance,
+      lastEventData: (state) => state.substrate.lastEventData
     }),
 
     getActiveMenu() {
@@ -221,12 +222,16 @@ export default {
   },
 
   async mounted () {
-    this.fetchWalletBalance()
     this.checkMetamaskAddress()
+    this.fetchWalletBalance()
 
-    if (this.metamaskWalletAddress) {
-      this.loginStatus = true
-      this.menus.find(menu => menu.type === "metamask").active = true
+  },
+
+  watch: {
+    lastEventData() {
+      if(this.lastEventData) {
+        this.fetchWalletBalance()
+      }
     }
   },
 
@@ -270,7 +275,6 @@ export default {
       
       if (selectedMenu.type === "polkadot") {
         this.walletAddress = this.wallet.address
-        // console.log(await fromEther(this.walletBalance))
         const formatedBalance = await fromEther(this.walletBalance)
         this.activeBalance = Number(formatedBalance).toFixed(3)
       }
@@ -329,6 +333,11 @@ export default {
           this.loginStatus = true
         }
       }
+
+      if (this.metamaskWalletAddress) {
+        this.loginStatus = true
+      }
+
     },
 
     connectToMetamask() {

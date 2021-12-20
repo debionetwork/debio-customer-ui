@@ -31,7 +31,7 @@
 <script>
 
 import { mapState } from "vuex"
-import { getLocations } from "@/common/lib/location"
+import { getLocations } from "@/common/lib/api"
 
 
 export default {
