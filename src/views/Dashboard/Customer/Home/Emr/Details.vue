@@ -124,7 +124,7 @@ export default {
 
       this.emrDocument.files = files.map(file => ({
         ...file,
-        recordLink: file.recordLink.replace("https://ipfs.io/ipfs/", "")
+        recordLink: file.recordLink.split("/").pop()
       }))
 
       if (this.emrDocument?.files.length) this.parseResult(
