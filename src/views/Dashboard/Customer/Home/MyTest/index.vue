@@ -264,7 +264,7 @@ export default {
         })  
       }
 
-      if(event.method === "Withdraw") {
+      if(event.method === "ServiceRequestWaitingForUnstaked") {
         this.isLoading = false
         this.showDialog = false
         this.$router.push({

@@ -25,7 +25,7 @@
               width="170"
               height="35"
               @click="closeDialog"
-              ) Dismis
+              ) Dismiss
 </template>
 
 <script>

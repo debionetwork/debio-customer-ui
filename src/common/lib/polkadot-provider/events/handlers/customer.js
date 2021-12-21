@@ -45,6 +45,14 @@ const handler = {
     const coin = web3.utils.fromWei(finalText, "kwei")
     const wording = `${coin} DBIO for registering in Debio Appchain`;
     return { data, id, params, wording }
+  },
+  serviceRequest: async (dataEvent, value, valueMessage) => {
+    const data = dataEvent[1]
+    const id = data[value]
+    const params = null
+    const wording = valueMessage    
+
+    return { data, id, params, wording}
   }
 }
 

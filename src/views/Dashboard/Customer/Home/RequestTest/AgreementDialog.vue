@@ -66,7 +66,6 @@
 <script>
 import { mapState } from "vuex"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
-import localStorage from "@/common/lib/local-storage"
 import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { getCreateRequestFee } from "@/common/lib/polkadot-provider/command/info"
 
@@ -126,7 +125,7 @@ export default {
   watch: {
     lastEventData() {
       if (this.lastEventData) {
-        if (this.lastEventData.method === "Endowed") {
+        if (this.lastEventData.method === "ServiceRequestCreated") {
           this.isLoading = false
           this.dialogAlert = true
           this.$emit("click")
@@ -164,39 +163,6 @@ export default {
           this.amount
         )
 
-        const address = localStorage.getAddress()
-        const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + "customer"
-        const listNotificationJson = localStorage.getLocalStorageByName(storageName)
-
-        let listNotification = []
-        if (listNotificationJson != null && listNotificationJson != "") {
-          listNotification = JSON.parse(listNotificationJson)
-        }
-
-        const dateSet = new Date()
-        const timestamp = dateSet.getTime().toString()
-        const notifDate = dateSet.toLocaleString("en-US", {
-          weekday: "short",
-          day: "numeric", 
-          year: "numeric",
-          month: "long", 
-          hour: "numeric",
-          minute: "numeric"
-        })
-
-        const notification = {
-          message: "Your request has been submitted",
-          timestamp: timestamp,
-          data: "",
-          route: "service-request",
-          params: "",
-          read: false,
-          notifDate: notifDate
-        }
-          
-        listNotification.push(notification)
-        localStorage.setLocalStorageByName(storageName, JSON.stringify(listNotification))
-        listNotification.reverse()
       } catch (err) {
         this.errorMsg = err.message
         this.isLoading = false

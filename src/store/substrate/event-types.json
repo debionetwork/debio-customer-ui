@@ -111,7 +111,33 @@
           "identity": 0
         }
       },
-      "electronicMedicalRecord": null
+      "electronicMedicalRecord": null,
+      "serviceRequest": {
+        "ServiceRequestCreated": {
+          "message": "Congrats! Your requested service has been submitted.",
+          "value": 0,
+          "value_message": "",
+          "route": "",
+          "params": "",
+          "identity": "requesterAddress"
+        },
+        "ServiceRequestUnstaked": {
+          "message": "Your stake amount has been refunded, kindly check your balance.",
+          "value": "requesterAddress",
+          "value_message": "",
+          "route": "",
+          "params": "",
+          "identity": "requesterAddress"
+        },
+        "ServiceRequestClaimed": {
+          "message": "Congrats! Your requested service is available now. See your stake service.",
+          "value": 0,
+          "value_message": "",
+          "route": "",
+          "params": "",
+          "identity": "requesterAddress"
+        }
+      }
     },
     "lab": {
       "orders": {
