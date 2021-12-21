@@ -55,21 +55,36 @@
 
 <script>
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
+import localStorage from "@/common/lib/local-storage"
 
 export default {
   name: "GenerateAccount",
+
   components: {
     LandingPagePopUp
   },
+
   data: () => ({
     agreeConditions: false
   }),
+
+  created() {
+    const hasTerms = localStorage.getLocalStorageByName("TERMS")
+
+    if (hasTerms) this.agreeConditions = hasTerms
+  },
+
   methods: {
     previous() {
+      const hasAddress = localStorage.getLocalStorageByName("mnemonic_data")
+
+      if (!hasAddress) localStorage.removeLocalStorageByName("TERMS")
+
       this.$router.push({name: "landing-page"})
     },
 
     generateMnemonic() {
+      localStorage.setLocalStorageByName("TERMS", this.agreeConditions)
       this.$router.push({name: "generate-mnemonic"})
     }
   }

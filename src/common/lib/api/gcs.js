@@ -18,12 +18,7 @@ export async function createSyncEvent({ orderId, serviceCategoryId, fileName }) 
     filename: fileName
   }
 
-  const { data } = await apiClientRequest.post("/bounty/create-sync-event", payload, {
-    auth: {
-      username: process.env.VUE_APP_USERNAME,
-      password: process.env.VUE_APP_PASSWORD
-    }
-  })
+  const { data } = await apiClientRequest.post("/bounty/create-sync-event", payload)
 
   return data
 }
