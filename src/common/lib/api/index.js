@@ -15,7 +15,11 @@ export * from "./service-request"
 // PLEASE DISCUSS BEFORE YOU WANT TO EDIT THIS SCRIPT
 const apiClientRequest = axios.create({
   baseURL: process.env.VUE_APP_BACKEND_API,
-  headers: { "Content-Type": "application/json" }
+  headers: { "Content-Type": "application/json" },
+  auth: {
+    username: process.env.VUE_APP_USERNAME,
+    password: process.env.VUE_APP_PASSWORD
+  }
 })
 
 export default apiClientRequest
