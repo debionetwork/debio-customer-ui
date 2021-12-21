@@ -2,8 +2,6 @@
   .customer-success
     .customer-success__wrapper
       .customer-success__nav
-        .customer-success__nav-button(@click="handleBack")
-          v-icon.customer-success__nav-icon mdi-chevron-left
       
       .customer-success__main
         .customer-success__stepper
@@ -37,13 +35,7 @@ export default {
       { number: 3, title: "Checkout & Payment", active: false },
       { number: 4, title: "Success", active: true }
     ]
-  }),
-
-  methods: {
-    handleBack() {
-      this.$router.push({ name: "customer-request-test-checkout"})
-    }
-  }
+  })
 }
 </script>
 

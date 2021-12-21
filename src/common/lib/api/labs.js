@@ -11,6 +11,11 @@ import store from "@/store/index"
  * 
  */
 
+const auth = {
+  username: process.env.VUE_APP_USERNAME,
+  password: process.env.VUE_APP_PASSWORD
+}
+
 export async function getServicesByCategory(category, flow) {
   const { country, region, city} = store.getters["lab/getCountryRegionCity"]
 
@@ -22,7 +27,6 @@ export async function getServicesByCategory(category, flow) {
     service_flow: flow
   }
 
-  const services = await apiClientRequest.get("/labs", { params })
-
-  return services
+  const { data : data } = await apiClientRequest.get("/labs", { params , auth })
+  return data
 }

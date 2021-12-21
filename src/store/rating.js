@@ -1,4 +1,4 @@
-import apiClientRequest from "@/common/lib/api"
+import { getRatingService, getRatingLab } from "@/common/lib/api"
 
 const defaultState = {
   labRate: null,
@@ -23,15 +23,16 @@ export default {
   },
   actions: {
     async getLabRate({ commit }, address ) {
-      const rate = await apiClientRequest.get(`/rating/lab/${address}`)
-      commit("SET_LAB_RATE", rate.data)
-      return rate.data
+      const rate = await getRatingLab(address)
+      commit("SET_LAB_RATE", rate)
+      return rate
     },
 
-    async getServiceRate({ commit }, address) {
-      const rate = await apiClientRequest.get(`/rating/service/${address}`)
+    async getServiceRate({ commit }, id) {
+      const rate = await getRatingService(id)
+
       commit("SET_SERVICE_RATE", rate.data)
-      return rate.data
+      return rate
     }
   },
 
