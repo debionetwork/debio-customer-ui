@@ -27,11 +27,11 @@ export const getRatingByOrderId = async (orderId) => {
 }
 
 export const getRatingService = async (id) => {
-  const { data } = await apiClientRequest.get(`/rating/service/${id}`, { auth })
+  const { data } = await apiClientRequest.get(`/rating/service/${id}`)
   return data
 }
 
 export const getRatingLab = async (address) => {
-  const { data } = await apiClientRequest.get(`/rating/lab/${address}`, { auth })
+  const { data } = await apiClientRequest.get(`/rating/lab/${address}`)
   return data
 }

@@ -25,7 +25,7 @@
         ui-debio-avatar.menu-card__lab-avatar(:src="dataService.labImage" size="90" rounded)
         b.menu-card__lab-title {{ dataService.labName }}
           ui-debio-rating.menu-card__rating(:rating="dataService.labRate" :total-reviews="dataService.countRateLab" size="10")
-          .menu-card__address {{ dataService.labAddress }}, {{ dataService.city }}, {{ country(dataService.country ) }}
+          .menu-card__address {{ dataService.labAddress }}, {{ dataService.city }}, {{ dataService.country }}
 </template>
 
 <script>
