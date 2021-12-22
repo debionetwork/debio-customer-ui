@@ -112,8 +112,8 @@
             ConfirmationDialog(
               :show="showDialog"
               :loading="isLoading"
-              title="Are you sure you want to unstake?"
-              message="If you wish to proceed, you won't be able to continue the request service process and no DBIO reward will be given. Your staking amount will be returned after 144 hours or 6 days"
+              title="Unstake"
+              message="Your staking amount will be returned after 144 hours or 6 days"
               @click="unstakeService"
               this.isLoding = true
               @close="showDialog=false"

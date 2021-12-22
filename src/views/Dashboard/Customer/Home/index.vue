@@ -2,7 +2,7 @@
 .customer-home
   ui-debio-banner(
     title="Welcome to Debio!"
-    subtitle="The Privacy-First Platform for Personal Biomedical Testing"
+    subtitle="The Privacy-First Platform for Personal Genetic and Biomedical Testing"
     with-decoration
     gradient-color="violet"
   )

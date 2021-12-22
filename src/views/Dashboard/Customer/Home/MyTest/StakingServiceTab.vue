@@ -43,12 +43,17 @@
         ) Proceed
 
       .customer-staking-tab__actions(v-else)
-        Button.pa-4(
-          style="font-size: 1em"
-          height="25px"
-          width="100px"
-          color="#F5F5F5"
-            ) {{ setRemainingStakingDate(item.request.unstaked_at) }}
+        Button(disabled width="220px" color="white" )
+          vue-countdown-timer(
+            :start-time="new Date().getTime()"
+            :end-time="setRemainingStakingDate(item.request.unstaked_at)"
+            :interval="1000"
+            :end-text="'-'"
+            :day-txt="'D :'"
+            :hour-txt="'H :'"
+            :minutes-txt="'M :'"
+            :seconds-txt="'S'"
+          )
 
 </template>
 
@@ -58,7 +63,6 @@ import { mapState, mapMutations } from "vuex"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import stakingStatus from "@/common/constants/staking-status"
-import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { getServiceRequestByCustomer } from "@/common/lib/api"
 import { getLocations } from "@/common/lib/api"
 
@@ -68,8 +72,7 @@ export default {
 
   components: {
     DataTable,
-    Button,
-    ConfirmationDialog
+    Button
   },
 
   data: () => ({
@@ -162,15 +165,9 @@ export default {
 
     setRemainingStakingDate(date) {
       const formatedDate = new Date(parseInt(date.replace(/,/g, "")))
-      const dueDate = formatedDate.setDate(formatedDate.getDate() + 7)
-      const now = new Date().getTime()
-      const distance = dueDate - now
+      const dueDate = formatedDate.setDate(formatedDate.getDate() + 6)
 
-      let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-
-      return `${days}D:${hours}H:${minutes}M`      
+      return dueDate
     },
 
     async toRequestTest(service) {

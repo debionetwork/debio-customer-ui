@@ -7,7 +7,7 @@
         font-family: Roboto;
         font-style: normal;
         font-weight: bold;
-        font-size: 35px;
+        font-size: 24px;
         line-height: 41px;
         color: #363636;
         
@@ -30,7 +30,7 @@
 
 <template lang='pug'>
     LandingPagePopUp: template(v-slot:main): div.pop-up-main
-        div.pop-up-title The Privacy-First Platform for Personal Genetic Testing
+        div.pop-up-title The Privacy-First Platform for Personal Genetic and Biomedical Testing
         v-btn.white--text(elevation='0' color='primary' @click='signIn') Sign In
         v-btn(elevation='0' outlined color='primary' @click='generateAccount') Generate Account
 </template>
