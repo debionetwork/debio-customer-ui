@@ -6,10 +6,13 @@ import vuetify from "./common/plugins/vuetify"
 import { fmtSpecimenNumber } from "./common/lib/string-format"
 import { format, fromUnixTime } from "date-fns"
 import "@/common/components/globalUiComponents"
+import VueCountdownTimer from "vuejs-countdown-timer"
 // import localStorage from './lib/local-storage'
 
 
 Vue.config.productionTip = false
+
+Vue.use(VueCountdownTimer)
 
 Vue.filter("customerSpecimenStatus", function (val) {
   return val == "Received" ? "Received by Lab" : val

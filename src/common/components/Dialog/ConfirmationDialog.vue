@@ -1,30 +1,26 @@
 <template lang="pug">
-  v-dialog(:value="show" height="400" width="400" persistent)
-    v-card
+  v-dialog.dialog-confirmation(:value="show" height="535" width="400" persistent)
+    v-card.dialog-confirmation__card
       v-app-bar(flat dense color="white")
-        v-toolbar-title(class="title d-flex justify-end align-center" style="width: 100%;")
-          v-btn(icon @click="closeDialog")
-            v-icon(style="font-size: 20px;") mdi-close
         v-spacer
+        v-btn(icon @click="closeDialog")
+          v-icon mdi-close
       
-      div(class="text-h5 pa-5" align="center") {{ title }}
-      v-card-text(class="pa-5" align="center") {{ message}}
+      .dialog-confirmation__title(align="center") {{ title }}
 
-        div(class="d-flex justify-space-between pa-10" style="gap: 5px")
-          Button(
-            color="secondary" 
-            width="120px"
-            height="35px"
-            outlined
-            @click="closeDialog"
-          ) No
+      .dialog-confirmation__icon
+        v-img(v-bind:src="require('@/assets/alert-triangle.png')" max-width="87.07")
 
-          Button(
-            color="secondary" 
-            width="120px"
-            height="35px"
-            @click="onSubmit"
-          ) Yes
+
+      v-card-text.dialog-confirmation__description {{ message}}
+
+      .dialog-confirmation__button
+        Button(
+          color="secondary" 
+          width="280px"
+          height="35px"
+          @click="onSubmit"
+        ) Unstake
   
       v-progress-linear(
         v-if="loading"
@@ -62,3 +58,36 @@ export default {
   }
 }
 </script>
+
+
+<style lang="sass" scoped>
+  @import "@/common/styles/mixins.sass"
+
+  .dialog-confirmation
+    &__title
+      display: flex
+      justify-content: center
+      align-items: center
+      text-align: center
+      letter-spacing: 0.0044em
+      padding-top: 30px
+      padding-bottom: 72.07px
+      @include h6
+
+    &__icon
+      display: flex
+      justify-content: center
+      align-items: center
+
+    &__description
+      display: flex
+      justify-content: center
+      text-align: center
+      letter-spacing: -0.0044em
+      margin-top: 57.5px
+      
+    &__button
+      padding: 60px
+    
+
+</style>

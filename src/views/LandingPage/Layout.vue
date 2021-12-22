@@ -95,7 +95,7 @@
         div.welcome
             div
                 h2 Welcome to our site!
-                h4 This is a demo version for testing purposes. We're still working on this site and will have more information available to you soon. Thank you.
+                h4 DeBio Network allows users to sample and test anonymously, without leaving home. Empower labs of all sizes to collaborate on analyzing genetic and medical data, and offering joint biomedical products.
         // Main
         div.main: router-view
 </template>
