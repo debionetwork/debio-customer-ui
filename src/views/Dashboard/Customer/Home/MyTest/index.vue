@@ -112,6 +112,7 @@
             ConfirmationDialog(
               :show="showDialog"
               :loading="isLoading"
+              :txWeight="Number(txWeight).toFixed(4)"
               title="Unstake"
               message="Your staking amount will be returned after 144 hours or 6 days"
               @click="unstakeService"
@@ -151,6 +152,9 @@ import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-r
 
 import { queryDnaSamples, queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { ordersByCustomer } from "@/common/lib/polkadot-provider/query/orders"
+import { unstakeRequestFee } from "@/common/lib/polkadot-provider/command/info"
+
+
 
 export default {
   name: "MyTest",
@@ -208,7 +212,8 @@ export default {
     isLoadingOrderHistory: false,
     isLoding: false,
     isLoadingTestResults: false,
-    testResult: []
+    testResult: [],
+    txWeight: 0
   }),
 
   computed: {
@@ -218,7 +223,8 @@ export default {
       wallet: (state) => state.substrate.wallet,
       lastEventData: (state) => state.substrate.lastEventData,
       mnemonicData: (state) => state.substrate.mnemonicData,
-      stakingId: (state) => state.lab.stakingId
+      stakingId: (state) => state.lab.stakingId,
+      web3: (state) => state.metamask.web3
     }),
 
     userAddress() {
@@ -287,6 +293,12 @@ export default {
       this.tabs = this.$route.params.page
     }
     await this.getTestResultData()
+
+    const txWeight = await unstakeRequestFee(this.api, this.wallet, this.stakingId)
+
+    console.log("tx partial ", String(txWeight.partialFee))
+    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+
   },
   
   async created() {
@@ -517,8 +529,7 @@ export default {
     async unstakeService () {
       const requestId = this.stakingId
       this.isLoading = true
-      await unstakeRequest(this.api, this.wallet, requestId)
-      
+      await unstakeRequest(this.api, this.wallet, requestId) 
     }
   }
 }

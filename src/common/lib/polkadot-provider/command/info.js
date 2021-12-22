@@ -11,3 +11,10 @@ export async function getCreateRequestFee(api, pair, country, region, city, cate
     .paymentInfo(pair)
   return info
 }
+
+export async function unstakeRequestFee(api, pair, requestId) {
+  const info = await api.tx.serviceRequest
+    .unstake(requestId)
+    .paymentInfo(pair)
+  return info
+}
