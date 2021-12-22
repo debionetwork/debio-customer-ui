@@ -11,6 +11,8 @@
     :to="to"
     :height="height"
     :dark="dark"
+    v-on="on"
+    v-bind="bind"
   )
     slot
 </template>
@@ -27,7 +29,9 @@ export default {
     loading: { type: Boolean, default: false },
     width: { type: [String, Number], default: "203px" },
     outlined: { type: Boolean, default: false },
-    height: String
+    height: String,
+    on: {type: [Boolean, String, Function, Object], default: null},
+    bind: {type: [Boolean, String, Function, Object], default: null }
   },
   mounted() {
     this.changeStyle()
