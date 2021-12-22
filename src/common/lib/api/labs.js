@@ -11,6 +11,7 @@ import store from "@/store/index"
  * 
  */
 
+
 export async function getServicesByCategory(category, flow) {
   const { country, region, city} = store.getters["lab/getCountryRegionCity"]
 
@@ -22,7 +23,6 @@ export async function getServicesByCategory(category, flow) {
     service_flow: flow
   }
 
-  const services = await apiClientRequest.get("/labs", { params })
-
-  return services
+  const { data : data } = await apiClientRequest.get("/labs", { params })
+  return data
 }

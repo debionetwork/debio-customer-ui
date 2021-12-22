@@ -54,8 +54,7 @@ export default {
 
     async getServicesByCategory({ commit }, datas) {
       const { category, status } = datas
-      const { data : data } = await getServicesByCategory (category, status)
-
+      const data = await getServicesByCategory (category, status)
 
       commit("SET_SERVICES", data.result)
       commit("SET_CATEGORY", category)

@@ -1,6 +1,6 @@
 <template lang="pug">
   v-dialog.dialog-payment(:value="show" width="400" rounded persistent )
-    v-card.dialog-payment__card
+    v-card.dialog-payment__card(v-if="!isLoading")
       v-app-bar(flat dense color="white")
         v-spacer
         v-btn(icon @click="closeDialog")
@@ -63,12 +63,6 @@
             @click:append="showPassword = !showPassword"
             outlined
           )
-
-        v-progress-linear(
-          v-if="isLoading"
-          indeterminate
-          color="primary"
-        )
       
         v-alert.mt-5.mb-5(
           v-if="error" 
@@ -85,12 +79,22 @@
           @click="onSubmit"
         ) Pay
 
+    v-card.dialog-payment__card(v-if="isLoading")
+      .dialog-payment__card-loading
+        SpinnerLoader(
+          :color="'#C400A5'"
+          :size="140"
+        )
+      .dialog-payment__card-loading-text Loading...
+      .dialog-payment__card-loading-desc Please wait while we're processing your payment
+
     ErrorDialog(
       :show="showError"
       :title="errorTitle"
       :message="errorMsg"
       @close="showError = false"
     )
+
 </template>
 
 <script>
@@ -111,7 +115,7 @@ import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import { errorHandler } from "@/common/lib/error-handler"
 import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
-
+import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
 
 
 export default {
@@ -119,7 +123,8 @@ export default {
 
   components: {
     Button,
-    ErrorDialog
+    ErrorDialog,
+    SpinnerLoader
   },
 
   mixins: [serviceHandlerMixin],
@@ -418,5 +423,18 @@ export default {
     &__icon
       margin-left: 5px
       @include body-text-3-opensans-medium
+
+    &__card-loading
+      padding: 125px 130px 0px 130px
+
+    &__card-loading-text
+      padding: 46.67px 153px 0px 153px
+      @include h6
+
+    &__card-loading-desc
+      padding: 35px 84px 118px 84px
+      text-align: center
+      letter-spacing: -0.0044em
+      @include body-text-2
 
 </style>

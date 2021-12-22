@@ -112,17 +112,11 @@ export default {
 
         // Example of how to subscribe to events via storage
         api.query.system.events((events) => {
-          console.log(`\nReceived ${events.length} events:`)
           events.forEach((record) => {
-            const { event, phase } = record
+            const { event } = record
             if (event.section == "serviceRequest" || event.section == "rewards" || event.section == "orders" || event.section == "geneticTesting" || event.section == "balances" || event.section == "electronicMedicalRecord") {
-              console.log("Method :" + event.method)
               if (event.method === "OrderPaid") localStorage.removeLocalStorageByName("lastOrderStatus")
-              console.log(`Phase: ${phase.toString()}`)
               commit("SET_LAST_EVENT", event)
-            }
-            else {
-              console.log("event no mapping")
             }
           })
         })
@@ -132,7 +126,7 @@ export default {
 
         commit("SET_LOADING_API", false)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         commit("SET_LOADING_API", false)
       }
     },
@@ -146,7 +140,6 @@ export default {
         localStorage.setKeystore(JSON.stringify(json))
         localStorage.setAddress(pair.address)
         commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
-        console.log("Is pair locked?", pair.isLocked)
         commit("SET_WALLET", pair) // FIXME: simpen untuk dev
         commit("SET_LOADING_WALLET", false)
 
@@ -154,7 +147,7 @@ export default {
         commit("SET_MNEMONIC_DATA", mnemonic)
         return { success: true }
       } catch (err) {
-        console.log(err)
+        console.error(err)
         commit("CLEAR_WALLET")
         commit("SET_LOADING_WALLET", false)
         return { success: false, error: err.message }
@@ -163,14 +156,12 @@ export default {
     async restoreAccountKeystore({ commit }, { file, password }) {
       try {
         if (Array.isArray(file)) {
-          console.log("mnemonic exist")
           commit("SET_LOADING_WALLET", true)
           const pair = keyring.restoreAccount(file[0], password)
           pair.unlock(password)
           localStorage.setKeystore(JSON.stringify(file[0]))
           localStorage.setAddress(pair.address)
           commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
-          console.log("Is pair locked?", pair.isLocked)
           commit("SET_WALLET", pair)
           
           localStorage.setLocalStorageByName("mnemonic_data", CryptoJS.AES.encrypt(file[1].mnemonic, password));	
@@ -180,14 +171,12 @@ export default {
           return { success: true }
         } else {
           // FIXME: Ini belum ada mnemonic nya
-          console.log("mnemonic no exist")
           commit("SET_LOADING_WALLET", true)
           const pair = keyring.restoreAccount(file, password)
           pair.unlock(password)
           localStorage.setKeystore(JSON.stringify(file))
           localStorage.setAddress(pair.address)
           commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
-          console.log("Is pair locked?", pair.isLocked)
           commit("SET_WALLET", pair)
 
           return { success: true }
@@ -238,7 +227,7 @@ export default {
 
         return { success: true }
       } catch (err) {
-        console.log(err)
+        console.error(err)
         commit("CLEAR_WALLET")
         commit("SET_LOADING_WALLET", false)
         return { success: false, error: err.message }
@@ -256,7 +245,7 @@ export default {
 
         return { success: true }
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return { success: false, error: err.message }
       }
     },
@@ -272,7 +261,7 @@ export default {
 
         return { success: true }
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return { success: false, error: err.message }
       }
     },
@@ -288,7 +277,7 @@ export default {
 
         return { success: true }
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return { success: false, error: err.message }
       }
     },
@@ -298,8 +287,6 @@ export default {
         const pair = keyringX.addFromUri(mnemonic, { name: "first pair" }, "ed25519")
         commit("SET_LOADING_WALLET", false)
         if (accountAddress == pair.address) {
-          console.log(accountAddress)
-          console.log(pair.address)
           return { success: true }
         } else {
           return { success: false }
@@ -318,11 +305,10 @@ export default {
         if (listNotificationJson != null && listNotificationJson != "") {
           listNotification = JSON.parse(listNotificationJson)
           listNotification.reverse()
-          //console.log(listNotification);
         }
         commit("SET_LIST_NOTIFICATION", listNotification)
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     },
     async addListNotification({ commit, state }, { address, event, role }) {
@@ -366,7 +352,7 @@ export default {
         listNotification.reverse()
         commit("SET_LIST_NOTIFICATION", listNotification)
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     },
     async updateDataListNotification({ commit }, { address, data, role }) {
@@ -378,7 +364,7 @@ export default {
           commit("SET_LIST_NOTIFICATION", data)
         }
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     },
     async addAnyNotification({ commit }, { address, dataAdd, role }) {
@@ -417,7 +403,7 @@ export default {
         listNotification.reverse()
         commit("SET_LIST_NOTIFICATION", listNotification)
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
   },
