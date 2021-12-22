@@ -10,16 +10,7 @@ export const submitRatingOrder = async (labId, serviceId, orderId, ratingBy, rat
     review: review
   }
 
-<<<<<<< HEAD
   const { data } = await apiClientRequest.post("/rating", payload);
-=======
-  const { data } = await apiClientRequest.post("/rating", payload, {
-    auth: {
-      username: process.env.VUE_APP_USERNAME,
-      password: process.env.VUE_APP_PASSWORD
-    }
-  });
->>>>>>> revert post rating auth
 
   return data;
 }
