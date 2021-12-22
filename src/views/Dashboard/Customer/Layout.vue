@@ -41,21 +41,32 @@
         ) Submit
 
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
-      Button(
-        outlined
-        height="35px"
-        @click="goToRequestTestPage"
-        class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-        color="primary"
-      ) Request a Test
+      template
+        v-tooltip(top)
+          template(v-slot:activator="{ on, attrs }")
+            Button(
+              outlined
+              height="35px"
+              @click="goToRequestTestPage"
+              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+              color="primary"
+              :bind="attrs"
+              :on="on"
+            ) Request a Test
+          span Get your biological sample tested or stake $DBIO to request Lab
 
-      Button(
-        outlined
-        height="35px"
-        @click="goToUploadEMR"
-        class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-        color="primary"
-      ) Upload EMR
+        v-tooltip(bottom)
+          template(v-slot:activator="{ on, attrs }")
+            Button(
+              outlined
+              height="35px"
+              @click="goToUploadEMR"
+              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+              color="primary"
+              :bind="attrs"
+              :on="on"
+            ) Upload EMR
+          span Upload your Electronic Medical Record
 
     .layout-dashboard__wrapper
       Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")

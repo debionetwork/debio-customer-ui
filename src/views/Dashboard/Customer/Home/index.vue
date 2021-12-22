@@ -13,7 +13,7 @@
       ui-debio-card(
         :to="{ name: 'customer-request-test'}"
         title="Request a Test"
-        sub-title="Get your biological sample tested"
+        sub-title="Get your biological sample tested or stake $DBIO to request Lab"
         tiny-card
         with-icon
         width="250"
