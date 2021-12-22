@@ -296,7 +296,6 @@ export default {
 
     const txWeight = await unstakeRequestFee(this.api, this.wallet, this.stakingId)
 
-    console.log("tx partial ", String(txWeight.partialFee))
     this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
 
   },
