@@ -55,6 +55,7 @@ jobs:
             VUE_APP_DEBIO_API_KEY:${{ secrets.MAINNET_GCP_PROJECT_ID }}/VUE_APP_DEBIO_API_KEY
             VUE_APP_USERNAME:${{ secrets.MAINNET_GCP_PROJECT_ID }}/VUE_APP_USERNAME
             VUE_APP_PASSWORD:${{ secrets.MAINNET_GCP_PROJECT_ID }}/VUE_APP_PASSWORD
+            CONTRACT_JSON:${{ secrets.MAINNET_GCP_PROJECT_ID }}//CONTRACT_JSON
       - name: Create .env & gcp sa
         shell: bash
         run: |
@@ -69,6 +70,12 @@ jobs:
           VUE_APP_DEBIO_API_KEY=${{ steps.secrets.outputs.VUE_APP_DEBIO_API_KEY }}
           VUE_APP_USERNAME=${{ steps.secrets.outputs.VUE_APP_USERNAME }}
           VUE_APP_PASSWORD=${{ steps.secrets.outputs.VUE_APP_PASSWORD }}
+          EOF
+
+          rm ./src/store/metamask/contracts/contract.json
+
+          tee -a ./src/store/metamask/contracts/contract.json <<EOF
+          ${{ steps.secrets.outputs.CONTRACT_JSON }}
           EOF
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -176,7 +183,14 @@ jobs:
               --set-string ingress.hosts[0].paths[0].pathType=ImplementationSpecific \
               --set-string ingress.tls[0].secretName=debio-customer-ui-tls \
               --set-string ingress.tls[0].hosts[0]=app.debio.network \
-              --set autoscaling.enabled=true
+              --set-string resources.requests.cpu=300m \
+              --set-string resources.requests.memory=512Mi \
+              --set-string resources.limits.cpu=500m \
+              --set-string resources.limits.memory=1024Mi \
+              --set replicaCount=1 \
+              --set autoscaling.enabled=true \
+              --set autoscaling.minReplicas=1 \
+              --set autoscaling.maxReplicas=11
             kubectl rollout status deployment/debio-customer-ui
 
   deploy-release:
@@ -234,5 +248,12 @@ jobs:
               --set-string ingress.hosts[0].paths[0].pathType=ImplementationSpecific \
               --set-string ingress.tls[0].secretName=debio-customer-ui-tls \
               --set-string ingress.tls[0].hosts[0]=app.debio.network \
-              --set autoscaling.enabled=true
+              --set-string resources.requests.cpu=300m \
+              --set-string resources.requests.memory=512Mi \
+              --set-string resources.limits.cpu=500m \
+              --set-string resources.limits.memory=1024Mi \
+              --set replicaCount=1 \
+              --set autoscaling.enabled=true \
+              --set autoscaling.minReplicas=1 \
+              --set autoscaling.maxReplicas=11
             kubectl rollout status deployment/debio-customer-ui
