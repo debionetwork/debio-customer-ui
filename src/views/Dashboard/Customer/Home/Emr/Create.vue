@@ -437,38 +437,33 @@ export default {
 
       fr.onload = async function() {
         try {
+          const encrypted = await context.encrypt({
+            text: fr.result,
+            fileType: file.type,
+            fileName: file.name
+          })
+
+          const { chunks, fileName, fileType } = encrypted
+
+          const dataFile = {
+            title,
+            description,
+            file,
+            chunks,
+            fileName,
+            fileType,
+            createdAt: new Date().getTime()
+          }
+
           if (context.isEdit) {
             const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
 
-            context.emr.files[index] = {
-              ...context.emr.files[index],
-              title,
-              description,
-              createdAt: new Date().getTime()
-            }
+            context.emr.files[index] = dataFile
 
             context.emr.files = context.emr.files.map(file => file)
             context.isEdit = false
-          }
-
-          else {
-            const encrypted = await context.encrypt({
-              text: fr.result,
-              fileType: file.type,
-              fileName: file.name
-            })
-
-            const { chunks, fileName, fileType } = encrypted
-
-            context.emr.files.push({
-              title,
-              description,
-              file,
-              chunks,
-              fileName,
-              fileType,
-              createdAt: new Date().getTime()
-            })
+          } else {
+            context.emr.files.push(dataFile)
           }
 
         } catch(e) {
