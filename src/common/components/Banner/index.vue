@@ -113,7 +113,7 @@ export default {
 
     &--gradient-violet
       .ui-debio-card__body
-        background: linear-gradient(267.84deg, #FFAAD4 66.51%, #FFD3E9 80%)
+        background: linear-gradient(91.73deg, #FFAAD4 -0.04%, #FFD3E9 99.96%)
 
     @media screen and (max-width: 959px)
       &__content,

@@ -1,8 +1,8 @@
 <template lang="pug">
 .customer-home
   ui-debio-banner(
-    title="Welcome to Debio!"
-    subtitle="The Privacy-First Platform for Personal Genetic and Biomedical Testing"
+    title="Dashboard"
+    subtitle="DeBio is the Most Privacy secured Platform for Personal Biomedical Testing!"
     with-decoration
     gradient-color="violet"
   )
