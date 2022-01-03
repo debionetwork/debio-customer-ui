@@ -30,26 +30,28 @@
           | {{ dataService.currency.toUpperCase()}}
 
 
-      div(class="ml-5 text-start me-10" v-if="stakingFlow")
-        div(class="d-flex justify-space-between" )
-          div( style=" font-size: 12px;" ) Staking Amount
-          div( style="font-size: 12px;" ) {{ stakingAmount }} {{ selectedService.currency.toUpperCase()}}
-      
-      span(class="d-flex justify-end me-3" style="font-size: 12px" v-if="stakingFlow") -
-      hr(class="ml-3 me-3 mb-1" v-if="stakingFlow")
+      .menu-card__details(v-if="stakingFlow")
+        .menu-card__sub-title Staking Amount
+        .menu-card__price
+          | {{ stakingAmount }}
+          | {{ dataService.currency.toUpperCase() }}
+    
+      .menu-card__operation(v-if="stakingFlow") -
+      hr.menu-card__line(v-if="stakingFlow")
 
-      div(class="ml-5 text-start me-10 mb-5" v-if="stakingFlow")
-        div(class="d-flex justify-space-between" )
-          b( style=" font-size: 12px;" ) Remaining Amount
-          b( style="font-size: 12px;" ) {{ remainingStaking }} {{ selectedService.currency.toUpperCase()}}
+      .menu-card__details(v-if="stakingFlow")
+        .menu-card__sub-title-medium Remaining Amount
+        .menu-card__price-medium
+          | {{ remainingStaking }}
+          | {{ dataService.currency.toUpperCase() }}
 
 
-      div(class="ml-4 text-center" v-if="!isCancelled")
-        div(v-if="!success" class="d-flex justify-space-between align-center")
+      div(class="text-center" v-if="!isCancelled")
+        div(v-if="!success" class="mt-3 d-flex justify-center align-center")
           Button(
             :class="setMargin"
             color="secondary"
-            width="300"
+            width="280"
             height="35"
             @click="onSubmit"
             ) Submit Order
@@ -59,7 +61,7 @@
             color="secondary" 
             width="46%"
             height="35"
-            @click="toInstruction(selectedService.dnaCollectionProcess)"
+            @click="toInstruction(dataService.dnaCollectionProcess)"
             style="font-size: 10px;"
             outlined 
             ) View Instruction
@@ -154,7 +156,7 @@ export default {
     remainingStaking: 0,
     remainingDbio: 0,
     showPayRemainingDialog: false,
-    orderId: 0,
+    orderId: "",
     COVID_19,
     DRIED_BLOOD,
     URINE_COLLECTION,
@@ -165,6 +167,15 @@ export default {
 
   async mounted () {
     this.stakingFlow = false
+    this.orderId = ""
+
+    if (this.dataService.length !== 0) {
+      this.servicePrice = this.formatPrice((this.dataService.detailPrice.price_components[0].value).replaceAll(",", ""))
+      this.qcPrice = this.formatPrice((this.dataService.detailPrice.additional_prices[0].value).replaceAll(",", ""))
+      this.totalPrice = this.formatPrice(this.dataService.price).replaceAll(",", "")
+      this.currency = this.dataService.currency.toUpperCase() 
+    }
+
 
     if (this.$route.params.id) {
       this.success = true
@@ -182,14 +193,16 @@ export default {
       this.orderId = this.detailOrder.id
     }
 
-    if (this.stakingData) {
+    if (this.dataService.serviceFlow === "StakingRequestService") {
       this.stakingFlow = true
       const debioBalance = await getDbioBalance()
-      const stakingAmount = this.stakingData.staking_amount * debioBalance.dai
-      this.stakingAmount = Number(this.formatPrice(stakingAmount)).toFixed(2)
-      const remainingStaking = this.selectedService.price - stakingAmount
-      this.remainingStaking = Number(this.formatPrice(remainingStaking))
-      this.remainingDbio = Number(this.formatPrice(remainingStaking / debioBalance.dai)).toFixed(3)
+
+      const stakingAmount = Number(this.stakingData.staking_amount.replaceAll(",", "")) * debioBalance
+
+      this.stakingAmount = Number(this.formatPrice(stakingAmount)).toFixed(3)
+      const remainingStaking = this.dataService.price - stakingAmount
+      this.remainingStaking = Number(this.formatPrice(remainingStaking)).toFixed(3)
+      this.remainingDbio = Number(this.formatPrice(remainingStaking / debioBalance)).toFixed(3)
     }
   },
 
@@ -205,7 +218,6 @@ export default {
       mnemonicData: (state) => state.substrate.mnemonicData,
       dataService: (state) => state.testRequest.products,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
-      selectedService: (state) => state.testRequest.products,
       stakingData: (state) => state.lab.stakingData,
       web3: (state) => state.metamask.web3
     }),
