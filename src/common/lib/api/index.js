@@ -1,5 +1,5 @@
 import axios from "axios"
-import * as Sentry from '@sentry/vue'
+import * as Sentry from "@sentry/vue"
 
 // EXPORT API COLLECTIONS HERE
 export * from "./categories"
