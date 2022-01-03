@@ -7,17 +7,13 @@ import { fmtSpecimenNumber } from "./common/lib/string-format"
 import { format, fromUnixTime } from "date-fns"
 import "@/common/components/globalUiComponents"
 import VueCountdownTimer from "vuejs-countdown-timer"
-import VueGtag from "vue-gtag"
 import * as Sentry from "@sentry/vue"
 import { Integrations } from "@sentry/tracing"
+import VueMixpanel from "vue-mixpanel"
 
-var pjson = require("../package.json")
-
-Vue.use(VueGtag, {
-  config: { id: process.env.VUE_APP_GTAG },
-  appName: pjson.name,
-  pageTrackerScreenviewEnabled: true
-}, router)
+Vue.use(VueMixpanel, {
+  token: process.env.VUE_APP_MIXPANEL_TOKEN
+})
 
 const SENTRY_DSN = process.env.VUE_APP_SENTRY_DSN
 
@@ -28,10 +24,10 @@ if (SENTRY_DSN) {
     integrations: [
       new Integrations.BrowserTracing({
         routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-        tracingOrigins: ["localhost", "app.debio.network", /^\//],
-      }),
+        tracingOrigins: ["localhost", "app.debio.network", /^\//]
+      })
     ],
-    tracesSampleRate: 1.0,
+    tracesSampleRate: 1.0
   })
 }
 

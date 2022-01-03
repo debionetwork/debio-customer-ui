@@ -31,7 +31,7 @@ apiClientRequest.interceptors.response.use(
     Sentry.captureException(error);
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default apiClientRequest
