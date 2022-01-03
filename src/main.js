@@ -8,6 +8,8 @@ import { format, fromUnixTime } from "date-fns"
 import "@/common/components/globalUiComponents"
 import VueCountdownTimer from "vuejs-countdown-timer"
 import VueGtag from "vue-gtag"
+import * as Sentry from "@sentry/vue"
+import { Integrations } from "@sentry/tracing"
 
 var pjson = require("../package.json")
 
@@ -16,6 +18,22 @@ Vue.use(VueGtag, {
   appName: pjson.name,
   pageTrackerScreenviewEnabled: true
 }, router)
+
+const SENTRY_DSN = process.env.VUE_APP_SENTRY_DSN
+
+if (SENTRY_DSN) {
+  Sentry.init({
+    Vue,
+    dsn: SENTRY_DSN,
+    integrations: [
+      new Integrations.BrowserTracing({
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+        tracingOrigins: ["localhost", "app.debio.network", /^\//],
+      }),
+    ],
+    tracesSampleRate: 1.0,
+  })
+}
 
 Vue.config.productionTip = false
 
