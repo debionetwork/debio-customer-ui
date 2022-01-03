@@ -7,8 +7,15 @@ import { fmtSpecimenNumber } from "./common/lib/string-format"
 import { format, fromUnixTime } from "date-fns"
 import "@/common/components/globalUiComponents"
 import VueCountdownTimer from "vuejs-countdown-timer"
-// import localStorage from './lib/local-storage'
+import VueGtag from "vue-gtag";
 
+var pjson = require('./package.json');
+
+Vue.use(VueGtag, {
+  config: { id: process.env.VUE_APP_GTAG },
+  appName: pjson.name,
+  pageTrackerScreenviewEnabled: true
+}, router);
 
 Vue.config.productionTip = false
 
