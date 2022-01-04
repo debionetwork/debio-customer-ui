@@ -91,6 +91,11 @@ export default {
   async mounted () {
     this.services = this.dataServices
     await this.getServices()
+
+    if (!this.country && !this.city && !this.category) {
+      this.$router.push({ name: "customer-request-test"})
+    }
+
   },
 
   methods: {
