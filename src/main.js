@@ -7,8 +7,29 @@ import { fmtSpecimenNumber } from "./common/lib/string-format"
 import { format, fromUnixTime } from "date-fns"
 import "@/common/components/globalUiComponents"
 import VueCountdownTimer from "vuejs-countdown-timer"
-// import localStorage from './lib/local-storage'
+import * as Sentry from "@sentry/vue"
+import { Integrations } from "@sentry/tracing"
+import VueMixpanel from "vue-mixpanel"
 
+Vue.use(VueMixpanel, {
+  token: process.env.VUE_APP_MIXPANEL_TOKEN
+})
+
+const SENTRY_DSN = process.env.VUE_APP_SENTRY_DSN
+
+if (SENTRY_DSN) {
+  Sentry.init({
+    Vue,
+    dsn: SENTRY_DSN,
+    integrations: [
+      new Integrations.BrowserTracing({
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+        tracingOrigins: ["localhost", "app.debio.network", /^\//]
+      })
+    ],
+    tracesSampleRate: 1.0
+  })
+}
 
 Vue.config.productionTip = false
 
