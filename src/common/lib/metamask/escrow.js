@@ -13,9 +13,9 @@ import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders"
  */
 export async function checkAllowance(userAddress) {
   const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
-  const contractEscrow = store.getters["metamask/contracts/getEscrowContract"]
+  const escrowAddress = process.env.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS
   let balance = await contractERC20Interface.methods
-    .allowance(userAddress, contractEscrow).call()
+    .allowance(userAddress, escrowAddress).call()
 
   const web3 = store.getters["metamask/getWeb3"]
 
@@ -36,14 +36,14 @@ export async function checkAllowance(userAddress) {
  */
 export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
   const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
-  const contractEscrow = store.getters["metamask/contracts/getEscrowContract"]
+  const escrowAddress = process.env.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS
 
 
 
   const web3 = store.getters["metamask/getWeb3"]
 
   const txData = contractERC20Interface.methods.approve(
-    contractEscrow,
+    escrowAddress,
     web3.utils.toWei(String(stakingAmount), "ether") // Convert to 18 decimal places
   ).encodeABI()
 
@@ -88,8 +88,7 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const testingPrice = (currentData.prices[0].value).replaceAll(",", "")
   const qcPrice = (currentData.additionalPrices[0].value).replaceAll(",", "")
   const payAmount = Number(testingPrice) + Number(qcPrice)
-
-  const contractEscrow = store.getters["metamask/contracts/getEscrowContract"]
+  const escrowAddress = process.env.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS
 
 
   const txData = contracEscrowInterface.methods
@@ -108,7 +107,7 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
     .encodeABI()
 
   const txHash = await sendTransaction(
-    contractEscrow,
+    escrowAddress,
     txData,
     ethAccount
   )
