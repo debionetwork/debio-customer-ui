@@ -46,11 +46,6 @@ export default {
   },
 
   async mounted () {
-
-    console.log("====")
-    console.log(this.$route.params.id)
-    console.log(this.dataService)
-
     if (!this.$route.params.id && this.dataService.length === 0) {
       this.$router.push({ name: "customer-request-test"})
     }
