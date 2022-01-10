@@ -4,7 +4,7 @@
     :items="items"
   )
     template(v-slot:[`item.country`]="{ item }")
-      div {{ country(item.request.country) }}
+      div {{ item.request.country ? country(item.request.country) : ""}}
 
     template(v-slot:[`item.city`]="{ item }")
       div {{ item.request.city }}
@@ -133,8 +133,8 @@ export default {
   },
 
   async mounted () {
-    await this.fetchData ()
     await this.getCountries()
+    await this.fetchData ()
   },
 
   methods: {
