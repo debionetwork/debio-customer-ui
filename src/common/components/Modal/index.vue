@@ -49,7 +49,7 @@ export default {
     show: { type: Boolean, default: false },
     disabledIconAnimate: { type: Boolean, default: false },
     title: { type: String, default: "Default title" },
-    type: { type: String, default: "alert", validation: val => allowedType.test(val) },
+    type: { type: String, default: "alert", validator: val => allowedType.test(val) },
     icon: { type: String, default: null },
     iconSize: { type: [String, Number], default: 80 },
     iconViewBox: { type: String, default: "0 0 40 40" },
