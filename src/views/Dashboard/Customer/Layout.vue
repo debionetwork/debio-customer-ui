@@ -35,7 +35,12 @@
 
       .modal-password__cta.d-flex(slot="cta")
         Button(
-          block
+          color="secondary"
+          outlined
+          @click="handleForgotPassword"
+        ) forgot password
+
+        Button(
           color="secondary"
           @click="handleSubmitPassword"
         ) Submit
@@ -196,6 +201,10 @@ export default {
 
     handleShowPassword() {
       this.showPassword = !this.showPassword
+    },
+
+    handleForgotPassword() {
+      this.$router.push({ name: "forgot-password" })
     },
 
     async handleSubmitPassword() {
