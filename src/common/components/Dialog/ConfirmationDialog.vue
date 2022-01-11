@@ -61,7 +61,7 @@ export default {
     message:String,
     title: String,
     loading:Boolean,
-    txWeight: Number
+    txWeight: String
   },
 
   methods: {

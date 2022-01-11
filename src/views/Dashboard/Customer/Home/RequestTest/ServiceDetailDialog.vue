@@ -28,7 +28,7 @@
         v-col(cols="6")
           .dialog-service__sub-title {{ selectedService.labName }}
           .dialog-service__address          
-            span {{ selectedService.labAddress }}, {{ selectedService.city }}, {{ country }}
+            span {{ selectedService.labAddress }}, {{ selectedService.city }}, {{ country(selectedService.country) }}
 
         v-col(cols="3")
           ui-debio-rating(:rating="selectedService.labRate" :total-reviews="selectedService.countRateLab" size="10")
@@ -94,11 +94,7 @@ export default {
     ...mapState({
       mnemonicData: (state) => state.substrate.mnemonicData,
       selectedService: (state) => state.testRequest.products
-    }),
-
-    country () {
-      return this.countries.filter((c) => c.iso2 === this.selectedService.country)[0].name
-    }
+    })
   },
 
   methods: {
@@ -114,6 +110,13 @@ export default {
 
     onSelect () {
       this.$router.push({ name: "customer-request-test-checkout"})
+    },
+
+
+    country (country) {
+      if (country) {
+        return this.countries.filter((c) => c.iso2 === country)[0].name
+      }
     },
 
     async downloadFile () {

@@ -41,7 +41,6 @@ export default {
     isSelectService: false,
     itosPaymentCheckout: false,
     isSuccessPage: false,
-    showNoLab: false,
     staking: false
   }),
 
@@ -50,11 +49,6 @@ export default {
     if (this.$route.params.flag === "staking") {
       this.staking = true
     }
-
-    if (!this.services.length) {
-      this.showNoLab = true
-    }
-
   },
 
   methods: {

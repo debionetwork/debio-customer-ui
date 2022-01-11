@@ -136,7 +136,8 @@ export default {
               }
             ]
           },
-          verification_status:  verificationStatus
+          verification_status:  verificationStatus,
+          service_flow: serviceFlow
         } = this.services[i]
 
         const labRateData = await this.$store.dispatch("rating/getLabRate", labId)
@@ -177,7 +178,8 @@ export default {
           verificationStatus,
           indexPrice: 0,
           dnaCollectionProcess,
-          resultSample
+          resultSample,
+          serviceFlow
         }
               
         if (service.verificationStatus === "Verified") {

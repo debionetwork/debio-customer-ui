@@ -2,30 +2,30 @@
   v-container.container-card
     v-card.menu-card
       v-row.menu-card__service
-        ui-debio-avatar.menu-card__service-avatar(:src="dataService.serviceImage" size="90" rounded)
+        ui-debio-avatar.menu-card__service-avatar(:src="service.serviceImage" size="90" rounded)
         
-        b.menu-card__service-title {{ dataService.serviceName }}
-          ui-debio-rating.menu-card__rating(:rating="dataService.serviceRate" :total-reviews="dataService.countServiceRate" size="10")
+        b.menu-card__service-title {{ service.serviceName }}
+          ui-debio-rating.menu-card__rating(:rating="service.serviceRate" :total-reviews="service.countServiceRate" size="10")
         
           v-row.menu-card__service-detail
             v-col(cols="5.5")
               b.menu-card__service-sub-title Price
               .menu-card__service-description
-                | {{ formatPrice(dataService.price) }} 
-                | {{ dataService.currency.toUpperCase() }}
+                | {{ price }} 
+                | {{ currency }}
             v-col(cols="6.5") 
               b.menu-card__service-sub-title Duration
               .menu-card__service-description
-                | {{ dataService.duration }} 
-                | {{ dataService.durationType }}
+                | {{ service.duration }} 
+                | {{ service.durationType }}
 
       hr.menu-card__line
       
       v-row.menu-card__lab
-        ui-debio-avatar.menu-card__lab-avatar(:src="dataService.labImage" size="90" rounded)
-        b.menu-card__lab-title {{ dataService.labName }}
-          ui-debio-rating.menu-card__rating(:rating="dataService.labRate" :total-reviews="dataService.countRateLab" size="10")
-          .menu-card__address {{ dataService.labAddress }}, {{ dataService.city }}, {{ dataService.country }}
+        ui-debio-avatar.menu-card__lab-avatar(:src="service.labImage" size="90" rounded)
+        b.menu-card__lab-title {{ service.labName }}
+          ui-debio-rating.menu-card__rating(:rating="service.labRate" :total-reviews="service.countRateLab" size="10")
+          .menu-card__address {{ service.labAddress }}, {{ service.city }}, {{ country }}
 </template>
 
 <script>
@@ -38,11 +38,22 @@ export default {
   name: "LabDetailCard",
 
   data: () => ({
-    countries: []
+    service: {},
+    countries: [],
+    price: "",
+    currency: "",
+    country: ""
   }),
 
   async mounted () {
     await this.getCountries()
+
+    if (this.dataService) {      
+      this.service = this.dataService
+      this.price = this.web3.utils.fromWei(this.service.price, "ether")      
+      this.currency = this.service.currency.toUpperCase()
+      this.country = this.countries.filter((c) => c.iso2 === this.service.country)[0].name
+    }
   },
 
   computed: {
@@ -57,14 +68,6 @@ export default {
     async getCountries() {
       const { data : { data }} = await getLocations()
       this.countries = data
-    },
-
-    formatPrice(price) {
-      return this.web3.utils.fromWei(String(price), "ether")
-    },
-
-    country (country) {
-      return this.countries.filter((c) => c.iso2 === country)[0].name
     }
   }
 }

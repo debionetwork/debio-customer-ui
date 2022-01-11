@@ -18,14 +18,14 @@
         .dialog-payment__desc
           .dialog-payment__detail Service Price
           .dialog-payment__detail
-            | {{ formatPrice((selectedService.detailPrice.price_components[0].value).replaceAll(",", "")) }} 
-            | {{ selectedService.currency.toUpperCase() }}
+            | {{ servicePrice }} 
+            | {{ currency }}
 
         .dialog-payment__desc
           .dialog-payment__detail Quality Control Price
           .dialog-payment__detail
-            | {{ formatPrice((selectedService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
-            | {{ selectedService.currency.toUpperCase() }}
+            | {{ qcPrice }} 
+            | {{ currency }}
        
         .dialog-payment__operation +
 
@@ -34,8 +34,8 @@
         .dialog-payment__desc
           .dialog-payment__total Total Pay
           .dialog-payment__total-detail
-            | {{  formatPrice((selectedService.price).replaceAll(",", "")) }} 
-            | {{ selectedService.currency.toUpperCase()}}
+            | {{  totalPrice }} 
+            | {{ currency }}
 
         .dialog-payment__desc
           .dialog-payment__trans-weight Estimated Transaction Weight
@@ -101,7 +101,7 @@
 
 import Button from "@/common/components/Button"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
-import { mapState, mapMutations } from "vuex"
+import { mapState } from "vuex"
 import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
@@ -155,7 +155,11 @@ export default {
     showError: false,
     errorTitle: "",
     errorMsg: "",
-    txWeight: 0
+    txWeight: 0,
+    servicePrice: "",
+    qcPrice: "",
+    totalPrice: "",
+    currency: ""
   }),
 
   computed: {
@@ -209,14 +213,14 @@ export default {
       this.detailOrder = await getOrdersData(this.api, this.lastOrder)
       this.status = this.detailOrder.status
     }
+
+    this.servicePrice = this.formatPrice((this.selectedService.detailPrice.price_components[0].value).replaceAll(",", ""))
+    this.qcPrice = this.formatPrice((this.selectedService.detailPrice.additional_prices[0].value).replaceAll(",", ""))
+    this.totalPrice = this.formatPrice((this.selectedService.price).replaceAll(",", ""))
+    this.currency = this.selectedService.currency.toUpperCase()
   },
 
   methods: {
-    ...mapMutations({
-      setLabToRequest: "testRequest/SET_LAB",
-      setProductsToRequest: "testRequest/SET_PRODUCTS",
-      setMetamaskAddress: "metamask/SET_WALLET_ADDRESS"
-    }),
 
     async onSubmit () {
       this.isLoading = true
