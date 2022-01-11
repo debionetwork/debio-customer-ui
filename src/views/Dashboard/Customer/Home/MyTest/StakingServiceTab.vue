@@ -4,13 +4,13 @@
     :items="items"
   )
     template(v-slot:[`item.country`]="{ item }")
-      div {{ item.request.country ? country(item.request.country) : ""}}
+      div {{ item.request.country ? country(item.request.country) : "N/A"}}
 
     template(v-slot:[`item.city`]="{ item }")
-      div {{ item.request.city }}
+      div {{ item.request.city ? item.request.city : "N/A"}}
 
     template(v-slot:[`item.category`]="{ item }")
-      div {{ item.request.service_category }}
+      div {{ item.request.service_category ? item.request.service_category : "N/A"}}
 
     template(v-slot:[`item.stakingDate`]="{ item }")
       span {{ formatDate(item.request.created_at) }}
