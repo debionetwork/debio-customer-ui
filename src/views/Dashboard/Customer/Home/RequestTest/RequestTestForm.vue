@@ -10,6 +10,7 @@
         item-text="name"
         item-value="iso2"
         placeholder="Select Country"
+        :rules="[val => !!val || errorMessage.REQUIRED]"
         @change="onCountryChange"
         autocomplete="off"
         outlined)
@@ -23,6 +24,7 @@
         item-text="name"
         item-value="state_code"
         placeholder="Select State/Province"
+        :rules="[val => !!val || errorMessage.REQUIRED]"
         :disabled="!country"
         @change="onStateChange"
         autocomplete="off"
@@ -37,6 +39,7 @@
         item-text="name"
         return-object
         placeholder="Select City"
+        :rules="[val => !!val || errorMessage.REQUIRED]"
         :disabled="!state"
         @change="onCityChange"
         autocomplete="off"
@@ -50,6 +53,7 @@
         item-value="service_categories"
         menu-props="auto"
         placeholder="Select Category"
+        :rules="[val => !!val || errorMessage.REQUIRED]"
         :disabled="!city"
         @change="onCategoryChange"
         autocomplete="off"
@@ -69,6 +73,8 @@ import { mapState, mapMutations } from "vuex"
 import { getLocations, getStates, getCities } from "@/common/lib/api"
 import { getCategories } from "@/common/lib/api"
 import Button from "@/common/components/Button"
+import errorMessage from "@/common/constants/error-messages"
+
 
 export default {
   name: "RequestTestForm",
@@ -78,6 +84,7 @@ export default {
   },
 
   data: () => ({
+    errorMessage,
     country: "",
     state: "",
     city: "",
