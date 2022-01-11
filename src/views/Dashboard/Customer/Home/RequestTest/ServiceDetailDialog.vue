@@ -59,8 +59,12 @@
 import { mapState } from "vuex"
 import Button from "@/common/components/Button"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
-import { hexToU8a } from "@polkadot/util"
-import { getLocations } from "@/common/lib/api"
+import { getLocations } from "@/common/lib/api/location"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import { u8aToHex } from "@polkadot/util"
+
+
 
 
 export default {
