@@ -33,15 +33,14 @@
           stroke
         )
 
-      .modal-password__cta.d-flex(slot="cta")
-        Button(
-          color="secondary"
-          outlined
-          @click="handleForgotPassword"
+      .modal-password__cta.d-flex.align-center.justify-between(slot="cta")
+        router-link.modal-password__cta-forgot.mr-8(
+          :to="{ name: 'forgot-password' }"
         ) forgot password
 
-        Button(
+        Button.modal-password__cta-submit(
           color="secondary"
+          width="130"
           @click="handleSubmitPassword"
         ) Submit
 
@@ -203,10 +202,6 @@ export default {
       this.showPassword = !this.showPassword
     },
 
-    handleForgotPassword() {
-      this.$router.push({ name: "forgot-password" })
-    },
-
     async handleSubmitPassword() {
       try {
         await this.wallet.unlock(this.password)
@@ -249,6 +244,16 @@ export default {
   .modal-password
     &__cta
       gap: 20px
+
+    &__cta-forgot,
+    &__cta-submit
+      font-size: 10px
+
+    &__cta-forgot
+      color: #5640A5 !important
+      font-weight: bold
+      text-transform: uppercase
+
   
   .transition-slide-x
     &-enter-active,
