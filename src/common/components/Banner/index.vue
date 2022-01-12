@@ -25,6 +25,8 @@
 <script>
 import { particleIllustration } from "@/common/icons"
 
+const allowedGradients = /^(primary|secondary|tertiary|violet)$/
+
 export default {
   name: "Banner",
   props: {
@@ -39,7 +41,7 @@ export default {
   computed: {
     classes() {
       return [
-        { "banner--with-gradient": this.gradientColor && /^(primary|secondary|tertiary|violet)$/ },
+        { "banner--with-gradient": this.gradientColor && allowedGradients.test(this.gradientColor) },
         { "banner--gradient-primary": this.gradientColor === "primary" },
         { "banner--gradient-secondary": this.gradientColor === "secondary" },
         { "banner--gradient-tertiary": this.gradientColor === "tertiary" },
