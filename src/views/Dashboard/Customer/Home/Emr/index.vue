@@ -8,28 +8,6 @@
     ui-debio-icon(:icon="alertTriangleIcon" stroke size="80")
     p.modal-password__subtitle(v-if="selectedFile") Are you sure you want to delete this EMR ?
 
-    ui-debio-input(
-      :rules="$options.rules.password"
-      :errorMessages="passwordErrorMessages"
-      v-model="password"
-      :error="!!error"
-      :disabled="isLoading"
-      @keyup.enter="onDelete"
-      :type="showPassword ? 'text' : 'password'"
-      placeholder="Input your password"
-      block
-      outlined
-    )
-
-      ui-debio-icon(
-        slot="icon-append"
-        role="button"
-        size="18"
-        @click="handleShowPassword"
-        :icon="showPassword ? eyeIcon : eyeOffIcon"
-        stroke
-      )
-
     p.modal-password__tx-info.mb-0.d-flex
       span.modal-password__tx-text.mr-6.d-flex.align-center
         | Estimated transaction weight
@@ -50,7 +28,6 @@
         block
         color="secondary"
         :loading="isLoading"
-        :disabled="!password"
         @click="onDelete"
       ) Delete
 
@@ -120,8 +97,6 @@ import {
   queryElectronicMedicalRecordFileById,
   queryElectronicMedicalRecordById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
-import errorMessage from "@/common/constants/error-messages"
-import { validateForms } from "@/common/lib/validate"
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
@@ -132,7 +107,7 @@ import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskService
 
 export default {
   name: "CustomerEmr",
-  mixins: [metamaskServiceHandler, validateForms],
+  mixins: [metamaskServiceHandler],
 
   components: { DataTable, Button },
 
@@ -154,7 +129,6 @@ export default {
     selectedFile: null,
     error: null,
     txWeight: null,
-    password: null,
     publicKey: null,
     secretKey: null,
     headers: [
@@ -201,11 +175,7 @@ export default {
       lastEventData: (state) => state.substrate.lastEventData,
       loadingData: (state) => state.auth.loadingData,
       web3: (state) => state.metamask.web3
-    }),
-
-    passwordErrorMessages() {
-      return this.errorMessages || this.error
-    }
+    })
   },
 
   watch: {
@@ -234,10 +204,6 @@ export default {
   async created() {
     if (this.mnemonicData) this.initialDataKey()
     await this.metamaskDispatchAction(this.getEMRHistory)
-  },
-
-  rules: {
-    password: [ val => !!val || errorMessage.PASSWORD(8) ]
   },
 
   methods: {
@@ -344,8 +310,6 @@ export default {
       const { id } = this.selectedFile
 
       try {
-        await this.wallet.decodePkcs8(this.password)
-
         await this.metamaskDispatchAction(deregisterElectronicMedicalRecord, this.api, this.wallet, id)
         this.showModal = false
         this.error = null

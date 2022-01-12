@@ -58,31 +58,6 @@
       template
         ui-debio-icon(:icon="fileTextIcon" size="100" stroke)
 
-        ui-debio-input(
-          :errorMessages="!!error ? error.message : ''"
-          :rules="$options.rules.password"
-          :type="showPassword ? 'text' : 'password'"
-          placeholder="Input Password"
-          label="Encrypt emr files by input your password"
-          :disabled="isLoading"
-          v-model="password"
-          outlined
-          block
-          :error="!!error"
-          validate-on-blur
-          @keyup.enter="finalSubmit"
-          @blur="error = null"
-          @isError="handleError"
-        )
-          ui-debio-icon(
-            slot="icon-append"
-            role="button"
-            size="18"
-            @click="handleShowPassword"
-            :icon="showPassword ? eyeIcon : eyeOffIcon"
-            stroke
-          )
-
         p.modal-password__tx-info.mb-0.d-flex
           span.modal-password__tx-text.mr-6.d-flex.align-center
             | Estimated transaction weight
@@ -538,8 +513,6 @@ export default {
       this.isLoading = true
 
       try {
-        await this.wallet.decodePkcs8(this.password)
-
         if (this.emr.files.length === 0) return
 
         for await (let [index, value] of this.emr.files.entries()) {
