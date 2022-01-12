@@ -59,9 +59,10 @@
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             :type="showPassword ? 'text' : 'password'"
             :rules="passwordRules"
+            :error-messages="errorMsg"
             :disabled="isLoading"
             @click:append="showPassword = !showPassword"
-            @keyup.enter="onPasswordSet"
+            @keyup.enter="decryptWallet"
             outlined
           )
           .forgot-password-text: div(v-on:click="forgotPassword") Forgot your password?
@@ -73,13 +74,6 @@
             @click="decryptWallet"
           ) Continue
           
-          v-snackbar(
-              v-model="snackbar"
-              :timeout="timeout"
-              right
-              bottom
-          ) {{ errorMessage }}
-
     LandingPagePopUp(v-if="isNoAccount")
       template(v-slot:main): div.pop-up-main
         img(src="@/assets/alert-circle.png")
@@ -107,6 +101,8 @@ import localStorage from "@/common/lib/local-storage"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"	
 import { u8aToHex } from "@polkadot/util"
+import errorMessage from "@/common/constants/error-messages"
+
 
 export default {
   name: "InputPassword",
@@ -123,14 +119,15 @@ export default {
     isLoading: false,
     snackbar: false,
     timeout: 2000,
-    errorMessage: "",
+    errorMessage,
     dataAccount: null,
     dataAccountJson: "",
     dataMnemonic: null,
     dataMnemonicJson: null,
     isNoAccount: false,
     keystoreInputErrors: [],
-    address: ""
+    address: "",
+    errorMsg: ""
   }),
 
   computed: {
@@ -144,9 +141,7 @@ export default {
 
     passwordRules() {
       return [
-        val => !!val || "Password is required",
-        val => (val && val.length >= 8) || "Password Min 8 Character",
-        val => /^[a-zA-Z0-9-_]+$/.test(val) || "Password must a-z, A-Z,"
+        val => !!val || "Password is required"
       ]
     }
   },
@@ -241,13 +236,14 @@ export default {
       this.keystoreInputErrors = ""
 
       if (!result.success) {
-        this.keystoreInputErrors = result.error
-        return
+        if (result.error === "Unable to decode using the supplied passphrase") {
+          return this.errorMsg = this.errorMessage.INCORRECT_PASSWORD          
+        }
       }
 
       this._show = false
       this.clearInput()
-      this.$router.push({name: "customer-dashboard"})
+      this.$router.push({name: "customer-dashboard"})    
     },
 
     clearInput() {

@@ -116,6 +116,8 @@ import { u8aToHex } from "@polkadot/util"
 import { errorHandler } from "@/common/lib/error-handler"
 import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
 import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
+import errorMessage from "@/common/constants/error-messages"
+
 
 
 export default {
@@ -135,6 +137,7 @@ export default {
   },
 
   data: () => ({
+    errorMessage,
     password: "",
     error: "",
     showPassword: false,
@@ -298,7 +301,7 @@ export default {
         const error = await errorHandler(err.message)
         
         if (error.title === "error") {
-          this.error = err.message
+          this.error = this.errorMessage.INCORRECT_PASSWORD
           return
         } 
 
