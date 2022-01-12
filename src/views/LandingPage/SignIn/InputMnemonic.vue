@@ -35,6 +35,8 @@
 <script>
 import { mnemonicValidate } from "@polkadot/util-crypto"
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
+import errorMessage from "@/common/constants/error-messages"
+
 
 export default {
   name: "InputMnemonic",
@@ -44,16 +46,17 @@ export default {
   },
 
   data: () => ({
+    errorMessage,
     mnemonic: ""
   }),
     
   computed: {
     mnemonicRule() {
       if(!this.mnemonic) {
-        return "Mnemonic cannot be empty."
+        return this.errorMessage.REQUIRED
       }
       if(!mnemonicValidate(this.mnemonic)) {
-        return "Mnemonic invalid."
+        return this.errorMessage.INVALID("Mnemonic")
       }
       return true
     },

@@ -88,6 +88,8 @@ export default {
     show: Boolean
   },
 
+  
+
   computed: {
     ...mapState({
       mnemonicData: (state) => state.substrate.mnemonicData,
