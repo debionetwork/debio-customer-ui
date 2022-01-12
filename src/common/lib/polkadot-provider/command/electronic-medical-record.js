@@ -12,6 +12,13 @@ export async function getCreateRegisterEMRFee(api, pair, data) {
   return info
 }
 
+export async function getDeleteEMRFee(api, pair, emrId) {
+  const info = await api.tx.electronicMedicalRecord
+    .removeElectronicMedicalRecord(emrId)
+    .paymentInfo(pair)
+  return info
+}
+
 export async function deregisterElectronicMedicalRecord(api, pair, emrId) {
   const result = await api.tx.electronicMedicalRecord
     .removeElectronicMedicalRecord(emrId)
