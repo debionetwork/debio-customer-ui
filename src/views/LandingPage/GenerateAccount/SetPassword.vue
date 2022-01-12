@@ -22,7 +22,7 @@
                 class="password-field"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
-                :rules="[val => !!val || 'Password is required']"
+                :rules="$options.rules.password"
                 :disabled="isLoading"
                 @click:append="showPassword = !showPassword"
                 @keyup.enter="onPasswordSet"
@@ -58,6 +58,8 @@ import apiClientRequest from "@/common/lib/api"
 import { mapActions, mapState, mapMutations } from "vuex"
 import Recaptcha from "@/common/components/Recaptcha.vue"
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
+import errorMessage from "@/common/constants/error-messages"
+
 
 export default {
   name: "SetPassword",
@@ -73,7 +75,8 @@ export default {
     passwordConfirm: "",
     showPassword: false,
     showPasswordConfirm: false,
-    recaptchaVerified: false
+    recaptchaVerified: false,
+    errorMessage
   }),
   
   computed: {
@@ -99,6 +102,13 @@ export default {
       substrateApi: (state) => state.substrate.api,
       isLoading: (state) => state.substrate.isLoadingWallet
     })
+  },
+
+  rules: {
+    password: [ 
+      val => !!val || errorMessage.REQUIRED,
+      val => (val && val.length >= 8) && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(val) || errorMessage.PASSWORD(8, "at least UPPER/lowercase characters, number and special character in (!@#$%^&*)")
+    ]
   },
 
   methods: {
