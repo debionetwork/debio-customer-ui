@@ -57,6 +57,8 @@ import apiClientRequest from "@/common/lib/api"
 import { mapActions, mapState, mapMutations } from "vuex"
 import Recaptcha from "@/common/components/Recaptcha.vue"
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
+import errorMessage from "@/common/constants/error-messages"
+
 
 export default {
   name: "ChangePassword",
@@ -71,7 +73,8 @@ export default {
     passwordConfirm: "",
     showPassword: false,
     showPasswordConfirm: false,
-    recaptchaVerified: false
+    recaptchaVerified: false,
+    errorMessage
   }),
 
   computed: {
@@ -88,9 +91,8 @@ export default {
 
     passwordRules() {
       return [
-        val => !!val || "Password is required",
-        val => (val && val.length >= 8) || "Password Min 8 Character",
-        val => /^[a-zA-Z0-9-_]+$/.test(val) || "Password must a-z, A-Z,"
+        val => !!val || errorMessage.REQUIRED,
+        val => (val && val.length >= 8) && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(val) || errorMessage.PASSWORD(8, "at least UPPER/lowercase characters, number and special character in (!@#$%^&*)")
       ]
     },
 

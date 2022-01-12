@@ -9,14 +9,16 @@
   )
     .ui-debio-avatar__initial(
       v-if="showInitial"
-      :style="computeBorderedStyle"
+      :style="[computeStyle, computeBorderedStyle]"
       @click.prevent="handleClick"
-    ) {{ initial }}
+    )
+      span.ui-debio-avatar__initial-text {{ initial }}
 
     img.ui-debio-avatar__image(
       v-else-if="!$slots['icon'] && !showInitial"
       :src="computeAvatarImage"
       :style="computeBorderedStyle"
+      @error="handleErrorImage"
       @click.prevent="handleClick"
     )
 
@@ -123,6 +125,10 @@ export default {
       this.$emit("avatarClicked")
     },
 
+    handleErrorImage(e) {
+      if (e.type === "error") e.target.src = require("@/assets/image-placeholder.png")
+    },
+
     handleOptionClick() {
       this.$emit("optionClicked")
     },
@@ -205,7 +211,12 @@ export default {
     align-items: center
     font-size: 60%
     background: #51459F
-    
+
+  &__initial-text
+    max-width: 70%
+    overflow: hidden
+    text-overflow: ellipsis
+
   &__image
     position: relative
     z-index: 7
