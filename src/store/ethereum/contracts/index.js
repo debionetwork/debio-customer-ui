@@ -1,11 +1,9 @@
-const contractInfo = require("./contract.json")
-
-const Degenics = require("./abi/Degenics.json")
-const DegenicsLog = require("./abi/DegenicsLog.json")
-const Location = require("./abi/Location.json")
-const Lab = require("./abi/Lab.json")
-const Account = require("./abi/Account.json")
-const Specimen = require("./abi/Specimen.json")
+const Degenics = require('./abi/Degenics.json')
+const DegenicsLog = require('./abi/DegenicsLog.json')
+const Location = require('./abi/Location.json')
+const Lab = require('./abi/Lab.json')
+const Account = require('./abi/Account.json')
+const Specimen = require('./abi/Specimen.json')
 
 const defaultState = {
   contractDegenics: null,
@@ -13,13 +11,13 @@ const defaultState = {
   contractLocation: null,
   contractLab: null,
   contractAccount: null,
-  contractSpecimen: null
+  contractSpecimen: null,
 }
 
 export default {
   namespaced: true,
   state: {
-    ...defaultState
+    ...defaultState,
   },
   mutations: {
     SET_CONTRACT_DEGENICS(state, contractDegenics){
@@ -44,20 +42,20 @@ export default {
   actions: {
     initContracts({ commit, rootState }) {
       const { web3 } = rootState.ethereum
-      const degenicsContract =  new web3.eth.Contract(Degenics, contractInfo.Degenics.address)
-      const degenicsLogContract = new web3.eth.Contract(DegenicsLog, contractInfo.DegenicsLog.address)
-      const locationContract =  new web3.eth.Contract(Location, contractInfo.Location.address)
-      const labContract =  new web3.eth.Contract(Lab, contractInfo.Lab.address)
-      const accountContract =  new web3.eth.Contract(Account, contractInfo.Account.address)
-      const specimenContract =  new web3.eth.Contract(Specimen, contractInfo.Specimen.address)
+      const degenicsContract =  new web3.eth.Contract(Degenics, process.env.VUE_APP_DEBIO_ETH_DEGENICS_ADDRESS) // TO REMOVE ?
+      const degenicsLogContract = new web3.eth.Contract(DegenicsLog, process.env.VUE_APP_DEBIO_ETH_DEGENICS_LOG_ADDRESS) // TO REMOVE ?
+      const locationContract =  new web3.eth.Contract(Location, process.env.VUE_APP_DEBIO_ETH_LOCATION_ADDRESS) // TO REMOVE ?
+      const labContract =  new web3.eth.Contract(Lab, process.env.VUE_APP_DEBIO_ETH_LAB_ADDRESS) // TO REMOVE ?
+      const accountContract =  new web3.eth.Contract(Account, process.env.VUE_APP_DEBIO_ETH_ACCOUNT_ADDRESS) 
+      const specimenContract =  new web3.eth.Contract(Specimen, process.env.VUE_APP_DEBIO_ETH_SPECIMEN_ADDRESS) // TO REMOVE ?
 
 
-      commit("SET_CONTRACT_DEGENICS", degenicsContract)
-      commit("SET_CONTRACT_DEGENICS_LOG", degenicsLogContract)
-      commit("SET_CONTRACT_LOCATION", locationContract)
-      commit("SET_CONTRACT_LAB", labContract)
-      commit("SET_CONTRACT_ACCOUNT", accountContract)
-      commit("SET_CONTRACT_SPECIMEN", specimenContract)
+      commit('SET_CONTRACT_DEGENICS', degenicsContract)
+      commit('SET_CONTRACT_DEGENICS_LOG', degenicsLogContract)
+      commit('SET_CONTRACT_LOCATION', locationContract)
+      commit('SET_CONTRACT_LAB', labContract)
+      commit('SET_CONTRACT_ACCOUNT', accountContract)
+      commit('SET_CONTRACT_SPECIMEN', specimenContract)
     }
   },
   getters: {
