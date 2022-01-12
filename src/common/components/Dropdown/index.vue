@@ -14,7 +14,7 @@
           ref="searchbox"
           :id="uuid"
         )
-        label.ui-debio-dropdown__value(v-show="!active" for="searchbox") {{ selectedOption }}
+        label.ui-debio-dropdown__value(v-show="!active" for="searchbox") {{ selectedOption || value }}
         v-icon(:class="{ 'ui-debio-dropdown__chevron--active': active }") mdi-chevron-down
 
       .ui-debio-dropdown__selects(:class="{ 'ui-debio-dropdown__selects--show': active }" ref="selects" role="listbox")
@@ -24,7 +24,7 @@
             v-for="(item, idx) in computeItems"
             :key="item.id"
             @mouseover="focusOnItem = null"
-            :class="{ 'ui-debio-dropdown__item--selected': item.selected || item.uuid === focusOnItem && !item.selected }"
+            :class="{ 'ui-debio-dropdown__item--selected': item.selected || (item.uuid === focusOnItem && !item.selected) || item[itemText] === value }"
             :aria-selected="item.selected"
             @click="handleSelectItem(item, item.uuid)"
           )
@@ -43,20 +43,22 @@ import { alertIcon } from "@/common/icons"
 import { validateInput } from "@/common/lib/validate"
 import { generateUUID } from "@/common/lib/utils"
 
+const allowedSize = /^(default|small|large)$/
+
 export default {
   name: "UiDebioDropdown",
   mixins: [validateInput],
 
   props: {
     items: { type: Array, default: () => [] },
-    itemValue: { type: String, default: "" },
+    itemValue: { type: String, default: "name" },
     width: { type: [String, Number], default: 200 },
-    itemText: { type: String, default: "" },
+    itemText: { type: String, default: "name" },
     label: { type: String, default: "Default Label" },
     customLabel: { type: Function, default: () => {} },
     placeholder: { type: String, default: "Select options" },
     value: { type: [String, Number, Boolean, Object, Array], default: null },
-    variant: { type: String, default: "default" },
+    variant: { type: String, default: "default", validator: val => allowedSize.test(val) },
 
     validateOnBlur: Boolean,
     outlined: Boolean,
@@ -79,7 +81,7 @@ export default {
   computed: {
     classes() {
       return [
-        { "ui-debio-dropdown--default": this.variant === "default" },
+        { "ui-debio-dropdown--default": this.variant === "default" || !allowedSize.test(this.variant) },
         { "ui-debio-dropdown--small": this.variant === "small" },
         { "ui-debio-dropdown--large": this.variant === "large" },
         { "ui-debio-dropdown--outlined": this.outlined },
@@ -104,7 +106,7 @@ export default {
       const filtered = this.listItems.filter(item => {
         return this.searchQuery.toLowerCase()
           .split(" ")
-          .every(v => item[this.itemValue].toLowerCase().includes(v))
+          .every(v => item[this.itemText].toLowerCase().includes(v))
       })
 
       return filtered
@@ -117,10 +119,12 @@ export default {
     },
 
     selectedOption() {
+      const computedValue = this.returnObject && this.value ? this.value[this.itemValue] : this.value
+
       return this.value
         ? this.customLabelResult
           ? this.customLabelResult
-          : this.value
+          : computedValue
         : this.placeholder
     }
   },
@@ -152,7 +156,7 @@ export default {
       handler(val) {
         this.listItems = val.map(item => ({
           uuid: generateUUID(),
-          ...item,
+          ...(typeof item === "object" ? item : { name: item }),
           selected: false,
           customLabelResult: ""
         }))
