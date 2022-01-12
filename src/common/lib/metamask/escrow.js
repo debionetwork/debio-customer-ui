@@ -16,9 +16,7 @@ export async function checkAllowance(userAddress) {
   const escrowAddress = process.env.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS
   let balance = await contractERC20Interface.methods
     .allowance(userAddress, escrowAddress).call()
-
   const web3 = store.getters["metamask/getWeb3"]
-
   return web3.utils.fromWei(balance, "ether")
 }
 
@@ -37,11 +35,7 @@ export async function checkAllowance(userAddress) {
 export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
   const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
   const escrowAddress = process.env.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS
-
-
-
   const web3 = store.getters["metamask/getWeb3"]
-
   const txData = contractERC20Interface.methods.approve(
     escrowAddress,
     web3.utils.toWei(String(stakingAmount), "ether") // Convert to 18 decimal places
