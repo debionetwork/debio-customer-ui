@@ -16,7 +16,7 @@
           span(v-else) {{ title }}
 
         ui-debio-icon.ui-debio-modal__card-icon(
-          v-if="!$slots.default"
+          v-if="!$slots.default && icon"
           :icon="icon"
           :view-box="iconViewBox"
           :size="iconSize"
