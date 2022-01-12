@@ -1,5 +1,4 @@
 import store from "@/store"
-import contractInfo from "@/store/metamask/contracts/contract.json"
 import { sendTransaction } from "./wallet"
 import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders"
 
@@ -14,8 +13,9 @@ import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders"
  */
 export async function checkAllowance(userAddress) {
   const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
+  const contractEscrow = store.getters["metamask/contracts/getEscrowContract"]
   let balance = await contractERC20Interface.methods
-    .allowance(userAddress, contractInfo.Escrow.address).call()
+    .allowance(userAddress, contractEscrow).call()
 
   const web3 = store.getters["metamask/getWeb3"]
 
@@ -36,15 +36,19 @@ export async function checkAllowance(userAddress) {
  */
 export async function approveDaiStakingAmount(stakerAddress, stakingAmount) {
   const contractERC20Interface = store.getters["metamask/contracts/getERC20InterfaceContract"]
+  const contractEscrow = store.getters["metamask/contracts/getEscrowContract"]
+
+
+
   const web3 = store.getters["metamask/getWeb3"]
 
   const txData = contractERC20Interface.methods.approve(
-    contractInfo.Escrow.address,
+    contractEscrow,
     web3.utils.toWei(String(stakingAmount), "ether") // Convert to 18 decimal places
   ).encodeABI()
 
   const txHash = await sendTransaction(
-    contractInfo.DAIToken.address,
+    process.env.VUE_APP_DEBIO_DAI_TOKEN_ADDRESS,
     txData,
     stakerAddress
   )
@@ -85,6 +89,8 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const qcPrice = (currentData.additionalPrices[0].value).replaceAll(",", "")
   const payAmount = Number(testingPrice) + Number(qcPrice)
 
+  const contractEscrow = store.getters["metamask/contracts/getEscrowContract"]
+
 
   const txData = contracEscrowInterface.methods
     .payOrder(
@@ -102,7 +108,7 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
     .encodeABI()
 
   const txHash = await sendTransaction(
-    contractInfo.Escrow.address,
+    contractEscrow,
     txData,
     ethAccount
   )

@@ -85,20 +85,20 @@
           "identity": "owner_id"
         },
         "DnaSampleRejected": {
-          "message": "Dna Sample Rejected",
-          "value": "tracking_id",
-          "value_message": "tracking_id",
-          "route": "result-test",
-          "params": "number",
-          "identity": "owner_id"
+          "message": "",
+          "value": "orderId",
+          "value_message": "Your sample has been rejected. See your test details",
+          "route": "order-history-detail",
+          "params": "orderId",
+          "identity": "ownerId"
         },
-        "DnaTestResultSubmitted": {
-          "message": "Dna Test Result Submitted",
-          "value": "tracking_id",
-          "value_message": "tracking_id",
-          "route": "result-test",
-          "params": "number",
-          "identity": "owner_id"
+        "DnaSampleResultReady": {
+          "message": "",
+          "value": "orderId",
+          "value_message": "Congrats! Your test results are out. See your test details.",
+          "route": "order-history-detail",
+          "params": "orderId",
+          "identity": "ownerId"
         }
       },
       "rewards": {
@@ -113,29 +113,45 @@
       },
       "electronicMedicalRecord": null,
       "serviceRequest": {
+        "ServiceRequestFinalized": {
+          "message": "Congrats! You’ve got ",
+          "value": 0,
+          "value_message": " DBIO as a reward for completing the request test from the service requested",
+          "route": "",
+          "params": "",
+          "identity": "customerAddress"
+        },
         "ServiceRequestCreated": {
           "message": "Congrats! Your requested service has been submitted.",
-          "value": 0,
+          "value": "serviceId",
           "value_message": "",
           "route": "",
           "params": "",
-          "identity": "requesterAddress"
+          "identity": "customerAddress"
         },
         "ServiceRequestUnstaked": {
           "message": "Your stake amount has been refunded, kindly check your balance.",
-          "value": "requesterAddress",
+          "value": "",
           "value_message": "",
           "route": "",
           "params": "",
-          "identity": "requesterAddress"
+          "identity": "customerAddress"
+        },
+        "StakingAmountExcessRefunded": {
+          "message": "You’ve got ",
+          "value": 2,
+          "value_message": " DBIO from an overpayment, kindly check your balance.",
+          "route": "",
+          "params": "",
+          "identity": 0
         },
         "ServiceRequestClaimed": {
           "message": "Congrats! Your requested service is available now. See your stake service.",
-          "value": 0,
+          "value": "serviceId",
           "value_message": "",
-          "route": "",
-          "params": "",
-          "identity": "requesterAddress"
+          "route": "my-test",
+          "params": "1",
+          "identity": 0
         }
       }
     },
