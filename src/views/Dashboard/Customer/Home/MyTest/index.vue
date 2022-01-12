@@ -290,8 +290,11 @@ export default {
   },
   async mounted() {
     if (this.$route.params.page) {
-      this.tabs = this.$route.params.page
+      this.tabs = /^[0-1]*$/.test(parseInt(this.$route.params.page))
+        ? parseInt(this.$route.params.page)
+        : 0
     }
+
     await this.getTestResultData()
 
     const txWeight = await unstakeRequestFee(this.api, this.wallet, this.stakingId)
