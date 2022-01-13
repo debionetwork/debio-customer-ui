@@ -1,12 +1,12 @@
 <template lang="pug">
-  v-dialog(:value="show" height="276" :width="width === null ? '500' : width" persistent)
+  v-dialog(:value="show" :height="height"  :width="width" persistent)
     v-card.dialog-card
       .dialog-card__title {{ title }}
       .dialog-card__message {{ message }}
       .dialog-card__button
         Button(
           color="secondary" 
-          width="auto"
+          width="150"
           @click="onSubmit"
           ) {{ btnMessage }}
       
@@ -24,10 +24,11 @@ export default {
 
   props: {
     show: Boolean,
-    width: Number,
-    title: String,
-    message:String,
-    btnMessage: String
+    height: { type: [String, Number], default: 276 },
+    width: { type: [String, Number], default: 500 },
+    title: { type: String, default: "Dialog Title" },
+    message:{ type: String, default: "Dialog Message"},
+    btnMessage: { type: String, default: "OK"}
   },
 
   methods: {
@@ -53,6 +54,8 @@ export default {
       text-align: center
       letter-spacing: -0.0044em
       margin: 0px 47px
+      width: 205px
+      height: 40px
       @include body-text-medium-1
 
     &__message
