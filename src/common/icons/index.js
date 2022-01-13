@@ -11,6 +11,7 @@ import polkadotIcon from "./polkadot"
 import daiIcon from "./dai"
 import debioIcon from "./debio"
 import alertIcon from "./alert"
+import alertTriangleIcon from "./alertTriangle"
 import userIcon from "./user"
 import usersIcon from "./users"
 import labIllustration from "./labIllustration"
@@ -64,6 +65,7 @@ export {
   creditCardIcon,
   layersIcon,
   alertIcon,
+  alertTriangleIcon,
   downloadIcon,
   arrowTopRightIcon,
   metamaskFoxIcon,

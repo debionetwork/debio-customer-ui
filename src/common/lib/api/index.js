@@ -1,4 +1,5 @@
 import axios from "axios"
+import VueRouter from "@/router"
 import * as Sentry from "@sentry/vue"
 
 // EXPORT API COLLECTIONS HERE
@@ -25,6 +26,8 @@ const apiClientRequest = axios.create({
 
 apiClientRequest.interceptors.response.use(
   response => {
+    if (response?.status === 503) VueRouter.push({ name: "maintenance" })
+
     return response;
   },
   error => {

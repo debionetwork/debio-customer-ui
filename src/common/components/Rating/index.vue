@@ -14,7 +14,7 @@
         p.ui-debio-rating__label.mb-0(v-if="withReviewers") ({{ totalReviews }})
 
       template(v-else)
-        ui-debio-icon(
+        ui-debio-icon.fillStar(
           v-for="star in interactiveStar"
           :key="`interactive ${star}`"
           :icon="starIcon"
@@ -24,7 +24,7 @@
           stroke
           @click="handleClicked(star)"
         )
-        ui-debio-icon(
+        ui-debio-icon.emptyStar(
           v-for="star in (totalRating - interactiveStar)"
           :key="`interactiveEmpty ${star}`"
           :icon="starIcon"
@@ -42,9 +42,9 @@ export default {
   name: "UiDebioRating",
 
   props: {
-    rating: { type: Number, default: 0, validator: val => val >= 0 },
-    value: { type: Number, default: 0, validator: val => val >= 0 },
-    totalRating: { type: Number, default: 5, validator: val => val >= 0 },
+    rating: { type: Number, default: 0, validator: val => val >= 0 && val <= 5 },
+    value: { type: Number, default: 0, validator: val => val >= 0 && val <= 5 },
+    totalRating: { type: Number, default: 5, validator: val => val >= 0 && val <= 5 },
     totalReviews: { type: Number, default: 0, validator: val => val >= 0 },
     size: { type: [String, Number], default: 15 },
 
@@ -55,12 +55,6 @@ export default {
   computed: {
     computeRating() {
       return this.rating > this.totalRating ? this.totalRating : this.rating
-    },
-    
-    computeEmptyRating() {
-      const calculate = this.totalRating - this.rating
-      
-      return calculate <= 0 ? 0 : calculate
     }
   },
 

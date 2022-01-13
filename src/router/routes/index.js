@@ -21,6 +21,16 @@ const indexRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home")
     },
     {
+      path: "maintenance",
+      name: "maintenance",
+      meta: { pageHeader: "Maintenance" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/maintenancePageLayout"),
+      beforeEnter: (to, from, next) => {
+        if (from.path === "/") next({ name: "customer-dashboard" })
+        else next()
+      }
+    },
+    {
       path: "emr",
       name: "customer-emr",
       meta: { pageHeader: "My EMR" },

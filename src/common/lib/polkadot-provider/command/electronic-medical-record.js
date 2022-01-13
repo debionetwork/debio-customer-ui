@@ -5,11 +5,16 @@ export async function registerElectronicMedicalRecord(api, pair, data) {
   return result.toHuman()
 }
 
-export async function getCreateRegisterEMRFee(api, pair, data) {
-  const info = await api.tx.electronicMedicalRecord
+export function getCreateRegisterEMRFee(api, pair, data) {
+  return api.tx.electronicMedicalRecord
     .addElectronicMedicalRecord(data.title, data.category, data.files)
     .paymentInfo(pair)
-  return info
+}
+
+export function getDeleteEMRFee(api, pair, emrId) {
+  return api.tx.electronicMedicalRecord
+    .removeElectronicMedicalRecord(emrId)
+    .paymentInfo(pair)
 }
 
 export async function deregisterElectronicMedicalRecord(api, pair, emrId) {
