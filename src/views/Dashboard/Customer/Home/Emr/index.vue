@@ -3,10 +3,11 @@
   ui-debio-modal(
     :show="showModal"
     :show-title="false"
+    @onClose="showModal = false"
   )
     h2.mb-10 Delete
-    ui-debio-icon(:icon="alertTriangleIcon" stroke size="80")
-    p.modal-password__subtitle(v-if="selectedFile") Are you sure you want to delete this EMR ?
+    ui-debio-icon.mb-8(:icon="alertTriangleIcon" stroke size="80")
+    p.modal-password__subtitle(v-if="selectedFile") You might not be retrieved back, are you sure you want to delete this EMR ?
 
     p.modal-password__tx-info.mb-0.d-flex
       span.modal-password__tx-text.mr-6.d-flex.align-center
@@ -21,7 +22,7 @@
           @mouseleave="handleShowTooltip"
           :class="{ 'modal-password__tooltip--show': showTooltip }"
         ) Total fee paid in DBIO to execute this transaction.
-      span {{ txWeight }}
+      span.modal-password__tx-value {{ txWeight }}
 
     .modal-password__cta.d-flex(slot="cta")
       Button(
@@ -356,8 +357,14 @@ export default {
       text-overflow: ellipsis
 
     .modal-password
-      &__tx-text
+      &__subtitle
+        max-width: 280px
+        @include body-text-2-opensans
+
+      &__tx-text,
+      &__tx-value
         position: relative
+        @include body-text-3-opensans
 
       &__tooltip
         max-width: 143px
