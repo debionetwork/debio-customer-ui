@@ -19,11 +19,13 @@ describe("Common Dialog", () => {
 
 
   it("Should render", () => {
-    shallowMount(Dialog)
+    shallowMount(Dialog, {
+      propsData: { show: true }
+    })
   })
 
 
-  it("Should render dialog with title, message and button value", () => {  
+  it("Should render dialog with title, message and button with default value", () => {  
     container = shallowMount(Dialog, {
       localVue,
       vuetify,

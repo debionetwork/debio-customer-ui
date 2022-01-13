@@ -18,7 +18,9 @@ describe("Alert Dialog", () => {
   })
 
   it("Should render", () => {
-    shallowMount(AlertDialog)
+    shallowMount(AlertDialog, {
+      propsData: { show: true}
+    })
   })
 
   it("Should render dialog with an customize image", () => {
