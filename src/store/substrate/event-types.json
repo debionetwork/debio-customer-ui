@@ -119,7 +119,7 @@
           "value_message": " DBIO as a reward for completing the request test from the service requested",
           "route": "",
           "params": "",
-          "identity": "customerAddress"
+          "identity": 0
         },
         "ServiceRequestCreated": {
           "message": "Congrats! Your requested service has been submitted.",
@@ -127,7 +127,7 @@
           "value_message": "",
           "route": "",
           "params": "",
-          "identity": "customerAddress"
+          "identity": 0
         },
         "ServiceRequestUnstaked": {
           "message": "Your stake amount has been refunded, kindly check your balance.",
@@ -135,7 +135,7 @@
           "value_message": "",
           "route": "",
           "params": "",
-          "identity": "customerAddress"
+          "identity": 0
         },
         "StakingAmountExcessRefunded": {
           "message": "You’ve got ",

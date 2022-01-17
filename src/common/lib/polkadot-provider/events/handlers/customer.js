@@ -47,8 +47,8 @@ const handler = {
     return { data, id, params, wording }
   },
   serviceRequest: async (dataEvent, value, valueMessage) => {
-    const data = dataEvent[1]
-    const id = data[value]
+    const data = dataEvent
+    const id = isNaN(value) ? data[0][value] : data[value]
     const params = { page: 1 }
     const wording = valueMessage    
 
