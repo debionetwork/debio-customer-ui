@@ -147,7 +147,7 @@ import {
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
-import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
+import ConfirmationDialog from "./ConfirmationDialog.vue"
 import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
 import { queryDnaSamples, queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
