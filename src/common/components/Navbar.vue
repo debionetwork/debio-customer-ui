@@ -389,7 +389,6 @@ export default {
       border-style: solid
       border-width: 0 0.875rem 1.875rem 0.875rem
       border-color: transparent transparent #FFFFFF transparent
-      border-radius: 5.625rem
       opacity: 0
       transform: translateX(var(--arrow-position))
       filter: drop-shadow(0 0.125rem 0.625rem rgba(0, 0, 0, 0.15))
