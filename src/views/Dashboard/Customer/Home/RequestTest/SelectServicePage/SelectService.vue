@@ -34,9 +34,10 @@
         AlertDialog(
           :show="showAlert"
           :width="289"
-          message="You have Unpaid Order"
-          imgPath="alert-circle.png"
-          btn-message="Go to Payment History"
+          title="Unpaid Order"
+          message="Complete your unpaid order first before requesting a new one. "
+          imgPath="alert-circle-primary.png"
+          btn-message="Go to My Payment"
           @close="closingDialog"
           @click="toPaymentHistory"
           )
