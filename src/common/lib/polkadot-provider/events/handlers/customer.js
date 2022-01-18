@@ -17,8 +17,12 @@ const handler = {
   orders: async (dataEvent, value, valueMessage) => {
     const data = dataEvent[0]
     const id = data[value]
-    const params = { number: id }
-    const wording = "for (" + data[valueMessage].substr(0, 4) + "..." + data[valueMessage].substr(data[valueMessage].length - 4) + ")"
+    const status = {
+      UNPAID: "submitted"
+    }
+    const computeStatus = `has been ${status[data.status.toUpperCase()]}`
+    const params = { id: id }
+    const wording = `for (${data[valueMessage].substr(0, 4)}...${data[valueMessage].substr(data[valueMessage].length - 4)}) ${computeStatus}`
     return { data, id, params, wording }
   },
   geneticTesting: async (dataEvent, value, valueMessage) => {
