@@ -128,13 +128,22 @@ export default {
     ...mapState({
       api: (state) => state.substrate.api,
       pair: (state) => state.substrate.wallet,
-      web3: (state) => state.metamask.web3
+      web3: (state) => state.metamask.web3,
+      lastEventData: (state) => state.substrate.lastEventData
     })
   },
 
   async mounted () {
     await this.getCountries()
     await this.fetchData ()
+  },
+
+  watch: {
+    lastEventData() {
+      if(this.lastEventData.section === "serviceRequest") {
+        this.fetchData()
+      }
+    }
   },
 
   methods: {
