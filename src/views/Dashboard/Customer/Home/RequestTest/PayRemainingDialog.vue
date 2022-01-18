@@ -1,51 +1,49 @@
 <template lang="pug">
-  v-dialog(:value="show" width="480" persistent rounded )
-    v-card
+  v-dialog.remaining-dialog(:value="show" width="480" persistent rounded )
+    v-card.remaining-dialog__dialog
       v-app-bar(flat dense color="white" )
-        v-toolbar-title(class="title mt-8" v-if="agreement") Pay remaining amount
+        v-toolbar-title.remaining-dialog__title Pay remaining amount
         v-spacer
-        v-btn( class="mt-8" icon @click="closeDialog")
+        v-btn(icon @click="closeDialog")
           v-icon mdi-close
-      v-card(class="ms-4 me-4" style="background-color: #F5F7F9; font-family: Raleway ")
-        v-card-text(class="mb-4 mt-10")
-          div(style="font-size: 12px" class="me-3" )
-            div 1. By clicking Pay button you will use your balance to pay the remaining amount that needed to be completed.
-            div 2. The remaining amount calculated in payment details.
-            div 3. If your balance is not enough to pay the remaining amount, you can top up your balance first and go back to this page.
+      .remaining-dialog__card
+        .remaining-dialog__card-text
+          //- TO ADJUST
+          .remaining-dialog__card-text-content 1. By clicking Pay button you will use your balance to pay the remaining amount that needed to be completed.
+          .remaining-dialog__card-text-content 2. The remaining amount calculated in payment details.
+          .remaining-dialog__card-text-content 3. If your balance is not enough to pay the remaining amount, you can top up your balance first and go back to this page.
 
-      v-card-text(class="mt-4 pb-0 text-subtitle-1")
-        div(class="text-body-1 mt-10")
-          div.mb-3 Remaining Amount
-            v-row
-              v-col(
-                cols="12"
-                sm="9"
-              )
-                v-text-field(
-                  :placeholder="amount"
-                  outlined
-                  disabled 
-                )
-              
-              v-col(
-                cols="12"
-                sm="3"
-              )
-                v-text-field(
-                  placeholder="DBIO"
-                  outlined
-                )
+      .remaining-dialog__input
+        .remaining-dialog__input-label Remaining Amount
+        ui-debio-input.remaining-dialog__input-field(
+          variant="small"
+          width="100%"
+          outlined
+          disabled 
+          :placeholder="amount"
+        )
 
-        v-checkbox(class="mt-5")
-          template(v-slot:label)
-            b I have read and agree to the <a> terms and conditions </a>
+        .remaining-dialog__trans-weight
+          .remaining-dialog__trans-weight-text
+            v-tooltip.visible(bottom)
+              template(v-slot:activator="{on, attrs}")
+                v-icon.remaining-dialog__trans-weight-icon(
+                  style="font-size: 12px;"
+                  color="primary"
+                  dark 
+                  v-bind="attrs"
+                  v-on="on" 
+                ) mdi-alert-circle-outline
+              span(style="font-size: 10ps;") Total fee paid in DBIO to execute this transaction.
 
-      v-card-actions(class="px-6 pb-4")
-        v-btn(
+          div(style="font-size: 12px;") {{ Number(txWeight).toFixed(4) }} DBIO
+
+        v-btn.remaining-dialog__input-button(
           depressed
           color="secondary"
           large
           width="100%"
+          height="35" 
           @click="onSubmit"
           :loading="isLoading"
         ) Continue
@@ -54,16 +52,17 @@
 
 <script>
 import { mapState } from "vuex"
+import CryptoJS from "crypto-js"	
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
 import { startApp } from "@/common/lib/metamask"
 import { getBalanceETH } from "@/common/lib/metamask/wallet.js"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
+import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
 import localStorage from "@/common/lib/local-storage"
-import CryptoJS from "crypto-js"	
-import Kilt from "@kiltprotocol/sdk-js"
-import { u8aToHex } from "@polkadot/util"
 
 export default {
   name: "PayRemainingDialog",
@@ -79,9 +78,9 @@ export default {
     dialogAlert: false,
     isLoading: false,
     transactionStep: "",
-    agreement: true,
     error: "",
-    password: ""
+    password: "",
+    txWeight: 0
   }),
   computed: {
     ...mapState({
@@ -94,8 +93,18 @@ export default {
       stakingData: (state) => state.lab.stakingData,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
       selectedService: (state) => state.testRequest.products
-      
     })
+  },
+
+  async mounted () {
+    const txWeight = await getCreateOrderFee(
+      this.api, 
+      this.pair, 
+      this.selectedService.serviceId,
+      this.selectedService.indexPrice
+    )
+
+    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
   },
   
   methods: {
@@ -185,3 +194,69 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+  @import "@/common/styles/mixins.sass"
+
+  .remaining-dialog
+    &__title
+      display: flex
+      align-items: center
+      letter-spacing: 0.0075em
+      margin-left: 20px
+      margin-top: 10px
+      @include button-1
+    
+    &__dialog
+      padding-bottom: 20px
+
+    &__card
+      background-color: #F5F7F9
+      margin: 0px 30px
+
+    &__card-text
+      padding: 18px 12px
+      letter-spacing: -0.004em
+
+    &__card-text-content
+      @include body-text-3-opensans
+
+    &__input
+      margin: 11px 30px
+
+    &__input-label
+      display: flex
+      align-items: center
+      letter-spacing: -0.0075em
+      margin-bottom: 11px
+      @include button-2
+    
+    &__input-field
+      max-height: 18px
+      letter-spacing: -0.004em
+      margin-bottom: 50px
+      @include body-text-3-opensans
+   
+    &__trans-weight
+      margin-top: 20px
+      margin-bottom: 20px
+      display: flex
+      justify-content: space-between
+
+    &__trans-weight-text
+      letter-spacing: -0.004em
+      display: flex
+      align-items: center
+      @include body-text-3-opensans
+
+    &__input-button
+      display: flex
+      align-items: center
+      text-align: center
+      letter-spacing: -0.015em
+      margin-top: 20px
+      @include tiny-semi-bold
+
+    &__trans-weight-icon
+      margin-left: 5px
+</style>
