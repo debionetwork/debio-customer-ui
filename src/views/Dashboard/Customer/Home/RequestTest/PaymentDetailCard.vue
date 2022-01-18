@@ -39,12 +39,25 @@
       .menu-card__operation(v-if="stakingFlow") -
       hr.menu-card__line(v-if="stakingFlow")
 
-      .menu-card__details(v-if="stakingFlow")
+      .menu-card__details(v-if="isDeficit" style="color: red")
         .menu-card__sub-title-medium Remaining Amount
         .menu-card__price-medium
           | {{ remainingStaking }}
           | {{ dataService.currency.toUpperCase() }}
 
+      .menu-card__details(v-if="isBalanced  ")
+        .menu-card__sub-title-medium Remaining Amount
+        .menu-card__price-medium
+          | 0
+          | {{ dataService.currency.toUpperCase() }}
+
+      .menu-card__details(v-if="isExcess" style="color: green")
+        .menu-card__sub-title-medium Excess Amount
+        .menu-card__price-medium
+          | {{ excessAmount }}
+          | {{ dataService.currency.toUpperCase() }}
+
+      
 
       div(class="text-center" v-if="!isCancelled")
         div(v-if="!success" class="mt-3 d-flex justify-center align-center")
@@ -162,7 +175,11 @@ export default {
     URINE_COLLECTION,
     FECAL_COLLECTION,
     SALIVA_COLLECTION,
-    BUCCAL_COLLECTION
+    BUCCAL_COLLECTION,
+    isDeficit: false,
+    isExcess: false,
+    isBalanced: false,
+    excessAmount: 0
   }),
 
   async mounted () {
@@ -203,7 +220,24 @@ export default {
       const remainingStaking = this.dataService.price - stakingAmount
       this.remainingStaking = Number(this.formatPrice(remainingStaking)).toFixed(3)
       this.remainingDbio = Number(this.formatPrice(remainingStaking / debioBalance)).toFixed(3)
+
+      const excessAmount = stakingAmount - this.dataService.price
+      this.excessAmount = Number(this.formatPrice(excessAmount)).toFixed(3)
+      
     }
+
+    if (this.stakingAmoung > Number(this.totalPrice)) {
+      this.isExcess = true
+    }
+    
+    if (this.stakingAmount === Number(this.totalPrice)) {
+      this.isBalanced = true
+    }
+
+    if (this.stakingAmount < Number(this.totalPrice)) {
+      this.isDeficit = true
+    }
+
   },
 
 
