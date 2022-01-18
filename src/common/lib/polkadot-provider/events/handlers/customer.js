@@ -22,7 +22,15 @@ const handler = {
     }
     const computeStatus = `has been ${status[data.status.toUpperCase()]}`
     const params = { id: id }
-    const wording = `for (${data[valueMessage].substr(0, 4)}...${data[valueMessage].substr(data[valueMessage].length - 4)}) ${computeStatus}`
+
+    const computeId = `${data[valueMessage].substr(0, 4)}...${ data[valueMessage].substr(data[valueMessage].length - 4)}`
+    const computeWording = ` DBIO as a reward for completing the request test for ${computeId} from the service requested`
+
+    const finalWording = data.status === "Fulfilled" && data.orderFlow === "StakingRequestService"
+      ? computeWording
+      : `for (${computeId}) ${computeStatus}`
+
+    const wording = finalWording
     return { data, id, params, wording }
   },
   geneticTesting: async (dataEvent, value, valueMessage) => {

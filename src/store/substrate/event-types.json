@@ -9,6 +9,14 @@
           "route": "customer-payment-details",
           "params": "id",
           "identity": "customerId"
+        },
+        "OrderFulfilled": {
+          "message": "Congrats! You’ve got ",
+          "value": "id",
+          "value_message": "id",
+          "route": "customer-payment-details",
+          "params": "id",
+          "identity": "customerId"
         }
       },
       "geneticTesting": {
