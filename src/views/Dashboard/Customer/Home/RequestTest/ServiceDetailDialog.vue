@@ -124,7 +124,7 @@ export default {
       const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
 
       const publicKey = u8aToHex(cred.boxKeyPair.publicKey)
-      const privateKey = u8aToHex(cred.boxKeyPair.publicKey)
+      const privateKey = u8aToHex(cred.boxKeyPair.secretKey)
       const arr = this.selectedService.resultSample.split("/")
       const path = arr[arr.length-1]
 
