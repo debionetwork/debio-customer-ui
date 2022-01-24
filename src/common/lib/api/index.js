@@ -33,6 +33,11 @@ apiClientRequest.interceptors.response.use(
   error => {
     Sentry.captureException(error);
 
+    if (error?.response?.status === 503 || !error?.response) {
+      VueRouter.push({ name: "maintenance" })
+      return
+    }
+
     return Promise.reject(error);
   }
 );
