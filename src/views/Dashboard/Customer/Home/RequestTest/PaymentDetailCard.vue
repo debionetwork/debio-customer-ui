@@ -39,13 +39,13 @@
       .menu-card__operation(v-if="stakingFlow") -
       hr.menu-card__line(v-if="stakingFlow")
 
-      .menu-card__details(v-if="isDeficit" style="color: red")
+      .menu-card__details(v-if="isDeficit && stakingFlow" style="color: red")
         .menu-card__sub-title-medium Remaining Amount
         .menu-card__price-medium
           | {{ remainingStaking }}
           | {{ dataService.currency.toUpperCase() }}
 
-      .menu-card__details(v-if="isBalanced  ")
+      .menu-card__details(v-if="isBalanced && stakingFlow")
         .menu-card__sub-title-medium Remaining Amount
         .menu-card__price-medium
           | 0

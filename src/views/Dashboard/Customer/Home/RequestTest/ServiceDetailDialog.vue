@@ -14,7 +14,7 @@
       div.dialog-service__service-body
         div.dialog-service__service-description
           .dialog-service__sub-title Description
-          .dialog-service__description {{ selectedService.serviceDescription }}
+          .dialog-service__description {{ selectedService.longDescription }}
 
         div.dialog-service__service-description
           .dialog-service__sub-title Expected Duration
