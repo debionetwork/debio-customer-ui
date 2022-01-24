@@ -32,7 +32,7 @@
                 large
                 elevation="2"
                 color="secondary" 
-                @click="inputPassword = true"
+               @click="inputPassword = true"
               ) Connect
 
           div(class="mt-10 mb-2 ml-10 mr-10" v-if="inputPassword")      
@@ -53,7 +53,7 @@
                 large
                 width="100%"
                 @click="setWallet('metamask')") Continue
-              v-alert(v-if="error" dense text type="error") {{ error }}              
+              v-alert(v-if="error" dense text type="error") {{ error }}                      
 
         div.mt-10.mb-10.ml-10.mr-10(v-if="!putWallet")
           ui-debio-input(label="Your Address" ref="metamask" disabled :value="ethAccount[0].address" block)
@@ -137,15 +137,23 @@ export default {
       setMetamaskAddress: "metamask/SET_WALLET_ADDRESS"
     }),
 
-    async setWallet(walletName) {
-      this.ethAccount = null
-      this.loading = true
-      this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
-
+    async setWallet(walletName) { 
+      this.error = ""
       try {
-        if (this.wallet.isLocked) {
-          await this.wallet.decodePkcs8(this.password)
-        } 
+        this.ethAccount = null
+        this.loading = true
+        this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
+        
+        if(this.ethAccount.currentAccount === "no_install") {
+          window.open("https://metamask.io/download/", "_blank")
+          this.error = ""
+          this.inputPassword = false
+          this.loading = false
+          this.putWallet = true
+          this.password = ""
+          this.ethAccount = null
+          return
+        }
         const accountId = localStorage.getAddress()
         const ethAddress = this.ethAccount[0].address
 
@@ -167,21 +175,20 @@ export default {
       this.error = ""
       this.loading = false
       this.putWallet = true
-      this.inputPassword = false
       this.ethAccount = null
       this.$emit("close")
     },
 
     closeDialog() {
       this.error = ""
+      this.inputPassword = false
       this.loading = false
       this.putWallet = true
-      this.inputPassword = false
       if (this.ethAccount) {
         this.$emit("success")
-      } else {
-        this.$emit("close")
       }
+      this.ethAccount = null
+      this.$emit("close")
     },
     
     async copyToClipboard(text) {

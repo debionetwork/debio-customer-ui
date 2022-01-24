@@ -87,7 +87,7 @@ export async function setMetamaskWallet(address) {
   const ethAccount = await startApp()
 
   if (ethAccount.currentAccount == "no_install") {
-    throw "Please install MetaMask!"
+    return ethAccount
   } 
 
   let accountList = []
