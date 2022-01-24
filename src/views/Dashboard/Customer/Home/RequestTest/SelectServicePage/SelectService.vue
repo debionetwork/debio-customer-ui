@@ -13,6 +13,7 @@
         )
           MenuCard.card(  
             :title="service.serviceName"
+            :description="service.serviceDescription"
             :icon="service.serviceImage"
             :rate="service.serviceRate"
             :countRate="service.countServiceRate"
@@ -124,6 +125,7 @@ export default {
             name: serviceName,
             category: serviceCategory,
             description: serviceDescription,
+            long_description: longDescription,
             image: serviceImage,
             dna_collection_process: dnaCollectionProcess,
             test_result_sample: resultSample,
@@ -161,6 +163,7 @@ export default {
           serviceImage,
           serviceCategory,
           serviceDescription,
+          longDescription,
           labId,
           labName,
           labRate,

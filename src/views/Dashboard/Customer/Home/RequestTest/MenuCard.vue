@@ -2,22 +2,22 @@
   .container-card(@click="onClick")
     v-card.menu-card
       v-row.pa-3
-        v-col(cols="3")
-          ui-debio-avatar(:src="icon" size="90" rounded)
+        v-col(cols="4")
+          ui-debio-avatar(:src="icon" size="135" rounded)
     
-        v-col(cols="9")
+        v-col(cols="8")
           .menu-card__title
             .menu-card__name 
               b {{ title }}
             .menu-card__price 
               b {{ formatPrice(price) }} {{ currency.toUpperCase() }}
+
+          .menu-card__description {{ description }}
           
-          ui-debio-rating(:rating="rate" :total-reviews="countRate" size="12")
+          ui-debio-rating.menu-card__rating(:rating="rate" :total-reviews="countRate" size="12")
 
           .menu-card__lab-name
             b {{ labName }}
-
-          .menu-card__address {{ city }}, {{ state }}
 
 </template>
 
@@ -37,14 +37,12 @@ export default {
     title: String,
     icon: String,
     labName: String,
-    country: String,
-    city: String,
-    region: String,
     price: String,
     avatar: String,
     currency: String,
     rate: Number,
-    countRate: Number
+    countRate: Number,
+    description: String
   },
 
   computed: {
@@ -80,7 +78,7 @@ export default {
 
   .container-card
     width: 452px
-    height: 117px
+    height: 165px
     padding: 1px
     border-radius: 8px
     cursor: pointer
@@ -92,7 +90,7 @@ export default {
     border-radius: 8px
     padding: 1px
     width: 450px
-    height: 115px
+    height: 163px
 
     &__title
       display: flex
@@ -100,11 +98,10 @@ export default {
       height:32px
 
     &__name
-      width: 240px
+      width: 230px
       @include body-text-3-opensans-medium
   
     &__price
-      margin-right: 5px
       color: #C400A5
       @include body-text-3-opensans-medium
 
@@ -113,10 +110,13 @@ export default {
       width: 240px
       @include body-text-3-opensans-medium
 
-    &__address
+    &__description
+      margin-top: 16px
       width: 270px
       color: gray
       @include tiny-reg
 
+    &__rating
+      margin-top: 10px
 </style>
 
