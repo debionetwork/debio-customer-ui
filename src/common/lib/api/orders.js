@@ -6,7 +6,7 @@ export async function fetchPaymentHistories(searchQuery) {
     data: {
       data
     }
-  } = await apiClientRequest.get(`/orders/list/${localStorage.getAddress()}`, {
+  } = await apiClientRequest.get(`substrate/orders/list/${localStorage.getAddress()}`, {
     params: {
       size: 1000,
       page: 1,
@@ -21,7 +21,7 @@ export async function fetchPaymentDetails(hash) {
   const {
     data
   } = await apiClientRequest.get(
-    `/orders/${hash}`
+    `substrate/orders/${hash}`
   );
 
   return data;
@@ -29,7 +29,7 @@ export async function fetchPaymentDetails(hash) {
 
 export async function fetchBountyLists(hash) {
   const { data: { data } } = await apiClientRequest.get(
-    `/orders/bounty_list/${hash}`
+    `substrate/orders/bounty_list/${hash}`
   );
 
   return data;
