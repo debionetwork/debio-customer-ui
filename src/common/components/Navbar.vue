@@ -99,7 +99,12 @@
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
-    WalletBinding(:show="showMetamaskDialog" @close="closeDialog" @success="walletBound")
+
+    v-progress-linear.navbar__loading(
+      v-if="loading"
+      color="primary"
+      indeterminate
+    )
 </template>
 
 <script>
@@ -120,19 +125,19 @@ import {
   copyIcon
 } from "@/common/icons"
 
-import WalletBinding from "./WalletBinding.vue"
 import localStorage from "@/common/lib/local-storage"
 import { generalDebounce } from "@/common/lib/utils"
 import { queryBalance } from "@/common/lib/polkadot-provider/query/balance"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile"
 import { getBalanceDAI } from "@/common/lib/metamask/wallet"
 import { fromEther } from "@/common/lib/balance-format"
+import { startApp } from "@/common/lib/metamask"
+import { handleSetWallet } from "@/common/lib/wallet"
 
 
 export default {
   name: "Navbar",
 
-  components: { WalletBinding },
 
   props: {
     notifications: { type: Array, default: () => [] },
@@ -162,6 +167,8 @@ export default {
     balance: 0,
     walletAddress: "",
     activeBalance: 0,
+    ethAccount: null,
+    loading: false,
     menus: [
       {
         id: 1,
@@ -240,7 +247,7 @@ export default {
       setWalletBalance: "substrate/SET_WALLET_BALANCE",
       setMetamaskAddress: "metamask/SET_WALLET_ADDRESS",
       setMetamaskBalance: "metamask/SET_WALLET_BALANCE",
-      clearWallet: "substrate/CLEAR_WALLET"
+      clearWallet: "metamask/CLEAR_WALLET"
     }),
 
     handleNotificationRead(notif) {
@@ -283,7 +290,7 @@ export default {
 
       if (selectedMenu.type === "metamask") {
         this.walletAddress = this.metamaskWalletAddress
-        this.activeBalance = this.metamaskWalletBalance
+        this.activeBalance = await getBalanceDAI(this.metamaskWalletAddress)
       }
 
       selectedMenu.active = true
@@ -340,8 +347,26 @@ export default {
 
     },
 
-    connectToMetamask() {
-      this.showMetamaskDialog = true      
+    async connectToMetamask() {
+      this.loading = true
+      this.ethAccount = await startApp()
+
+      if (this.ethAccount.currentAccount === "no_install") {
+        window.open("https://metamask.io/download/", "_blank")
+        this.ethAccount = null
+        this.loading = false
+        return
+      }
+
+      const account = await handleSetWallet("metamask", this.metamaskWalletAddress)
+      const accountId = localStorage.getAddress()
+      const ethAddress = account[0].address
+
+      await this.$store.dispatch("wallet/walletBinding", {accountId, ethAddress})
+      this.setMetamaskAddress(ethAddress)
+      this.loading = false
+      this.loginStatus = true
+      this.menus.find(menu => menu.type === "metamask").active = true
     },
 
     disconnectWallet() {
@@ -353,19 +378,13 @@ export default {
       if (type === "metamask") this.disconnectWallet()
     },
 
-    closeDialog () {
-      this.loginStatus = false
-      this.showMetamaskDialog = false
-    },
-
-    walletBound () {
-      this.loginStatus = true
-      this.showMetamaskDialog = false
-    },
-
     signOut () {
       localStorage.clear()
       this.clearAuth
+      this.clearWallet()
+      this.ethAccount = null
+      this.loginStatus = false
+      this.menus.find(menu => menu.type === "metamask").active = false
       this.$router.push({ name: "sign-in"})
     }
   }
@@ -373,10 +392,15 @@ export default {
 </script>
 
 <style lang="sass">
+  @import "@/common/styles/mixins.sass"
+
   .navbar
     padding: 3rem
     width: 100%
     z-index: 100
+
+    &__loading
+      margin-top: 10px
 
     &__triangle
       height: 1.25rem
@@ -603,4 +627,5 @@ export default {
       transform: translateY(0.063rem)
     100%
       transform: rotate(6deg)
+    
 </style>
