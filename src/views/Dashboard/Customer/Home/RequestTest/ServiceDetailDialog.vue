@@ -28,7 +28,7 @@
         v-col(cols="6")
           .dialog-service__sub-title {{ selectedService.labName }}
           .dialog-service__address          
-            span {{ selectedService.labAddress }}, {{ selectedService.city }}, {{ country(selectedService.country) }}
+            span {{ selectedService.labAddress }}, {{ selectedService.city }}, {{ country }}
 
         v-col(cols="3")
           ui-debio-rating(:rating="selectedService.labRate" :total-reviews="selectedService.countRateLab" size="10")
@@ -59,12 +59,8 @@
 import { mapState } from "vuex"
 import Button from "@/common/components/Button"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
-import { getLocations } from "@/common/lib/api/location"
-import Kilt from "@kiltprotocol/sdk-js"
-import CryptoJS from "crypto-js"
-import { u8aToHex } from "@polkadot/util"
-
-
+import { hexToU8a } from "@polkadot/util"
+import { getLocations } from "@/common/lib/api"
 
 
 export default {
@@ -92,7 +88,11 @@ export default {
     ...mapState({
       mnemonicData: (state) => state.substrate.mnemonicData,
       selectedService: (state) => state.testRequest.products
-    })
+    }),
+
+    country () {
+      return this.countries.filter((c) => c.iso2 === this.selectedService.country)[0].name
+    }
   },
 
   methods: {
@@ -110,27 +110,16 @@ export default {
       this.$router.push({ name: "customer-request-test-checkout"})
     },
 
-
-    country (country) {
-      if (country) {
-        return this.countries.filter((c) => c.iso2 === country)[0].name
-      }
-    },
-
     async downloadFile () {
-
-      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
-
-      const publicKey = u8aToHex(cred.boxKeyPair.publicKey)
-      const privateKey = u8aToHex(cred.boxKeyPair.publicKey)
-      const arr = this.selectedService.resultSample.split("/")
-      const path = arr[arr.length-1]
-
+      const publicKey = hexToU8a(this.mnemonicData.publicKey)
+      const privateKey = hexToU8a(this.mnemonicData.privateKey)
+      const baseUrl = "https://ipfs.io/ipfs/"
+      const path = this.downloadPath.replace(baseUrl, "")
       await downloadDecryptedFromIPFS(
         path,
         privateKey,
         publicKey,
-        `${this.selectedService.serviceId}.pdf`,
+        this.serviceId + ".pdf",
         "application/pdf"
       )
     }

@@ -19,6 +19,9 @@
           :rules="amountRules"
           variant="small"
           width="100%"
+          type="number"
+          min="0"
+          step=".001"
           v-model="amount"
           placeholder="Amount (DBIO)"
           outlined
