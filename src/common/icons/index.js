@@ -14,6 +14,7 @@ import alertIcon from "./alert"
 import alertTriangleIcon from "./alertTriangle"
 import userIcon from "./user"
 import usersIcon from "./users"
+import heartBeatIcon from "./heartBeat"
 import labIllustration from "./labIllustration"
 import particleIllustration from "./particleIllustration"
 import analiticIllustration from "./analiticIllustration"
@@ -80,6 +81,7 @@ export {
   eyeOffIcon,
   userIcon,
   usersIcon,
+  heartBeatIcon,
   fileTextIcon,
   starIcon,
   labIllustration,

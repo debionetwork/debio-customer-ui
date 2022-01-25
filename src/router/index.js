@@ -11,7 +11,7 @@ const routes = [
   ...landingPageRoutes,
   {
     path: "*",
-    component: () => import(/* webpackChunkName */ "@/views/404")
+    component: () => import(/* webpackChunkName */ "@/views/NotFound")
   }
 ]
 
