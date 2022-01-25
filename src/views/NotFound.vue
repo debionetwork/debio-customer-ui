@@ -17,7 +17,7 @@ import { Illustration404 } from "@/common/icons"
 import Button from "@/common/components/Button"
 
 export default {
-  name: "404",
+  name: "NotFound",
 
   components: { Button },
 
