@@ -107,6 +107,7 @@
           v-tab-item
             .customer-my-test__table
             StakingServiceTab(
+              ref="staking"
               @unstake="showDialog = true"
             )
             ConfirmationDialog(
@@ -269,19 +270,6 @@ export default {
           role: "customer"
         })  
       }
-
-      if(event.method === "ServiceRequestWaitingForUnstaked") {
-        this.isLoading = false
-        this.showDialog = false
-        this.$router.push({
-          name: "my-test",
-          params: {
-            page: 1
-          }
-        })
-      }
-
-      
     },
 
     mnemonicData(val) {
@@ -531,7 +519,18 @@ export default {
     async unstakeService () {
       const requestId = this.stakingId
       this.isLoading = true
-      await unstakeRequest(this.api, this.wallet, requestId) 
+      await unstakeRequest(
+        this.api, 
+        this.wallet, 
+        requestId, 
+        this.fetchStakingTab
+      )
+    },
+
+    fetchStakingTab () {
+      this.$refs.staking.fetchData()
+      this.isLoading = false
+      this.showDialog = false
     }
   }
 }

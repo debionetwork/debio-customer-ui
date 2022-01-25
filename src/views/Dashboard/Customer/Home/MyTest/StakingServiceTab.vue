@@ -138,13 +138,13 @@ export default {
     await this.fetchData ()
   },
 
-  watch: {
-    lastEventData() {
-      if(this.lastEventData.section === "serviceRequest") {
-        this.fetchData()
-      }
-    }
-  },
+  // watch: {
+  //   fetchData() {
+  //     if(this.lastEventData.section === "serviceRequest") {
+  //       this.fetchData()
+  //     }
+  //   }
+  // },
 
   methods: {
     ...mapMutations({
@@ -154,8 +154,14 @@ export default {
     }),
 
     async fetchData () {
+      console.log("HEEEEEEEYYYY !!!")
       const { data } = await getServiceRequestByCustomer(this.pair.address)
       this.items = data
+
+
+      console.log("ITEMS")
+      console.log(this.items)
+
     },
 
     setAmount(amount) {
@@ -194,10 +200,10 @@ export default {
       this.$router.push({ name: "customer-request-test-service"})
     },
 
-    getUnstakingDialog(id) {
+    async getUnstakingDialog(id) {
       this.setStakingId(id)
-      this.$emit("unstake")
-
+      await this.$emit("unstake")
+      this.fetchData()
       this.requestId = id
     },
 
