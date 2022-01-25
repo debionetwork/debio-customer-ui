@@ -5,6 +5,13 @@ export async function registerElectronicMedicalRecord(api, pair, data) {
   return result.toHuman()
 }
 
+export async function updateElectronicMedicalRecord(api, pair, data) {
+  const result = await api.tx.electronicMedicalRecord
+    .updateElectronicMedicalRecord(data.id, data.title, data.category, data.files)
+    .signAndSend(pair, { nonce: -1 })
+  return result.toHuman()
+}
+
 export function getCreateRegisterEMRFee(api, pair, data) {
   return api.tx.electronicMedicalRecord
     .addElectronicMedicalRecord(data.title, data.category, data.files)

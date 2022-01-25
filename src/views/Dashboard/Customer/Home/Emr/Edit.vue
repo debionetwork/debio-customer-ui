@@ -84,7 +84,7 @@
       )
 
     .customer-create-emr__wrapper
-      .customer-create-emr__title Upload EMR
+      .customer-create-emr__title Edit EMR
       .customer-create-emr__forms
         ui-debio-input(
           :rules="$options.rules.emr.title"
@@ -143,9 +143,9 @@
                   .customer-create-emr__file-name No File uploaded, Please add file to upload
 
             template(v-else)
-              .customer-create-emr__file-item(v-for="(item, idx) in computeFiles" :key="item.createdAt")
+              .customer-create-emr__file-item(v-for="(item, idx) in computeFiles" :key="item.id")
                 ui-debio-modal.modal-confirm(
-                  :show="showModalConfirm === item.createdAt"
+                  :show="showModalConfirm === item.id"
                   title="Do you want to delete ?"
                   @onClose="showModalConfirm = null"
                 )
@@ -160,7 +160,7 @@
                     Button(
                       width="100"
                       color="secondary"
-                      @click="onDelete(item.createdAt)"
+                      @click="onDelete(item.id)"
                     ) Yes
 
                 .customer-create-emr__file-title {{ item.title }}
@@ -188,7 +188,7 @@
                       size="15"
                       color="#989898"
                       fill
-                      @click="showModalConfirm = item.createdAt"
+                      @click="showModalConfirm = item.id"
                     )
 
         Button.white--text(
@@ -209,9 +209,13 @@ import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/api"
 import {
-  registerElectronicMedicalRecord,
+  updateElectronicMedicalRecord,
   getCreateRegisterEMRFee
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
+import {
+  queryElectronicMedicalRecordById,
+  queryElectronicMedicalRecordFileById
+} from "@/common/lib/polkadot-provider/query/electronic-medical-record"
 import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import { errorHandler } from "@/common/lib/error-handler"
@@ -220,7 +224,7 @@ import Button from "@/common/components/Button"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
 
 export default {
-  name: "CustomerEmrCreate",
+  name: "CustomerEmrEdit",
 
   mixins: [validateForms],
 
@@ -250,6 +254,7 @@ export default {
     secretKey: null,
     txWeight: null,
     emr: {
+      id: "",
       title: "",
       category: "",
       files: []
@@ -288,7 +293,7 @@ export default {
     lastEventData(event) {
       if (event !== null) {
         const dataEvent = JSON.parse(event.data.toString())
-        if (event.method === "ElectronicMedicalRecordAdded") {
+        if (event.method === "ElectronicMedicalRecordUpdated") {
           if (dataEvent[1] === this.wallet.address) {
             this.resetState()
             this.$router.push({ name: "customer-emr" })
@@ -333,10 +338,50 @@ export default {
 
   async created() {
     this.fetchCategories()
-    if (this.mnemonicData) this.initialDataKey()
+    if (this.mnemonicData) {
+      this.initialData()
+      this.initialDataKey()
+    }
   },
 
   methods: {
+    async initialData() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+
+      if (cred) await this.prepareData()
+    },
+
+    async prepareData() {
+      const { id } = this.$route.params
+      const data = await queryElectronicMedicalRecordById(this.api, id)
+      let files = []
+
+      if (!id || !data) {
+        this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
+
+        return
+      }
+
+      this.emr.id = id
+      this.emr.title = data.title
+      this.emr.category = data.category
+
+      for (const file of data.files) {
+        const dataFile = await queryElectronicMedicalRecordFileById(this.api, file)
+        dataFile.id = file
+        files.push(dataFile)
+      }
+
+      this.emr.files = files.map(file => ({
+        ...file,
+        file: new File([], file.recordLink.split("/").pop(), {type: "application/pdf"}),
+        oldFile: new File([], file.recordLink.split("/").pop(), {type: "application/pdf"}),
+        recordLink: file.recordLink
+      }))
+    },
     initialDataKey() {
       const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
 
@@ -365,9 +410,10 @@ export default {
       const { title: docTitle, description: docDescription, file: docFile } = this.isDirty?.document
       if (docTitle || docDescription || docFile) return
 
+      const { createdAt, title, description, file } = this.document
+
       const context = this
       const fr = new FileReader()
-      const { createdAt, title, description, file } = this.document
 
       fr.onload = async function() {
         try {
@@ -386,12 +432,13 @@ export default {
             chunks,
             fileName,
             fileType,
+            fileIsEdited: true,
             createdAt: new Date().getTime()
           }
 
           if (context.isEdit) {
             const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
-
+            
             context.emr.files[index] = dataFile
 
             context.emr.files = context.emr.files.map(file => file)
@@ -405,7 +452,28 @@ export default {
         }
       }
 
-      fr.readAsArrayBuffer(file)
+      if(file != this.document.oldFile) {
+        fr.readAsArrayBuffer(file)
+        this.onCloseModalDocument()
+        return
+      }
+
+      const dataFile = {
+        title,
+        description,
+        file,
+        fileIsEdited: false,
+        createdAt: new Date().getTime()
+      }
+
+      if (context.isEdit) {
+        const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
+        
+        context.emr.files[index] = dataFile
+
+        context.emr.files = context.emr.files.map(file => file)
+        context.isEdit = false
+      }
 
       this.onCloseModalDocument()
     },
@@ -434,7 +502,7 @@ export default {
 
     onDelete(id) {
       this.showModalConfirm = null
-      this.emr.files = this.emr.files.filter(file => file.createdAt !== id)
+      this.emr.files = this.emr.files.filter(file => file.id !== id)
     },
 
     handleAddFile() {
@@ -475,6 +543,7 @@ export default {
         if (this.emr.files.length === 0) return
 
         for await (let [index, value] of this.emr.files.entries()) {
+          if(!value.fileIsEdited) continue
           const dataFile = await this.setupFileReader({ value })
           await this.upload({
             encryptedFileChunks: dataFile.chunks,
@@ -484,7 +553,7 @@ export default {
           })
         }
 
-        await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
+        await updateElectronicMedicalRecord(this.api, this.wallet, this.emr)
 
         this.showModalPassword = false
         this.isLoading = false

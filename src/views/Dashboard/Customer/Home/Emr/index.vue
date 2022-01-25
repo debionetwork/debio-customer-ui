@@ -72,6 +72,7 @@
 
     template(v-slot:[`item.actions`]="{ item }")
       .customer-emr__actions
+        ui-debio-icon(:icon="pencilIcon" size="16" role="button" stroke @click="onEdit(item)")
         ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item)")
         ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="handleOpenModalDelete(item)")
 </template>
@@ -82,6 +83,7 @@ import {
   layersIcon,
   analiticIllustration,
   eyeIcon,
+  pencilIcon,
   eyeOffIcon,
   alertTriangleIcon,
   alertIcon,
@@ -116,6 +118,7 @@ export default {
     layersIcon,
     analiticIllustration,
     eyeIcon,
+    pencilIcon,
     eyeOffIcon,
     trashIcon,
     downloadIcon,
@@ -281,6 +284,10 @@ export default {
       }
 
       this.emrDocuments.push(order)
+    },
+
+    onEdit(emr) {
+      this.$router.push({ name: "customer-emr-edit", params: { id: emr.id }})
     },
 
     onDetails(emr) {

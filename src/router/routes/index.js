@@ -43,6 +43,12 @@ const indexRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Create")
     },
     {
+      path: "emr/edit/:id?",
+      name: "customer-emr-edit",
+      meta: { pageHeader: "Edit EMR", parent: "customer-emr" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Edit")
+    },
+    {
       path: "emr/details/:id?",
       name: "customer-emr-details",
       meta: { pageHeader: "Details", parent: "customer-emr" },
