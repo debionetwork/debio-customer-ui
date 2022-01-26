@@ -40,7 +40,7 @@ describe("Error Dialog", () => {
     const propsData = {
       show : true,
       title : "Custom Title",
-      message : "Custom Message",
+      message : "Custom Message"
     }  
   
     container = shallowMount(ErrorDialog, {

@@ -1,4 +1,4 @@
-import { mockFunction } from './mock'
+import { mockFunction } from "./mock"
 
 export class WsProvider {
   constructor(params) {

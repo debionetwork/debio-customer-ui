@@ -3,9 +3,9 @@ import CustomerEmr from "@/views/Dashboard/Customer/Home/Emr"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 
-config.stubs['ui-debio-icon'] = { template: "<div class='icon'></div>" }
-config.stubs['ui-debio-modal'] = { template: "<div></div>" }
-config.stubs['ui-debio-banner'] = { template: "<div></div>" }
+config.stubs["ui-debio-icon"] = { template: "<div class='icon'></div>" }
+config.stubs["ui-debio-modal"] = { template: "<div></div>" }
+config.stubs["ui-debio-banner"] = { template: "<div></div>" }
 
 describe("Customer EMR Dashboard", () => {
   let container
@@ -27,17 +27,17 @@ describe("Customer EMR Dashboard", () => {
       vuetify: new Vuetify(),
       store: new Vuex.Store({
         state: {
-            substrate: {
-                api: "API",
-                wallet: "WALLET",
-                mnemonicData: "oil spend nation obey lecture behave lake diary reward forest gym apple"
-            },
-            auth: {
-                loadingData: "LOADING"
-            },
-            metamask: {
-                web3: "WEB3"
-            }
+          substrate: {
+            api: "API",
+            wallet: "WALLET",
+            mnemonicData: "oil spend nation obey lecture behave lake diary reward forest gym apple"
+          },
+          auth: {
+            loadingData: "LOADING"
+          },
+          metamask: {
+            web3: "WEB3"
+          }
         }
       })
     })
