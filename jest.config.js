@@ -15,7 +15,10 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
-    "vuetify/lib(.*)": "<rootDir>/node_modules/vuetify/es5$1"
+    "vuetify/lib(.*)": "<rootDir>/node_modules/vuetify/es5$1",
+    "@polkadot/ui-keyring": "<rootDir>/tests/unit/@polkadot-ui-keyring.mock.js",
+    "@polkadot/keyring": "<rootDir>/tests/unit/@polkadot-keyring.mock.js",
+    "@polkadot/api": "<rootDir>/tests/unit/@polkadot-api.mock.js"
   },
   modulePaths: [
     "<rootDir>/src",
