@@ -3,7 +3,7 @@ import CustomerEmr from "@/views/Dashboard/Customer/Home/Emr"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 
-config.stubs["ui-debio-icon"] = { template: "<div class='icon'></div>" }
+config.stubs["ui-debio-icon"] = { template: "<div></div>" }
 config.stubs["ui-debio-modal"] = { template: "<div></div>" }
 config.stubs["ui-debio-banner"] = { template: "<div></div>" }
 
