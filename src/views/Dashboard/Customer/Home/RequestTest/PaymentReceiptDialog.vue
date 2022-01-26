@@ -58,7 +58,7 @@
             class="password-field"
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             :type="showPassword ? 'text' : 'password'"
-            :rules="[val => !!val || 'Password is required']"
+            :rules="[val => !!val || errorMessage.REQUIRED]"
             :disabled="isLoading"
             @click:append="showPassword = !showPassword"
             outlined

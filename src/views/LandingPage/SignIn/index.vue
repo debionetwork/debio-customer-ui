@@ -141,7 +141,7 @@ export default {
 
     passwordRules() {
       return [
-        val => !!val || "Password is required"
+        val => !!val || errorMessage.REQUIRED
       ]
     }
   },

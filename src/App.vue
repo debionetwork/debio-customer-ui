@@ -1,20 +1,21 @@
 <template lang="pug">
   div#app: v-app
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
-    div(v-if="isLoadingSubstrateApi") Loading...
-    NoAccessMobile(v-else-if="isMobileDevice")
-    router-view(v-else)
+    LoadingScreen(v-show="isLoadingSubstrateApi")
+    NoAccessMobile(v-show="isMobileDevice")
+    router-view(v-show="!isLoadingSubstrateApi && !isMobileDevice")
 </template>
   
 <script>
 import { mapState, mapActions } from "vuex"
-import NoAccessMobile from "@/views/NoAccessMobile.vue"
+import NoAccessMobile from "@/views/NoAccessMobile"
+import LoadingScreen from "@/views/LoadingScreen"
 import { generalDebounce } from "@/common/lib/utils"
 
 export default {
   name: "App",
 
-  components: { NoAccessMobile },
+  components: { NoAccessMobile, LoadingScreen },
 
   data: () => ({
     address: "",

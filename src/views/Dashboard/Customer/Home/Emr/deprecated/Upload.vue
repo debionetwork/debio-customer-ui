@@ -89,9 +89,15 @@ export default {
 
   rules: {
     document: {
-      title: [ val => !!val || errorMessage.REQUIRED ],
+      title: [
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50)
+      ],
       category: [ val => !!val || errorMessage.REQUIRED ],
-      description: [ val => !!val || errorMessage.REQUIRED ],
+      description: [
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255)
+      ],
       file: [
         val => !!val || errorMessage.REQUIRED,
         val => (val && val.size < 30000000) || errorMessage.FILE_SIZE(30),

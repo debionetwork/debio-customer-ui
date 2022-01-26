@@ -67,5 +67,14 @@ export default Object.freeze({
   INPUT_CHARACTER: (type) => {
     const message = `This field can only contain ${type}`
     return message
+  },
+  /**
+   * 
+   * @param {number | string} number 
+   * @returns {string}
+   */
+  MAX_CHARACTER: (number) => {
+    const message = `This field only allows ${number} characters`
+    return message
   }
 })

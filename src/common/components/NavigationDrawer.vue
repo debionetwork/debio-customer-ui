@@ -105,6 +105,7 @@
     :width="width"
     stateless
     class="mr-10 pt-10 drawer darken-1"
+    floating
   )
     div.dbioLogo
       a(
