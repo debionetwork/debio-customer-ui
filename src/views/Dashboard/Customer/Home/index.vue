@@ -307,10 +307,10 @@ export default {
 
       const number = detailOrder.id
       const dateSet = new Date(
-        parseInt(detailOrder.createdAt.replaceAll(",", ""))
+        parseInt(detailOrder.createdAt.replace(",", ""))
       )
       const dateUpdate = new Date(
-        parseInt(detailOrder.updatedAt.replaceAll(",", ""))
+        parseInt(detailOrder.updatedAt.replace(",", ""))
       )
       const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-GB", {
@@ -351,6 +351,7 @@ export default {
       }
       this.paymentHistory.push(order)
     },
+
     prepareTestResult(detailOrder, dnaSample, detailLab, detailService) {
       const feedback = {
         rejectedTitle: dnaSample.rejectedTitle,
