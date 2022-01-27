@@ -20,7 +20,6 @@ export async function createRequest(api, pair, country, region, city, category, 
 export async function unstakeRequest (api, pair, requestId, callback = () => {}) {
   const unsub = await api.tx.serviceRequest
     .unstake(requestId)
-    // .signAndSend(pair, { nonce: -1})
     .signAndSend(pair, { nonce: -1 }, async ({ events = [], status }) => {
       if(status.isFinalized) {
         const eventList = events.filter(({ event }) =>

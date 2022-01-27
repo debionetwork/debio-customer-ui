@@ -138,14 +138,6 @@ export default {
     await this.fetchData ()
   },
 
-  // watch: {
-  //   fetchData() {
-  //     if(this.lastEventData.section === "serviceRequest") {
-  //       this.fetchData()
-  //     }
-  //   }
-  // },
-
   methods: {
     ...mapMutations({
       setCategory: "lab/SET_CATEGORY",
@@ -154,14 +146,8 @@ export default {
     }),
 
     async fetchData () {
-      console.log("HEEEEEEEYYYY !!!")
       const { data } = await getServiceRequestByCustomer(this.pair.address)
       this.items = data
-
-
-      console.log("ITEMS")
-      console.log(this.items)
-
     },
 
     setAmount(amount) {
@@ -203,7 +189,6 @@ export default {
     async getUnstakingDialog(id) {
       this.setStakingId(id)
       await this.$emit("unstake")
-      this.fetchData()
       this.requestId = id
     },
 
