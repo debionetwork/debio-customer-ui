@@ -3,7 +3,7 @@ import Home from "@/views/Dashboard/Customer/Home"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 
-jest.mock('../../../../../../src/common/lib/polkadot-provider/query/orders', () => ({
+jest.mock("../../../../../../src/common/lib/polkadot-provider/query/orders", () => ({
   ordersByCustomer: jest.fn(() => {
     return {
       length: 1,
@@ -26,13 +26,13 @@ jest.mock('../../../../../../src/common/lib/polkadot-provider/query/orders', () 
       prices: [
         {
           component: "testing_price",
-          value: "2,000,000,000,000,000,000",
+          value: "2,000,000,000,000,000,000"
         }
       ],
       additionalPrices: [
         {
           component: "qc_price",
-          value: "1,998,000,000,000,000,000",
+          value: "1,998,000,000,000,000,000"
         }
       ],
       status: "Cancelled",
@@ -40,10 +40,10 @@ jest.mock('../../../../../../src/common/lib/polkadot-provider/query/orders', () 
       createdAt: "1,643,000,820,001",
       updatedAt: "1,643,012,070,001"
     }
-  }),
+  })
 }))
 
-jest.mock('../../../../../../src/common/lib/polkadot-provider/query/genetic-testing', () => ({
+jest.mock("../../../../../../src/common/lib/polkadot-provider/query/genetic-testing", () => ({
   queryDnaSamples: jest.fn(() => {
     return {
       trackingId: "CU6F63ADJ9RTWF5J10CU6",
@@ -56,10 +56,10 @@ jest.mock('../../../../../../src/common/lib/polkadot-provider/query/genetic-test
       createdAt: "1,643,181,408,001",
       updatedAt: "1,643,181,408,001"
     }
-  }),
+  })
 }))
 
-jest.mock('../../../../../../src/common/lib/polkadot-provider/query/labs', () => ({
+jest.mock("../../../../../../src/common/lib/polkadot-provider/query/labs", () => ({
   queryLabsById: jest.fn(() => {
     return {
       accountId: "5EFb5C9AjhGnejq1f8k7bPGgAdQV4iM84EjwdopHhJidftfi",
@@ -80,13 +80,13 @@ jest.mock('../../../../../../src/common/lib/polkadot-provider/query/labs', () =>
         website: "labutama.com",
         latitude: null,
         longitude: null,
-        profileImage: null,
+        profileImage: null
       }
     }
-  }),
+  })
 }))
 
-jest.mock('../../../../../../src/common/lib/polkadot-provider/query/services', () => ({
+jest.mock("../../../../../../src/common/lib/polkadot-provider/query/services", () => ({
   queryServicesById: jest.fn(() => {
     return {
       id: "0xabd8224962152bae46333a82794c9b9d0654c57df1ba40cbc275fde415809b45",
@@ -106,14 +106,14 @@ jest.mock('../../../../../../src/common/lib/polkadot-provider/query/services', (
             additionalPrices: [
               {
                 component: "qc_price",
-                value: "1,500,000,000,000,000,000",
+                value: "1,500,000,000,000,000,000"
               }
             ]
           }
         ],
         expectedDuration: {
           duration: 7,
-          durationType: "WorkingDays",
+          durationType: "WorkingDays"
         },
         category: "Whole Genome Sequencing",
         description: "Analyze",
@@ -124,7 +124,7 @@ jest.mock('../../../../../../src/common/lib/polkadot-provider/query/services', (
       },
       serviceFlow: "RequestTest"
     }
-  }),
+  })
 }))
 
 config.stubs["ui-debio-icon"] = { template: "<div></div>" }
