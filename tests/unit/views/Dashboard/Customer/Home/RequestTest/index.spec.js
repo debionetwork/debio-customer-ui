@@ -1,9 +1,10 @@
-import { createLocalVue, shallowMount } from "@vue/test-utils"
+import { createLocalVue, shallowMount, config } from "@vue/test-utils"
 import RequestTest from "@/views/Dashboard/Customer/Home/RequestTest"
 import SelectLocation from "@/views/Dashboard/Customer/Home/RequestTest/SelectLocation"
 import Vue from "vue"
 import Vuetify from "vuetify"
-import Stepper from "@/common/components/Stepper"
+
+config.stubs["ui-debio-stepper"] = { template: "<div></div>" }
 
 Vue.use(Vuetify)
 
@@ -21,8 +22,7 @@ describe("Request Test Page", () => {
       localVue,
       vuetify,
       stubs: {
-        UiDebioStepper: Stepper,
-        SelectLocation,
+        SelectLocation
       }
     })
     
@@ -34,8 +34,7 @@ describe("Request Test Page", () => {
       localVue,
       vuetify,
       stubs: {
-        UiDebioStepper: Stepper,
-        SelectLocation,
+        SelectLocation
       }
     })
 

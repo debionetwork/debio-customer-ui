@@ -34,6 +34,7 @@ describe("Request Test Form component", () => {
   it("should render", () => {
     container = shallowMount(RequestTestForm, {
       vuetify,
+      localVue,
       store,
       stubs: {
         Button
@@ -46,6 +47,7 @@ describe("Request Test Form component", () => {
   it("should render form with disabled button", () => {
     container = shallowMount(RequestTestForm, {
       vuetify,
+      localVue,
       store,
       stubs: {
         Button
