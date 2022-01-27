@@ -32,12 +32,11 @@ describe("Select Service", () => {
         state: {
           substrate: {
             api: "API",
-            wallet: "WALLET",
+            wallet: "WALLET"
           },
           lab: {
             country: "ID",
             city: "JK",
-            country: "Kota Administrasi Jakarta Barat",
             category: "Single Gene",
             dataServices: [{"Services": "Data Service"}]
           }

@@ -30,7 +30,7 @@ describe("No Lab", () => {
             region: "REGION",
             city: "CITY",
             category: "CATEGORY"
-          },
+          }
         }
       })
     })

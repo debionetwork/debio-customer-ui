@@ -1,6 +1,6 @@
 import Vue from "vue"
 import Vuetify from "vuetify"
-import VueRouter from 'vue-router'
+import VueRouter from "vue-router"
 import Stepper from "@/common/components/Stepper"
 import { createLocalVue, shallowMount, config } from "@vue/test-utils"
 import SelectServicePage from "@/views/Dashboard/Customer/Home/RequestTest/SelectServicePage"
@@ -40,7 +40,7 @@ describe("Select Service Page", () => {
       vuetify,
       stubs: {
         UiDebioStepper: Stepper,
-        SelectService,
+        SelectService
       }
     })
     expect(container.findComponent(SelectService).exists()).toBe(true)
