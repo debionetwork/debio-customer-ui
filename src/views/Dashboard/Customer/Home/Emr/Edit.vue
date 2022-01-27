@@ -223,7 +223,7 @@ import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
 
-const englishAlphabet = val => (val && /^[A-Za-z? ]?[A-Za-z0-9? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
+const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
 
 export default {
   name: "CustomerEmrEdit",
