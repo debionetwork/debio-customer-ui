@@ -5,10 +5,9 @@
         v-toolbar-title.remaining-dialog__title Pay remaining amount
       .remaining-dialog__card
         .remaining-dialog__card-text
-          //- TO ADJUST
           .remaining-dialog__card-text-content 1. By clicking Pay button you will use your balance to pay the remaining amount that needed to be completed.
           .remaining-dialog__card-text-content 2. The remaining amount calculated in order summary.
-          .remaining-dialog__card-text-content 3.  If your balance is not enough to pay the remaining amount, you can top up your balance first and go back to this page.
+          .remaining-dialog__card-text-content 3. If your balance is not enough to pay the remaining amount, you can top up your balance first and go back to this page.
 
       .remaining-dialog__input
         .remaining-dialog__input-label Remaining Amount
