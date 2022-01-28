@@ -241,7 +241,7 @@ export default {
       this.stakingAmount = Number(this.formatPrice(stakingAmount)).toFixed(3)
       const remainingStaking = this.dataService.price - stakingAmount
       this.remainingDai = remainingStaking
-     this.remainingStaking = Number(this.formatPrice(remainingStaking)).toFixed(3)
+      this.remainingStaking = Number(this.formatPrice(remainingStaking)).toFixed(3)
       this.remainingDbio = Number(this.formatPrice(remainingStaking / debioBalance)).toFixed(3)
 
       const excessAmount = stakingAmount - this.dataService.price
@@ -317,7 +317,7 @@ export default {
       }
 
       if (this.isExcess && this.detailOrder !== "Unpaid") {
-     const customerBoxPublicKey = await this.getCustomerPublicKey()        
+        const customerBoxPublicKey = await this.getCustomerPublicKey()        
         await createOrder(
           this.api,
           this.wallet,
