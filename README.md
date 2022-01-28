@@ -17,27 +17,34 @@ The Anonymous-First Platform for Medical and Bioinformatics Data.
 DeBio Network is a decentralized anonymous-first platform for medical and bioinformatics data. It uses blockchain technology as the immutable transaction ledger to support its processes.
 
 ## Project setup
+```sh
+cp .env-example .env
 ```
+adjust the contents of the `.env` file
+
+## Install dependencies
+
+```sh
 npm install
 ```
 
 ### Compiles and hot-reloads for development
-```
+```sh
 npm run serve
 ```
 
 ### Compiles and minifies for production
-```
+```sh
 npm run build
 ```
 
 ### Run your unit tests
-```
+```sh
 npm run test:unit
 ```
 
 ### Lints and fixes files
-```
+```sh
 npm run lint
 ```
 
@@ -49,12 +56,13 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 First, install [Docker](https://docs.docker.com/get-docker/) and
 [Docker Compose](https://docs.docker.com/compose/install/).
 
-Then run the following command to run the app in Docker.
+Run the following command.
 
-```bash
+```sh
 ./.maintain/docker/create-network.sh
 ```
 
-```bash
+```sh
 ./.maintain/docker/start-docker-compose.sh
 ```
+Open http://127.0.0.1:8085 in your browser.
