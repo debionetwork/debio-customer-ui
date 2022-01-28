@@ -48,7 +48,7 @@ export async function claimRequest(api, pair, requestId, serviceId, testingPrice
 }
 
 export async function processRequest(api, pair, labId, requestId, orderId, dnaSampleTrackingId, additionalStakingAmount) {
-  const result = await api.tx.serviceRequest
+    const result = await api.tx.serviceRequest
     .processRequest(labId, requestId, orderId, dnaSampleTrackingId, additionalStakingAmount)
     .signAndSend(pair, { nonce: -1})
   return result.toHuman()
