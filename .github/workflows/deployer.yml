@@ -140,7 +140,7 @@ jobs:
     if: "github.event.release.prerelease && contains(needs.compute-build-info.outputs.latest_tag, 'beta')"
     runs-on: ubuntu-latest
     needs: [compute-build-info]
-    environment: staging
+    environment: testnet
     env:
       DEPLOY: ${{ secrets.TESTNET_DEPLOY }}
     steps:
@@ -189,7 +189,7 @@ jobs:
     if: "github.event.release.prerelease && contains(needs.compute-build-info.outputs.latest_tag, 'rc')"
     runs-on: ubuntu-latest
     needs: [compute-build-info]
-    environment: testnet
+    environment: mainnet
     env:
       DEPLOY: ${{ secrets.MAINNET_DEPLOY }}
     steps:

@@ -44,19 +44,15 @@ jobs:
             then
                 LATEST_TAG=latest
                 PRE_RELEASE=false
+                ENVIRONMENT=mainnet
             else
                 SUFFIX=$(tmp=${TAG#$VERSION-} ; echo $tmp | sed -r 's/[0-9]//g' )
                 LATEST_TAG=latest-$SUFFIX
 
-                if [[ $SUFFIX =~ [0-9].[0-9].[0-9]-alpha* ]] ;
-                then
+                if [[ $TAG =~ [0-9].[0-9].[0-9]-alpha* ]] ; then
                     ENVIRONMENT=staging
-                elif [[ $SUFFIX =~ [0-9].[0-9].[0-9]-beta* ]] ;
-                then
+                elif [[ $TAG =~ [0-9].[0-9].[0-9]-beta* ]] ; then
                     ENVIRONMENT=testnet
-                elif [[ $SUFFIX == [0-9].[0-9].[0-9] ]] ;
-                then
-                    ENVIRONMENT=mainnet
                 fi
             fi
           fi
@@ -93,6 +89,16 @@ jobs:
           VUE_APP_PASSWORD=${{ secrets.VUE_APP_PASSWORD }}
           VUE_APP_MIXPANEL_TOKEN=${{ secrets.VUE_APP_MIXPANEL_TOKEN }}
           VUE_APP_SENTRY_DSN=${{ secrets.VUE_APP_SENTRY_DSN }}
+          EOF
+      - name: create contract.json file
+        if: ${{ needs.compute-build-info.outputs.environment == 'mainnet' }}
+        shell: bash
+        run: |
+          tee -a .env <<EOF
+          rm -f ./src/store/metamask/contracts/contract.json
+
+          tee -a ./src/store/metamask/contracts/contract.json <<EOF
+          ${{ secrets.CONTRACT_JSON }}
           EOF
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
