@@ -3,13 +3,14 @@
 </div>
 
 <div align="Center">
-<h1> DeBio Network Customer UI</h1>
+<h1> DeBio Customer UI</h1>
 <h2> Decentralized Sovereign Biomed </h2>
 The Anonymous-First Platform for Medical and Bioinformatics Data.
 
 <br>
 
 [![Medium](https://img.shields.io/badge/Medium-DeBio%20Network-brightgreen?logo=medium)](https://blog.debio.network)
+
 </div>
 
 ---
