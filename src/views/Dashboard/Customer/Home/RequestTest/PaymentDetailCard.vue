@@ -10,15 +10,15 @@
       .menu-card__details
         .menu-card__sub-title Service Price
         .menu-card__price 
-          | {{ formatPrice((dataService.detailPrice.price_components[0].value).replaceAll(",", "")) }}
-          | {{ dataService.currency.toUpperCase() }}
+          | {{ servicePrice }}
+          | {{ currency }}
     
 
       .menu-card__details
         .menu-card__sub-title Quality Control Price
         .menu-card__price 
-          | {{ formatPrice((dataService.detailPrice.additional_prices[0].value).replaceAll(",", "")) }} 
-          | {{ dataService.currency.toUpperCase() }}
+          | {{ qcPrice }} 
+          | {{ currency }}
 
       .menu-card__operation +
       hr.menu-card__line
@@ -26,15 +26,15 @@
       .menu-card__details
         .menu-card__sub-title-medium Total Price
         .menu-card__price-medium
-          | {{ (formatPrice(dataService.price).replaceAll(",", "")) }} 
-          | {{ dataService.currency.toUpperCase()}}
+          | {{ totalPrice }} 
+          | {{ currency}}
 
 
       .menu-card__details(v-if="stakingFlow")
         .menu-card__sub-title Staking Amount
         .menu-card__price
           | {{ stakingAmount }}
-          | {{ dataService.currency.toUpperCase() }}
+          | {{ currency }}
     
       .menu-card__operation(v-if="stakingFlow") -
       hr.menu-card__line(v-if="stakingFlow")
@@ -43,19 +43,19 @@
         .menu-card__sub-title-medium Remaining Amount
         .menu-card__price-medium
           | {{ remainingStaking }}
-          | {{ dataService.currency.toUpperCase() }}
+          | {{ currency }}
 
       .menu-card__details(v-if="isBalanced && stakingFlow")
         .menu-card__sub-title-medium Remaining Amount
         .menu-card__price-medium
           | 0
-          | {{ dataService.currency.toUpperCase() }}
+          | {{ currency }}
 
       .menu-card__details(v-if="isExcess" style="color: green")
         .menu-card__sub-title-medium Excess Amount
         .menu-card__price-medium
           | {{ excessAmount }}
-          | {{ dataService.currency.toUpperCase() }}
+          | {{ currency }}
 
       
 
@@ -163,6 +163,8 @@ import {
   SALIVA_COLLECTION,
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
+import { fetchPaymentDetails } from "@/common/lib/api";
+
 
 export default {
   name: "PaymentDetailCard",
@@ -201,25 +203,33 @@ export default {
     isExcess: false,
     isBalanced: false,
     excessAmount: 0,
-    showAlert: false
+    showAlert: false,
+    servicePrice: 0,
+    qcPrice: 0,
+    totalPrice: 0,
+    currency: "",
+    success: false
   }),
 
   async mounted () {
     this.stakingFlow = false
-    this.orderId = ""
 
-    if (this.dataService.length !== 0) {
+    if(this.$route.params.id) {
+      await this.getDataService()
+    }
+
+    if (this.dataService.detailPrice) {
       this.servicePrice = this.formatPrice((this.dataService.detailPrice.price_components[0].value).replaceAll(",", ""))
       this.qcPrice = this.formatPrice((this.dataService.detailPrice.additional_prices[0].value).replaceAll(",", ""))
       this.totalPrice = this.formatPrice(this.dataService.price).replaceAll(",", "")
-      this.currency = this.dataService.currency.toUpperCase() 
+      this.currency = this.dataService.currency.toUpperCase()
     }
-
 
     if (this.$route.params.id) {
       this.success = true
       this.orderId = this.$route.params.id.toString()
     }
+
     // get last order id
     this.lastOrder = await lastOrderByCustomer(
       this.api,
@@ -267,11 +277,6 @@ export default {
 
   },
 
-
-  props: {
-    success: { type: Boolean, default: false }
-  },
-
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
@@ -292,6 +297,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setProductsToRequest: "testRequest/SET_PRODUCTS"
+    }),
 
     toEtherscan () {
       window.open(`https://rinkeby.etherscan.io/tx/${this.$route.params.hash}`, "_blank")
@@ -411,6 +419,45 @@ export default {
     setCancelled() {
       this.isCancelled = true
       this.$emit("cancel")
+    },
+
+    async getDataService() {
+      const data = await fetchPaymentDetails(this.$route.params.id)
+      console.log("DATA PAYMENT DETAIL", data)
+
+      if (data.status !== "Unpaid") {
+        this.$router.push({ name: "customer-payment-history" })
+      }
+
+      const service = {
+        serviceId: data.service_id,
+        serviceName: data.service_info.name,
+        serviceRate: 0,
+        serviceImage: data.service_info.image,
+        serviceCategory: data.service_info.category,
+        serviceDescription: data.service_info.description,
+        labName: data.lab_info.name,
+        labId: data.seller_id,
+        labImage: data.lab_info.profile_image,
+        labRate: 0,
+        labAddress: data.lab_info.address,
+        price: (data.service_info.prices_by_currency[0].total_price).replaceAll(",", ""),
+        detailPrice: data.service_info.prices_by_currency[0],
+        currency: data.service_info.prices_by_currency[0].currency,
+        city: data.lab_info.city,
+        country: data.lab_info.country,
+        region: data.lab_info.region,
+        countRateLab: 0,
+        countServiceRate: 0,
+        duration: data.service_info.expected_duration.duration,
+        durationType: data.service_info.expected_duration.durationType,
+        verificationStatus: "Verified",
+        indexPrice: 0,
+        dnaCollectionProcess: data.service_info.dna_collection_process
+      }
+
+      this.setProductsToRequest(service)
+
     }
   }
 }
