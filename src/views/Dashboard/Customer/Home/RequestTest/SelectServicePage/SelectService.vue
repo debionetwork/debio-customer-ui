@@ -108,6 +108,8 @@ export default {
     }),
 
     async getServices () {
+      if (!this.services) return
+      
       for (let i = 0; i < this.services.length; i++) {
 
         let {
