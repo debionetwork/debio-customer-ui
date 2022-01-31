@@ -138,14 +138,6 @@ export default {
     await this.fetchData ()
   },
 
-  watch: {
-    lastEventData() {
-      if(this.lastEventData.section === "serviceRequest") {
-        this.fetchData()
-      }
-    }
-  },
-
   methods: {
     ...mapMutations({
       setCategory: "lab/SET_CATEGORY",
@@ -194,10 +186,9 @@ export default {
       this.$router.push({ name: "customer-request-test-service"})
     },
 
-    getUnstakingDialog(id) {
+    async getUnstakingDialog(id) {
       this.setStakingId(id)
-      this.$emit("unstake")
-
+      await this.$emit("unstake")
       this.requestId = id
     },
 

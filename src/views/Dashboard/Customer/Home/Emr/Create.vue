@@ -219,6 +219,8 @@ import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
 
+const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
+
 export default {
   name: "CustomerEmrCreate",
 
@@ -308,7 +310,7 @@ export default {
       title: [
         val => !!val || errorMessage.REQUIRED,
         val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
-        val => (val && /^[A-Za-z? ]?[A-Za-z0-9? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
+        englishAlphabet
       ],
       category: [ val => !!val || errorMessage.REQUIRED ]
     },
@@ -316,12 +318,12 @@ export default {
       title: [
         val => !!val || errorMessage.REQUIRED,
         val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
-        val => (val && /^[A-Za-z? ]?[A-Za-z0-9? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
+        englishAlphabet
       ],
       description: [
         val => !!val || errorMessage.REQUIRED,
         val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255),
-        val => (val && /^[A-Za-z? ]?[A-Za-z0-9? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
+        englishAlphabet
       ],
       file: [
         val => !!val || errorMessage.REQUIRED,
