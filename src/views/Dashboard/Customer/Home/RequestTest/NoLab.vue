@@ -66,7 +66,8 @@ export default {
   },
 
   async mounted () {
-    if (!this.labs.length) this.showNoLab = true
+    if(!this.labs) return
+    if(!this.labs.length) this.showNoLab = true
   },
 
   methods: {

@@ -7,9 +7,7 @@
     template
       v-row.customer-payment-success__row
         LabDetailCard
-        PaymentDetailCard(
-          :success="isSuccess"
-        )
+        PaymentDetailCard
 
   
 </template>

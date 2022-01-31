@@ -121,18 +121,37 @@
       
       PayRemainingDialog(
         :show="showPayRemainingDialog"
-        :amount="remainingDbio"        
+        :amount="remainingDbio"     
+        :amountInDai="remainingDai"   
         @onContinue="onContinue"
         @close="showPayRemainingDialog = false"
-      )       
+      ) 
+
+      AlertDialog(
+        :show="showAlert"
+        :width="289"
+        title="Unpaid Order"
+        message="Complete your unpaid order first before requesting a new one. "
+        imgPath="alert-circle-primary.png"
+        btn-message="Go to My Payment"
+        @close="showAlert = false"
+        @click="toPaymentHistory"
+      )
+
 
 </template>
 
 <script>
 import { mapState } from "vuex"
+import CryptoJS from "crypto-js"	
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
 import Button from "@/common/components/Button"
 import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
+import AlertDialog from "@/common/components/Dialog/AlertDialog"
+import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
+import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
 import { getDbioBalance } from "@/common/lib/api"
@@ -152,7 +171,8 @@ export default {
     Button,
     PaymentReceiptDialog,
     CancelDialog,
-    PayRemainingDialog
+    PayRemainingDialog,
+    AlertDialog
   },
 
   data: () => ({
@@ -168,6 +188,7 @@ export default {
     stakingAmount: 0,
     remainingStaking: 0,
     remainingDbio: 0,
+    remainingDai: 0,
     showPayRemainingDialog: false,
     orderId: "",
     COVID_19,
@@ -179,7 +200,8 @@ export default {
     isDeficit: false,
     isExcess: false,
     isBalanced: false,
-    excessAmount: 0
+    excessAmount: 0,
+    showAlert: false
   }),
 
   async mounted () {
@@ -218,23 +240,28 @@ export default {
 
       this.stakingAmount = Number(this.formatPrice(stakingAmount)).toFixed(3)
       const remainingStaking = this.dataService.price - stakingAmount
+      this.remainingDai = remainingStaking
       this.remainingStaking = Number(this.formatPrice(remainingStaking)).toFixed(3)
       this.remainingDbio = Number(this.formatPrice(remainingStaking / debioBalance)).toFixed(3)
 
       const excessAmount = stakingAmount - this.dataService.price
       this.excessAmount = Number(this.formatPrice(excessAmount)).toFixed(3)
-      
+
+      if (this.excessAmount > 0) {
+        this.isExcess = true
+      }
+
     }
 
-    if (this.stakingAmoung > Number(this.totalPrice)) {
+    if (Number(this.stakingAmoung) > Number(this.totalPrice)) {
       this.isExcess = true
     }
     
-    if (this.stakingAmount === Number(this.totalPrice)) {
+    if (Number(this.stakingAmount) === Number(this.totalPrice)) {
       this.isBalanced = true
     }
 
-    if (this.stakingAmount < Number(this.totalPrice)) {
+    if (Number(this.stakingAmount) < Number(this.totalPrice)) {
       this.isDeficit = true
     }
 
@@ -270,12 +297,82 @@ export default {
       window.open(`https://rinkeby.etherscan.io/tx/${this.$route.params.hash}`, "_blank")
     },
 
-    onSubmit () {
+    toPaymentHistory () {
+      this.$router.push({ name: "customer-payment-history" })
+    },
+
+    async onSubmit () {
+      this.lastOrder = await lastOrderByCustomer(
+        this.api,
+        this.wallet.address
+      )
+
+      if(this.lastOrder){
+        this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+
+        if (this.detailOrder.status === "Unpaid") {
+          this.showAlert = true
+          return
+        }
+      }
+
+      if (this.isExcess && this.detailOrder !== "Unpaid") {
+        const customerBoxPublicKey = await this.getCustomerPublicKey()        
+        await createOrder(
+          this.api,
+          this.wallet,
+          this.dataService.serviceId,
+          customerBoxPublicKey,
+          this.dataService.serviceFlow,
+          this.dataService.indexPrice,
+          this.processRequestService
+        )
+        return
+      }
+
       if (this.remainingStaking && this.remainingStaking > 0) {
         this.showPayRemainingDialog = true
         return
       }
       this.showReceipt = true 
+    },
+
+
+    
+    async processRequestService() {
+      const lastOrder = await lastOrderByCustomer(
+        this.api,
+        this.wallet.address
+      )
+
+      const detailOrder = await getOrdersData(
+        this.api,
+        lastOrder
+      )
+
+      await processRequest(
+        this.api,
+        this.wallet,
+        this.stakingData.lab_address,
+        this.stakingData.hash,
+        detailOrder.id,
+        detailOrder.dnaSampleTrackingId
+      )
+
+      this.$router.push({ 
+        name: "my-test",
+        params: {
+          page: 1
+        }
+      })
+
+    },
+
+    getCustomerPublicKey() {
+      const identity = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+      this.publicKey = u8aToHex(identity.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(identity.boxKeyPair.secretKey)
+      return u8aToHex(identity.boxKeyPair.publicKey)
     },
 
     onContinue() {
