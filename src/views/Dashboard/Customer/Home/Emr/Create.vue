@@ -358,7 +358,7 @@ export default {
     },
 
     getFileIpfsUrl(file) {
-      const path = file.ipfsPath.data.path
+      const path = `${file.collection.data.ipfsFilePath}/${file.fileName}`
       return `https://ipfs.io/ipfs/${path}`
     },
     
@@ -554,14 +554,16 @@ export default {
       let offset = 0
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
+      const newBlobData = new File([blob], fileName)
+
       const uploaded = await new Promise((resolve, reject) => {
         try {
-          const fileSize = blob.size
+          const fileSize = newBlobData.size
           do {
-            let chunk = blob.slice(offset, chunkSize + offset)
+            let chunk = newBlobData.slice(offset, chunkSize + offset)
             ipfsWorker.workerUpload.postMessage({
               seed: chunk.seed,
-              file: blob
+              file: newBlobData
             })
             offset += chunkSize
           } while (chunkSize + offset < fileSize)
@@ -574,7 +576,7 @@ export default {
               resolve({
                 fileName: fileName,
                 fileType: fileType,
-                ipfsPath: event.data
+                collection: event.data
               })
             }
           }

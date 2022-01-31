@@ -1,13 +1,17 @@
 /* eslint-disable */
-
 import IPFSHttpClient from "ipfs-http-client"
 
 onmessage = function(e) {
-  const ipfs = IPFSHttpClient({host: "ipfs.infura.io", port: 5001, protocol: "https"})
+  const ipfs = IPFSHttpClient({ host: "ipfs.infura.io", port: 5001, protocol: "https" })
   console.log("IPFS Uploader Start");
   (async (ipfs) => {
-    const data = await ipfs.add(e.data.file)
-    postMessage({seed: e.data.seed, data})
+    const file = {
+      path: `/tmp/${e.data.file.name}`,
+      content: e.data.file
+    }
+    const response = await ipfs.add(file)
+    const data = { ...response, ipfsFilePath: response.cid.string }
+    postMessage({ seed: e.data.seed, data })
   // eslint-disable-next-line no-unused-vars
   })(ipfs).then(res => {
     console.log("IPFS Uploader finish")

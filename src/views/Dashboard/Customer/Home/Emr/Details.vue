@@ -124,7 +124,7 @@ export default {
 
       this.emrDocument.files = files.map(file => ({
         ...file,
-        recordLink: file.recordLink.split("/").pop()
+        recordLink: file.recordLink.split("/").slice(4, 6).join("/")
       }))
 
       if (this.emrDocument?.files.length) this.parseResult(
