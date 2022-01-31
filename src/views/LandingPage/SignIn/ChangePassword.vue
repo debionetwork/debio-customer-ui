@@ -14,7 +14,8 @@
 <template lang="pug">
      LandingPagePopUp(:previous='previous')
         template(v-slot:header) Change Password
-        template(v-slot:main): div.pop-up-main
+        template(v-slot:main)
+          v-form.pop-up-main(v-model="isPasswordsValid" ref="passwordForm")
             p Type and confirm a secure new password for your account.
             v-text-field(
                 label="Type in your password"
@@ -44,7 +45,7 @@
                 :verify="onVerifyRecaptcha"
             )
             v-btn(
-                :disabled="!buttonDisabled"
+                :disabled="!buttonDisabled || !isPasswordsValid"
                 class='white--text' 
                 elevation='0' 
                 color='primary' 
@@ -74,6 +75,7 @@ export default {
     showPassword: false,
     showPasswordConfirm: false,
     recaptchaVerified: false,
+    isPasswordsValid: false,
     errorMessage
   }),
 
