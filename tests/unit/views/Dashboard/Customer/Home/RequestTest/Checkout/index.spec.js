@@ -30,7 +30,7 @@ describe("Checkout page", () => {
             serviceName: "test 1"
           }
         }
-      },
+      }
     })
   })
 

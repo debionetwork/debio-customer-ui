@@ -29,7 +29,7 @@ describe("Lab Detail Card", () => {
           mnemonicData: "claw spare illegal parrot crack chase buddy answer slim weird write uncle"
         },
         testRequest: {
-          products: [],
+          products: []
         },
         metamask: {
           web3: "WEB3"

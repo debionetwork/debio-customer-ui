@@ -25,14 +25,14 @@ describe("Payment Detail Card", () => {
         substrate: {
           api: "API",
           wallet: "WALLET",
-          mnemonicData: "claw spare illegal parrot crack chase buddy answer slim weird write uncle", 
+          mnemonicData: "claw spare illegal parrot crack chase buddy answer slim weird write uncle" 
         },
         testRequest: {
-          products: {},
+          products: {}
         },
         metamask: {
           metamaskWalletAddress: "metamaskWalletAddress",
-          web3: "WEB3",
+          web3: "WEB3"
         },
         lab: {
           stakingData: {}

@@ -154,7 +154,7 @@ import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
-import { getDbioBalance } from "@/common/lib/api"
+import { getDbioBalance, fetchPaymentDetails } from "@/common/lib/api"
 import {
   COVID_19,
   DRIED_BLOOD,
@@ -163,7 +163,6 @@ import {
   SALIVA_COLLECTION,
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
-import { fetchPaymentDetails } from "@/common/lib/api";
 
 
 export default {
