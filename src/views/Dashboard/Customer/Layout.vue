@@ -71,7 +71,7 @@
               color="primary"
               :bind="attrs"
               :on="on"
-            ) Request a Test
+            ) Request Test
           span Get your biological sample tested or stake $DBIO to request Lab
 
         v-tooltip(bottom)
