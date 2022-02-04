@@ -119,6 +119,14 @@ const indexRoutes = [{
       name: "customer-payment-details",
       meta: { pageHeader: "Details", parent: "customer-payment-history" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory/Details")
+    },
+
+    // My Genetic Data
+    {
+      path: "genetic-data",
+      name: "customer-genetic-data",
+      meta: { pageHeader: "My Genetic Data" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData")
     }
   ]
 }]
