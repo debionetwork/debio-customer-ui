@@ -8,6 +8,38 @@
     )
 
     ui-debio-modal(
+      :show="showModalPassword"
+      title="Encrypt EMR files"
+      iconSize="100"
+      @onClose="showModalPassword = false; error = null"
+    )
+      template
+        ui-debio-icon(:icon="fileTextIcon" size="100" stroke)
+
+        //- p.modal-password__tx-info.mb-0.d-flex
+        //-   span.modal-password__tx-text.mr-6.d-flex.align-center
+        //-     | Estimated transaction weight
+        //-     ui-debio-icon.ml-1(
+        //-       :icon="alertIcon"
+        //-       size="14"
+        //-       stroke
+        //-       @mouseenter="handleShowTooltip"
+        //-     )
+        //-     span.modal-password__tooltip(
+        //-       @mouseleave="handleShowTooltip"
+        //-       :class="{ 'modal-password__tooltip--show': showTooltip }"
+        //-     ) Total fee paid in DBIO to execute this transaction.
+        //-   span {{ txWeight }}
+
+        //- .modal-password__cta.d-flex(slot="cta")
+        //-   Button(
+        //-     block
+        //-     :loading="isLoading"
+        //-     color="secondary"
+        //-     @click="finalSubmit"
+        //-   ) Submit
+
+    ui-debio-modal(
       :show="showModal"
       :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
       cta-title="Submit"
@@ -158,6 +190,7 @@
                       fill
                       @click="showModalConfirm = item.id"
                     )
+
         p.modal-password__tx-info.mb-0.d-flex.justify-space-between
           span.modal-password__tx-text.d-flex.align-center
             | Estimated transaction weight
@@ -174,7 +207,6 @@
           span {{ txWeight }}
 
         Button.white--text(
-          :loading="isLoading"
           color="secondary"
           height="2.5rem"
           @click="handleModalPassword"
@@ -183,14 +215,14 @@
 </template>
 
 <script>
-import {mapState} from "vuex"
+import { mapState } from "vuex"
 
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
-import {getEMRCategories} from "@/common/lib/api"
+import { getEMRCategories } from "@/common/lib/api"
 import {
   updateElectronicMedicalRecord,
   getCreateRegisterEMRFee
@@ -199,30 +231,21 @@ import {
   queryElectronicMedicalRecordById,
   queryElectronicMedicalRecordFileById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
-import {u8aToHex} from "@polkadot/util"
-import {validateForms} from "@/common/lib/validate"
-import {errorHandler} from "@/common/lib/error-handler"
+import { u8aToHex } from "@polkadot/util"
+import { validateForms } from "@/common/lib/validate"
+import { errorHandler } from "@/common/lib/error-handler"
 import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
-import {
-  fileTextIcon,
-  alertIcon,
-  pencilIcon,
-  trashIcon,
-  eyeOffIcon,
-  eyeIcon
-} from "@/common/icons"
+import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
 
-const englishAlphabet = (val) =>
-  (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) ||
-  errorMessage.INPUT_CHARACTER("English alphabet")
+const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
 
 export default {
   name: "CustomerEmrEdit",
 
   mixins: [validateForms],
 
-  components: {Button, ErrorDialog},
+  components: { Button, ErrorDialog },
 
   data: () => ({
     errorMessage,
@@ -271,19 +294,15 @@ export default {
     }),
 
     computeFiles() {
-      return this.emr.files.map((file) => ({...file, percent: 0})).reverse()
+      return this.emr.files.map(file => ({ ...file, percent: 0 })).reverse()
     },
 
     disabledDocumentForm() {
-      return (
-        this.document.title === "" ||
-        this.document.description === "" ||
-        this.document.file === null
-      )
+      return this.document.title === "" || this.document.description === "" || this.document.file === null
     },
-
+    
     disabledFinish() {
-      return this.computeFiles?.some((file) => file.percent !== 100)
+      return this.computeFiles?.some(file => file.percent !== 100)
     }
   },
 
@@ -294,7 +313,7 @@ export default {
         if (event.method === "ElectronicMedicalRecordUpdated") {
           if (dataEvent[1] === this.wallet.address) {
             this.resetState()
-            this.$router.push({name: "customer-emr"})
+            this.$router.push({ name: "customer-emr" })
           }
         }
       }
@@ -306,32 +325,30 @@ export default {
   },
 
   rules: {
-    password: [(val) => !!val || errorMessage.PASSWORD(8)],
+    password: [ val => !!val || errorMessage.PASSWORD(8) ],
     emr: {
       title: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.length < 50) || errorMessage.MAX_CHARACTER(50),
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
         englishAlphabet
       ],
-      category: [(val) => !!val || errorMessage.REQUIRED]
+      category: [ val => !!val || errorMessage.REQUIRED ]
     },
     document: {
       title: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.length < 50) || errorMessage.MAX_CHARACTER(50),
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
         englishAlphabet
       ],
       description: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.length < 255) || errorMessage.MAX_CHARACTER(255),
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255),
         englishAlphabet
       ],
       file: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.size < 2000000) || errorMessage.FILE_SIZE(2),
-        (val) =>
-          (val && val.type === "application/pdf") ||
-          errorMessage.FILE_FORMAT("PDF")
+        val => !!val || errorMessage.REQUIRED,
+        val => (val && val.size < 2000000) || errorMessage.FILE_SIZE(2),
+        val => (val && val.type === "application/pdf") || errorMessage.FILE_FORMAT("PDF")
       ]
     }
   },
@@ -347,9 +364,7 @@ export default {
 
   methods: {
     async initialData() {
-      const cred = Kilt.Identity.buildFromMnemonic(
-        this.mnemonicData.toString(CryptoJS.enc.Utf8)
-      )
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
 
       this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
       this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
@@ -358,13 +373,12 @@ export default {
     },
 
     async prepareData() {
-      const {id} = this.$route.params
+      const { id } = this.$route.params
       const data = await queryElectronicMedicalRecordById(this.api, id)
       let files = []
 
       if (!id || !data) {
-        this.messageError =
-          "Oh no! We can't find your selected order. Please select another one or try again"
+        this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
 
         return
       }
@@ -374,29 +388,20 @@ export default {
       this.emr.category = data.category
 
       for (const file of data.files) {
-        const dataFile = await queryElectronicMedicalRecordFileById(
-          this.api,
-          file
-        )
+        const dataFile = await queryElectronicMedicalRecordFileById(this.api, file)
         dataFile.id = file
         files.push(dataFile)
       }
 
-      this.emr.files = files.map((file) => ({
+      this.emr.files = files.map(file => ({
         ...file,
-        file: new File([], file.recordLink.split("/").pop(), {
-          type: "application/pdf"
-        }),
-        oldFile: new File([], file.recordLink.split("/").pop(), {
-          type: "application/pdf"
-        }),
+        file: new File([], file.recordLink.split("/").pop(), {type: "application/pdf"}),
+        oldFile: new File([], file.recordLink.split("/").pop(), {type: "application/pdf"}),
         recordLink: file.recordLink
       }))
     },
     initialDataKey() {
-      const cred = Kilt.Identity.buildFromMnemonic(
-        this.mnemonicData.toString(CryptoJS.enc.Utf8)
-      )
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
 
       this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
       this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
@@ -407,8 +412,8 @@ export default {
     },
 
     resetState() {
-      Object.assign(this.emr, {title: "", category: "", files: []})
-      Object.assign(this.document, {title: "", description: "", file: null})
+      Object.assign(this.emr, { title: "", category: "", files: [] })
+      Object.assign(this.document, { title: "", description: "", file: null })
 
       this.password = ""
     },
@@ -417,17 +422,13 @@ export default {
       const path = file.ipfsPath.data.path
       return `https://ipfs.io/ipfs/${path}`
     },
-
+    
     handleNewFile() {
       this._touchForms("document")
-      const {
-        title: docTitle,
-        description: docDescription,
-        file: docFile
-      } = this.isDirty?.document
+      const { title: docTitle, description: docDescription, file: docFile } = this.isDirty?.document
       if (docTitle || docDescription || docFile) return
 
-      const {createdAt, title, description, file} = this.document
+      const { createdAt, title, description, file } = this.document
 
       const context = this
       const fr = new FileReader()
@@ -440,7 +441,7 @@ export default {
             fileName: file.name
           })
 
-          const {chunks, fileName, fileType} = encrypted
+          const { chunks, fileName, fileType } = encrypted
 
           const dataFile = {
             title,
@@ -454,23 +455,22 @@ export default {
           }
 
           if (context.isEdit) {
-            const index = context.emr.files.findIndex(
-              (file) => file.createdAt === createdAt
-            )
-
+            const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
+            
             context.emr.files[index] = dataFile
 
-            context.emr.files = context.emr.files.map((file) => file)
+            context.emr.files = context.emr.files.map(file => file)
             context.isEdit = false
           } else {
             context.emr.files.push(dataFile)
           }
-        } catch (e) {
+
+        } catch(e) {
           this.error = e.message
         }
       }
 
-      if (file != this.document.oldFile) {
+      if(file != this.document.oldFile) {
         fr.readAsArrayBuffer(file)
         this.onCloseModalDocument()
         return
@@ -485,21 +485,19 @@ export default {
       }
 
       if (context.isEdit) {
-        const index = context.emr.files.findIndex(
-          (file) => file.createdAt === createdAt
-        )
-
+        const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
+        
         context.emr.files[index] = dataFile
 
-        context.emr.files = context.emr.files.map((file) => file)
+        context.emr.files = context.emr.files.map(file => file)
         context.isEdit = false
       }
 
       this.onCloseModalDocument()
     },
-
+    
     onEdit(item) {
-      Object.assign(this.document, {...item})
+      Object.assign(this.document, { ...item })
       this.showModal = true
       this.isEdit = true
       this.clearFile = false
@@ -515,14 +513,14 @@ export default {
         this.isEdit = false
       }, 350)
       this.showModal = false
-      Object.assign(this.document, {title: "", description: "", file: null})
+      Object.assign(this.document, { title: "", description: "", file: null })
       this.clearFile = true
       this._resetForms("document")
     },
 
     onDelete(id) {
       this.showModalConfirm = null
-      this.emr.files = this.emr.files.filter((file) => file.id !== id)
+      this.emr.files = this.emr.files.filter(file => file.id !== id)
     },
 
     handleAddFile() {
@@ -531,14 +529,10 @@ export default {
       this.clearFile = false
     },
 
-    async handleModalPassword() {
+    handleModalPassword() {
       this._touchForms("emr")
-      const isEMRValid = Object.values(this.isDirty?.emr).every(
-        (v) => v !== null && v === false
-      )
-      const isDocumentValid = Object.values(this.isDirty?.document).every(
-        (v) => v !== null && v === false
-      )
+      const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
+      const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
 
       if (!isEMRValid || (!isDocumentValid && this.emr.files.length < 1)) {
         if (!this.emr.files.length) this.fileEmpty = true
@@ -556,15 +550,8 @@ export default {
     async calculateTxWeight() {
       this.txWeight = "Calculating..."
 
-      const txWeight = await getCreateRegisterEMRFee(
-        this.api,
-        this.wallet,
-        this.emr
-      )
-      this.txWeight = `${this.web3.utils.fromWei(
-        String(txWeight.partialFee),
-        "ether"
-      )} DBIO`
+      const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, this.emr)
+      this.txWeight = `${this.web3.utils.fromWei(String(txWeight.partialFee), "ether")} DBIO`
     },
 
     handleShowPassword() {
@@ -578,8 +565,8 @@ export default {
         if (this.emr.files.length === 0) return
 
         for await (let [index, value] of this.emr.files.entries()) {
-          if (!value.fileIsEdited) continue
-          const dataFile = await this.setupFileReader({value})
+          if(!value.fileIsEdited) continue
+          const dataFile = await this.setupFileReader({ value })
           await this.upload({
             encryptedFileChunks: dataFile.chunks,
             fileName: dataFile.fileName,
@@ -599,12 +586,12 @@ export default {
       }
     },
 
-    setupFileReader({value}) {
+    setupFileReader({ value }) {
       return new Promise((resolve, reject) => {
         const file = value.file
         const fr = new FileReader()
 
-        fr.onload = async function() {
+        fr.onload = async function () {
           resolve(value)
         }
 
@@ -614,7 +601,7 @@ export default {
       })
     },
 
-    async encrypt({text, fileType, fileName}) {
+    async encrypt({ text, fileType, fileName }) {
       const context = this
       const arrChunks = []
       let chunksAmount
@@ -625,7 +612,7 @@ export default {
 
       return await new Promise((resolve, reject) => {
         try {
-          cryptWorker.workerEncryptFile.postMessage({pair, text, fileType}) // Access this object in e.data in worker
+          cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }) // Access this object in e.data in worker
           cryptWorker.workerEncryptFile.onmessage = async (event) => {
             if (event.data.chunksAmount) {
               chunksAmount = event.data.chunksAmount
@@ -651,11 +638,11 @@ export default {
       })
     },
 
-    async upload({encryptedFileChunks, fileName, index, fileType}) {
+    async upload({ encryptedFileChunks, fileName, index, fileType }) {
       const chunkSize = 30 * 1024 * 1024 // 30 MB
       let offset = 0
       const data = JSON.stringify(encryptedFileChunks)
-      const blob = new Blob([data], {type: fileType})
+      const blob = new Blob([data], { type: fileType })
       const uploaded = await new Promise((resolve, reject) => {
         try {
           const fileSize = blob.size
@@ -691,7 +678,7 @@ export default {
     },
 
     setPercent(file) {
-      const selected = this.computeFiles.find((v) => v.file === file)
+      const selected = this.computeFiles.find(v => v.file === file)
 
       setInterval(() => {
         if (selected && selected.percent < 100) selected.percent += 1
@@ -720,241 +707,241 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "@/common/styles/mixins.sass"
+  @import "@/common/styles/mixins.sass"
 
-.customer-create-emr
-  width: 100%
-  height: 100%
+  .customer-create-emr
+    width: 100%
+    height: 100%
 
-  &__wrapper
-    background: #ffffff
-    padding: 50px 0
+    &__wrapper
+      background: #ffffff
+      padding: 50px 0
 
-  &__title
-    text-align: center
+    &__title
+      text-align: center
 
-  &__forms
-    display: flex
-    flex-direction: column
-    gap: 20px
-    margin: 0 auto
-    max-width: 450px
+    &__forms
+      display: flex
+      flex-direction: column
+      gap: 20px
+      margin: 0 auto
+      max-width: 450px
 
-  &__files
-    margin: 10px 0 20px
+    &__files
+      margin: 10px 0 20px
 
-  &__files-title
-    margin-bottom: 20px
+    &__files-title
+      margin-bottom: 20px
 
-  &__files-items
-    display: flex
-    flex-direction: column
-    gap: 20px
-    padding-right: .35rem
-    max-height: calc(116px * 3)
-    overflow-y: auto
+    &__files-items
+      display: flex
+      flex-direction: column
+      gap: 20px
+      padding-right: .35rem
+      max-height: calc(116px * 3)
+      overflow-y: auto
 
-    &::-webkit-scrollbar-track
-      background-color: #f2f2ff
+      &::-webkit-scrollbar-track
+        background-color: #f2f2ff
 
-    &::-webkit-scrollbar
-      width: 0.25rem
+      &::-webkit-scrollbar
+        width: 0.25rem
 
-    &::-webkit-scrollbar-thumb
-      border-radius: 0.625rem
-      background: #a1a1ff
+      &::-webkit-scrollbar-thumb
+        border-radius: 0.625rem
+        background: #a1a1ff
 
-  &__files-loading
-    &::v-deep
-      .ui-debio-modal__card
-        max-width: 600px
-
-  &__file-item
-    padding: 12px 20px
-    border-radius: 4px
-    border: 2px dashed #8AC1FF
-    background: #F9F9FF
-    transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
-
-    &:hover
-      background: #f2f2ff
-      border-color: #a1a1ff
-
-    &--no-file
-      height: 64px
-
-    &--error
-      border-color: #c400a5
-
+    &__files-loading
       &::v-deep
-        .customer-create-emr__file-icon > svg
-          color: #c400a5 !important
+        .ui-debio-modal__card
+          max-width: 600px
 
-      .customer-create-emr__file-name
-        color: #c400a5
+    &__file-item
+      padding: 12px 20px
+      border-radius: 4px
+      border: 2px dashed #8AC1FF
+      background: #F9F9FF
+      transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
 
-  &__file-title
-    font-weight: 600
-    overflow: hidden
-    white-space: nowrap
-    text-overflow: ellipsis
-    @include body-text-1
+      &:hover
+        background: #f2f2ff
+        border-color: #a1a1ff
 
-  &__file-name
-    max-width: 320px
-    white-space: nowrap
-    overflow: hidden
-    text-overflow: ellipsis
-    @include body-text-5
+      &--no-file
+        height: 64px
 
-  &__file-description
-    margin-top: 10px
-    display: -webkit-box
-    -webkit-line-clamp: 2
-    -webkit-box-orient: vertical
-    overflow: hidden
-    color: #595959
-    @include body-text-4
+      &--error
+        border-color: #c400a5
 
-  &__file-details
-    margin-top: 12px
-    display: flex
-    justify-content: space-between
+        &::v-deep
+          .customer-create-emr__file-icon > svg
+            color: #c400a5 !important
 
-    &--left,
-    &--right
+        .customer-create-emr__file-name
+          color: #c400a5
+
+    &__file-title
+      font-weight: 600
+      overflow: hidden
+      white-space: nowrap
+      text-overflow: ellipsis
+      @include body-text-1
+
+    &__file-name
+      max-width: 320px
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+      @include body-text-5
+
+    &__file-description
+      margin-top: 10px
+      display: -webkit-box
+      -webkit-line-clamp: 2
+      -webkit-box-orient: vertical  
+      overflow: hidden
+      color: #595959
+      @include body-text-4
+
+    &__file-details
+      margin-top: 12px
+      display: flex
+      justify-content: space-between
+
+      &--left,
+      &--right
+        display: flex
+        align-items: center
+        gap: 10px
+
+    &__file-edit,
+    &__file-delete
+      cursor: pointer
+
+    &::v-deep
+      
+      .ui-debio-modal__card-title
+        @include h2
+        font-weight: 700
+
+  .modal-confirm
+    &__title
+      width: 212px
+      text-align: center
+
+    &__cta
+      width: 250px
+      margin: 0 auto
+
+  .modal-password
+    &__cta
+      gap: 20px
+
+    &__tx-text
+      position: relative
+
+    &__tooltip
+      max-width: 143px
+      padding: 10px
+      position: absolute
+      top: 35px
+      z-index: 10
+      background: #fff
+      border: 1px solid #D3C9D1
+      right: -120px
+      transition: all .3s ease-in-out
+      visibility: hidden
+      opacity: 0
+      @include tiny-reg
+
+      &::after
+        position: absolute
+        content: ""
+        display: block
+        top: -20px
+        height: 20px
+        border-color: transparent transparent #FFF transparent
+        border-style: solid
+        border-width: 8px
+
+      &::before
+        position: absolute
+        content: ""
+        display: block
+        top: -21px
+        height: 20px
+        border-color: transparent transparent #D3C9D1 transparent
+        border-style: solid
+        border-width: 8px
+
+      &--show
+        opacity: 1
+        visibility: visible
+
+  .modal-files-upload
+    &__files
+      display: flex
+      flex-direction: column
+      gap: 35px
+
+    &__file-details
       display: flex
       align-items: center
-      gap: 10px
+      gap: 115px
+      justify-content: space-between
 
-  &__file-edit,
-  &__file-delete
-    cursor: pointer
+    &__file-name
+      max-width: 360px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+      @include body-text-medium-2
 
-  &::v-deep
+    &__progress
+      display: flex
+      align-items: center
+      justify-content: space-between
+      gap: 15px
+      margin-top: 8px
 
-    .ui-debio-modal__card-title
-      @include h2
-      font-weight: 700
+    &__status
+      display: flex
+      align-items: center
+      gap: 8px
 
-.modal-confirm
-  &__title
-    width: 212px
-    text-align: center
+    &__file-percent,
+    &__error-message
+      @include body-text-5
 
-  &__cta
-    width: 250px
-    margin: 0 auto
+    &__error-message
+      color: #F5222D
 
-.modal-password
-  &__cta
-    gap: 20px
+    &__file-percent
+      color: #8C8C8C
+      
+    &__progress-check
+      width: 12px
+      height: 12px
+      border-radius: 50%
 
-  &__tx-text
-    position: relative
+      &--success
+        background: linear-gradient(225deg, #76DA92 0%, #61FFF6 100%)
 
-  &__tooltip
-    max-width: 143px
-    padding: 10px
-    position: absolute
-    top: 35px
-    z-index: 10
-    background: #fff
-    border: 1px solid #D3C9D1
-    right: -120px
-    transition: all .3s ease-in-out
-    visibility: hidden
-    opacity: 0
-    @include tiny-reg
+      &--cancel
+        background: #757274
 
-    &::after
-      position: absolute
-      content: ""
-      display: block
-      top: -20px
-      height: 20px
-      border-color: transparent transparent #FFF transparent
-      border-style: solid
-      border-width: 8px
+      &--failed
+        background: #FF525B
 
-    &::before
-      position: absolute
-      content: ""
-      display: block
-      top: -21px
-      height: 20px
-      border-color: transparent transparent #D3C9D1 transparent
-      border-style: solid
-      border-width: 8px
+    &__progressbar
+      width: 100%
+      height: 6px
+      background: #E7E7E7
+      border-radius: 3px
 
-    &--show
-      opacity: 1
-      visibility: visible
-
-.modal-files-upload
-  &__files
-    display: flex
-    flex-direction: column
-    gap: 35px
-
-  &__file-details
-    display: flex
-    align-items: center
-    gap: 115px
-    justify-content: space-between
-
-  &__file-name
-    max-width: 360px
-    overflow: hidden
-    text-overflow: ellipsis
-    white-space: nowrap
-    @include body-text-medium-2
-
-  &__progress
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: 15px
-    margin-top: 8px
-
-  &__status
-    display: flex
-    align-items: center
-    gap: 8px
-
-  &__file-percent,
-  &__error-message
-    @include body-text-5
-
-  &__error-message
-    color: #F5222D
-
-  &__file-percent
-    color: #8C8C8C
-
-  &__progress-check
-    width: 12px
-    height: 12px
-    border-radius: 50%
-
-    &--success
-      background: linear-gradient(225deg, #76DA92 0%, #61FFF6 100%)
-
-    &--cancel
-      background: #757274
-
-    &--failed
-      background: #FF525B
-
-  &__progressbar
-    width: 100%
-    height: 6px
-    background: #E7E7E7
-    border-radius: 3px
-
-    &--thumb
-      width: 0%
-      height: 100%
-      background: #6FE4AF
-      border-radius: inherit
+      &--thumb
+        width: 0%
+        height: 100%
+        background: #6FE4AF
+        border-radius: inherit
 </style>
