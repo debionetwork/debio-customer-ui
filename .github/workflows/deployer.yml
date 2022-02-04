@@ -7,6 +7,7 @@ on:
   workflow_run:
     branches:
       - main
+      - main-tmp
     workflows:
       - 'Builder'
     types:
@@ -38,8 +39,57 @@ jobs:
           echo $version
           echo "::set-output name=latest_tag::$version"
 
+  deploy-dev-tmp:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} && github.ref == 'refs/heads/main-tmp'
+    runs-on: ubuntu-latest
+    needs: [compute-build-info]
+    environment: development-tmp
+    env:
+      DEPLOY: ${{ secrets.DEV_DEPLOY }}
+    steps:
+      - name: Checkout code
+        if: "${{ env.DEPLOY == 'true' }}"
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Deploy
+        if: "${{ env.DEPLOY == 'true' }}"
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            ./connect.sh
+            helm repo add debio https://charts.debio.network
+            helm repo update
+            helm upgrade debio-customer-ui-tmp debio/debio-customer-ui \
+              --install \
+              --set-string image.repository=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ github.repository }} \
+              --set-string image.tag=${{ needs.compute-build-info.outputs.sha_short }} \
+              --set-string imagePullSecrets[0].name=gcr-auth \
+              --set ingress.enabled=true \
+              --set-string ingress.annotations."kubernetes\.io/ingress\.class"=nginx \
+              --set-string ingress.annotations."cert-manager\.io/cluster-issuer"=letsencrypt \
+              --set-string ingress.annotations."nginx\.ingress\.kubernetes\.io/limit-rps"="100" \
+              --set-string ingress.hosts[0].host=${{ secrets.INGRESS_HOST }} \
+              --set-string ingress.hosts[0].paths[0].path=/ \
+              --set-string ingress.hosts[0].paths[0].pathType=ImplementationSpecific \
+              --set-string ingress.tls[0].secretName=debio-customer-ui-tls-tmp \
+              --set-string ingress.tls[0].hosts[0]=${{ secrets.INGRESS_HOST }} \
+              --set-string resources.requests.cpu=100m \
+              --set-string resources.requests.memory=256Mi \
+              --set-string resources.limits.cpu=300m \
+              --set-string resources.limits.memory=512Mi \
+              --set replicaCount=1 \
+              --set autoscaling.enabled=true \
+              --set autoscaling.minReplicas=1 \
+              --set autoscaling.maxReplicas=11
+            kubectl rollout status deployment/debio-customer-ui-tmp
+
   deploy-dev:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [compute-build-info]
     environment: development
