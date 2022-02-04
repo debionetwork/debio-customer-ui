@@ -127,7 +127,14 @@ const indexRoutes = [{
       name: "customer-genetic-data",
       meta: { pageHeader: "My Genetic Data" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData")
+    },
+    {
+      path: "add-genetic-data",
+      name: "customer-add-genetic-data",
+      meta: { pageHeader: "My Genetic Data" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/Add")
     }
+
   ]
 }]
 export default indexRoutes

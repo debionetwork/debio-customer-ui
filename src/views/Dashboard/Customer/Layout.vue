@@ -91,7 +91,7 @@
         v-tooltip(bottom)
           template(v-slot:activator="{ on, attrs }")
             Button(
-              style="font-size: 13px"
+              style="font-size: 11px"
               outlined
               height="35px"
               @click="goToRequestAnalysis"
@@ -99,7 +99,7 @@
               color="primary"
               :bind="attrs"
               :on="on"
-            ) REQUEST DNA ANALYSIS
+            ) Request Genetic Analysis
           span Get your genetic data analyzed by Genetic Analyst
 
     .layout-dashboard__wrapper

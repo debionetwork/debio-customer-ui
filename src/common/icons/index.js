@@ -62,6 +62,7 @@ import qualityControlBanner from "./qualityControlBanner"
 import rejectedQCBanner from "./rejectedQCBanner"
 import medicalResearchIllustration from "./medicalResearchIllustration"
 import geneticDnaIcon from "./geneticDna"
+import plusCircle from "./plus-circle"
 
 export {
   creditCardIcon,
@@ -127,5 +128,6 @@ export {
   qualityControlBanner,
   rejectedQCBanner,
   medicalResearchIllustration,
-  geneticDnaIcon
+  geneticDnaIcon,
+  plusCircle
 }
