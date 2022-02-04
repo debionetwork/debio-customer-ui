@@ -8,15 +8,6 @@
     )
 
     ui-debio-modal(
-      :show="showModalPassword"
-      title="Encrypt EMR files"
-      iconSize="100"
-      @onClose="showModalPassword = false; error = null"
-    )
-      template
-        ui-debio-icon(:icon="fileTextIcon" size="100" stroke)
-
-    ui-debio-modal(
       :show="showModal"
       :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
       cta-title="Submit"
@@ -237,7 +228,6 @@ export default {
     showModal: false,
     showPassword: false,
     showModalConfirm: null,
-    showModalPassword: false,
     error: null,
     isLoading: false,
     fileEmpty: false,
@@ -519,7 +509,6 @@ export default {
 
       this.fileEmpty = false
       this.clearFile = true
-      this.showModalPassword = true
 
       this.finalSubmit()
     },
@@ -554,7 +543,6 @@ export default {
 
         await updateElectronicMedicalRecord(this.api, this.wallet, this.emr)
 
-        this.showModalPassword = false
         this.isLoading = false
       } catch (e) {
         const error = await errorHandler(e.message)
