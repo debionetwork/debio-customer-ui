@@ -16,29 +16,6 @@
       template
         ui-debio-icon(:icon="fileTextIcon" size="100" stroke)
 
-        //- p.modal-password__tx-info.mb-0.d-flex
-        //-   span.modal-password__tx-text.mr-6.d-flex.align-center
-        //-     | Estimated transaction weight
-        //-     ui-debio-icon.ml-1(
-        //-       :icon="alertIcon"
-        //-       size="14"
-        //-       stroke
-        //-       @mouseenter="handleShowTooltip"
-        //-     )
-        //-     span.modal-password__tooltip(
-        //-       @mouseleave="handleShowTooltip"
-        //-       :class="{ 'modal-password__tooltip--show': showTooltip }"
-        //-     ) Total fee paid in DBIO to execute this transaction.
-        //-   span {{ txWeight }}
-
-        //- .modal-password__cta.d-flex(slot="cta")
-        //-   Button(
-        //-     block
-        //-     :loading="isLoading"
-        //-     color="secondary"
-        //-     @click="finalSubmit"
-        //-   ) Submit
-
     ui-debio-modal(
       :show="showModal"
       :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
