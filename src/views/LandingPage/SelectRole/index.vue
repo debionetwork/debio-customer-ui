@@ -63,7 +63,7 @@ export default {
     height: 110px
     border-radius: 50%
     text-align: center
-    box-shadow: 0px 2px 10px 0px #0000001A
+    box-shadow: 0px 2px 10px 0px #000000
     display: flex
     justify-content: center
     align-items: center
@@ -72,7 +72,7 @@ export default {
 
     &:hover
       border: solid 5px #C400A5
-      box-shadow: 0px 2px 20px 0px #0000001A
+      box-shadow: 0px 2px 20px 0px #000000
 
       & + span
         color: #C400A5
