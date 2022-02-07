@@ -8,38 +8,6 @@
     )
 
     ui-debio-modal(
-      :show="showModalPassword"
-      title="Encrypt EMR files"
-      iconSize="100"
-      @onClose="showModalPassword = false; error = null"
-    )
-      template
-        ui-debio-icon(:icon="fileTextIcon" size="100" stroke)
-
-        p.modal-password__tx-info.mb-0.d-flex
-          span.modal-password__tx-text.mr-6.d-flex.align-center
-            | Estimated transaction weight
-            ui-debio-icon.ml-1(
-              :icon="alertIcon"
-              size="14"
-              stroke
-              @mouseenter="handleShowTooltip"
-            )
-            span.modal-password__tooltip(
-              @mouseleave="handleShowTooltip"
-              :class="{ 'modal-password__tooltip--show': showTooltip }"
-            ) Total fee paid in DBIO to execute this transaction.
-          span {{ txWeight }}
-
-        .modal-password__cta.d-flex(slot="cta")
-          Button(
-            block
-            :loading="isLoading"
-            color="secondary"
-            @click="finalSubmit"
-          ) Submit
-
-    ui-debio-modal(
       :show="showModal"
       :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
       cta-title="Submit"
@@ -191,6 +159,21 @@
                       @click="showModalConfirm = item.id"
                     )
 
+        p.modal-password__tx-info.mb-0.d-flex.justify-space-between
+          span.modal-password__tx-text.d-flex.align-center
+            | Estimated transaction weight
+            ui-debio-icon.ml-1(
+              :icon="alertIcon"
+              size="14"
+              stroke
+              @mouseenter="handleShowTooltip"
+            )
+            span.modal-password__tooltip(
+              @mouseleave="handleShowTooltip"
+              :class="{ 'modal-password__tooltip--show': showTooltip }"
+            ) Total fee paid in DBIO to execute this transaction.
+          span {{ txWeight }}
+
         Button.white--text(
           color="secondary"
           height="2.5rem"
@@ -245,7 +228,6 @@ export default {
     showModal: false,
     showPassword: false,
     showModalConfirm: null,
-    showModalPassword: false,
     error: null,
     isLoading: false,
     fileEmpty: false,
@@ -343,6 +325,7 @@ export default {
     if (this.mnemonicData) {
       this.initialData()
       this.initialDataKey()
+      this.calculateTxWeight()
     }
   },
 
@@ -513,7 +496,7 @@ export default {
       this.clearFile = false
     },
 
-    async handleModalPassword() {
+    handleModalPassword() {
       this._touchForms("emr")
       const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
       const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
@@ -526,8 +509,11 @@ export default {
 
       this.fileEmpty = false
       this.clearFile = true
-      this.showModalPassword = true
 
+      this.finalSubmit()
+    },
+
+    async calculateTxWeight() {
       this.txWeight = "Calculating..."
 
       const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, this.emr)
@@ -557,7 +543,6 @@ export default {
 
         await updateElectronicMedicalRecord(this.api, this.wallet, this.emr)
 
-        this.showModalPassword = false
         this.isLoading = false
       } catch (e) {
         const error = await errorHandler(e.message)
