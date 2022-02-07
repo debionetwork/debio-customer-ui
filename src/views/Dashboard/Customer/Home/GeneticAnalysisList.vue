@@ -124,7 +124,13 @@ export default {
       const fileName = item.ipfsLink.split("/").pop().replaceAll("%20", " ")
       const path = `${item.ipfsLink.split("/").slice(4, 5).join("")}/${fileName}`
 
-      await downloadDecryptedFromIPFS(path, this.secretKey, this.publicKey, fileName, "application/pdf")
+      await downloadDecryptedFromIPFS(
+        path,
+        this.secretKey,
+        this.publicKey,
+        `[${item.name} - ${item.analyst}] • ${fileName}`,
+        "application/pdf"
+      )
     }
   }
 }
