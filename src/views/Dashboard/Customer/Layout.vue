@@ -11,6 +11,7 @@
       ui-debio-input(
         v-if="!success"
         :error="!!error"
+        autofocus
         :errorMessages="!!error ? error.message : null"
         :rules="$options.rules.password"
         :type="showPassword ? 'text' : 'password'"
