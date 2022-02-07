@@ -20,8 +20,12 @@
 <script>
 import { medicalResearchIllustration } from "@/common/icons"
 import { downloadIcon } from "@/common/icons"
-
+import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
+import { u8aToHex } from "@polkadot/util"
+import CryptoJS from "crypto-js"
+import Kilt from "@kiltprotocol/sdk-js"
 import DataTable from "@/common/components/DataTable"
+import { mapState } from "vuex"
 
 export default {
   name: "GeneticAnalysisList",
@@ -32,6 +36,8 @@ export default {
     downloadIcon,
 
     // TODO: Update headers and items to dynamic data from backend later
+    publicKey: null,
+    secretKey: null,
     headers: [
       { text: "Service Name", value: "name", sortable: true },
       { text: "Analyst Name", value: "analyst", sortable: true },
@@ -51,6 +57,7 @@ export default {
         analyst: "Hildegard Einstein",
         createdAt: "28 Jan 2022",
         updatedAt: "29 Jan 2022",
+        ipfsLink: "https://ipfs.io/ipfs/QmYaGRJSZV8FjjD9Bd7BAQ5KevCQfbG3mU4yb2PNQAr1Vh/A wonderful.pdf",
         status: "Inprogress"
       },
       {
@@ -58,6 +65,7 @@ export default {
         analyst: "Sarah Newton",
         createdAt: "28 Jan 2022",
         updatedAt: "29 Jan 2022",
+        ipfsLink: "https://ipfs.io/ipfs/QmYaGRJSZV8FjjD9Bd7BAQ5KevCQfbG3mU4yb2PNQAr1Vh/A wonderful.pdf",
         status: "Done"
       },
       {
@@ -65,6 +73,7 @@ export default {
         analyst: "Jacky Colombus",
         createdAt: "28 Jan 2022",
         updatedAt: "29 Jan 2022",
+        ipfsLink: "https://ipfs.io/ipfs/QmYaGRJSZV8FjjD9Bd7BAQ5KevCQfbG3mU4yb2PNQAr1Vh/A wonderful.pdf",
         status: "Done"
       },
       {
@@ -72,6 +81,7 @@ export default {
         analyst: "Azmi Galileo",
         createdAt: "28 Jan 2022",
         updatedAt: "29 Jan 2022",
+        ipfsLink: "https://ipfs.io/ipfs/QmYaGRJSZV8FjjD9Bd7BAQ5KevCQfbG3mU4yb2PNQAr1Vh/A wonderful.pdf",
         status: "Done"
       },
       {
@@ -79,15 +89,42 @@ export default {
         analyst: "Dr Octopus",
         createdAt: "28 Jan 2022",
         updatedAt: "29 Jan 2022",
+        ipfsLink: "https://ipfs.io/ipfs/QmYaGRJSZV8FjjD9Bd7BAQ5KevCQfbG3mU4yb2PNQAr1Vh/A wonderful.pdf",
         status: "Open"
       }
     ]
   }),
 
+  computed: {
+    ...mapState({
+      mnemonicData: (state) => state.substrate.mnemonicData
+    })
+  },
+
+  watch: {
+    mnemonicData(val) {
+      if (val) this.initialData()
+    }
+  },
+
+  async created() {
+    if (this.mnemonicData) this.initialData()
+  },
+
   methods: {
-    onDownload(item) {
+    async initialData() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
+    async onDownload(item) {
       if (item.status !== "Done") return
-      // TODO: Do something
+      const fileName = item.ipfsLink.split("/").pop().replaceAll("%20", " ")
+      const path = `${item.ipfsLink.split("/").slice(4, 5).join("")}/${fileName}`
+
+      await downloadDecryptedFromIPFS(path, this.secretKey, this.publicKey, fileName, "application/pdf")
     }
   }
 }
