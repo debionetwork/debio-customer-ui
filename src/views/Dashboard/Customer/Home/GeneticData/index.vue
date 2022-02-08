@@ -4,12 +4,12 @@
       ui-debio-banner.genetic-data__banner(
         title="My Genetic Data"
         subtitle="Privacy-first biomedical service. Get your own biomedical sample at home, proceed it anonymously to expert and scientist!"
-        gradientColor="secondary"
+        gradientColor="tertiary"
         with-decoration
       )
         template(slot="illustration")
           ui-debio-icon.genetic-data__banner-illustration(
-            :icon="medicalResearchIllustration"
+            :icon="geneticIllustration"
             :size="cardBlock ? 250 : 180"
             view-box="0 0 245 170"
             fill
@@ -27,16 +27,41 @@
           )
             ui-debio-icon(:icon="plusCircle" slot="icon" size="34" color="#C400A5" fill)
 
+
+      .genetic-data__tabs
+        template
+          v-tabs(v-model="tabs")
+            v-tab Genetic Data List
+            v-tab Genetic Analysis List
+          
+        v-tabs-items(v-model="tabs")
+          v-tab-item
+            GeneticDataList
+          v-tab-item
+            GeneticDataList
+
+
+
 </template>
 
 <script>
-import { medicalResearchIllustration, plusCircle } from "@/common/icons"
+import { geneticIllustration, plusCircle } from "@/common/icons"
+import GeneticDataList from "./GeneticDataList.vue"
+import StakingServiceTab from "@/views/Dashboard/Customer/Home/MyTest/StakingServiceTab"
+
 
 export default {
   name: "GeneticData",
+
+  components: {
+    GeneticDataList,
+    StakingServiceTab
+  },
+
   data:() => ({
-    medicalResearchIllustration,
-    plusCircle
+    geneticIllustration,
+    plusCircle,
+    tabs: null
   }) 
 }
 
@@ -54,5 +79,21 @@ export default {
     &::v-deep
       .banner__subtitle
         max-width: 29.2rem !important
+
+    &__tabs
+      margin-top: 35px
+      background-color: #ffffff
+      padding: 10px 30px
+    
+    &__table
+      margin-top: 0px !important
+      padding: 0px
+
+  .degenics-datatable-card
+    padding: 0 !important
+    margin: -20px 0 0 0
+
+  .degenics-data-table
+    margin-top: 0px !important
 
 </style>

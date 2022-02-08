@@ -228,7 +228,7 @@ export default {
     },
 
     goToRequestAnalysis() {
-      this.$router.push({ name: "customer-genetic-data"}) //TOFIX : push to reequest analysis page
+      this.$router.push({ name: "customer-request-analysis"})
     },
 
     handleShowPassword() {
