@@ -51,6 +51,7 @@
           
         Button(
           :disabled="!disable"
+          :loading="isLoading"
           block
           color="secondary"
           @click="onSubmit"
@@ -72,7 +73,8 @@ import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
-import { addGeneticData, getAddGeneticDataFee } from "@/common/lib/polkadot-provider/command/genetic-data"
+import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
+import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
 import Button from "@/common/components/Button"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
@@ -98,7 +100,9 @@ export default {
     isSuccess: false,
     checkCircleIcon,
     link: null,
-    txWeight: 0
+    txWeight: 0,
+    isLoading: false,
+    dataId: null
   }),
 
   computed: {
@@ -106,6 +110,7 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       mnemonicData: (state) => state.substrate.mnemonicData,
+      lastEventData: (state) => state.substrate.lastEventData,
       web3: (state) => state.metamask.web3
     }),
 
@@ -143,17 +148,44 @@ export default {
   },
 
   async mounted () {
-    const txWeight = await getAddGeneticDataFee(this.api, this.wallet, "title", "description", "link")
-    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+
+    if (this.$route.params.id) {
+      this.isEdit = true
+      this.dataId = this.$route.params.id
+    }
+
+    await this.getTxWeight()
+    await this.getDetails()
+
   },
 
   watch: {
     mnemonicData(val) {
       if (val) this.initialDataKey()
+    },
+
+    lastEventData(e) {
+      if (e !== null) {
+        const dataEvent = JSON.parse(e.data.toString())
+        if (e.method === "GeneticDataAdded" || e.method === "GeneticDataUpdated") {
+          if (dataEvent[1] === this.wallet.address) {
+            this.isLoading = false
+            this.isSuccess = true
+          }
+        }
+      }
     }
   },
 
   methods: {
+
+    async getDetails() {
+      const detail = await queryGeneticDataById(this.api, this.dataId)
+      this.document.title = detail.title
+      this.document.description = detail.description
+      this.document.file = detail.reportLink
+    },
+
     initialDataKey() {
       const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
       this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
@@ -229,7 +261,7 @@ export default {
             }
             res(dataFile)
           } catch (e) {
-            console.log(e)
+            console.error(e)
           }          
         }
         fr.onerror = rej
@@ -286,6 +318,8 @@ export default {
     },
 
     async onSubmit() {
+      this.isLoading = true
+
       try{
         if (!this.document.file) return
 
@@ -296,11 +330,34 @@ export default {
           fileType: dataFile.fileType
         })
 
-        await addGeneticData(this.api, this.wallet, this.document.title, this.document.description, this.link)
-        this.isSuccess = true
+        if (this.isEdit) {
+          await updateGeneticData(
+            this.api,
+            this.wallet,
+            this.dataId,
+            this.document.title,
+            this.document.description,
+            this.link
+          )
+          
+        } else {
+          await addGeneticData(
+            this.api, 
+            this.wallet, 
+            this.document.title, 
+            this.document.description, 
+            this.link)
+        }
+
+
       } catch (e) {
-        console.log(e)
+        console.error(e)
       }
+    },
+
+    async getTxWeight() {
+      const txWeight = await getAddGeneticDataFee(this.api, this.wallet, "title", "description", "link")
+      this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
     },
 
     closeDialog() {

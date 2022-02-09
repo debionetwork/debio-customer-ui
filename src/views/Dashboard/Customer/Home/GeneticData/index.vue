@@ -38,7 +38,6 @@
           v-tab-item
             GeneticDataList
           v-tab-item
-            GeneticDataList
 
 
 
@@ -47,15 +46,12 @@
 <script>
 import { geneticIllustration, plusCircle } from "@/common/icons"
 import GeneticDataList from "./GeneticDataList.vue"
-import StakingServiceTab from "@/views/Dashboard/Customer/Home/MyTest/StakingServiceTab"
-
 
 export default {
   name: "GeneticData",
 
   components: {
-    GeneticDataList,
-    StakingServiceTab
+    GeneticDataList
   },
 
   data:() => ({
@@ -63,7 +59,7 @@ export default {
     plusCircle,
     tabs: null,
     cardBlock: false
-  }) 
+  })
 }
 
 </script>

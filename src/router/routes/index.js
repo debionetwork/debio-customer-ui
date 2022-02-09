@@ -129,9 +129,9 @@ const indexRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData")
     },
     {
-      path: "add-genetic-data",
+      path: "add-genetic-data/:id?",
       name: "customer-add-genetic-data",
-      meta: { pageHeader: "Add Genetic Data" },
+      meta: { pageHeader: "Genetic Data" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/Add")
     },
     {
