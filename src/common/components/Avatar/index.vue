@@ -18,6 +18,7 @@
       v-else-if="!$slots['icon'] && !showInitial"
       :src="computeAvatarImage"
       :style="computeBorderedStyle"
+      v-bind="$attrs"
       @error="handleErrorImage"
       @click.prevent="handleClick"
     )
@@ -49,6 +50,8 @@ import { metamaskFoxIcon } from "@/common/icons"
 
 export default {
   name: "UiDebioAvatar",
+  inheritAttrs: false,
+
   props: {
     src: { type: String, default: "" },
     size: { type: [String, Number], default: 44 },
@@ -220,7 +223,6 @@ export default {
   &__image
     position: relative
     z-index: 7
-    width: 100%
     height: 100%
     object-fit: cover
 
