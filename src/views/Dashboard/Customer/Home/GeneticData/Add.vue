@@ -67,7 +67,7 @@
 
 <script>
 import Button from "@/common/components/Button"
-import errorMessage from "@/common/constants/error-messages"
+import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
 import { checkCircleIcon } from "@/common/icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
@@ -96,44 +96,33 @@ export default {
       return !title, description, file
     },
 
-    englishAlphabeth() {
-      return  val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
-    },
-
-    fieldRequired() {
-      return val => !!val || errorMessage.REQUIRED
-    },
-
     titleRule() {
       return[
-        this.fieldRequired,
-        this.englishAlphabeth,
-        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50)
+        rulesHandler.FIELD_REQUIRED,
+        rulesHandler.ENGLISH_ALPHABET,
+        rulesHandler.MAX_CHARACTER(50)
       ]
     },
 
     descriptionRule() {
       return[
-        this.fieldRequired,
-        this.englishAlphabeth,
-        val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255)
-        
+        rulesHandler.FIELD_REQUIRED,
+        rulesHandler.ENGLISH_ALPHABET,
+        rulesHandler.MAX_CHARACTER(255)
       ]
     },
 
     fileRule() {
       return[
-        this.fieldRequired,
-        val => (val && val.size < 1000000) || errorMessage.FILE_SIZE(1)
+        rulesHandler.FIELD_REQUIRED,
+        rulesHandler.FILE_SIZE(1000000)
       ]
     }
   },
 
   methods: {
     onSubmit() {
-      console.log("HELLO from Submit")
       this.isSuccess = true
-      console.log(this.isSuccess)
     }
   }
 }

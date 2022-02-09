@@ -67,7 +67,6 @@ export default {
     },
 
     toReqAnalysis() {
-      console.log("hello")
       this.$router.push({ name: "customer-request-analysis"})
     }
   }
