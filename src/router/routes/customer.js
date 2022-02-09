@@ -25,7 +25,7 @@ export default [
         path: "maintenance",
         name: "maintenance",
         meta: { pageHeader: "Maintenance" },
-        component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/maintenancePageLayout"),
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/maintenancePageLayout"),
         beforeEnter: (to, from, next) => {
           if (from.path === "/") next({ name: "customer-dashboard" })
           else next()

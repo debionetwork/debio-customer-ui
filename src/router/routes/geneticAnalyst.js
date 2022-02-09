@@ -24,20 +24,26 @@ export default [
       {
         path: "my-account",
         name: "ga-account",
-        meta: { pageHeader: "My Account" },
+        meta: { pageHeader: "My Account", maintenance: true },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/GeneticAnalyst/Account")
       },
       {
         path: "my-services",
         name: "ga-services",
-        meta: { pageHeader: "My Services" },
+        meta: { pageHeader: "My Services", maintenance: true },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/GeneticAnalyst/Services")
       },
       {
         path: "orders",
         name: "ga-orders",
-        meta: { pageHeader: "Orders" },
+        meta: { pageHeader: "Orders", maintenance: true },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/GeneticAnalyst/Orders")
+      },
+      {
+        path: "order-details/:id",
+        name: "ga-order-details",
+        meta: { pageHeader: "Details", parent: "ga-orders" },
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/GeneticAnalyst/Orders/Details")
       }
     ]
   }

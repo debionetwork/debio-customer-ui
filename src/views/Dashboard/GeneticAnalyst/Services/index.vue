@@ -1,11 +1,11 @@
 <template lang="pug">
-  .genetic-analyst-dashboard
+  .ga-services
     h1 SERVICES
 </template>
 
 <script>
 export default {
-  name: "GeneticAnalystDashboard"
+  name: "GAServices"
 }
 </script>
 

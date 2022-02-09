@@ -3,7 +3,7 @@
     .error-page__wrapper
       ui-debio-icon(:icon="constructIllustration" view-box="0 0 383 241" width="383" height="241" fill)
       h3.error-page__title This feature is currently unavailable
-      h2.error-page__legend Please contact our support team if the problem persists
+      h4.error-page__legend Please contact our support team if the problem persists
 </template>
 
 <script>
@@ -13,7 +13,7 @@ export default {
   name: "maintenancePageLayout",
 
   props: {
-    error: { type: Object, default: () => {} }
+    error: { type: [Object, Boolean], default: null }
   },
 
   data: () => ({ constructIllustration })
@@ -35,5 +35,5 @@ export default {
       font-size: 1.125rem
 
     &__legend
-      font-size: 2.375rem
+      font-size: 1.375rem
 </style>

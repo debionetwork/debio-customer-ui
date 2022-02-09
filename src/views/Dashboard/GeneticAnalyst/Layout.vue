@@ -71,7 +71,7 @@ import {
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import maintenancePageLayout from "@/views/Dashboard/Customer/maintenancePageLayout"
+import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 
 export default {
@@ -126,8 +126,9 @@ export default {
   },
 
   watch: {
-    $route() {
-      this.pageError = null
+    $route(val) {
+      if (val.meta.maintenance) this.pageError = true
+      else this.pageError = null
     },
 
     lastEventData(event) {
@@ -143,6 +144,7 @@ export default {
 
   async mounted() {
     if (!this.mnemonicData) this.showModalPassword = true
+    if (this.$route.meta.maintenance) this.pageError = true
     await this.getListNotification()
   },
 

@@ -98,7 +98,7 @@ import {
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import maintenancePageLayout from "@/views/Dashboard/Customer/maintenancePageLayout"
+import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 
 export default {
