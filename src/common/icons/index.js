@@ -44,9 +44,12 @@ import phoneIcon from "./phone"
 import bookIcon from "./book";
 import doctorDashboardIllustrator from "./doctorDashboardIllustrator"
 import constructIllustration from "./constructIllustration"
+import geneticAnalystIllustration from "./geneticAnalystIllustration"
 import microscopeIcon from "./microscope"
 import weightLifterIcon from "./weightLifter"
 import fileSearchIcon from "./fileSearch"
+import chevronLeftIcon from "./chevronLeft"
+import timerIcon from "./timer"
 import hairIcon from "./hair"
 import familyTreeIcon from "./familyTree"
 import debioFullIcon from "./debioFull"
@@ -109,9 +112,12 @@ export {
   bookIcon,
   doctorDashboardIllustrator,
   constructIllustration,
+  geneticAnalystIllustration,
   microscopeIcon,
   weightLifterIcon,
   fileSearchIcon,
+  chevronLeftIcon,
+  timerIcon,
   hairIcon,
   familyTreeIcon,
   debioFullIcon,
