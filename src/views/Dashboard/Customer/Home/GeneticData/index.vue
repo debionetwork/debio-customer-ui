@@ -61,7 +61,8 @@ export default {
   data:() => ({
     geneticIllustration,
     plusCircle,
-    tabs: null
+    tabs: null,
+    cardBlock: false
   }) 
 }
 

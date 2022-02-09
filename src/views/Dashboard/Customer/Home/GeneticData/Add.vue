@@ -47,7 +47,7 @@
                 ) mdi-alert-circle-outline 
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
 
-          span( style="font-size: 12px;" ) 0.0014 DBIO
+          span( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
           
         Button(
           :disabled="!disable"
@@ -59,13 +59,20 @@
       SuccessDialog(
         :show="isSuccess"
         title="Success"
-        @close="isSuccess = false"
+        @close="closeDialog"
       )
 
 
 </template>
 
 <script>
+import { mapState } from "vuex"
+import { u8aToHex } from "@polkadot/util"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
+import cryptWorker from "@/common/lib/ipfs/crypt-worker"
+import { addGeneticData, getAddGeneticDataFee } from "@/common/lib/polkadot-provider/command/genetic-data"
 import Button from "@/common/components/Button"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
@@ -80,6 +87,8 @@ export default {
   mixins: [validateForms],
 
   data: () => ({
+    secretKey: null,
+    publicKey: null,
     document: {
       title: "",
       description: "",
@@ -87,10 +96,19 @@ export default {
     },
     isEdit: false,
     isSuccess: false,
-    checkCircleIcon
+    checkCircleIcon,
+    link: null,
+    txWeight: 0
   }),
 
   computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      web3: (state) => state.metamask.web3
+    }),
+
     disable() {
       const { title, description, file } = this.document
       return !title, description, file
@@ -120,9 +138,176 @@ export default {
     }
   },
 
+  async created() {
+    if (this.mnemonicData) this.initialDataKey()
+  },
+
+  async mounted () {
+    const txWeight = await getAddGeneticDataFee(this.api, this.wallet, "title", "description", "link")
+    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+  },
+
+  watch: {
+    mnemonicData(val) {
+      if (val) this.initialDataKey()
+    }
+  },
+
   methods: {
-    onSubmit() {
-      this.isSuccess = true
+    initialDataKey() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
+    async encrypt({ text, fileType, fileName}) {      
+      const context = this
+      const arrChunks = []
+      let chunksAmount
+      const pair = {
+        secretKey: this.secretKey,
+        publicKey: this.publicKey
+      }
+
+      return await new Promise((res, rej) => {
+        try {
+          cryptWorker.workerEncryptFile.postMessage({
+            pair,
+            text,
+            fileType
+          })
+
+          cryptWorker.workerEncryptFile.onmessage = async (event) => {
+            if (event.data.chunksAmount) {
+              chunksAmount = event.data.chunksAmount
+              return
+            }
+
+            arrChunks.push(event.data)
+            context.encryptProgress = (arrChunks.length / chunksAmount) * 100
+
+            if (arrChunks.length === chunksAmount ) {
+              res({
+                fileName: fileName,
+                chunks: arrChunks,
+                fileType: fileType
+              })
+            }
+          }
+        } catch (e) {
+          rej(new Error(e.message))
+        }
+      })
+
+    },
+
+
+    setupFileReader(value) {
+      return new Promise((res, rej) => {
+        const context = this
+        const fr = new FileReader()
+
+        const { title, description, file } = value
+        
+        fr.onload = async function () {
+          try {
+            const encrypted = await context.encrypt({
+              text: fr.result,
+              fileType: file.type,
+              fileName: file.name
+            })
+
+            const { chunks, fileName, fileType } = encrypted
+            const dataFile = { 
+              title,
+              description,
+              file,
+              chunks,
+              fileName,
+              fileType,
+              createdAt: new Date().getTime()
+            }
+            res(dataFile)
+          } catch (e) {
+            console.log(e)
+          }          
+        }
+        fr.onerror = rej
+        fr.readAsArrayBuffer(value.file)
+      })
+    },
+
+    async upload({ encryptedFileChunks, fileName, fileType }) {
+      const chunkSize = 30 * 1024 * 1024
+      let offset = 0
+
+      const data = JSON.stringify(encryptedFileChunks)
+      const blob = new Blob([data], { type: fileType })
+      const newBlobData = new File([blob], fileName)
+
+      const uploaded = await new Promise((res, rej) => {
+        try{
+          const fileSize = newBlobData.size
+          do {
+            let chunk = newBlobData.slice(offset, chunkSize + offset)
+            ipfsWorker.workerUpload.postMessage({
+              seed: chunk.seed,
+              file: newBlobData
+            })
+            offset += chunkSize
+          } while (chunkSize + offset < fileSize)
+
+          let uploadSize = 0
+          ipfsWorker.workerUpload.onmessage = async (event) => {
+            uploadSize += event.data.data.size
+
+            if (uploadSize >= fileSize) {
+              res({
+                fileName: fileName,
+                fileType: fileType,
+                collection: event.data
+              })
+            }
+          }
+
+        } catch(e) {
+          rej(new Error(e.message))
+        }
+      })
+
+      const link = this.getFileIpfsUrl(uploaded)
+      this.link = link
+
+    }, 
+
+    getFileIpfsUrl(file) {
+      const path = `${file.collection.data.ipfsFilePath}/${file.fileName}`
+      return `https://ipfs.io/ipfs/${path}`
+    },
+
+    async onSubmit() {
+      try{
+        if (!this.document.file) return
+
+        const dataFile = await this.setupFileReader(this.document)
+        await this.upload({
+          encryptedFileChunks: dataFile.chunks,
+          fileName: dataFile.fileName,
+          fileType: dataFile.fileType
+        })
+
+        await addGeneticData(this.api, this.wallet, this.document.title, this.document.description, this.link)
+        this.isSuccess = true
+      } catch (e) {
+        console.log(e)
+      }
+    },
+
+    closeDialog() {
+      this.isSuccess = false
+      this.document.title = null
+      this.document.description = null
+      this.document.file = null
     }
   }
 }
