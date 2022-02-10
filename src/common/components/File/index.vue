@@ -1,9 +1,8 @@
 <template lang="pug">
   .ui-debio-file(:class="classes" @click="active = true" v-click-outside="{ handler: handleBlur, closeConditional }")
     .ui-debio-file__label(v-if="label" :aria-label="label")
-      span
-        | {{ label }} 
-        span.ui-debio-file__label-rules(v-if="labelRules") {{ labelRules }}
+      span {{ label }}
+      span.ui-debio-file__label-rules.ml-2(v-if="labelRules") {{ labelRules }}
 
     .ui-debio-file__wrapper
       input.ui-debio-file__input(type="file" ref="input-file" :accept="accept" @change="handleFileChange")
@@ -138,7 +137,6 @@ export default {
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
       display: flex
       align-items: center
-      justify-content: space-between
 
     &__label-rules
       @include body-text-3
