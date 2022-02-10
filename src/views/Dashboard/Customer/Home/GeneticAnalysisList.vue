@@ -7,19 +7,25 @@
       template(v-slot:[`item.action`]="{ item }")
         .genetic-analysis-list__actions
           ui-debio-icon.genetic-analysis-list__action(
+            :icon="eyeIcon"
+            size="16"
+            role="button"
+            stroke
+            stroke-width="3"
+          )
+          ui-debio-icon.genetic-analysis-list__action(
             :icon="downloadIcon"
             :class="{ 'genetic-analysis-list__action--disabled': item.status !== 'Done' }"
             size="16"
             role="button"
             stroke
-            stroke-width="4"
+            stroke-width="3"
             @click="onDownload(item)"
           )
 </template>
 
 <script>
-import { medicalResearchIllustration } from "@/common/icons"
-import { downloadIcon } from "@/common/icons"
+import { medicalResearchIllustration, downloadIcon, eyeIcon } from "@/common/icons"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { u8aToHex } from "@polkadot/util"
 import CryptoJS from "crypto-js"
@@ -34,6 +40,7 @@ export default {
   data: () => ({
     medicalResearchIllustration,
     downloadIcon,
+    eyeIcon,
 
     // TODO: Update headers and items to dynamic data from backend later
     publicKey: null,
