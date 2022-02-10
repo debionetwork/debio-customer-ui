@@ -5,7 +5,7 @@
       span.ui-debio-file__label-rules.ml-2(v-if="labelRules") {{ labelRules }}
 
     .ui-debio-file__wrapper
-      input.ui-debio-file__input(type="file" ref="input-file" :accept="accept" @change="handleFileChange")
+      input.ui-debio-file__input(type="file" ref="input-file" :value="$attrs.value" :accept="accept" @change="handleFileChange")
       ui-debio-input(block read-only :variant="variant" outlined :value="computeFileName" :placeholder="computeButtonLabel")
         v-icon(slot="icon-append" v-if="selectedFile" size="15" @click="handleClearFile") mdi-window-close
       Button.ui-debio-file__button(:color="computeButtonVariant" height="40" @click="handleChooseFile") {{ computeButtonLabel }}
@@ -51,7 +51,7 @@ export default {
     },
 
     computeFileName() {
-      return this.selectedFile?.name || ""
+      return (this.$attrs.value?.name || this.selectedFile?.name) || ""
     },
 
     computeButtonLabel() {
