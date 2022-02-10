@@ -166,12 +166,9 @@ export default {
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
-      selectedService: (state) => state.testRequest.products,
       lastEventData: (state) => state.substrate.lastEventData,
+      selectedService: (state) => state.testRequest.products,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
-      metamaskWalletBalance: (state) => state.metamask.metamaskWalletBalance,
-      mnemonicData: state => state.substrate.mnemonicData,
-      walletBalance: (state) => state.substrate.walletBalance,
       web3: (state) => state.metamask.web3
     })
   },
