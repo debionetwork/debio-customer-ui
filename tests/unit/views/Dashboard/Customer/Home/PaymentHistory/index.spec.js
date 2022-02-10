@@ -15,7 +15,6 @@ describe("Customer Payment History Dashboard", () => {
   beforeEach(() => {
     localVue = createLocalVue()
     localVue.use(Vuex)
-    localVue.use(Vuetify)
   })
 
   afterEach(() => {
