@@ -272,7 +272,7 @@ export default {
     signOut() {
       this.$router.push({name: "landing-page"})
       localStorage.clear()
-      this.clearAuth
+      this.clearAuth()
       this.clearWallet()
     }
   }
