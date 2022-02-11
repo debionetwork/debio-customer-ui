@@ -67,6 +67,7 @@ import medicalResearchIllustration from "./medicalResearchIllustration"
 import geneticDnaIcon from "./geneticDna"
 import plusCircle from "./plus-circle"
 import geneticIllustration from "./geneticIllustration"
+import emptyDataIllustration from "./emptyDataIllustration"
 
 export {
   creditCardIcon,
@@ -137,5 +138,6 @@ export {
   medicalResearchIllustration,
   geneticDnaIcon,
   plusCircle,
-  geneticIllustration
+  geneticIllustration,
+  emptyDataIllustration
 }
