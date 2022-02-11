@@ -44,9 +44,12 @@ import phoneIcon from "./phone"
 import bookIcon from "./book";
 import doctorDashboardIllustrator from "./doctorDashboardIllustrator"
 import constructIllustration from "./constructIllustration"
+import geneticAnalystIllustration from "./geneticAnalystIllustration"
 import microscopeIcon from "./microscope"
 import weightLifterIcon from "./weightLifter"
 import fileSearchIcon from "./fileSearch"
+import chevronLeftIcon from "./chevronLeft"
+import timerIcon from "./timer"
 import hairIcon from "./hair"
 import familyTreeIcon from "./familyTree"
 import debioFullIcon from "./debioFull"
@@ -61,6 +64,9 @@ import resultReadyBanner from "./resultReadyBanner"
 import qualityControlBanner from "./qualityControlBanner"
 import rejectedQCBanner from "./rejectedQCBanner"
 import medicalResearchIllustration from "./medicalResearchIllustration"
+import geneticDnaIcon from "./geneticDna"
+import plusCircle from "./plus-circle"
+import geneticIllustration from "./geneticIllustration"
 
 export {
   creditCardIcon,
@@ -109,9 +115,12 @@ export {
   bookIcon,
   doctorDashboardIllustrator,
   constructIllustration,
+  geneticAnalystIllustration,
   microscopeIcon,
   weightLifterIcon,
   fileSearchIcon,
+  chevronLeftIcon,
+  timerIcon,
   hairIcon,
   familyTreeIcon,
   debioFullIcon,
@@ -125,5 +134,8 @@ export {
   resultReadyBanner,
   qualityControlBanner,
   rejectedQCBanner,
-  medicalResearchIllustration
+  medicalResearchIllustration,
+  geneticDnaIcon,
+  plusCircle,
+  geneticIllustration
 }

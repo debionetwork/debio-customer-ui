@@ -115,6 +115,7 @@
               :loading="isLoading"
               :txWeight="Number(txWeight).toFixed(4)"
               title="Unstake"
+              btnMessage="Unstake"
               message="Your staking amount will be returned after 144 hours or 6 days"
               @click="unstakeService"
               this.isLoding = true

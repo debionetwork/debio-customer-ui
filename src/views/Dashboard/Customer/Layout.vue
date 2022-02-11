@@ -65,12 +65,13 @@
             Button(
               outlined
               height="35px"
+              style="font-size: 13px"
               @click="goToRequestTestPage"
               class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
               color="primary"
               :bind="attrs"
               :on="on"
-            ) Request a Test
+            ) Request Test
           span Get your biological sample tested or stake $DBIO to request Lab
 
         v-tooltip(bottom)
@@ -78,6 +79,7 @@
             Button(
               outlined
               height="35px"
+              style="font-size: 13px"
               @click="goToUploadEMR"
               class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
               color="primary"
@@ -85,6 +87,20 @@
               :on="on"
             ) Upload EMR
           span Upload your Electronic Medical Record
+
+        v-tooltip(bottom)
+          template(v-slot:activator="{ on, attrs }")
+            Button(
+              style="font-size: 11px"
+              outlined
+              height="35px"
+              @click="goToRequestAnalysis"
+              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+              color="primary"
+              :bind="attrs"
+              :on="on"
+            ) Request Genetic Analysis
+          span Get your genetic data analyzed by Genetic Analyst
 
     .layout-dashboard__wrapper
       Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
@@ -106,13 +122,14 @@ import {
   databaseIcon,
   checkCircleIcon,
   fileTextIcon,
-  creditCardIcon
+  creditCardIcon,
+  geneticDnaIcon
 } from "@/common/icons"
 
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import maintenancePageLayout from "@/views/Dashboard/Customer/maintenancePageLayout"
+import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 // import localStorage from "@/common/lib/local-storage"
 
@@ -136,41 +153,12 @@ export default {
     password: null,
 
     navs: [
-      {
-        text: "Dashboard",
-        disabled: false,
-        active: false,
-        route: "customer-dashboard",
-        icon: gridIcon
-      },
-      {
-        text: "My Test",
-        disabled: false,
-        active: false,
-        route: "my-test",
-        icon: boxIcon
-      },
-      {
-        text: "My EMR",
-        disabled: false,
-        active: false,
-        route: "customer-emr",
-        icon: fileTextIcon
-      },
-      {
-        text: "Data Bounty",
-        disabled: false,
-        active: false,
-        route: "customer-data-bounty",
-        icon: databaseIcon
-      },
-      {
-        text: "Payment History",
-        disabled: false,
-        active: false,
-        route: "customer-payment-history",
-        icon: creditCardIcon
-      }
+      { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
+      { text: "My Test", disabled: false, active: false, route: "my-test", icon: boxIcon },
+      { text: "My EMR", disabled: false, active: false, route: "customer-emr", icon: fileTextIcon },
+      { text: "My Genetic Data", disabled: false, active: false, route: "customer-genetic-data", icon: geneticDnaIcon},
+      { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", icon: databaseIcon },
+      { text: "Payment History", disabled: false, active: false, route: "customer-payment-history", icon: creditCardIcon }
     ]
   }),
 
@@ -246,6 +234,10 @@ export default {
 
     goToUploadEMR() {
       this.$router.push({name: "customer-emr-create"})
+    },
+
+    goToRequestAnalysis() {
+      this.$router.push({ name: "customer-request-analysis"})
     },
 
     handleShowPassword() {

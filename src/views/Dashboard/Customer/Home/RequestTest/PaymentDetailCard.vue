@@ -422,7 +422,6 @@ export default {
 
     async getDataService() {
       const data = await fetchPaymentDetails(this.$route.params.id)
-      console.log("DATA PAYMENT DETAIL", data)
 
       if (data.status !== "Unpaid") {
         this.$router.push({ name: "customer-payment-history" })
