@@ -18,6 +18,7 @@
         DataTable.customer-request-analysis__table(v-if="!isEmpty"
           :headers="headers"
           :items="items"
+          @click="selectData"
         ) 
           template(v-slot:[`item.title`]="{ item }")
             .d-flex.flex-column.customer-request-analysis__table-item-title
@@ -29,18 +30,15 @@
 
           template(v-slot:[`item.uploadDate`]="{ item }")
             .d-flex.flex-column.customer-request-analysis__table-item-upload
-              span 02 Feb 2022
-
-
-
+              span {{ formatDate(item.createdAt)}}
 
 
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapMutations, mapState } from "vuex"
 import { queryGeneticDataByOwner, queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
-import NoDataCard from "./noDataCard.vue"
+import NoDataCard from "./NoDataCard"
 import DataTable from "@/common/components/DataTable"
 
 export default {
@@ -91,6 +89,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setSelectedGeneticData: "geneticData/SET_SELECTED_DATA"
+    }),
+
     async fetchGeneticData() {
       this.items = []
       const accountId = this.wallet.address
@@ -104,8 +106,20 @@ export default {
       if (this.items.length === 0) this.isEmpty = true
     },
 
+    selectData(item){
+      this.setSelectedGeneticData(item)
+      this.$router.push({ name: "customer-request-analysis-service"})  
+    },
+
     handleBack() {
       this.$router.push({ name: "customer-genetic-data" })
+    },
+
+    formatDate(date) {
+      const formattedDate = new Date(parseInt(date.replace(/,/g, ""))).toLocaleDateString("en-GB", {
+        day: "numeric", month: "short", year: "numeric"
+      })
+      return formattedDate
     }
   }
 }

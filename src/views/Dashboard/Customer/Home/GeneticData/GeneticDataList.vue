@@ -14,7 +14,7 @@
 
       template(v-slot:[`item.uploadDate`]="{ item }")
         .d-flex.flex-column.genetic-data-list__upload
-          span
+          span {{ formatDate(item.createdAt)}}
 
     
       template(v-slot:[`item.actions`]="{ item }")
@@ -140,6 +140,13 @@ export default {
 
     async confirmedDelete() {
       await removeGeneticData(this.api, this.wallet, this.selectedDataId)
+    },
+
+    formatDate(date) {
+      const formattedDate = new Date(parseInt(date.replace(/,/g, ""))).toLocaleDateString("en-GB", {
+        day: "numeric", month: "short", year: "numeric"
+      })
+      return formattedDate
     }
   }
 
