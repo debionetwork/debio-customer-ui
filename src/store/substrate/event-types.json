@@ -99,11 +99,11 @@
         },
         "ServiceRequestUnstaked": {
           "message": "Your stake amount has been refunded, kindly check your balance.",
-          "value": "",
+          "value": 1,
           "value_message": "",
           "route": "",
           "params": "",
-          "identity": 0
+          "identity": "requesterAddress"
         },
         "StakingAmountExcessRefunded": {
           "message": "You’ve got ",
