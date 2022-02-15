@@ -77,13 +77,18 @@ export default {
 
   async mounted() {
     await this.getAnalysisOrderDetail()
-    await this.getServiceDetail()
-    await this.getGeneticData()
-    await this.getAnalysisStatus()
 
     if (this.orderStatus === "Cancelled") {
       this.stepperItems[3].title = "Cancelled"
     }
+    console.log(this.orderStatus)
+
+    await this.getServiceDetail()
+    await this.getGeneticData()
+    await this.getAnalysisStatus()
+
+
+
   },
 
   methods: {

@@ -98,12 +98,13 @@ export default {
       const accountId = this.wallet.address
       const dataList = await queryGeneticDataByOwner(this.api, accountId)
 
+      if (!dataList) return this.isEmpty = true
+
       for (let i = 0; i < dataList.length; i++) {
         const geneticData = await queryGeneticDataById(this.api, dataList[i])
         this.items.push(geneticData)
       }
 
-      if (this.items.length === 0) this.isEmpty = true
     },
 
     selectData(item){
