@@ -14,7 +14,7 @@ module.exports = {
     "vue"
   ],
   moduleNameMapper: {
-    "^@\/(((?!ipfs).)*)$": "<rootDir>/src/$1", // Any library except IPFS
+    "^@/(((?!ipfs).)*)$": "<rootDir>/src/$1", // Any library except IPFS
     "vuetify/lib(.*)": "<rootDir>/node_modules/vuetify/es5$1",
     "@polkadot/ui-keyring": "<rootDir>/tests/unit/@polkadot-ui-keyring.mock.js",
     "@polkadot/keyring": "<rootDir>/tests/unit/@polkadot-keyring.mock.js",
