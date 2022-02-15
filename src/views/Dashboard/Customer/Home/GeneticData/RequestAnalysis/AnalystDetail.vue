@@ -7,48 +7,49 @@
 
 
       .analyst-detail__service
-        .analyst-detail__service-name Cardiology Analysis
+        .analyst-detail__service-name {{ service.serviceName }}
 
-        .analyst-detail__service-description The metabolism analysis uses a blood or saliva sample and body-related data (e.g. weight, physical activity, eating habits) to investigate how your metabolism works.
+        .analyst-detail__service-description {{ service.description }}
 
 
         .analyst-detail__service-info
           v-row
             v-col(cols="8")
               v-icon(size="14" outlined ) mdi-timer 
-              span.analyst-detail__service-info-duration 5 days
+              span.analyst-detail__service-info-duration {{ service.duration }} {{ service.durationType }}
             v-col(cols="4")
-              span.analyst-detail__service-info-price 3000 DBIO
+              b.analyst-detail__service-info-price {{ formatBalance(service.priceDetail[0].totalPrice) }} {{ service.priceDetail[0].currency }}
         hr
 
       v-row.analyst-detail__profil
         v-col(cols="3")
           ui-debio-avatar.analyst-detail__profil-avatar(src="https://ipfs.io/ipfs/QmcJYkCKK7QPmYWjp4FD2e3Lv5WCGFuHNUByvGKBaytif4" size="75" rounded)
-        v-cols(cols="9")
-          .analyst-detail__profil-name Lydia Agustin
-          .analyst-detail__profil-desc Metabolic
+        v-col(cols="9")
+          .analyst-detail__profil-name {{ service.analystsInfo.info.firstName }} {{ service.analystsInfo.info.lastName }}
+          .analyst-detail__profil-desc {{ service.analystsInfo.info.specialization }}
 
-          v-img.analyst-detail__profil-social(
-            alt="linkedin"
-            center
-            src="@/assets/linkedin-logo.png"
-            height="15" 
-            width="15"
-          )
+          a(href="https://www.linkedin.com/" target="_blank")
+            v-img.analyst-detail__profil-social(
+              alt="linkedin"
+              center
+              src="@/assets/linkedin-logo.png"
+              height="15" 
+              width="15"
+            )
 
       .analyst-detail__profil-experience Experience
       ul.analyst-detail__profil-experience-list(
         v-for="(experience, i) in experiences"
         :key="i"
-      ) - {{ experience }}
+      ) - {{ experience.title }}
+
 
       .analyst-detail__button
         Button.analyst-detail__button-text(
           color="secondary" 
           width="48%"
           height="38" 
-          outlined 
-          @click="downloadFile"
+          outlined
         ) Download Sample Report
 
         Button.analyst-detail__button-text(
@@ -63,43 +64,49 @@
 
 <script>
 
+import { mapMutations, mapState } from "vuex"
 import Button from "@/common/components/Button"
+
 
 export default {
   name: "AnalystDetail",
-
-  data: () => ({
-    experiences: [
-      "Skin Councelor at RS Pertamina",
-      "Skin Cancer Councelor for WHO",
-      "Senior Dermatologist on RS Pertamina",
-      "Health Skin Advisor for Siloam Hospital from 2019 to 2021",
-      "Best Skin Councelor at Indonesian Medic Awards 2019"
-    ]
-  }),
 
   components: {
     Button
   },
 
   props: {
-    show: Boolean
+    show: Boolean,
+    service: Object,
+    experiences: Array
+  },
+
+  computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      web3: (state) => state.metamask.web3,
+      mnemonicData: (state) => state.substrate.mnemonicData
+    })
   },
 
   methods: {
+    ...mapMutations({
+      setSelectedAnalysisService: "geneticData/SET_SELECTED_SERVICE"
+    }),
 
     closeDialog() {
       this.$emit("close")
     },
 
-    donwloadFile() {
-      console.log("Downloading...")
+    onSelect() {
+      this.setSelectedAnalysisService(this.service)
+      this.$router.push({name: "customer-request-analysis-payment"})
     },
 
-    onSelect() {
-      this.$router.push({name: "customer-request-analysis-payment"})
+    formatBalance(balance) {
+      const formatedBalance = this.web3.utils.fromWei(String(balance.replaceAll(",", "")), "ether")
+      return Number(formatedBalance).toPrecision()
     }
-
   }
 }
 </script>
@@ -115,6 +122,7 @@ export default {
       @include button-2
 
     &__service-description
+      height: 60px
       margin-top: 8px
       @include body-text-3-opensans
 

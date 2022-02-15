@@ -14,33 +14,34 @@
         .customer-select-service-analyst__title Select Service and Analyst
         
         .customer-select-service-analyst__cards
-
           v-row
-            v-col
-              ServiceAnalysisCard(
+            v-col(
+              cols="4"
+              v-for="(service, i) in serviceList"
+              :key="i"
+            )
+              ServiceAnalysisCard.customer-select-service-analyst__card(
+                :service="service"
                 @click="showDetail"
               )
               
-            v-col
-              ServiceAnalysisCard(
-                @click="showDetail"
-              )
-
-            v-col
-              ServiceAnalysisCard(
-                @click="showDetail"
-              )
-
         AnalystDetail(
           :show="showAnalystDetail"
+          :service="selectedService"
+          :experiences="selectedAnalystExperiences"
           @close="closeDetailDialog"
         )
           
 </template>
 
 <script>
+
+import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard"
 import AnalystDetail from "./AnalystDetail"
+import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { queryGetAllGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
+import { queryGeneticAnalystQualifications } from "@/common/lib/polkadot-provider/query/genetic-analyst-qualifications"
 
 export default {
   name: "SelectServiceAnalyst",
@@ -52,21 +53,88 @@ export default {
       { number: 3, title: "Checkout and Payment", active: false },
       { number: 4, title: "Success", active: false }
     ],
-    showAnalystDetail: false
+    showAnalystDetail: false,
+    serviceList: [],
+    selectedService: null,
+    selectedAnalystExperiences: null
   }),
+
+  computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      selectedGeneticData: (state) => state.geneticData.selectedData
+    })
+  },
 
   components: {
     ServiceAnalysisCard,
     AnalystDetail
   },
 
+  async mounted () {
+
+    if (!this.selectedGeneticData) {
+      this.$router.push({ name: "customer-request-analysis" })
+    }
+
+    await this.getGeneticAnalystService()
+  },
+
+
   methods: {
+    async getGeneticAnalystService() {
+      const geneticAnalystService = await queryGetAllGeneticAnalystServices(this.api)
+
+
+
+      for (let i = 0; i < geneticAnalystService.length; i++) {
+        let {
+          id: serviceId,
+          ownerId: analystId,
+          info: {
+            name: serviceName,
+            pricesByCurrency: priceDetail,
+            expectedDuration: {
+              duration,
+              durationType
+            },
+            description,
+            testResultSample
+          }     
+        } = geneticAnalystService[i][1].toHuman()  
+        
+        const analystsInfo = await queryGeneticAnalysts(this.api, analystId)
+
+
+        const service = {
+          serviceId,
+          analystId,
+          serviceName,
+          priceDetail,
+          duration,
+          durationType,
+          description,
+          testResultSample,
+          analystsInfo
+        }
+        this.serviceList.push(service)
+      }
+    },
+
     handleBack() {
       this.$router.push({ name: "customer-request-analysis" })
     },
 
-    showDetail() {
+    async showDetail(val) {
+      this.selectedService = val
+      const qualifications = val.analystsInfo.qualifications[0]
       this.showAnalystDetail = true
+      await this.getExperience(qualifications)
+    },
+
+    async getExperience(id) {
+      const experiences = await queryGeneticAnalystQualifications(this.api, id)
+      this.selectedAnalystExperiences = experiences.info.experience
     },
 
     closeDetailDialog() {
@@ -121,4 +189,10 @@ export default {
 
     &__cards
       margin-top: 40px
+      margin-left: 16px
+      
+    &__card
+      margin-bottom: 20px
+
+    
 </style>

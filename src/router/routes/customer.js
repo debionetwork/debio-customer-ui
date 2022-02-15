@@ -162,7 +162,7 @@ export default [
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/CheckoutPayment")
       },
       {
-        path: "request-analysis/success-payment",
+        path: "request-analysis/success-payment/:id?",
         name: "customer-request-analysis-success",
         meta: { pageHeader: "My Genetic Data" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/SuccessPage")

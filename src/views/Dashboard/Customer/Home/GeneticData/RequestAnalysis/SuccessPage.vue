@@ -10,13 +10,24 @@
             :items="stepperItems"
           )
 
-        .customer-request-analyst-success__title Thank you for your order!
-        .customer-request-analyst-success__sub-title Please wait, Genetic Analyst will confirm your order soon
+        div(v-if="orderStatus !== 'Cancelled'")
+          .customer-request-analyst-success__title Thank you for your order!
+          .customer-request-analyst-success__sub-title(v-if="!isProcessing") Please wait, Genetic Analyst will confirm your order soon
+          .customer-request-analyst-success__sub-title(v-else) Please wait while your genetic data is being analyzed
+
         
+        div(v-if="orderStatus === 'Cancelled'")
+          .customer-request-analyst-success__title Your service has been cancelled!
+
+
         
         .customer-request-analyst-success__cards
-          ServiceAnalysisCard
-          PaymentCard
+          ServiceAnalysisCard(
+            :service="service"
+          )
+          PaymentCard(
+            :genetic-data="geneticData"
+          )
         
 
   
@@ -24,8 +35,15 @@
 </template>
 
 <script>
+import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
+import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
+import { queryGetGeneticAnalystServiceById } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
+import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
+import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
+
 
 export default {
   name: "SuccessPage",
@@ -36,13 +54,98 @@ export default {
       { number: 2, title: "Select Service & Analyst", active: false },
       { number: 3, title: "Checkout and Payment", active: false },
       { number: 4, title: "Success", active: true }
-    ]
+    ],
+    geneticOrderAnalysisDetail: null,
+    serviceAnalysis: null,
+    geneticData: null,
+    service: null,
+    orderStatus: null,
+    isProcessing: false
   }),
+
+  computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet
+    })
+  },
 
   components: {
     ServiceAnalysisCard,
     PaymentCard
+  },
+
+  async mounted() {
+    await this.getAnalysisOrderDetail()
+    await this.getServiceDetail()
+    await this.getGeneticData()
+    await this.getAnalysisStatus()
+
+    if (this.orderStatus === "Cancelled") {
+      this.stepperItems[3].title = "Cancelled"
+    }
+  },
+
+  methods: {
+    async getAnalysisOrderDetail() {
+      const analysisOrderId = this.$route.params.id
+      const analysisOrderDetail = await queryGeneticAnalysisOrders(this.api, analysisOrderId)
+      this.geneticOrderAnalysisDetail = analysisOrderDetail
+      this.orderStatus = this.geneticOrderAnalysisDetail.status
+      this.trackingId = this.geneticOrderAnalysisDetail.geneticAnalysisTrackingId
+    },
+
+    async getAnalysisStatus() {
+      const details = await queryGeneticAnalysisStorage(this.api, this.trackingId)
+      if (details.status === "InProgress") {
+        this.isProcessing = true
+      }
+
+    },
+
+    async getServiceDetail() {
+      const serviceDetail = await queryGetGeneticAnalystServiceById(this.api, this.geneticOrderAnalysisDetail.serviceId)
+    
+      let {
+        id: serviceId,
+        ownerId: analystId,
+        info: {
+          name: serviceName,
+          pricesByCurrency: priceDetail,
+          expectedDuration: {
+            duration,
+            durationType
+          },
+          description,
+          testResultSample
+        }     
+      } = serviceDetail
+
+      const analystsInfo = await queryGeneticAnalysts(this.api, analystId)
+      const service = {
+        serviceId,
+        analystId,
+        serviceName,
+        priceDetail,
+        duration,
+        durationType,
+        description,
+        testResultSample,
+        analystsInfo
+      }
+
+      this.service = service
+
+    },
+
+    async getGeneticData() {
+      const geneticData = await queryGeneticDataById(this.api, this.geneticOrderAnalysisDetail.geneticDataId)
+      this.geneticData = geneticData
+    }
+
   }
+
+
 }
 </script>
 

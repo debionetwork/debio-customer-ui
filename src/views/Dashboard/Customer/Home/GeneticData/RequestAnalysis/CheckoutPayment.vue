@@ -14,8 +14,13 @@
         .customer-request-analyst-checkout__title Checkout and Payment
         
         .customer-request-analyst-checkout__cards
-          ServiceAnalysisCard
-          PaymentCard
+          ServiceAnalysisCard(
+            :service="selectedAnalysisService"
+          )
+          PaymentCard(
+            :genetic-data="selectedGeneticData"
+            :service="selectedAnalysisService"
+          )
 
 
 
@@ -23,6 +28,7 @@
 
 <script>
 
+import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
 
@@ -41,6 +47,20 @@ export default {
   components: {
     ServiceAnalysisCard,
     PaymentCard
+  },
+
+
+  computed: {
+    ...mapState({
+      selectedGeneticData: (state) => state.geneticData.selectedData,
+      selectedAnalysisService: (state) => state.geneticData.selectedAnalysisSerivice
+    })
+  },
+
+  mounted() {
+    if (!this.selectedGeneticData) {
+      this.$router.push({ name: "customer-request-analysis" })
+    }
   },
 
   methods: {
