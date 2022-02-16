@@ -14,7 +14,7 @@
 
       template(v-slot:[`item.uploadDate`]="{ item }")
         .d-flex.flex-column.genetic-data-list__upload
-          span {{ formatDate(item.createdAt)}}
+          span {{ item.createdAt }}
 
     
       template(v-slot:[`item.actions`]="{ item }")
@@ -119,7 +119,17 @@ export default {
 
       for (let i = 0; i < dataList.length; i++) {
         const geneticData = await queryGeneticDataById(this.api, dataList[i])
-        this.items.push(geneticData)
+
+        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = geneticData
+        
+        if (updatedAt !== "0") {
+          createdAt = this.formatDate(updatedAt)
+        } else {
+          createdAt = this.formatDate(createdAt)
+        }
+
+        const item = { id, owenerId, reportLink, title, description, createdAt, updatedAt }
+        this.items.push(item)
       }
     },
 
