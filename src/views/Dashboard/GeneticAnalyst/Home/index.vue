@@ -15,7 +15,7 @@
             fill
           )
 
-      DataTable(:headers="headers" :items="orders")
+      DataTable(:headers="headers" :items="orderLists")
         template(slot="prepend")
           .ga-dashboard__text
             h2.ga-dashboard__table-title Order Lists
@@ -37,8 +37,11 @@
 </template>
 
 <script>
-import DataTable from "@/common/components/DataTable"
+import { GAGetOrders } from "@/common/lib/api"
 import { geneticAnalystIllustration, eyeIcon } from "@/common/icons"
+
+import DataTable from "@/common/components/DataTable"
+import { mapState } from "vuex"
 
 
 export default {
@@ -50,43 +53,7 @@ export default {
     eyeIcon,
 
     cardBlock: false,
-    orders: [
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40e",
-        name: "Neurology Analysis A",
-        createdAt: "28 Jan 2022",
-        price: "3600  DBIO",
-        status: "In Progres"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40a",
-        name: "Neurology Analysis B",
-        createdAt: "21 Jan 2022",
-        price: "2300 DBIO",
-        status: "Done"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40c",
-        name: "Neurology Analysis C",
-        createdAt: "25 Jan 2022",
-        price: "1400 DBIO",
-        status: "In Progres"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40b",
-        name: "Neurology Analysis D",
-        createdAt: "15 Jan 2022",
-        price: "4600 DBIO",
-        status: "Reject"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40z",
-        name: "Neurology Analysis E",
-        createdAt: "16 Jan 2022",
-        price: "1600 DBIO",
-        status: "Open"
-      }
-    ],
+    orderLists: [],
     headers: [
       {
         text: "Order ID",
@@ -100,7 +67,7 @@ export default {
       },
       {
         text: "Order Date",
-        value: "createdAt",
+        value: "created_at",
         sortable: true
       },
       {
@@ -122,11 +89,42 @@ export default {
     ]
   }),
 
+  computed: {
+    ...mapState({
+      web3: (state) => state.metamask.web3
+    })
+  },
+
+  created() {
+    this.getOrdersData()
+  },
+
   mounted() {
     window.addEventListener("resize", () => {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
     })
+  },
+
+  methods: {
+    async getOrdersData() {
+      const orderData = await GAGetOrders()
+      this.orderLists = orderData.data.map(order => {
+        const sourceData = order._source
+        // TODO: Remove OR condition here after backend ready
+        const formatedPrice = `${this.web3.utils.fromWei(String(sourceData.prices[0]?.value.replaceAll(",", "") || 0), "ether")} ${sourceData?.currency}`
+
+        return {
+          ...sourceData,
+          price: formatedPrice,
+          created_at: new Date(+sourceData.created_at.replaceAll(",", "")).toLocaleString("en-GB", {
+            day: "numeric",
+            year: "numeric",
+            month: "short"
+          })
+        }
+      })
+    }
   }
 }
 </script>

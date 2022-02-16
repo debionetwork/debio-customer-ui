@@ -1,6 +1,55 @@
 <template lang="pug">
   .ga-order-details
     //- TODO: Update dummy data with data value from backend
+    ui-debio-modal(
+      :show="showModalReject"
+      title="Reject Order"
+      cta-title="Submit"
+      :cta-action="handleSubmitRejection"
+      :cta-outlined="false"
+      @onClose="showModalReject = false"
+    )
+      ui-debio-input(
+        :error="isDirty.rejectionTitle && isDirty.rejectionTitle"
+        :rules="$options.rules.rejectionTitle"
+        variant="small"
+        label="Title"
+        placeholder="Add Title"
+        v-model="rejectionTitle"
+        outlined
+        block
+        validate-on-blur
+        @isError="handleError"
+      )
+      ui-debio-textarea(
+        :error="isDirty.rejectionDesc && isDirty.rejectionDesc"
+        :rules="$options.rules.rejectionDesc"
+        variant="small"
+        label="Reason"
+        placeholder="Add Description"
+        v-model="rejectionDesc"
+        validate-on-blur
+        outlined
+        block
+        @isError="handleError"
+      )
+
+      .upload-section
+        .upload-section__tx-details.d-flex.justify-space-between.background--primary(@mouseleave="handleShowTooltip")
+          .upload-section__tx-title
+            span Estimated transaction weight
+            ui-debio-icon.ml-1(
+              :icon="alertIcon"
+              size="14"
+              stroke
+              @mouseenter="handleShowTooltip"
+            )
+            span.upload-section__tx-tooltip(
+              :class="{ 'upload-section__tx-tooltip--show': showTooltip }"
+            ) Total fee paid in DBIO to execute this transaction.
+
+          span.upload-section__tx-price 0.0014 DBIO
+    
     ui-debio-icon.ga-order-details__back-button(
       :icon="chevronLeftIcon"
       size="20"
@@ -9,6 +58,7 @@
       @click="handlePrevious"
       stroke
     )
+
     .ga-order-details__wrapper
       ui-debio-stepper.ga-order-details__stepper(:items="computeStepper")
 
@@ -17,57 +67,57 @@
       section.order-section
         transition(name="transition-slide-x" mode="out-in")
           Card.order-section__hilight-description.mb-6(
-            :title="$route.params.item.status === 'Reject' ? 'Reason of Rejection' : 'DNA Result'"
-            v-if="$route.params.item.status === 'Reject' || (step === 3 && $route.params.item.status !== 'Reject')"
+            :title="orderDataDetails.status === 'Reject' ? 'Reason of Rejection' : 'DNA Result'"
+            v-if="orderDataDetails.status === 'Reject' || (step === 3 && orderDataDetails.status !== 'Reject')"
           )
-            p(v-if="step === 3 && $route.params.item.status !== 'Reject'") DNA Report Analysis.pdf
+            p(v-if="step === 3 && orderDataDetails.status !== 'Reject'") DNA Report Analysis.pdf
             p
               | {{ readMore ? hilightDescription : hilightDescription.substr(0, 130) }}
               a(@click="readMore = !readMore" role="button") {{ readMore ? " Read less" : " Read more..." }}
 
         .order-section__services
-          Card.service-details(:title="$route.params.item.name")
+          Card.service-details(:title="orderDataDetails.service_info.name")
             p.service-details__description(
-              title="The metabolism analysis uses a blood or saliva sample and body-related data (e.g. weight, physical activity, eating habits) to investigate how your metabolism works."
-              aria-label="The metabolism analysis uses a blood or saliva sample and body-related data (e.g. weight, physical activity, eating habits) to investigate how your metabolism works."
-            ) The metabolism analysis uses a blood or saliva sample and body-related data (e.g. weight, physical activity, eating habits) to investigate how your metabolism works.
+              :title="orderDataDetails.service_info.description"
+              :aria-label="orderDataDetails.service_info.description"
+            ) {{ orderDataDetails.service_info.description }}
 
             .service-details__time.d-flex.align-center
               ui-debio-icon.mr-2(:icon="timerIcon" size="20" stroke color="#000000")
-              span(aria-label="5 Days") 5 Days
+              span(:aria-label="orderDataDetails.service_info.expectedDuration") {{ orderDataDetails.service_info.expectedDuration }}
 
             .service-details__detail.d-flex.mt-5
-              ui-debio-avatar.service-details__avatar.mr-4(
-                src="https://i.pravatar.cc/80"
-                alt="Hildegard Agustin"
-                size="80"
-              )
+              //- ui-debio-avatar.service-details__avatar.mr-4(
+              //-   src="https://i.pravatar.cc/80"
+              //-   alt="orderDataDetails.analyst_info"
+              //-   size="80"
+              //- )
               .service-details__analyst
                 p.service-details__analyst-name.mb-0(
-                  title="Hildegard Agustin"
-                  aria-label="Hildegard Agustin"
-                ) Hildegard Agustina
+                  :title="orderDataDetails.analyst_info.name"
+                  :aria-label="orderDataDetails.analyst_info.name"
+                ) {{ orderDataDetails.analyst_info.name }}
 
                 p.service-details__analyst-specialization.mb-0(
-                  title="Metabolic"
-                  aria-label="Metabolic"
-                ) Metabolic
+                  :title="orderDataDetails.analyst_info.specialization"
+                  :aria-label="orderDataDetails.analyst_info.specialization"
+                ) {{ orderDataDetails.analyst_info.specialization }}
 
-                span.service-details__analyst-price {{ $route.params.item.price }}
+                //- span.service-details__analyst-price {{ orderDataDetails.price }}
 
           Card.order-details(title="Order ID")
             .order-details__wrapper
-              span.order-details__hash(:title="$route.params.item.id" :aria-label="$route.params.item.id") {{ $route.params.item.id }}
+              span.order-details__hash(:title="orderDataDetails.id" :aria-label="orderDataDetails.id") {{ orderDataDetails.id }}
               .order-details__date.mb-4.mt-4
                 b.order-details__date-label Date: 
-                span.order-details__date-detail {{ $route.params.item.createdAt }}
+                span.order-details__date-detail {{ orderDataDetails.createdAt }}
 
               b.order-details__name(title="Pediatric Record" aria-label="Pediatric Record") Pediatric Record
               span.order-details__file(title="PerdiatricRecord.vcf" aria-label="PerdiatricRecord.vcf" role="button" @click="handleDownloadFile") PerdiatricRecord.vcf
 
-              .order-details__actions.d-flex.justify-space-between(v-if="$route.params.item.status !== 'Reject' && step === 1")
-                Button(width="130px" outlined color="secondary") REJECT
-                Button(width="130px" color="secondary" @click="step = 2") ACCEPT
+              .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.status !== 'Reject' && step === 1")
+                Button(width="130px" outlined color="secondary" @click="showModalReject = true") REJECT
+                Button(width="130px" color="secondary" @click="handleAcceptOrder") ACCEPT
 
       transition(name="transition-slide-x" mode="out-in")
         section.upload-section.mt-6(v-if="step === 2")
@@ -106,13 +156,26 @@
               ) Total fee paid in DBIO to execute this transaction.
 
             span.upload-section__tx-price 0.0014 DBIO
-          Button(block @click="handleSubmitForms" color="secondary") SUBMIT
+          Button(block :loading="isLoading" :disabled="isLoading" @click="handleSubmitForms" color="secondary") SUBMIT
 </template>
 
 <script>
+import CryptoJS from "crypto-js"	
+import Kilt from "@kiltprotocol/sdk-js"
+import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
+import cryptWorker from "@/common/lib/ipfs/crypt-worker"
+
+import { u8aToHex } from "@polkadot/util"
 import { chevronLeftIcon, timerIcon, alertIcon } from "@/common/icons"
 import { validateForms } from "@/common/lib/validate"
+import { updateStatusOrder, rejectOrder, submitOrderReport, fulfillOrder } from "@/common/lib/polkadot-provider/command/genetic-analyst/orders"
+import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
+import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
+import { serviceDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/services"
+import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
+import { mapState } from "vuex"
 import errorMessage from "@/common/constants/error-messages"
+
 import Card from "./Card.vue"
 import Button from "@/common/components/Button"
 
@@ -132,24 +195,38 @@ export default {
     step: 1,
     readMore: false,
     showTooltip: false,
+    isLoading: false,
+    showModalReject: false,
+    publicKey: null,
+    secretKey: null,
+    rejectionTitle: null,
+    rejectionDesc: null,
+    documentLink: null,
+    orderDataDetails: {},
     hilightDescription: "The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she continued her way. On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word 'and' and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their",
     document: {
       file: null,
+      recordLink: null,
       description: null
     },
     steppers: [
-      { number: 1, title: "", active: false },
+      { number: 1, title: "Confirm", active: false },
       { number: 2, title: "Upload Result", active: false },
       { number: 3, title: "Success", active: false }
     ]
   }),
 
   computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      wallet: (state) => state.substrate.wallet
+    }),
+
     computeStepper() {
       return this.steppers.map(stepper => {
         if (stepper.number === 1) return {
           ...stepper,
-          title: `${this.$route.params.item.status} Order`,
           active: stepper.number === this.step
         } 
         return { ...stepper, active: stepper.number === this.step }
@@ -159,15 +236,36 @@ export default {
     computeDetailsTitle() {
       const sectionTitles = ["Upload Result", "Completed"]
       
-      if (this.step === 1) return this.$route.params.item.status === "Open"
+      if (this.step === 1) return this.orderDataDetails.status === "Open"
         ? "Awaiting Order"
-        : `${this.$route.params.item.status} Order`
+        : `${this.orderDataDetails.status} Order`
 
       else return sectionTitles[this.step - 2]
     }
   },
 
+  watch: {
+    mnemonicData(val) {
+      if (val) this.initialDataKey()
+    }
+  },
+
+  async created() {
+    if (this.mnemonicData) this.initialDataKey()
+    this.prepareData(this.$route.params.id)
+  },
+
   rules: {
+    rejectionTitle: [
+      val => !!val || errorMessage.REQUIRED,
+      val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
+      englishAlphabet
+    ],
+    rejectionDesc: [
+      val => !!val || errorMessage.REQUIRED,
+      val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255),
+      englishAlphabet
+    ],
     document: {
       file: [
         val => !!val || errorMessage.REQUIRED,
@@ -183,6 +281,43 @@ export default {
   },
 
   methods: {
+    initialDataKey() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+    
+    async prepareData(id) {
+      try {
+        const data = await orderDetails(this.api, id)
+        const serviceData = await serviceDetails(this.api, data.serviceId)
+        const analystData = await analystDetails(this.api, data.sellerId)
+        const analysisData = await analysisDetails(this.api, data.geneticAnalysisTrackingId)
+        this.orderDataDetails = {
+          ...data,
+          ...analysisData,
+          createdAt: new Date(+data.createdAt.replaceAll(",", "")).toLocaleString("en-GB", {
+            day: "numeric",
+            year: "numeric",
+            month: "short"
+          }),
+          analyst_info: {
+            ...analystData.info,
+            id: analystData.accountId,
+            name: `${analystData.info.firstName} ${analystData.info.lastName}`
+          },
+          service_info: {
+            ...serviceData,
+            ...serviceData.info,
+            expectedDuration: `${serviceData.info.expectedDuration.duration} ${serviceData.info.expectedDuration.durationType}`
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    
     handlePrevious() {
       if (this.step === 1) {
         this.$router.go(-1)
@@ -192,16 +327,157 @@ export default {
       else { this.step-- }
     },
 
+    async handleAcceptOrder() {
+      try {
+        await updateStatusOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, "InProgress")
+        this.step = 2
+      } catch (e) {
+        console.error(e)
+      }
+    },
+
+    async handleSubmitRejection() {
+      try {
+        await rejectOrder(this.api, this.wallet, this.rejectionTitle, this.rejectionDesc)
+
+        this.showModalReject = false
+      } catch (e) {
+        console.error(e);
+      }
+    },
+
     handleDownloadFile() {
       // TODO: Do something
     },
 
-    handleSubmitForms() {
+    async handleSubmitForms() {
       this._touchForms("document")
       const { description: docDescription, file: docFile } = this.isDirty?.document
       if (docDescription || docFile) return
 
-      this.step = 3
+      try {
+        this.isLoading = true
+        await this.processFile()
+      } catch (e) {
+        this.isLoading = false
+        console.error(e)
+      }
+    },
+
+    async processFile() {
+      const context = this
+      const fr = new FileReader()
+      const { file } = this.document
+
+      fr.onload = async function() {
+        try {
+          const encrypted = await context.encrypt({
+            text: fr.result,
+            fileType: file.type,
+            fileName: file.name
+          })
+
+          await context.upload({
+            encryptedFileChunks: encrypted.chunks,
+            fileName: encrypted.fileName,
+            fileType: encrypted.fileType
+          })
+
+          await submitOrderReport(
+            context.api,
+            context.wallet,
+            context.orderDataDetails.geneticAnalysisTrackingId,
+            context.document.recordLink,
+            context.document.description
+          )
+
+          await fulfillOrder(context.api, context.wallet, context.orderDataDetails.id)
+          await updateStatusOrder(context.api, context.wallet, context.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
+
+          context.step = 3
+        } catch(e) {
+          console.error(e)
+        }
+      }
+
+      fr.readAsArrayBuffer(file)
+    },
+
+    async encrypt({ text, fileType, fileName }) {
+      const context = this
+      const arrChunks = []
+      let chunksAmount
+
+      const pair = {
+        secretKey: this.secretKey,
+        publicKey: this.publicKey
+      }
+
+      return await new Promise((resolve, reject) => {
+        try {
+          cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }) // Access this object in e.data in worker
+          cryptWorker.workerEncryptFile.onmessage = async (event) => {
+            if (event.data.chunksAmount) {
+              chunksAmount = event.data.chunksAmount
+              return
+            }
+
+            arrChunks.push(event.data)
+            context.encryptProgress = (arrChunks.length / chunksAmount) * 100
+
+            if (arrChunks.length === chunksAmount) {
+              resolve({
+                fileName: fileName,
+                chunks: arrChunks,
+                fileType: fileType
+              })
+            }
+          }
+        } catch (err) {
+          reject(new Error(err.message))
+        }
+      })
+    },
+
+    async upload({ encryptedFileChunks, fileName, fileType }) {
+      const chunkSize = 30 * 1024 * 1024 // 30 MB
+      let offset = 0
+      const data = JSON.stringify(encryptedFileChunks)
+      const blob = new Blob([data], { type: fileType })
+      const newBlobData = new File([blob], fileName)
+
+      const uploaded = await new Promise((resolve, reject) => {
+        try {
+          const fileSize = newBlobData.size
+          do {
+            let chunk = newBlobData.slice(offset, chunkSize + offset)
+            ipfsWorker.workerUpload.postMessage({
+              seed: chunk.seed,
+              file: newBlobData
+            })
+            offset += chunkSize
+          } while (chunkSize + offset < fileSize)
+
+          let uploadSize = 0
+          ipfsWorker.workerUpload.onmessage = async (event) => {
+            uploadSize += event.data.data.size
+
+            if (uploadSize >= fileSize) {
+              resolve({
+                fileName: fileName,
+                fileType: fileType,
+                collection: event.data
+              })
+            }
+          }
+        } catch (err) {
+          reject(new Error(err.message))
+        }
+      })
+
+      const path = `${uploaded.collection.data.ipfsFilePath}/${uploaded.fileName}`
+
+      this.document.recordLink = `https://ipfs.io/ipfs/${path}`
     },
 
     handleShowTooltip(e) {
@@ -215,7 +491,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
   @import "@/common/styles/mixins.sass"
 
   .ga-order-details
@@ -239,6 +515,9 @@ export default {
     &__stepper
       margin-bottom: 40px
 
+    &::v-deep
+      .ui-debio-modal__card
+        width: 400px
 
   .order-section
     width: 100%
