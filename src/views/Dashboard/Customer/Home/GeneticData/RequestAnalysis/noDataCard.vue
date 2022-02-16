@@ -9,7 +9,6 @@
       )
 
     .no-data-card__alert Oops! Looks like you haven't submitted any genetic data!
-
     .no-data-card__message You can add your genetic data by clicking the "Add Genetic Data" button.
 
     .no-data-card__button
