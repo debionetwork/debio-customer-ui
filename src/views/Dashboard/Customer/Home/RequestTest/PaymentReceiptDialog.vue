@@ -117,6 +117,7 @@ import { errorHandler } from "@/common/lib/error-handler"
 import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
 import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
 import errorMessage from "@/common/constants/error-messages"
+import { postTxHash } from "@/common/lib/api"
 
 
 
@@ -333,6 +334,7 @@ export default {
 
         this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
         await getTransactionReceiptMined(this.txHash)
+        await postTxHash(this.lastOrder, this.txHash)
         
       } catch (err) {
         this.isLoading = false

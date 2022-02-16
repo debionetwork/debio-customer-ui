@@ -12,6 +12,8 @@ export * from "./location"
 export * from "./orders"
 export * from "./rating"
 export * from "./service-request"
+export * from "./tx-hash"
+
 
 // AXIOS INSTANCE EXPORT BY DEFAULT
 // PLEASE DISCUSS BEFORE YOU WANT TO EDIT THIS SCRIPT
