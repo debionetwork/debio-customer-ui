@@ -141,7 +141,7 @@ export default {
 
   props: {
     notifications: { type: Array, default: () => [] },
-    error: { type: Object, default: () => {} }
+    error: { type: [Object, Boolean], default: null }
   },
 
   data: () => ({

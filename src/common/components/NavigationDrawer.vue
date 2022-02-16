@@ -141,7 +141,7 @@
                   width="9"
                 )
     v-flex
-      .drawer-item.pt-2.pb-2(v-for="(item, key) in items" :key="key")
+      .drawer-item.pt-1.pb-1(v-for="(item, key) in items" :key="key")
         Button.btn-drawer(
           :class="customClass(item.active)"
           :to="{ name: item.route }"
@@ -152,7 +152,7 @@
         )
           ui-debio-icon.btnDrawerIcon(
             :icon="item.icon"
-            size="25"
+            size="24"
             stroke
             :color="item.active ? '#C400A5' : '#363636'"
           )

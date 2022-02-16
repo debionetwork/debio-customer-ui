@@ -2,6 +2,7 @@
   .ui-debio-file(:class="classes" @click="active = true" v-click-outside="{ handler: handleBlur, closeConditional }")
     .ui-debio-file__label(v-if="label" :aria-label="label")
       span {{ label }}
+      span.ui-debio-file__label-rules.ml-2(v-if="labelRules") {{ labelRules }}
 
     .ui-debio-file__wrapper
       input.ui-debio-file__input(type="file" ref="input-file" :accept="accept" @change="handleFileChange")
@@ -26,6 +27,7 @@ export default {
   props: {
     accept: { type: [Array, String], default: () => [".docx", ".pdf", ".doc"] },
     label: { type: String, default: null },
+    labelRules: { type: String, default: null },
     placeholder: { type: String, default: "Choose File" },
     variant: { type: String, default: "default" },
     validateOnBlur: Boolean,
@@ -49,7 +51,7 @@ export default {
     },
 
     computeFileName() {
-      return this.selectedFile?.name || ""
+      return (this.$attrs.value?.name || this.selectedFile?.name) || ""
     },
 
     computeButtonLabel() {
@@ -135,7 +137,10 @@ export default {
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
       display: flex
       align-items: center
-      justify-content: space-between
+
+    &__label-rules
+      @include body-text-3
+      color: #595959
 
     &__wrapper
       display: flex

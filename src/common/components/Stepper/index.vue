@@ -78,7 +78,7 @@ export default {
           position: absolute
           top: 25%
           right: 52%
-          min-width: calc(100% + (4 * 3.2rem))
+          min-width: calc(100% + (4 * 3rem))
           height: 0.188rem
           background: #F5F7F9
           transition: all cubic-bezier(.7,-0.04,.61,1.14) .3s
