@@ -38,6 +38,7 @@
 
 <script>
 import { GAGetOrders } from "@/common/lib/api"
+import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
 import { geneticAnalystIllustration, eyeIcon } from "@/common/icons"
 
 import DataTable from "@/common/components/DataTable"
@@ -62,7 +63,7 @@ export default {
       },
       {
         text: "Service Name",
-        value: "name",
+        value: "service_info.name",
         sortable: true
       },
       {
@@ -92,6 +93,7 @@ export default {
   computed: {
     ...mapState({
       lastEventData: (state) => state.substrate.lastEventData,
+      api: (state) => state.substrate.api,
       web3: (state) => state.metamask.web3
     })
   },
@@ -116,22 +118,41 @@ export default {
 
   methods: {
     async getOrdersData() {
-      const orderData = await GAGetOrders()
-      this.orderLists = orderData.data.map(order => {
-        const sourceData = order._source
-        // TODO: Remove OR condition here after backend ready
-        const formatedPrice = `${this.web3.utils.fromWei(String(sourceData.prices[0]?.value.replaceAll(",", "") || 0), "ether")} ${sourceData?.currency}`
+      try {
+        this.orderLists = []
 
-        return {
-          ...sourceData,
-          price: formatedPrice,
-          created_at: new Date(+sourceData.created_at.replaceAll(",", "")).toLocaleString("en-GB", {
-            day: "numeric",
-            year: "numeric",
-            month: "short"
-          })
+        const orderData = await GAGetOrders()
+
+        for (const order of orderData.data) {
+          const sourceData = order._source
+          const analysisData = await analysisDetails(this.api, order._source.genetic_analysis_tracking_id)
+          const GENETIC_STATUS = {
+            REGISTERED: "Open",
+            INPROGRESS: "In Progress",
+            REJECTED: "Rejected",
+            RESULTREADY: "Done"
+          }
+          const formatedPrice = `
+            ${Number(this.web3.utils.fromWei(String(sourceData.service_info?.prices_by_currency[0]?.total_price.replaceAll(",", "") || 0), "ether")).toFixed(4)} 
+            ${sourceData?.currency}
+          `
+
+          const data = {
+            ...sourceData,
+            price: formatedPrice,
+            status: GENETIC_STATUS[analysisData.status.toUpperCase()],
+            created_at: new Date(+sourceData.created_at.replaceAll(",", "")).toLocaleString("en-GB", {
+              day: "numeric",
+              year: "numeric",
+              month: "short"
+            })
+          }
+
+          this.orderLists.push(data)
         }
-      })
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 }

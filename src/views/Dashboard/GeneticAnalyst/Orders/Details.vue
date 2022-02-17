@@ -67,11 +67,11 @@
       section.order-section
         transition(name="transition-slide-x" mode="out-in")
           Card.order-section__hilight-description.mb-6(
-            :title="orderDataDetails.status === 'Rejected' ? orderDataDetails.rejectedTitle : 'DNA Result'"
-            v-if="orderDataDetails.status === 'Rejected' || (step === 3 && orderDataDetails.status !== 'Rejected')"
+            :title="rejectedOrder ? orderDataDetails.analysis_info.rejectedTitle : 'DNA Result'"
+            v-if="rejectedOrder || (step === 3 && orderDataDetails.analysis_info.status !== 'Rejected')"
           )
-            p(v-if="step === 3 && orderDataDetails.status !== 'Rejected'") {{ orderDataDetails.analysis_info.fileName }}
-            p
+            p(v-if="step === 3 && !rejectedOrder") {{ orderDataDetails.analysis_info.fileName }}
+            p(v-if="hilightDescription")
               | {{ readMore ? hilightDescription : hilightDescription.substr(0, 130) }}
               a(
                 v-if="hilightDescription.length >= 130"
@@ -127,7 +127,7 @@
                 @click="handleDownloadFile"
               ) {{ orderDataDetails.document.fileName }}
 
-              .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.status !== 'Rejected' && step === 1")
+              .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step !== 2")
                 Button(
                   :disabled="completed"
                   width="130px"
@@ -191,7 +191,7 @@ import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { u8aToHex } from "@polkadot/util"
 import { chevronLeftIcon, timerIcon, alertIcon } from "@/common/icons"
 import { validateForms } from "@/common/lib/validate"
-import { updateStatusOrder, rejectOrder, submitOrderReport, fulfillOrder } from "@/common/lib/polkadot-provider/command/genetic-analyst/orders"
+import { updateStatusOrder, rejectOrder, submitOrderReport } from "@/common/lib/polkadot-provider/command/genetic-analyst/orders"
 import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
 import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
 import { geneticDataById } from "@/common/lib/polkadot-provider/query/genetic-analyst/geneticData"
@@ -228,7 +228,12 @@ export default {
     rejectionTitle: null,
     rejectionDesc: null,
     documentLink: null,
-    orderDataDetails: {},
+    orderDataDetails: {
+      analysis_info: {},
+      document: {},
+      analyst_info: {},
+      service_info: {}
+    },
     hilightDescription: "",
     document: {
       file: null,
@@ -251,8 +256,12 @@ export default {
       wallet: (state) => state.substrate.wallet
     }),
 
+    rejectedOrder() {
+      return this.orderDataDetails?.analysis_info?.status === "Rejected"
+    },
+
     completed() {
-      return this.orderDataDetails.status === "ResultReady" || this.orderDataDetails.status === "Fulfilled"
+      return this.orderDataDetails?.analysis_info?.status === "ResultReady"
     },
 
     computeStepper() {
@@ -268,9 +277,9 @@ export default {
     computeDetailsTitle() {
       const sectionTitles = ["Upload Result", "Completed"]
       
-      if (this.step === 1) return this.orderDataDetails.status === "Registered"
+      if (this.step === 1) return this.orderDataDetails?.analysis_info?.status === "Registered"
         ? "Awaiting Order"
-        : `${this.orderDataDetails.status} Order`
+        : `${this.orderDataDetails?.analysis_info?.status} Order`
 
       else return sectionTitles[this.step - 2]
     }
@@ -283,7 +292,7 @@ export default {
 
     lastEventData(val) {
       if (val === null) return
-      if (val.section === "geneticAnalysisOrders") this.prepareData(this.$route.params.id)
+      if (val.section === "geneticAnalysisOrders" || val.section === "geneticAnalysis") this.prepareData(this.$route.params.id)
     }
   },
 
@@ -332,6 +341,7 @@ export default {
         const analystData = await analystDetails(this.api, data.sellerId)
         const analysisData = await analysisDetails(this.api, data.geneticAnalysisTrackingId)
         const geneticData = await geneticDataById(this.api, data.geneticDataId)
+
         this.orderDataDetails = {
           ...data,
           analysis_info: {
@@ -356,16 +366,17 @@ export default {
             ...serviceData,
             ...serviceData.info,
             price: `
-              ${this.web3.utils.fromWei(String(serviceData.info.pricesByCurrency[0].priceComponents[0].value.replaceAll(",", "")), "ether")} 
+              ${Number(this.web3.utils.fromWei(String(serviceData.info.pricesByCurrency[0].priceComponents[0].value.replaceAll(",", "")), "ether")).toFixed(4)}
               ${serviceData.info.pricesByCurrency[0].currency}
             `,
             expectedDuration: `${serviceData.info.expectedDuration.duration} ${serviceData.info.expectedDuration.durationType}`
           }
         }
 
-        if (this.orderDataDetails.status === "Rejected") this.hilightDescription = this.orderDataDetails.rejectedDescription
+        if (this.orderDataDetails?.analysis_info?.status === "Rejected") this.hilightDescription = this.orderDataDetails.analysis_info.rejectedDescription
+        if (this.orderDataDetails?.analysis_info?.status === "InProgress") this.step = 2
         if (this.completed) {
-          this.hilightDescription = this.orderDataDetails.analysis_info.comment
+          this.hilightDescription = this.orderDataDetails?.analysis_info?.comment
           this.step = 3
         }
       } catch (e) {
@@ -404,14 +415,15 @@ export default {
     async handleDownloadFile() {
       const fileName = this.orderDataDetails.document.fileName
       const path = `${this.orderDataDetails.document.reportLink.split("/").slice(4, 5).join("")}/${fileName}`
-
-      await downloadDecryptedFromIPFS(
-        path,
-        this.secretKey,
-        this.publicKey,
-        fileName,
-        "application/pdf"
-      )
+      await Promise.all[
+        downloadDecryptedFromIPFS(
+          path,
+          this.secretKey,
+          this.publicKey,
+          fileName,
+          "application/pdf"
+        )
+      ]
     },
 
     async handleSubmitForms() {
@@ -456,8 +468,6 @@ export default {
           )
 
           await updateStatusOrder(context.api, context.wallet, context.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
-          await fulfillOrder(context.api, context.wallet, context.orderDataDetails.id)
-
           context.step = 3
         } catch(e) {
           console.error(e)
