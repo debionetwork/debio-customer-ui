@@ -132,14 +132,40 @@ export default [
       {
         path: "add-genetic-data/:id?",
         name: "customer-add-genetic-data",
-        meta: { pageHeader: "Genetic Data" },
+        meta: { pageHeader: "My Genetic Data" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/Add")
       },
+
+      // Request Analysis
       {
         path: "request-analysis",
         name: "customer-request-analysis",
         meta: { pageHeader: "My Genetic Data" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis")
+      },
+      {
+        path: "request-analysis/select-service",
+        name: "customer-request-analysis-service",
+        meta: { pageHeader: "My Genetic Data" },
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/SelectServiceAnalyst")
+      },
+      {
+        path: "request-analysis/checkout-payment",
+        name: "customer-request-analysis-payment",
+        meta: { pageHeader: "My Genetic Data" },
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/CheckoutPayment")
+      },
+      {
+        path: "request-analysis/checkout-payment",
+        name: "customer-request-analysis-payment",
+        meta: { pageHeader: "My Genetic Data" },
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/CheckoutPayment")
+      },
+      {
+        path: "request-analysis/success-payment/:id?",
+        name: "customer-request-analysis-success",
+        meta: { pageHeader: "My Genetic Data" },
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/SuccessPage")
       }
     ]
   }

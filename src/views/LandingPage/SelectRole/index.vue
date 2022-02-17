@@ -56,23 +56,23 @@ export default {
 
   &__title
     margin-top: 10px
-    transition: all cubic-bezier(.7, -0.04, .61, 1.14) .5s
+    transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
 
   &__icon
     width: 110px
     height: 110px
     border-radius: 50%
     text-align: center
-    box-shadow: 0px 2px 10px 0px #000000
+    box-shadow: 0px 2px 10px 0px #a9a9a9
     display: flex
     justify-content: center
     align-items: center
     border: solid 50px #FFFFFF
-    transition: all cubic-bezier(.7, -0.04, .61, 1.14) .5s
+    transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
 
     &:hover
       border: solid 5px #C400A5
-      box-shadow: 0px 2px 20px 0px #000000
+      box-shadow: 0px 2px 20px 0px #a9a9a9
 
       & + span
         color: #C400A5

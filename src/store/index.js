@@ -8,6 +8,7 @@ import substrate from "./substrate"
 import lab from "./lab"
 import wallet from "./wallet"
 import rating from "./rating"
+import geneticData from "./genetic-data"
 
 
 
@@ -23,7 +24,8 @@ export default new Vuex.Store({
     substrate,
     lab,
     wallet,
-    rating
+    rating,
+    geneticData
   },
   state: {
   },
