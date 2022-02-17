@@ -91,8 +91,16 @@ export default {
 
   computed: {
     ...mapState({
+      lastEventData: (state) => state.substrate.lastEventData,
       web3: (state) => state.metamask.web3
     })
+  },
+
+  watch: {
+    lastEventData(val) {
+      if (val === null) return
+      if (val.section === "geneticAnalysisOrders") this.getOrdersData()
+    }
   },
 
   created() {

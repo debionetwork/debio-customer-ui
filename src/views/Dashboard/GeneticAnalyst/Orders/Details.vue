@@ -67,13 +67,17 @@
       section.order-section
         transition(name="transition-slide-x" mode="out-in")
           Card.order-section__hilight-description.mb-6(
-            :title="orderDataDetails.status === 'Reject' ? 'Reason of Rejection' : 'DNA Result'"
-            v-if="orderDataDetails.status === 'Reject' || (step === 3 && orderDataDetails.status !== 'Reject')"
+            :title="orderDataDetails.status === 'Rejected' ? orderDataDetails.rejectedTitle : 'DNA Result'"
+            v-if="orderDataDetails.status === 'Rejected' || (step === 3 && orderDataDetails.status !== 'Rejected')"
           )
-            p(v-if="step === 3 && orderDataDetails.status !== 'Reject'") DNA Report Analysis.pdf
+            p(v-if="step === 3 && orderDataDetails.status !== 'Rejected'") {{ orderDataDetails.analysis_info.fileName }}
             p
               | {{ readMore ? hilightDescription : hilightDescription.substr(0, 130) }}
-              a(@click="readMore = !readMore" role="button") {{ readMore ? " Read less" : " Read more..." }}
+              a(
+                v-if="hilightDescription.length >= 130"
+                @click="readMore = !readMore"
+                role="button"
+              ) {{ readMore ? " Read less" : " Read more..." }}
 
         .order-section__services
           Card.service-details(:title="orderDataDetails.service_info.name")
@@ -87,11 +91,11 @@
               span(:aria-label="orderDataDetails.service_info.expectedDuration") {{ orderDataDetails.service_info.expectedDuration }}
 
             .service-details__detail.d-flex.mt-5
-              //- ui-debio-avatar.service-details__avatar.mr-4(
-              //-   src="https://i.pravatar.cc/80"
-              //-   alt="orderDataDetails.analyst_info"
-              //-   size="80"
-              //- )
+              ui-debio-avatar.service-details__avatar.mr-4(
+                src="https://i.pravatar.cc/80"
+                alt="orderDataDetails.analyst_info"
+                size="80"
+              )
               .service-details__analyst
                 p.service-details__analyst-name.mb-0(
                   :title="orderDataDetails.analyst_info.name"
@@ -103,7 +107,7 @@
                   :aria-label="orderDataDetails.analyst_info.specialization"
                 ) {{ orderDataDetails.analyst_info.specialization }}
 
-                //- span.service-details__analyst-price {{ orderDataDetails.price }}
+                span.service-details__analyst-price {{ orderDataDetails.service_info.price }}
 
           Card.order-details(title="Order ID")
             .order-details__wrapper
@@ -112,12 +116,31 @@
                 b.order-details__date-label Date: 
                 span.order-details__date-detail {{ orderDataDetails.createdAt }}
 
-              b.order-details__name(title="Pediatric Record" aria-label="Pediatric Record") Pediatric Record
-              span.order-details__file(title="PerdiatricRecord.vcf" aria-label="PerdiatricRecord.vcf" role="button" @click="handleDownloadFile") PerdiatricRecord.vcf
+              b.order-details__name(
+                :title="orderDataDetails.document.title"
+                :aria-label="orderDataDetails.document.title"
+              ) {{ orderDataDetails.document.title }}
+              span.order-details__file(
+                :title="orderDataDetails.document.fileName"
+                :aria-label="orderDataDetails.document.fileName"
+                role="button"
+                @click="handleDownloadFile"
+              ) {{ orderDataDetails.document.fileName }}
 
-              .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.status !== 'Reject' && step === 1")
-                Button(width="130px" outlined color="secondary" @click="showModalReject = true") REJECT
-                Button(width="130px" color="secondary" @click="handleAcceptOrder") ACCEPT
+              .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.status !== 'Rejected' && step === 1")
+                Button(
+                  :disabled="completed"
+                  width="130px"
+                  outlined
+                  color="secondary"
+                  @click="showModalReject = true"
+                ) REJECT
+                Button(
+                  :disabled="completed"
+                  width="130px"
+                  color="secondary"
+                  @click="handleAcceptOrder"
+                ) ACCEPT
 
       transition(name="transition-slide-x" mode="out-in")
         section.upload-section.mt-6(v-if="step === 2")
@@ -171,9 +194,12 @@ import { validateForms } from "@/common/lib/validate"
 import { updateStatusOrder, rejectOrder, submitOrderReport, fulfillOrder } from "@/common/lib/polkadot-provider/command/genetic-analyst/orders"
 import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
 import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
+import { geneticDataById } from "@/common/lib/polkadot-provider/query/genetic-analyst/geneticData"
 import { serviceDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/services"
 import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { mapState } from "vuex"
+import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
+
 import errorMessage from "@/common/constants/error-messages"
 
 import Card from "./Card.vue"
@@ -203,7 +229,7 @@ export default {
     rejectionDesc: null,
     documentLink: null,
     orderDataDetails: {},
-    hilightDescription: "The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she continued her way. On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word 'and' and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their",
+    hilightDescription: "",
     document: {
       file: null,
       recordLink: null,
@@ -219,9 +245,15 @@ export default {
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
+      web3: (state) => state.metamask.web3,
       mnemonicData: (state) => state.substrate.mnemonicData,
+      lastEventData: (state) => state.substrate.lastEventData,
       wallet: (state) => state.substrate.wallet
     }),
+
+    completed() {
+      return this.orderDataDetails.status === "ResultReady" || this.orderDataDetails.status === "Fulfilled"
+    },
 
     computeStepper() {
       return this.steppers.map(stepper => {
@@ -236,7 +268,7 @@ export default {
     computeDetailsTitle() {
       const sectionTitles = ["Upload Result", "Completed"]
       
-      if (this.step === 1) return this.orderDataDetails.status === "Open"
+      if (this.step === 1) return this.orderDataDetails.status === "Registered"
         ? "Awaiting Order"
         : `${this.orderDataDetails.status} Order`
 
@@ -247,12 +279,17 @@ export default {
   watch: {
     mnemonicData(val) {
       if (val) this.initialDataKey()
+    },
+
+    lastEventData(val) {
+      if (val === null) return
+      if (val.section === "geneticAnalysisOrders") this.prepareData(this.$route.params.id)
     }
   },
 
   async created() {
     if (this.mnemonicData) this.initialDataKey()
-    this.prepareData(this.$route.params.id)
+    await this.prepareData(this.$route.params.id)
   },
 
   rules: {
@@ -294,9 +331,17 @@ export default {
         const serviceData = await serviceDetails(this.api, data.serviceId)
         const analystData = await analystDetails(this.api, data.sellerId)
         const analysisData = await analysisDetails(this.api, data.geneticAnalysisTrackingId)
+        const geneticData = await geneticDataById(this.api, data.geneticDataId)
         this.orderDataDetails = {
           ...data,
-          ...analysisData,
+          analysis_info: {
+            ...analysisData,
+            fileName: analysisData.reportLink.replaceAll("%20", " ").split("/").pop()
+          },
+          document: {
+            ...geneticData,
+            fileName: geneticData.reportLink.replaceAll("%20", " ").split("/").pop()
+          },
           createdAt: new Date(+data.createdAt.replaceAll(",", "")).toLocaleString("en-GB", {
             day: "numeric",
             year: "numeric",
@@ -310,8 +355,18 @@ export default {
           service_info: {
             ...serviceData,
             ...serviceData.info,
+            price: `
+              ${this.web3.utils.fromWei(String(serviceData.info.pricesByCurrency[0].priceComponents[0].value.replaceAll(",", "")), "ether")} 
+              ${serviceData.info.pricesByCurrency[0].currency}
+            `,
             expectedDuration: `${serviceData.info.expectedDuration.duration} ${serviceData.info.expectedDuration.durationType}`
           }
+        }
+
+        if (this.orderDataDetails.status === "Rejected") this.hilightDescription = this.orderDataDetails.rejectedDescription
+        if (this.completed) {
+          this.hilightDescription = this.orderDataDetails.analysis_info.comment
+          this.step = 3
         }
       } catch (e) {
         console.error(e);
@@ -319,7 +374,7 @@ export default {
     },
     
     handlePrevious() {
-      if (this.step === 1) {
+      if (this.step === 1 || (this.step === 3 && this.completed)) {
         this.$router.go(-1)
         return
       }
@@ -338,7 +393,7 @@ export default {
 
     async handleSubmitRejection() {
       try {
-        await rejectOrder(this.api, this.wallet, this.rejectionTitle, this.rejectionDesc)
+        await rejectOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, this.rejectionTitle, this.rejectionDesc)
 
         this.showModalReject = false
       } catch (e) {
@@ -346,8 +401,17 @@ export default {
       }
     },
 
-    handleDownloadFile() {
-      // TODO: Do something
+    async handleDownloadFile() {
+      const fileName = this.orderDataDetails.document.fileName
+      const path = `${this.orderDataDetails.document.reportLink.split("/").slice(4, 5).join("")}/${fileName}`
+
+      await downloadDecryptedFromIPFS(
+        path,
+        this.secretKey,
+        this.publicKey,
+        fileName,
+        "application/pdf"
+      )
     },
 
     async handleSubmitForms() {
@@ -391,8 +455,8 @@ export default {
             context.document.description
           )
 
-          await fulfillOrder(context.api, context.wallet, context.orderDataDetails.id)
           await updateStatusOrder(context.api, context.wallet, context.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
+          await fulfillOrder(context.api, context.wallet, context.orderDataDetails.id)
 
           context.step = 3
         } catch(e) {
@@ -527,6 +591,9 @@ export default {
     align-items: center
     justify-content: center
     
+    &__hilight-description
+      width: 100%
+
     &__title
       color: #595959
       margin-bottom: 40px
