@@ -295,7 +295,7 @@ export default {
       
       if (this.step === 1) return this.orderDataDetails?.analysis_info?.status === "Registered"
         ? "Awaiting Order"
-        : `${GENETIC_STATUS[this.orderDataDetails?.analysis_info?.status.toUpperCase()]} Order`
+        : `${GENETIC_STATUS[this.orderDataDetails?.analysis_info?.status?.toUpperCase()]} Order`
 
       else return sectionTitles[this.step - 2]
     }
