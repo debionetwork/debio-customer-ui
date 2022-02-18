@@ -39,6 +39,7 @@
 <script>
 import { GAGetOrders } from "@/common/lib/api"
 import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
+import { generalDebounce } from "@/common/lib/utils"
 import { geneticAnalystIllustration, eyeIcon } from "@/common/icons"
 
 import DataTable from "@/common/components/DataTable"
@@ -99,9 +100,12 @@ export default {
   },
 
   watch: {
-    lastEventData(val) {
-      if (val === null) return
-      if (val.section === "geneticAnalysisOrders") this.getOrdersData()
+    lastEventData: {
+      deep: true,
+      immediate: true,
+      handler: generalDebounce(async function(val) {
+        if (val?.section === "geneticAnalysisOrders") await this.getOrdersData()
+      }, 100)
     }
   },
 

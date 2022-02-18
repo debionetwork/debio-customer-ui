@@ -7,7 +7,7 @@
       cta-title="Submit"
       :cta-action="handleSubmitRejection"
       :cta-outlined="false"
-      @onClose="showModalReject = false"
+      @onClose="handleHideModalReject"
     )
       ui-debio-input(
         :error="isDirty.rejectionTitle && isDirty.rejectionTitle"
@@ -19,6 +19,7 @@
         outlined
         block
         validate-on-blur
+        @change="handleRejectionTitle"
         @isError="handleError"
       )
       ui-debio-textarea(
@@ -31,6 +32,7 @@
         validate-on-blur
         outlined
         block
+        @change="handleRejectionDesc"
         @isError="handleError"
       )
 
@@ -48,7 +50,7 @@
               :class="{ 'upload-section__tx-tooltip--show': showTooltip }"
             ) Total fee paid in DBIO to execute this transaction.
 
-          span.upload-section__tx-price 0.0014 DBIO
+          span.upload-section__tx-price {{ txWeight }}
     
     ui-debio-icon.ga-order-details__back-button(
       :icon="chevronLeftIcon"
@@ -133,14 +135,14 @@
                   width="130px"
                   outlined
                   color="secondary"
-                  @click="showModalReject = true"
+                  @click="handleShowModalReject"
                 ) REJECT
                 Button(
                   :disabled="completed"
                   width="130px"
                   color="secondary"
                   @click="handleAcceptOrder"
-                ) ACCEPT
+                ) {{ orderDataDetails.analysis_info.status === 'InProgress' ? "Upload" :"ACCEPT" }}
 
       transition(name="transition-slide-x" mode="out-in")
         section.upload-section.mt-6(v-if="step === 2")
@@ -178,7 +180,7 @@
                 :class="{ 'upload-section__tx-tooltip--show': showTooltip }"
               ) Total fee paid in DBIO to execute this transaction.
 
-            span.upload-section__tx-price 0.0014 DBIO
+            span.upload-section__tx-price {{ txWeight }}
           Button(block :loading="isLoading" :disabled="isLoading" @click="handleSubmitForms" color="secondary") SUBMIT
 </template>
 
@@ -191,7 +193,13 @@ import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { u8aToHex } from "@polkadot/util"
 import { chevronLeftIcon, timerIcon, alertIcon } from "@/common/icons"
 import { validateForms } from "@/common/lib/validate"
-import { updateStatusOrder, rejectOrder, submitOrderReport } from "@/common/lib/polkadot-provider/command/genetic-analyst/orders"
+import {
+  updateStatusOrder,
+  rejectOrder,
+  rejectOrderFee,
+  submitOrderReportFee,
+  submitOrderReport
+} from "@/common/lib/polkadot-provider/command/genetic-analyst/orders"
 import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
 import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
 import { geneticDataById } from "@/common/lib/polkadot-provider/query/genetic-analyst/geneticData"
@@ -199,6 +207,7 @@ import { serviceDetails } from "@/common/lib/polkadot-provider/query/genetic-ana
 import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { mapState } from "vuex"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
+import { generalDebounce } from "@/common/lib/utils"
 
 import errorMessage from "@/common/constants/error-messages"
 
@@ -227,6 +236,7 @@ export default {
     secretKey: null,
     rejectionTitle: null,
     rejectionDesc: null,
+    txWeight: null,
     documentLink: null,
     orderDataDetails: {
       analysis_info: {},
@@ -276,10 +286,16 @@ export default {
 
     computeDetailsTitle() {
       const sectionTitles = ["Upload Result", "Completed"]
+      const GENETIC_STATUS = {
+        REGISTERED: "Open",
+        INPROGRESS: "In Progress",
+        REJECTED: "Rejected",
+        RESULTREADY: "Done"
+      }
       
       if (this.step === 1) return this.orderDataDetails?.analysis_info?.status === "Registered"
         ? "Awaiting Order"
-        : `${this.orderDataDetails?.analysis_info?.status} Order`
+        : `${GENETIC_STATUS[this.orderDataDetails?.analysis_info?.status.toUpperCase()]} Order`
 
       else return sectionTitles[this.step - 2]
     }
@@ -290,9 +306,20 @@ export default {
       if (val) this.initialDataKey()
     },
 
-    lastEventData(val) {
-      if (val === null) return
-      if (val.section === "geneticAnalysisOrders" || val.section === "geneticAnalysis") this.prepareData(this.$route.params.id)
+    lastEventData: {
+      deep: true,
+      immediate: true,
+      handler: generalDebounce(async function(val) {
+        if (val?.section === "geneticAnalysisOrders" || val?.section === "geneticAnalysis") await this.prepareData(this.$route.params.id)
+      }, 100)
+    },
+
+    document: {
+      deep: true,
+      immediate: true,
+      handler: generalDebounce(async function() {
+        await this.calculateDocumentFee()
+      }, 500)
     }
   },
 
@@ -374,7 +401,19 @@ export default {
         }
 
         if (this.orderDataDetails?.analysis_info?.status === "Rejected") this.hilightDescription = this.orderDataDetails.analysis_info.rejectedDescription
-        if (this.orderDataDetails?.analysis_info?.status === "InProgress") this.step = 2
+        if (this.orderDataDetails?.analysis_info?.status === "InProgress") {
+          const txWeight = await submitOrderReportFee(
+            this.api,
+            this.wallet,
+            this.orderDataDetails.geneticAnalysisTrackingId,
+            this.document.recordLink,
+            this.document.description
+          )
+
+          this.txWeight = "Calculating..."
+          this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
+          this.step = 2
+        }
         if (this.completed) {
           this.hilightDescription = this.orderDataDetails?.analysis_info?.comment
           this.step = 3
@@ -394,12 +433,30 @@ export default {
     },
 
     async handleAcceptOrder() {
+      if (this.orderDataDetails.analysis_info?.status === "InProgress") {
+        this.step = 2
+        return
+      }
+
       try {
         await updateStatusOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, "InProgress")
+        await this.calculateDocumentFee()
+
         this.step = 2
       } catch (e) {
         console.error(e)
       }
+    },
+
+    async handleShowModalReject() {
+      await this.calculateRejectFee()
+
+      this.showModalReject = true
+    },
+
+    async handleHideModalReject() {
+      this.showModalReject = false
+      this.txWeight = null
     },
 
     async handleSubmitRejection() {
@@ -409,7 +466,36 @@ export default {
         this.showModalReject = false
       } catch (e) {
         console.error(e);
+      } finally {
+        this.txWeight = null
       }
+    },
+
+    async handleRejectionTitle() {
+      await this.calculateRejectFee()
+    },
+
+    async handleRejectionDesc() {
+      await this.calculateRejectFee()
+    },
+
+    async calculateRejectFee() {
+      const txWeight = await rejectOrderFee(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, this.rejectionTitle, this.rejectionDesc)
+      this.txWeight = "Calculating..."
+      this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
+    },
+
+    async calculateDocumentFee() {
+      const txWeight = await submitOrderReportFee(
+        this.api,
+        this.wallet,
+        this.orderDataDetails.geneticAnalysisTrackingId,
+        this.document.recordLink,
+        this.document.description
+      )
+
+      this.txWeight = "Calculating..."
+      this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 
     async handleDownloadFile() {
