@@ -35,7 +35,7 @@ describe("Payment Remaining dialog", () => {
           region: "JK",
           city: "Kota Administrasi Jakarta Pusat",
           category: "Single Gene",
-          stakingData: {},
+          stakingData: {}
         },
         testRequest: {
           products: {}

@@ -3,7 +3,7 @@
     .genetic-data__wrapper
       ui-debio-banner.genetic-data__banner(
         title="My Genetic Data"
-        subtitle="Privacy-first biomedical service. Get your own biomedical sample at home, proceed it anonymously to expert and scientist!"
+        subtitle="A feature that allows you to request genetic analysis to a verified Genetic Analyst based on uploaded genetic data."
         gradientColor="tertiary"
         with-decoration
       )
