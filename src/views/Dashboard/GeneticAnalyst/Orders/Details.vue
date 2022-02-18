@@ -311,6 +311,7 @@ export default {
       immediate: true,
       handler: generalDebounce(async function(val) {
         if (val?.section === "geneticAnalysisOrders" || val?.section === "geneticAnalysis") await this.prepareData(this.$route.params.id)
+        if (val?.method === "GeneticAnalysisResultReady") this.step = 3
       }, 100)
     },
 
@@ -554,7 +555,6 @@ export default {
           )
 
           await updateStatusOrder(context.api, context.wallet, context.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
-          context.step = 3
         } catch(e) {
           console.error(e)
         }
