@@ -15,7 +15,7 @@
             fill
           )
 
-      DataTable(:headers="headers" :items="orders")
+      DataTable(:headers="headers" :items="orderLists")
         template(slot="prepend")
           .ga-dashboard__text
             h2.ga-dashboard__table-title Order Lists
@@ -37,8 +37,13 @@
 </template>
 
 <script>
-import DataTable from "@/common/components/DataTable"
+import { GAGetOrders } from "@/common/lib/api"
+import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
+import { generalDebounce } from "@/common/lib/utils"
 import { geneticAnalystIllustration, eyeIcon } from "@/common/icons"
+
+import DataTable from "@/common/components/DataTable"
+import { mapState } from "vuex"
 
 
 export default {
@@ -50,43 +55,7 @@ export default {
     eyeIcon,
 
     cardBlock: false,
-    orders: [
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40e",
-        name: "Neurology Analysis A",
-        createdAt: "28 Jan 2022",
-        price: "3600  DBIO",
-        status: "In Progres"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40a",
-        name: "Neurology Analysis B",
-        createdAt: "21 Jan 2022",
-        price: "2300 DBIO",
-        status: "Done"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40c",
-        name: "Neurology Analysis C",
-        createdAt: "25 Jan 2022",
-        price: "1400 DBIO",
-        status: "In Progres"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40b",
-        name: "Neurology Analysis D",
-        createdAt: "15 Jan 2022",
-        price: "4600 DBIO",
-        status: "Reject"
-      },
-      {
-        id: "0xa654e848bbb9ec1bb817cca5f005f5a24148eab00d3af3254200dd99a78fd40z",
-        name: "Neurology Analysis E",
-        createdAt: "16 Jan 2022",
-        price: "1600 DBIO",
-        status: "Open"
-      }
-    ],
+    orderLists: [],
     headers: [
       {
         text: "Order ID",
@@ -95,12 +64,12 @@ export default {
       },
       {
         text: "Service Name",
-        value: "name",
+        value: "service_info.name",
         sortable: true
       },
       {
         text: "Order Date",
-        value: "createdAt",
+        value: "created_at",
         sortable: true
       },
       {
@@ -122,11 +91,73 @@ export default {
     ]
   }),
 
+  computed: {
+    ...mapState({
+      lastEventData: (state) => state.substrate.lastEventData,
+      api: (state) => state.substrate.api,
+      web3: (state) => state.metamask.web3
+    })
+  },
+
+  watch: {
+    lastEventData: {
+      deep: true,
+      immediate: true,
+      handler: generalDebounce(async function(val) {
+        if (val?.section === "geneticAnalysisOrders") await this.getOrdersData()
+      }, 100)
+    }
+  },
+
+  created() {
+    this.getOrdersData()
+  },
+
   mounted() {
     window.addEventListener("resize", () => {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
     })
+  },
+
+  methods: {
+    async getOrdersData() {
+      try {
+        this.orderLists = []
+
+        const orderData = await GAGetOrders()
+
+        for (const order of orderData.data) {
+          const sourceData = order._source
+          const analysisData = await analysisDetails(this.api, order._source.genetic_analysis_tracking_id)
+          const GENETIC_STATUS = {
+            REGISTERED: "Open",
+            INPROGRESS: "In Progress",
+            REJECTED: "Rejected",
+            RESULTREADY: "Done"
+          }
+          const formatedPrice = `
+            ${Number(this.web3.utils.fromWei(String(sourceData.service_info?.prices_by_currency[0]?.total_price.replaceAll(",", "") || 0), "ether")).toFixed(4)} 
+            ${sourceData?.currency}
+          `
+
+          const data = {
+            ...sourceData,
+            price: formatedPrice,
+            status: GENETIC_STATUS[analysisData.status.toUpperCase()],
+            created_at: new Date(+sourceData.created_at.replaceAll(",", "")).toLocaleString("en-GB", {
+              day: "numeric",
+              year: "numeric",
+              month: "short"
+            })
+          }
+
+          this.orderLists.push(data)
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 }
 </script>
