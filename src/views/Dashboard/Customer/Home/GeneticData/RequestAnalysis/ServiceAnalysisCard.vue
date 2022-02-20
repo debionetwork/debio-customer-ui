@@ -1,29 +1,29 @@
 <template lang="pug">
   v-card.service-analysis-card(@click="onClick")
-    .service-analysis-card__title {{ service.serviceName }}
+    .service-analysis-card__title {{ serviceName }}
 
-    .service-analysis-card__description {{ service.description }}
+    .service-analysis-card__description {{ description }}
 
     .service-analysis-card__info
       v-row
         v-col(cols="8")
           v-icon(size="14" outlined ) mdi-timer 
-          span.service-analysis-card__info-duration {{ service.duration }} {{ service.durationType }}
+          span.service-analysis-card__info-duration {{ duration }} {{ durationType }}
         v-col(cols="4")
-          b.service-analysis-card__info-price {{ formatBalance(service.priceDetail[0].totalPrice) }} {{ service.priceDetail[0].currency }}
+          b.service-analysis-card__info-price {{ price }}
 
     hr
 
     .service-analysis-card__analyst
       v-row
         v-col(cols=3)
-          ui-debio-avatar.service-analysis-card__avatar(src="https://ipfs.io/ipfs/QmcJYkCKK7QPmYWjp4FD2e3Lv5WCGFuHNUByvGKBaytif4" size="70" rounded)
+          ui-debio-avatar.service-analysis-card__avatar(:src="profileImage" size="70" rounded)
 
         v-col(cols=8).service-analysis-card__analyst-info
-          .service-analysis-card__analyst-name {{ service.analystsInfo.info.firstName }} {{ service.analystsInfo.info.lastName }}
-          .service-analysis-card__analyst-desc {{ service.analystsInfo.info.specialization }}
+          .service-analysis-card__analyst-name {{ analystName }}
+          .service-analysis-card__analyst-desc {{ specialization }}
 
-          a(href="https://www.linkedin.com/" target="_blank")
+          a(:href="profileLink" target="_blank")
             v-img.service-analysis-card__social(
               alt="linkedin"
               center
@@ -36,12 +36,27 @@
 
 <script>
 import { mapState } from "vuex"
+import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
+import { queryGetGeneticAnalystServiceById } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
+import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+
 
 export default {
   name: "ServiceAnalysisCard",
 
   data: () => ({
-    showDetail: false
+    showDetail: false,
+    serviceName: null,
+    description: null,
+    duration: null,
+    durationType: null,
+    price: null,
+    profileImage: null,
+    analystName: null,
+    specialization: null,
+    profileLink: null,
+    geneticOrderDetail: null,
+    orderId: null
   }),
 
   props: {
@@ -50,10 +65,33 @@ export default {
 
   computed: {
     ...mapState({
+      api: (state) => state.substrate.api,
       web3: (state) => state.metamask.web3
     })
   },
 
+  async mounted() {
+
+    if(this.$route.params.id) {
+      this.isCreated = true
+      this.orderId = this.$route.params.id
+      await this.getServiceDetail()
+    }
+
+    this.serviceName = this.service.serviceName
+    this.description = this.service.description
+    this.duration = this.service.duration
+    this.durationType = this.service.durationType
+    this.price = `${this.formatBalance(this.service.priceDetail[0].totalPrice)} ${this.service.priceDetail[0].currency}`
+
+    if (!this.service.analystsInfo.info.profielImage) {
+      this.profileImage = "https://ipfs.debio.network/ipfs/QmQ9Zvn4pMNMr3nVTGzYE9zGQfyFrhyAHWZNjm76pJmvRn"
+    }
+
+    this.analystName = `${this.service.analystsInfo.info.firstName} ${this.service.analystsInfo.info.lastName}`
+    this.specialization = this.service.analystsInfo.info.specialization
+    this.profileLink = this.service.analystsInfo.info.profileLink
+  },
 
   methods: {
     onClick() {
@@ -63,6 +101,54 @@ export default {
     formatBalance(balance) {
       const formatedBalance = this.web3.utils.fromWei(String(balance.replaceAll(",", "")), "ether")
       return Number(formatedBalance).toPrecision()
+    },
+
+    async getServiceDetail ()  {
+      this.geneticOrderDetail = await queryGeneticAnalysisOrders(this.api, this.orderId)
+      
+      const serviceDetail = await queryGetGeneticAnalystServiceById(this.api, this.geneticOrderDetail.serviceId)
+
+      let {
+        id: serviceId,
+        ownerId: analystId,
+        info: {
+          name: serviceName,
+          pricesByCurrency: priceDetail,
+          expectedDuration: {
+            duration,
+            durationType
+          },
+          description,
+          testResultSample
+        }     
+      } = serviceDetail
+
+      const analystsInfo = await queryGeneticAnalysts(this.api, analystId)
+      const service = {
+        serviceId,
+        analystId,
+        serviceName,
+        priceDetail,
+        duration,
+        durationType,
+        description,
+        testResultSample,
+        analystsInfo
+      }
+
+      this.serviceName = service.serviceName
+      this.description = service.description
+      this.duration = service.duration
+      this.durationType = service.durationType
+      this.price = `${this.formatBalance(service.priceDetail[0].totalPrice)} ${service.priceDetail[0].currency}`
+
+      if (!service.analystsInfo.info.profielImage) {
+        this.profileImage = "https://ipfs.debio.network/ipfs/QmQ9Zvn4pMNMr3nVTGzYE9zGQfyFrhyAHWZNjm76pJmvRn"
+      }
+
+      this.analystName = `${service.analystsInfo.info.firstName} ${service.analystsInfo.info.lastName}`
+      this.specialization = service.analystsInfo.info.specialization
+      this.profileLink = service.analystsInfo.info.profileLink
     }
   }
 }

@@ -16,7 +16,6 @@
         .customer-select-service-analyst__cards
           v-row
             v-col(
-              cols="4"
               v-for="(service, i) in serviceList"
               :key="i"
             )
@@ -56,7 +55,8 @@ export default {
     showAnalystDetail: false,
     serviceList: [],
     selectedService: null,
-    selectedAnalystExperiences: null
+    selectedAnalystExperiences: null,
+    isLoading: false
   }),
 
   computed: {
@@ -83,6 +83,7 @@ export default {
 
   methods: {
     async getGeneticAnalystService() {
+      this.isLoading = true
       const geneticAnalystService = await queryGetAllGeneticAnalystServices(this.api)
 
 
@@ -105,20 +106,22 @@ export default {
         
         const analystsInfo = await queryGeneticAnalysts(this.api, analystId)
 
-
-        const service = {
-          serviceId,
-          analystId,
-          serviceName,
-          priceDetail,
-          duration,
-          durationType,
-          description,
-          testResultSample,
-          analystsInfo
+        if (analystsInfo.verificationStatus === "Verified") {
+          const service = {
+            serviceId,
+            analystId,
+            serviceName,
+            priceDetail,
+            duration,
+            durationType,
+            description,
+            testResultSample,
+            analystsInfo
+          }
+          this.serviceList.push(service)
         }
-        this.serviceList.push(service)
       }
+      this.isLoading = false
     },
 
     handleBack() {

@@ -10,15 +10,25 @@
             :items="stepperItems"
           )
 
-        div(v-if="orderStatus !== 'Cancelled'")
+        div(v-if="isProcessing")
           .customer-request-analyst-success__title Thank you for your order!
           .customer-request-analyst-success__sub-title(v-if="!isProcessing") Please wait, Genetic Analyst will confirm your order soon
           .customer-request-analyst-success__sub-title(v-else) Please wait while your genetic data is being analyzed
 
         
-        div(v-if="orderStatus === 'Cancelled'")
+        div(v-if="isCancelled")
           .customer-request-analyst-success__title Your service has been cancelled!
 
+
+        div(v-if="isRejected")
+          .customer-request-analyst-success__title Your service has been Rejected!
+
+          v-card.customer-request-analyst-success__reject.mt-5
+            .customer-request-analyst-success__reject-title Title
+            .customer-request-analyst-success__reject-text {{ rejectTitle }}
+
+            .customer-request-analyst-success__reject-title.mt-5 Reason of Rejection
+            .customer-request-analyst-success__reject-text {{ rejectDesc }}
 
         
         .customer-request-analyst-success__cards
@@ -60,7 +70,11 @@ export default {
     geneticData: null,
     service: null,
     orderStatus: null,
-    isProcessing: false
+    isProcessing: true,
+    isRejected: false,
+    isCancelled: false,
+    rejectTitle: null,
+    rejectDesc: null
   }),
 
   computed: {
@@ -80,14 +94,19 @@ export default {
 
     if (this.orderStatus === "Cancelled") {
       this.stepperItems[3].title = "Cancelled"
+      this.isCancelled = true
+      this.isProcessing = false
     }
-    console.log(this.orderStatus)
 
+    if (this.orderStatus === "Failed") {
+      this.stepperItems[3].title = "Rejeted"
+      this.isRejected = true
+      this.isProcessing = false
+
+    }
     await this.getServiceDetail()
     await this.getGeneticData()
     await this.getAnalysisStatus()
-
-
 
   },
 
@@ -106,6 +125,9 @@ export default {
         this.isProcessing = true
       }
 
+      this.rejectTitle = details.rejectedTitle
+      this.rejectDesc = details.rejectedDescription
+      
     },
 
     async getServiceDetail() {
@@ -208,5 +230,15 @@ export default {
       justify-content: space-between
       padding: 29px 35px 55px 35px
       gap: 32px
+
+    &__reject
+      width: 704px
+      padding: 30px
+    
+    &__reject-title
+      @include button-2
+
+    &__reject-text
+      @include new-body-text-2
 
 </style>

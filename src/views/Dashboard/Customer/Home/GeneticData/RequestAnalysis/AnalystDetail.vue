@@ -18,17 +18,17 @@
               v-icon(size="14" outlined ) mdi-timer 
               span.analyst-detail__service-info-duration {{ service.duration }} {{ service.durationType }}
             v-col(cols="4")
-              b.analyst-detail__service-info-price {{ formatBalance(service.priceDetail[0].totalPrice) }} {{ service.priceDetail[0].currency }}
+              b.analyst-detail__service-info-price {{ price }}
         hr
 
       v-row.analyst-detail__profil
         v-col(cols="3")
-          ui-debio-avatar.analyst-detail__profil-avatar(src="https://ipfs.io/ipfs/QmcJYkCKK7QPmYWjp4FD2e3Lv5WCGFuHNUByvGKBaytif4" size="75" rounded)
+          ui-debio-avatar.analyst-detail__profil-avatar(:src="profileImage" size="75" rounded)
         v-col(cols="9")
           .analyst-detail__profil-name {{ service.analystsInfo.info.firstName }} {{ service.analystsInfo.info.lastName }}
           .analyst-detail__profil-desc {{ service.analystsInfo.info.specialization }}
 
-          a(href="https://www.linkedin.com/" target="_blank")
+          a(:href="service.analystsInfo.info.profileLink" target="_blank")
             v-img.analyst-detail__profil-social(
               alt="linkedin"
               center
@@ -43,13 +43,13 @@
         :key="i"
       ) - {{ experience.title }}
 
-
       .analyst-detail__button
         Button.analyst-detail__button-text(
           color="secondary" 
           width="48%"
-          height="38" 
+          height="38"
           outlined
+          @click="handleDownloadFile"
         ) Download Sample Report
 
         Button.analyst-detail__button-text(
@@ -66,6 +66,11 @@
 
 import { mapMutations, mapState } from "vuex"
 import Button from "@/common/components/Button"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import { u8aToHex } from "@polkadot/util"
+import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
+
 
 
 export default {
@@ -75,10 +80,23 @@ export default {
     Button
   },
 
+  data: () => ({
+    price: null,
+    profileImage: null
+  }),
+
   props: {
     show: Boolean,
     service: Object,
     experiences: Array
+  },
+
+  mounted() {
+    this.price = `${this.formatBalance(this.service.priceDetail[0].totalPrice)} ${this.service.priceDetail[0].currency}`
+    
+    if (!this.service.analystsInfo.info.profileImage) {
+      this.profileImage = "https://ipfs.debio.network/ipfs/QmQ9Zvn4pMNMr3nVTGzYE9zGQfyFrhyAHWZNjm76pJmvRn"
+    }
   },
 
   computed: {
@@ -106,6 +124,24 @@ export default {
     formatBalance(balance) {
       const formatedBalance = this.web3.utils.fromWei(String(balance.replaceAll(",", "")), "ether")
       return Number(formatedBalance).toPrecision()
+    },
+
+    async handleDownloadFile() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+      const publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      const privateKey = u8aToHex(cred.boxKeyPair.secretKey)
+      const arr = this.service.testResultSample.split("/")
+      const fileName = arr[arr.length-1]
+      const path = `${this.service.testResultSample.split("/").slice(4, 5).join("")}/${fileName}`
+
+      await downloadDecryptedFromIPFS(
+        path,
+        privateKey,
+        publicKey,
+        fileName,
+        "application/pdf"
+      )
+
     }
   }
 }

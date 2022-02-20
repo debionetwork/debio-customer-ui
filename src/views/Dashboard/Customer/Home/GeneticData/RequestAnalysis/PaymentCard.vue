@@ -52,13 +52,15 @@
           b.customer-analysis-payment-card__data-text {{ orderPrice }} {{ orderCurrency }}
         .customer-analysis-payment-card__rate ( {{ orderPriceInUsd }} USD )
 
-        Button.customer-analysis-payment-card__button(
-          v-if="isRegistered && orderStatus !== 'Cancelled' "
-          width="280"
-          height="35"  
-          color="secondary"
-          @click="showCancelDialog = true"
-        ) Cancel Order
+        
+        //- Upcomming Feature
+        //- Button.customer-analysis-payment-card__button(
+        //-   v-if="isRegistered && orderStatus !== 'Cancelled' "
+        //-   width="280"
+        //-   height="35"  
+        //-   color="secondary"
+        //-   @click="showCancelDialog = true"
+        //- ) Cancel Order
     
 
       ImportantDialog(
@@ -89,14 +91,13 @@ import { u8aToHex } from "@polkadot/util"
 import Button from "@/common/components/Button"
 import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
 import ImportantDialog from "./Information.vue"
-import { getDbioBalance } from "@/common/lib/api"
+import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
 import { 
   createGeneticAnalysisOrder,
   cancelGeneticAnalysisOrder,
   getCreateGeneticAnalysisOrderFee
 } from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
-import { lastAnlysisOrderByCustomer } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
-import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
+import { lastAnlysisOrderByCustomer, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 
 export default {
@@ -184,13 +185,14 @@ export default {
         this.selectedAnalysisService.serviceId,
         priceIndex,
         customerBoxPublicKey,
-        this.getLastOrder
+        this.setPaid
       )
     },
 
-    async getLastOrder() {
+    async setPaid() {
       const lastOrder = await lastAnlysisOrderByCustomer(this.api, this.wallet.address)
       this.$router.push({ name: "customer-request-analysis-success", params: {id: lastOrder} })
+      await setGeneticAnalysisPaid(lastOrder)
     },
 
     async getGeneticAnalysisOrderDetail () {
