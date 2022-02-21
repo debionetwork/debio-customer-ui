@@ -158,9 +158,20 @@ export default {
       @include button-2
 
     &__service-description
-      height: 60px
+      height: 100px
+      overflow-y: scroll
       margin-top: 8px
       @include body-text-3-opensans
+
+      &::-webkit-scrollbar-track
+        background-color: #f2f2ff
+
+      &::-webkit-scrollbar
+        width: 0.25rem
+
+      &::-webkit-scrollbar-thumb
+        border-radius: 0.625rem
+        background: #a1a1ff
 
     &__service-info
       margin-top: 16px
