@@ -88,7 +88,7 @@
 
 <script>
 import { alertIcon } from "@/common/icons"
-import { fetchPaymentDetails } from "@/common/lib/api";
+import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api";
 import { getRatingService } from "@/common/lib/api"
 import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { mapState } from "vuex"
@@ -203,10 +203,12 @@ export default {
 
     async handleViewEtherscan() {
       const anchor = document.createElement("a")
-      const txHash = this.payment?.id
+      const orderId = this.payment?.id
+      const { transaction_hash } = await fetchTxHashOrder(orderId)
 
       // NOTE: Use anchor tag with "noreferrer noopener" for security
-      anchor.href = `https://rinkeby.etherscan.io/tx/${txHash}`
+      // eslint-disable-next-line camelcase
+      anchor.href = `https://rinkeby.etherscan.io/tx/${transaction_hash}`
       anchor.target = "_blank"
       anchor.rel = "noreferrer noopener"
       anchor.click()
