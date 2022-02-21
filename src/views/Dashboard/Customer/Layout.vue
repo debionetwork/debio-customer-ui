@@ -132,7 +132,7 @@ import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
 import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
-// import localStorage from "@/common/lib/local-storage"
+import localStorage from "@/common/lib/local-storage"
 
 export default {
   name: "MainPage",

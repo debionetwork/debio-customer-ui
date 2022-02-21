@@ -1,8 +1,8 @@
 <template lang="pug">
   .layout-dashboard
-    ui-debio-modal(
+    ui-debio-modal.font-weight-bold(
       :show="showModalPassword"
-      title="Unlock Wallet by Input your password"
+      title="Unlock Wallet"
       :icon="checkCircleIcon"
       :showCta="!success"
       :showTitle="!success"
@@ -33,16 +33,29 @@
           stroke
         )
 
-      .modal-password__cta.d-flex.align-center.justify-between(slot="cta")
-        router-link.modal-password__cta-forgot.mr-8(
-          :to="{ name: 'forgot-password' }"
-        ) forgot password
+      .modal-password__cta.d-flex.flex-column(slot="cta")
+        .modal-password__cta.d-flex.align-center.justify-between
+          Button.router-link.modal-password__cta-submit(
+            color="secondary"
+            width="130"
+            :to="{ name: 'forgot-password' }"
+            outlined
+          ) Forgot Password
 
-        Button.modal-password__cta-submit(
-          color="secondary"
-          width="130"
-          @click="handleSubmitPassword"
-        ) Submit
+          Button.modal-password__cta-submit(
+            color="secondary"
+            width="130"
+            @click="handleSubmitPassword"
+          ) Submit
+
+        .modal-password__cta.d-flex.align-center.justify-space-between
+          div.modal-password__divider
+          span.modal-password__cta-forgot OR
+          div.modal-password__divider
+
+        .modal-password__cta-change-account(
+          @click="signOut"
+        ) Not you? Try different account
 
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
 
@@ -55,7 +68,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapActions, mapMutations, mapState } from "vuex"
 import store from "@/store"
 import { validateForms } from "@/common/lib/validate"
 import {
@@ -73,6 +86,7 @@ import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
 import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
+import localStorage from "@/common/lib/local-storage"
 
 export default {
   name: "MainPage",
@@ -153,6 +167,14 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      clearWallet: "metamask/CLEAR_WALLET"
+    }),
+
+    ...mapActions({
+      clearAuth: "auth/clearAuth"
+    }),
+
     handlePageError(error) {
       this.pageError = error
     },
@@ -174,6 +196,13 @@ export default {
 
     handleShowPassword() {
       this.showPassword = !this.showPassword
+    },
+
+    signOut() {
+      this.$router.push({name: "landing-page"})
+      localStorage.clear()
+      this.clearAuth()
+      this.clearWallet()
     },
 
     async handleSubmitPassword() {
@@ -218,15 +247,25 @@ export default {
   .modal-password
     &__cta
       gap: 20px
+      align-items: center
 
     &__cta-forgot,
     &__cta-submit
       font-size: 10px
 
-    &__cta-forgot
+    &__cta-forgot,
+    &__cta-change-account
       color: #5640A5 !important
       font-weight: bold
       text-transform: uppercase
+
+    &__cta-change-account
+      font-size: 12px
+      cursor: pointer
+
+    &__divider
+      border-top: 1px solid #E9E9E9
+      width: 110px
 
   
   .transition-slide-x
