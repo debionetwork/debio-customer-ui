@@ -40,6 +40,7 @@
                 color="secondary" 
                 width="255"
                 height="35"
+                @click="goToDashboardPage"
                 ) Back to Dashboard
             v-col(
               v-else
@@ -115,8 +116,6 @@ export default {
       this.isLoading = true
       const geneticAnalystService = await queryGetAllGeneticAnalystServices(this.api)
 
-
-
       for (let i = 0; i < geneticAnalystService.length; i++) {
         let {
           id: serviceId,
@@ -171,6 +170,10 @@ export default {
 
     closeDetailDialog() {
       this.showAnalystDetail = false
+    },
+
+    goToDashboardPage() {
+      this.$router.push({name: "dashboard"})
     }
   }
 
@@ -230,7 +233,7 @@ export default {
     display: flex
     flex-direction: column
     align-items: center
-    font-family: opensans
+    @include body-text-3-opensans
     font-size: 12px
 
     &__text-alert
