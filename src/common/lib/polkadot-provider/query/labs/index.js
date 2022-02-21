@@ -1,9 +1,7 @@
-import { checkApiConnection } from "../../util"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import { getCertificationDetail } from "@/common/lib/polkadot-provider/query/labs/certifications"
 
 export async function queryLabsById(api, labId){
-  checkApiConnection()
   const res = await api.query.labs.labs(labId)
   return res.toHuman()
 }
