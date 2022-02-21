@@ -2,7 +2,7 @@
   v-card.service-analysis-card(@click="onClick")
     .service-analysis-card__title {{ serviceName }}
 
-    .service-analysis-card__description {{ description }}
+    .service-analysis-card__description {{ computeDescription }}
 
     .service-analysis-card__info
       v-row
@@ -68,7 +68,15 @@ export default {
     ...mapState({
       api: (state) => state.substrate.api,
       web3: (state) => state.metamask.web3
-    })
+    }),
+
+    computeDescription() {
+      const validateLength = this.description.length >= 100
+        ? `${this.description.slice(0, 100)}...`
+        : this.description
+
+      return this.description ? validateLength : "No Description"
+    }
   },
 
   async mounted() {
