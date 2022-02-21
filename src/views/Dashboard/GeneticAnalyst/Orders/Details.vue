@@ -94,8 +94,8 @@
 
             .service-details__detail.d-flex.mt-5
               ui-debio-avatar.service-details__avatar.mr-4(
-                src="https://i.pravatar.cc/80"
-                alt="orderDataDetails.analyst_info"
+                :src="computeAvatar"
+                :alt="orderDataDetails.analyst_info.name"
                 size="80"
               )
               .service-details__analyst
@@ -274,6 +274,12 @@ export default {
       return this.orderDataDetails?.analysis_info?.status === "ResultReady"
     },
 
+    computeAvatar() {
+      return this.orderDataDetails.analyst_info.profileImage
+        ? this.orderDataDetails.analyst_info.profileImage
+        : require("@/assets/defaultAvatar.svg")
+    },
+
     computeStepper() {
       return this.steppers.map(stepper => {
         if (stepper.number === 1) return {
@@ -394,7 +400,7 @@ export default {
             ...serviceData,
             ...serviceData.info,
             price: `
-              ${Number(this.web3.utils.fromWei(String(serviceData.info.pricesByCurrency[0].priceComponents[0].value.replaceAll(",", "")), "ether")).toFixed(4)}
+              ${Number(this.web3.utils.fromWei(String(serviceData.info.pricesByCurrency[0].totalPrice.replaceAll(",", "") || 0), "ether")).toFixed(4)}
               ${serviceData.info.pricesByCurrency[0].currency}
             `,
             expectedDuration: `${serviceData.info.expectedDuration.duration} ${serviceData.info.expectedDuration.durationType}`
