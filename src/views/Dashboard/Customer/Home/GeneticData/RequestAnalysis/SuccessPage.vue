@@ -10,7 +10,7 @@
             :items="stepperItems"
           )
 
-        div(v-if="isProcessing")
+        div(v-if="!isCancelled && !isRejected")
           .customer-request-analyst-success__title Thank you for your order!
           .customer-request-analyst-success__sub-title(v-if="!isProcessing") Please wait, Genetic Analyst will confirm your order soon
           .customer-request-analyst-success__sub-title(v-else) Please wait while your genetic data is being analyzed
@@ -70,7 +70,7 @@ export default {
     geneticData: null,
     service: null,
     orderStatus: null,
-    isProcessing: true,
+    isProcessing: false,
     isRejected: false,
     isCancelled: false,
     rejectTitle: null,
@@ -91,19 +91,6 @@ export default {
 
   async mounted() {
     await this.getAnalysisOrderDetail()
-
-    if (this.orderStatus === "Cancelled") {
-      this.stepperItems[3].title = "Cancelled"
-      this.isCancelled = true
-      this.isProcessing = false
-    }
-
-    if (this.orderStatus === "Failed") {
-      this.stepperItems[3].title = "Rejeted"
-      this.isRejected = true
-      this.isProcessing = false
-
-    }
     await this.getServiceDetail()
     await this.getGeneticData()
     await this.getAnalysisStatus()
@@ -123,6 +110,16 @@ export default {
       const details = await queryGeneticAnalysisStorage(this.api, this.trackingId)
       if (details.status === "InProgress") {
         this.isProcessing = true
+      }
+
+      if (this.orderStatus === "Cancelled") {
+        this.stepperItems[3].title = "Cancelled"
+        this.isCancelled = true
+      }
+
+      if (this.orderStatus === "Failed") {
+        this.stepperItems[3].title = "Rejeted"
+        this.isRejected = true
       }
 
       this.rejectTitle = details.rejectedTitle

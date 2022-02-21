@@ -50,18 +50,7 @@
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Service Price
           b.customer-analysis-payment-card__data-text {{ orderPrice }} {{ orderCurrency }}
-        .customer-analysis-payment-card__rate ( {{ orderPriceInUsd }} USD )
-
-        
-        //- Upcomming Feature
-        //- Button.customer-analysis-payment-card__button(
-        //-   v-if="isRegistered && orderStatus !== 'Cancelled' "
-        //-   width="280"
-        //-   height="35"  
-        //-   color="secondary"
-        //-   @click="showCancelDialog = true"
-        //- ) Cancel Order
-    
+        .customer-analysis-payment-card__rate ( {{ orderPriceInUsd }} USD )    
 
       ImportantDialog(
         @close="showInformation = false"

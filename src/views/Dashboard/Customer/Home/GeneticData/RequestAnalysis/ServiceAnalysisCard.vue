@@ -17,7 +17,8 @@
     .service-analysis-card__analyst
       v-row
         v-col(cols=3)
-          ui-debio-avatar.service-analysis-card__avatar(:src="profileImage" size="70" rounded)
+          ui-debio-avatar.service-analysis-card__avatar(v-if="profileImage" :src="profileImage" size="70" rounded)
+          v-img.service-analysis-card__img(v-else src="@/assets/debio-logo.png" size="70" rounded)
 
         v-col(cols=8).service-analysis-card__analyst-info
           .service-analysis-card__analyst-name {{ analystName }}
@@ -83,13 +84,9 @@ export default {
     this.duration = this.service.duration
     this.durationType = this.service.durationType
     this.price = `${this.formatBalance(this.service.priceDetail[0].totalPrice)} ${this.service.priceDetail[0].currency}`
-
-    if (!this.service.analystsInfo.info.profielImage) {
-      this.profileImage = "https://ipfs.debio.network/ipfs/QmQ9Zvn4pMNMr3nVTGzYE9zGQfyFrhyAHWZNjm76pJmvRn"
-    }
-
     this.analystName = `${this.service.analystsInfo.info.firstName} ${this.service.analystsInfo.info.lastName}`
     this.specialization = this.service.analystsInfo.info.specialization
+    this.profileImage = this.service.analystsInfo.info.profileImage
     this.profileLink = this.service.analystsInfo.info.profileLink
   },
 
@@ -141,14 +138,11 @@ export default {
       this.duration = service.duration
       this.durationType = service.durationType
       this.price = `${this.formatBalance(service.priceDetail[0].totalPrice)} ${service.priceDetail[0].currency}`
-
-      if (!service.analystsInfo.info.profielImage) {
-        this.profileImage = "https://ipfs.debio.network/ipfs/QmQ9Zvn4pMNMr3nVTGzYE9zGQfyFrhyAHWZNjm76pJmvRn"
-      }
-
       this.analystName = `${service.analystsInfo.info.firstName} ${service.analystsInfo.info.lastName}`
       this.specialization = service.analystsInfo.info.specialization
+      this.profileImage = service.analystsInfo.info.profileImage
       this.profileLink = service.analystsInfo.info.profileLink
+
     }
   }
 }
@@ -193,6 +187,11 @@ export default {
       margin-top: 16px
       margin-left: 16px
 
+    &__img
+      margin-top: 16px
+      margin-left: 12px
+      margin-right: -10px
+      
     &__analyst
       margin-bottom: 20px
 
