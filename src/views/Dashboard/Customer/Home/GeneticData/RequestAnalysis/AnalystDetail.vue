@@ -23,7 +23,10 @@
 
       v-row.analyst-detail__profil
         v-col(cols="3")
-          ui-debio-avatar.analyst-detail__profil-avatar(:src="profileImage" size="75" rounded)
+          v-img.analyst-detail__img(v-if="!profileImage" src="@/assets/debio-logo.png" size="70" rounded)
+          ui-debio-avatar.analyst-detail__avatar(v-else :src="profileImage" size="70" rounded)
+
+
         v-col(cols="9")
           .analyst-detail__profil-name {{ service.analystsInfo.info.firstName }} {{ service.analystsInfo.info.lastName }}
           .analyst-detail__profil-desc {{ service.analystsInfo.info.specialization }}
@@ -93,10 +96,7 @@ export default {
 
   mounted() {
     this.price = `${this.formatBalance(this.service.priceDetail[0].totalPrice)} ${this.service.priceDetail[0].currency}`
-    
-    if (!this.service.analystsInfo.info.profileImage) {
-      this.profileImage = "https://ipfs.debio.network/ipfs/QmQ9Zvn4pMNMr3nVTGzYE9zGQfyFrhyAHWZNjm76pJmvRn"
-    }
+    this.profileImage = this.service.analystsInfo.info.profileImage
   },
 
   computed: {
@@ -189,6 +189,9 @@ export default {
 
     &__profil-social
       margin-top: 16px
+      
+    &__img
+      margin-top: 12px
 
 
     &__profil-experience
