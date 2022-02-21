@@ -29,7 +29,7 @@ import Button from "@/common/components/Button"
 
 
 export default {
-  name: "NoDataCard",
+  name: "EmptyDataCard",
 
   data: () => ({
     emptyDataIllustration

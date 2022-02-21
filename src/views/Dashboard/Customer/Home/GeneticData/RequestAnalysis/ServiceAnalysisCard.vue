@@ -17,8 +17,12 @@
     .service-analysis-card__analyst
       v-row
         v-col(cols=3)
-          ui-debio-avatar.service-analysis-card__avatar(v-if="profileImage" :src="profileImage" size="70" rounded)
-          v-img.service-analysis-card__img(v-else src="@/assets/debio-logo.png" size="70" rounded)
+          ui-debio-avatar.service-analysis-card__avatar(
+            :src="computeAvatar" 
+            size="75"
+            rounded
+          )
+  
 
         v-col(cols=8).service-analysis-card__analyst-info
           .service-analysis-card__analyst-name {{ analystName }}
@@ -76,6 +80,10 @@ export default {
         : this.description
 
       return this.description ? validateLength : "No Description"
+    },
+
+    computeAvatar() {
+      return this.profileImage ? this.profileImage : require("@/assets/defaultAvatar.svg")
     }
   },
 

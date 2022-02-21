@@ -23,8 +23,12 @@
 
       v-row.analyst-detail__profil
         v-col(cols="3")
-          v-img.analyst-detail__img(v-if="!profileImage" src="@/assets/debio-logo.png" size="70" rounded)
-          ui-debio-avatar.analyst-detail__avatar(v-else :src="profileImage" size="70" rounded)
+          ui-debio-avatar.service-analysis-card__avatar(
+            :src="computeAvatar" 
+            size="75"
+            rounded
+          )
+
 
 
         v-col(cols="9")
@@ -104,7 +108,12 @@ export default {
       api: (state) => state.substrate.api,
       web3: (state) => state.metamask.web3,
       mnemonicData: (state) => state.substrate.mnemonicData
-    })
+    }),
+
+    computeAvatar() {
+      return this.profileImage ? this.profileImage : require("@/assets/defaultAvatar.svg")
+    }
+
   },
 
   methods: {
