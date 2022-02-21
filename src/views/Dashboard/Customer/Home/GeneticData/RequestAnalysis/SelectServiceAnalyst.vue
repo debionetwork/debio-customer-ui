@@ -16,6 +16,34 @@
         .customer-select-service-analyst__cards
           v-row
             v-col(
+              v-if="isLoading"
+              v-for="(value) in 3"
+              :key="value"
+            )
+              v-skeleton-loader(
+                type="card"
+                width="300"
+              )
+            v-col.no-items(
+              v-if="!isLoading && !serviceList.length"
+            )
+              v-img(
+                alt="no-list-data"
+                center
+                src="@/assets/no-data-list.svg"
+                width="358px"
+                height="207px"
+              )
+              span.no-items__text-alert Oops! Looks like there is no Service and Analyst available
+              span Please try again later
+              Button.no-items__button-dashboard(
+                color="secondary" 
+                width="255"
+                height="35"
+                @click="goToDashboardPage"
+                ) Back to Dashboard
+            v-col(
+              v-else
               v-for="(service, i) in serviceList"
               :key="i"
             )
@@ -41,6 +69,7 @@ import AnalystDetail from "./AnalystDetail"
 import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
 import { queryGetAllGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
 import { queryGeneticAnalystQualifications } from "@/common/lib/polkadot-provider/query/genetic-analyst-qualifications"
+import Button from "@/common/components/Button"
 
 export default {
   name: "SelectServiceAnalyst",
@@ -68,7 +97,8 @@ export default {
 
   components: {
     ServiceAnalysisCard,
-    AnalystDetail
+    AnalystDetail,
+    Button
   },
 
   async mounted () {
@@ -85,8 +115,6 @@ export default {
     async getGeneticAnalystService() {
       this.isLoading = true
       const geneticAnalystService = await queryGetAllGeneticAnalystServices(this.api)
-
-
 
       for (let i = 0; i < geneticAnalystService.length; i++) {
         let {
@@ -142,6 +170,10 @@ export default {
 
     closeDetailDialog() {
       this.showAnalystDetail = false
+    },
+
+    goToDashboardPage() {
+      this.$router.push({name: "dashboard"})
     }
   }
 
@@ -196,6 +228,22 @@ export default {
       
     &__card
       margin-bottom: 20px
+
+  .no-items
+    display: flex
+    flex-direction: column
+    align-items: center
+    @include body-text-3-opensans
+    font-size: 12px
+
+    &__text-alert
+      font-size: 14px
+      font-weight: 600
+      margin: 25px 0px 20px 0px
+
+    &__button-dashboard
+      margin-top: 40px
+
 
     
 </style>
