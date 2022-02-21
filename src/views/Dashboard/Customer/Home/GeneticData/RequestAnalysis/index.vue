@@ -14,7 +14,7 @@
 
         .customer-request-analysis__title Select Genetic Data
 
-        NoDataCard(v-if="isEmpty" )
+        EmptyDataCard(v-if="isEmpty" )
         DataTable.customer-request-analysis__table(v-if="!isEmpty"
           :headers="headers"
           :items="items"
@@ -38,7 +38,7 @@
 <script>
 import { mapMutations, mapState } from "vuex"
 import { queryGeneticDataByOwner, queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
-import NoDataCard from "./NoDataCard"
+import EmptyDataCard from "./EmptyDataCard"
 import DataTable from "@/common/components/DataTable"
 
 export default {
@@ -84,7 +84,7 @@ export default {
   },
 
   components: {
-    NoDataCard,
+    EmptyDataCard,
     DataTable
   },
 
