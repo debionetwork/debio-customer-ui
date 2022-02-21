@@ -18,3 +18,7 @@ export async function toFormatDebioCoin(valueCoin) {
   }
   return addCoin
 }
+
+export async function checkApiConnection() {
+  if(!store.getters["substrate/isConnected"]) throw new Error("API is not connected")
+}
