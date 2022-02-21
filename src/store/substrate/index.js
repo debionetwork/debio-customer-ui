@@ -111,6 +111,22 @@ export default {
         commit("SET_LOADING_API", true)
         const PROVIDER_SOCKET = store.getters["auth/getConfig"].substrateWs
         const wsProvider = new WsProvider(PROVIDER_SOCKET)
+
+        wsProvider.on("connected", () => { // Websocket connection if connected here
+          commit("SET_IS_CONNECTED", true)
+          commit("SET_LOADING_API", false)
+        })
+
+        wsProvider.on("disconnected", () => { // Websocket connection if disconnected here
+          commit("SET_IS_CONNECTED", false)
+          commit("SET_LOADING_API", false)
+        })
+
+        wsProvider.on("error", () => { // Websocket connection if error here
+          commit("SET_IS_CONNECTED", false)
+          commit("SET_LOADING_API", false)
+        })
+
         const api = await ApiPromise.create({
           provider: wsProvider
         })

@@ -36,7 +36,7 @@ export default {
       this.formatTitle(val)
     },
     substrateIsConnected (val) {
-      if(!val) {
+      if(!val) { // Handle watch here
         console.log("API is not connected")
       }
       else {
