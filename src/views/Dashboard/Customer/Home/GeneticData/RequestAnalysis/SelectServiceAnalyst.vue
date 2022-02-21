@@ -16,6 +16,16 @@
         .customer-select-service-analyst__cards
           v-row
             v-col(
+              v-if="isLoading"
+              v-for="(value) in skeletonData"
+              :key="value"
+            )
+              v-skeleton-loader(
+                type="card"
+                width="300"
+              )
+            v-col(
+              v-else
               v-for="(service, i) in serviceList"
               :key="i"
             )
@@ -56,7 +66,8 @@ export default {
     serviceList: [],
     selectedService: null,
     selectedAnalystExperiences: null,
-    isLoading: false
+    isLoading: false,
+    skeletonData: [1, 2, 3]
   }),
 
   computed: {
