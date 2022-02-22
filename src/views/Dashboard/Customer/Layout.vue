@@ -312,7 +312,7 @@ export default {
 
   &__expantion-button
     width: 140px
-    border: 1px solid #5640A5
+    border-color: #5640A5
 
 .layout-dashboard
   width: 100%
