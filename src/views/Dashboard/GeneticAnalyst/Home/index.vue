@@ -122,9 +122,10 @@ export default {
 
   methods: {
     async getOrdersData() {
-      try {
-        this.orderLists = []
+      this.orderLists = []
 
+      try {
+        let orders = []
         const orderData = await GAGetOrders()
 
         for (const order of orderData.data) {
@@ -152,8 +153,10 @@ export default {
             })
           }
 
-          this.orderLists.push(data)
+          orders.push(data)
         }
+
+        this.orderLists = orders
       } catch (e) {
         console.error(e);
       }

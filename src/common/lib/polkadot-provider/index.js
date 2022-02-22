@@ -1,6 +1,6 @@
 import { setEthAddress } from "./command/user-profile"
 import { queryBalance } from "./query/balance"
-import { toFormatDebioCoin } from "./util"
+import { checkApiConnection, toFormatDebioCoin } from "./util"
 
 const serviceHandlerMixin = {
   data: () => ({
@@ -49,6 +49,7 @@ const serviceHandlerMixin = {
       args = this.addCallback(args)      
 
       try {
+        checkApiConnection()
         const response = await action.apply(this, args)
         
         return Promise.resolve(response)
