@@ -99,7 +99,10 @@
 
             .service-details__time.d-flex.align-center
               ui-debio-icon.mr-2(:icon="timerIcon" size="20" stroke color="#000000")
-              span(:aria-label="orderDataDetails.service_info.expectedDuration") {{ orderDataDetails.service_info.expectedDuration }}
+              span(
+                :title="`Expected Duration (${orderDataDetails.service_info.expectedDuration})`"
+                :aria-label="orderDataDetails.service_info.expectedDuration"
+              ) {{ orderDataDetails.service_info.expectedDuration }}
 
             .service-details__detail.d-flex.mt-5
               ui-debio-avatar.service-details__avatar.mr-4(
