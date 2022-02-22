@@ -22,8 +22,10 @@ export default {
       this.formErrors.push({ name: name, status: val })
     },
 
-    _resetForms(field) {
-      Object.entries(this.isDirty[field]).forEach(([key]) => {
+    _resetForms(field, fieldKey) {
+      if (fieldKey) this.isDirty[field][fieldKey] = null
+
+      else Object.entries(this.isDirty[field]).forEach(([key]) => {
         this.isDirty[field][key] = null
       })
     },

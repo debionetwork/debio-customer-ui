@@ -1,16 +1,29 @@
 <template lang="pug">
   div#app: v-app
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
-    LoadingScreen(v-show="isLoadingSubstrateApi")
-    NoAccessMobile(v-show="isMobileDevice")
-    router-view(v-show="!isLoadingSubstrateApi && !isMobileDevice")
+    template(v-if="showModalError")
+      ui-debio-modal.app-modal-error(
+        :show="showModalError"
+        disable-dismiss
+        :show-title="false"
+        :show-cta="false"
+      )
+        ui-debio-icon(:icon="cableErrorIcon" fill size="100")
+        h6.app-modal-error__title Aw, Snap!
+        p.app-modal-error__subtitle Something went wrong! Reinitializing the RPC connection...
+
+    template(v-else)
+      LoadingScreen(v-show="isLoadingSubstrateApi")
+      NoAccessMobile(v-show="isMobileDevice")
+      router-view(v-show="!isLoadingSubstrateApi && !isMobileDevice")
 </template>
   
 <script>
+import { cableErrorIcon } from "@/common/icons"
 import { mapState, mapActions } from "vuex"
+import { generalDebounce } from "@/common/lib/utils"
 import NoAccessMobile from "@/views/NoAccessMobile"
 import LoadingScreen from "@/views/LoadingScreen"
-import { generalDebounce } from "@/common/lib/utils"
 
 export default {
   name: "App",
@@ -18,8 +31,11 @@ export default {
   components: { NoAccessMobile, LoadingScreen },
 
   data: () => ({
+    cableErrorIcon,
+
     address: "",
-    isMobileDevice: false
+    isMobileDevice: false,
+    showModalError: false
   }),
 
   computed: {
@@ -35,13 +51,10 @@ export default {
     $route(val) {
       this.formatTitle(val)
     },
+
     substrateIsConnected (val) {
-      if(!val) { // Handle watch here
-        console.log("API is not connected")
-      }
-      else {
-        console.log("API is connected")
-      }
+      if(!val) this.showModalError = true
+      else this.showModalError = false
     }
   },
 
@@ -96,9 +109,30 @@ export default {
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 @import "@/common/styles/variables.scss";
+@import "@/common/styles/mixins.sass";
 
 * {
   font-family: "Open Sans", sans-serif;
+}
+
+.app-modal-error {
+  .ui-debio-modal__card {
+    width: 300px;
+    gap: 1rem;
+    border-radius: 10px;
+  }
+
+  &__title {
+    @include h6-opensans
+  }
+
+  &__subtitle {
+    max-width: 200px;
+    text-align: center;
+    color: #595959;
+    @include body-text-3-opensans
+  }
+
 }
 
 ::-moz-selection { /* Code for Firefox */
