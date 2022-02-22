@@ -108,6 +108,7 @@
               ui-debio-avatar.service-details__avatar.mr-4(
                 :src="computeAvatar"
                 :alt="orderDataDetails.analyst_info.name"
+                :title="orderDataDetails.analyst_info.name"
                 size="80"
               )
               .service-details__analyst
