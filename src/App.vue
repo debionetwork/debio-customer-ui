@@ -35,7 +35,7 @@ export default {
 
     address: "",
     isMobileDevice: false,
-    showModalError: true
+    showModalError: false
   }),
 
   computed: {
