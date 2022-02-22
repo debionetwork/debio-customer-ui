@@ -27,7 +27,6 @@
         block
         validate-on-blur
         @change="handleRejectionTitle"
-        @isError="handleError"
       )
       ui-debio-textarea(
         :error="isDirty.rejectionDesc && isDirty.rejectionDesc"
@@ -40,7 +39,6 @@
         outlined
         block
         @change="handleRejectionDesc"
-        @isError="handleError"
       )
 
       .upload-section
@@ -76,9 +74,13 @@
       section.order-section
         transition(name="transition-slide-x" mode="out-in")
           Card.order-section__hilight-description.mb-6(
-            :title="rejectedOrder ? orderDataDetails.analysis_info.rejectedTitle : 'DNA Result'"
+            :title="rejectedOrder ? 'Title' : 'DNA Result'"
             v-if="rejectedOrder || (step === 3 && orderDataDetails.analysis_info.status !== 'Rejected')"
           )
+            template(v-if="step === 1 && rejectedOrder")
+              p {{ orderDataDetails.analysis_info.rejectedTitle }}
+              p.order-section__subtitle Reason of rejection
+
             p(v-if="step === 3 && !rejectedOrder") {{ orderDataDetails.analysis_info.fileName }}
             p(v-if="hilightDescription")
               | {{ readMore ? hilightDescription : hilightDescription.substr(0, 130) }}
@@ -93,7 +95,7 @@
             p.service-details__description(
               :title="orderDataDetails.service_info.description"
               :aria-label="orderDataDetails.service_info.description"
-            ) {{ orderDataDetails.service_info.description }}
+            ) {{ computeServiceDesc }}
 
             .service-details__time.d-flex.align-center
               ui-debio-icon.mr-2(:icon="timerIcon" size="20" stroke color="#000000")
@@ -215,13 +217,10 @@ import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-ana
 import { mapState } from "vuex"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { generalDebounce } from "@/common/lib/utils"
-
-import errorMessage from "@/common/constants/error-messages"
+import rulesHandler from "@/common/constants/rules"
 
 import Card from "./Card.vue"
 import Button from "@/common/components/Button"
-
-const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
 
 export default {
   name: "GAOrderDetails",
@@ -298,6 +297,16 @@ export default {
       })
     },
 
+    computeServiceDesc() {
+      const formatedDesc = this.orderDataDetails?.service_info?.description?.length >= 140
+        ? `${this.orderDataDetails?.service_info?.description.slice(0, 140)}...`
+        : this.orderDataDetails?.service_info?.description
+
+      return this.orderDataDetails?.service_info?.description
+        ? formatedDesc
+        : "No Description"
+    },
+
     computeDetailsTitle() {
       const sectionTitles = ["Upload Result", "Completed"]
       const GENETIC_STATUS = {
@@ -345,25 +354,24 @@ export default {
 
   rules: {
     rejectionTitle: [
-      val => !!val || errorMessage.REQUIRED,
-      val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
-      englishAlphabet
+      rulesHandler.FIELD_REQUIRED,
+      rulesHandler.ENGLISH_ALPHABET,
+      rulesHandler.MAX_CHARACTER(50)
     ],
     rejectionDesc: [
-      val => !!val || errorMessage.REQUIRED,
-      val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255),
-      englishAlphabet
+      rulesHandler.FIELD_REQUIRED,
+      rulesHandler.ENGLISH_ALPHABET,
+      rulesHandler.MAX_CHARACTER(255)
     ],
     document: {
       file: [
-        val => !!val || errorMessage.REQUIRED,
-        val => (val && val.size < 2000000) || errorMessage.FILE_SIZE(2),
-        val => (val && (val.type === "application/pdf" || val.type === "application/msword" || val.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) || errorMessage.FILE_FORMAT("PDF/DOC/DOCX")
+        rulesHandler.FIELD_REQUIRED,
+        rulesHandler.DEFAULT_ACCEPT_DOCUMENTS,
+        rulesHandler.FILE_SIZE(2000000)
       ],
       description: [
-        val => !!val || errorMessage.REQUIRED,
-        val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255),
-        englishAlphabet
+        rulesHandler.ENGLISH_ALPHABET,
+        rulesHandler.MAX_CHARACTER(255)
       ]
     }
   },
@@ -536,6 +544,7 @@ export default {
 
     async handleSubmitForms() {
       this._touchForms("document")
+      this._resetForms("document", "description")
       const { description: docDescription, file: docFile } = this.isDirty?.document
       if (docDescription || docFile) return
 
@@ -716,6 +725,9 @@ export default {
     &__hilight-description
       width: 100%
 
+    &__subtitle
+      @include button-2
+
     &__title
       color: #595959
       margin-bottom: 40px
@@ -789,10 +801,6 @@ export default {
       width: 280px
       font-size: 14px
       text-align: justify
-      display: -webkit-box
-      -webkit-line-clamp: 4
-      -webkit-box-orient: vertical  
-      overflow: hidden
 
     &__analyst-name,
     &__analyst-specialization
