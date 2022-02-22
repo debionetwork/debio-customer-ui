@@ -1,6 +1,13 @@
 <template lang="pug">
   .ga-order-details
-    //- TODO: Update dummy data with data value from backend
+    ui-debio-modal.ga-order-details__modal-error(
+      :show="!!messageError"
+      :show-title="false"
+      :show-cta="false"
+      @onClose="$router.push({ name: 'ga-dashboard' })"
+    )
+      | {{ messageError }}
+
     ui-debio-modal(
       :show="showModalReject"
       title="Reject Order"
@@ -129,7 +136,7 @@
                 @click="handleDownloadFile"
               ) {{ orderDataDetails.document.fileName }}
 
-              .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step !== 2")
+              .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
                 Button(
                   :disabled="completed"
                   width="130px"
@@ -232,6 +239,7 @@ export default {
     showTooltip: false,
     isLoading: false,
     showModalReject: false,
+    messageError: null,
     publicKey: null,
     secretKey: null,
     rejectionTitle: null,
@@ -371,6 +379,13 @@ export default {
     async prepareData(id) {
       try {
         const data = await orderDetails(this.api, id)
+
+        // Prevent continue requests if the order doesn't exist on the data records
+        if (!data) {
+          this.messageError = "Oh no! We can't find your selected order. Please select another one"
+          return
+        }
+
         const serviceData = await serviceDetails(this.api, data.serviceId)
         const analystData = await analystDetails(this.api, data.sellerId)
         const analysisData = await analysisDetails(this.api, data.geneticAnalysisTrackingId)
@@ -425,8 +440,8 @@ export default {
           this.hilightDescription = this.orderDataDetails?.analysis_info?.comment
           this.step = 3
         }
-      } catch (e) {
-        console.error(e);
+      } catch {
+        this.messageError = "Something went wrong. Please try again later"
       }
     },
     
@@ -664,6 +679,11 @@ export default {
     padding: 15px 15px 80px
     background: #ffffff
     border-radius: 4px
+
+    &__modal-error
+      &::v-deep
+        .ui-debio-modal__card
+          width: unset !important
 
     &__wrapper
       display: flex
