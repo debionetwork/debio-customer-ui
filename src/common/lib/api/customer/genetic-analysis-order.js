@@ -6,5 +6,6 @@ export const setGeneticAnalysisPaid = async (orderId) => {
   }
 
   const { data } = await apiClientRequest.post("/substrate/geneticAnasysisOrderPaid", payload)
+
   return data
 }
