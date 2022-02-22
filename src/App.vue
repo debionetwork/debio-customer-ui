@@ -25,6 +25,7 @@ export default {
   computed: {
     ...mapState({
       substrateApi: (state) => state.substrate.api,
+      substrateIsConnected: (state) => state.substrate.isConnected,
       isLoadingSubstrateApi: (state) => state.substrate.isLoadingApi,
       web3: (state) => state.metamask.web3
     })
@@ -33,6 +34,14 @@ export default {
   watch: {
     $route(val) {
       this.formatTitle(val)
+    },
+    substrateIsConnected (val) {
+      if(!val) { // Handle watch here
+        console.log("API is not connected")
+      }
+      else {
+        console.log("API is connected")
+      }
     }
   },
 

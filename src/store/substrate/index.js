@@ -21,6 +21,7 @@ cryptoWaitReady().then(() => {
 
 const defaultState = {
   api: null,
+  isConnected: false,
   isLoadingApi: false,
   isLoadingWallet: false,
   wallet: null,
@@ -46,6 +47,9 @@ export default {
   mutations: {
     SET_API(state, api) {
       state.api = api
+    },
+    SET_IS_CONNECTED(state, isConnected) {
+      state.isConnected = isConnected
     },
     SET_LOADING_API(state, isLoading) {
       state.isLoadingApi = isLoading
@@ -103,9 +107,26 @@ export default {
   actions: {
     async connect({ commit }) {
       try {
+        commit("SET_IS_CONNECTED", false)
         commit("SET_LOADING_API", true)
         const PROVIDER_SOCKET = store.getters["auth/getConfig"].substrateWs
         const wsProvider = new WsProvider(PROVIDER_SOCKET)
+
+        wsProvider.on("connected", () => { // Websocket connection if connected here
+          commit("SET_IS_CONNECTED", true)
+          commit("SET_LOADING_API", false)
+        })
+
+        wsProvider.on("disconnected", () => { // Websocket connection if disconnected here
+          commit("SET_IS_CONNECTED", false)
+          commit("SET_LOADING_API", false)
+        })
+
+        wsProvider.on("error", () => { // Websocket connection if error here
+          commit("SET_IS_CONNECTED", false)
+          commit("SET_LOADING_API", false)
+        })
+
         const api = await ApiPromise.create({
           provider: wsProvider
         })
@@ -124,10 +145,12 @@ export default {
         await api.isReady
         commit("SET_API", api)
 
+        commit("SET_IS_CONNECTED", true)
         commit("SET_LOADING_API", false)
       } catch (err) {
-        console.error(err)
+        commit("SET_IS_CONNECTED", false)
         commit("SET_LOADING_API", false)
+        console.error(err)
       }
     },
     async registerMnemonic({ commit }, { mnemonic, password }) {
@@ -410,6 +433,9 @@ export default {
   getters: {
     wallet(state) {
       return state.wallet
+    },
+    isConnected(state) {
+      return state.isConnected
     },
     labAccount(state) {
       return state.labAccount
