@@ -63,6 +63,12 @@
         @close="closeDialog"
       )
 
+      ErrorDialog(
+        :show="!!error"
+        :title="error ? error.title : ''"
+        :message="error ? error.message : ''"
+        @close="error = null"
+      )
 
 </template>
 
@@ -80,11 +86,13 @@ import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
 import { checkCircleIcon } from "@/common/icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
+import { errorHandler } from "@/common/lib/error-handler"
+import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 
 export default {
   name: "AddGeneticData",
   
-  components: { Button, SuccessDialog },
+  components: { Button, SuccessDialog, ErrorDialog },
 
   mixins: [validateForms],
 
@@ -102,7 +110,8 @@ export default {
     link: null,
     txWeight: 0,
     isLoading: false,
-    dataId: null
+    dataId: null,
+    error: null
   }),
 
   computed: {
@@ -351,7 +360,10 @@ export default {
 
 
       } catch (e) {
-        console.error(e)
+        const error = await errorHandler(e.message)
+        
+        this.error = error
+        this.isLoading = false
       }
     },
 

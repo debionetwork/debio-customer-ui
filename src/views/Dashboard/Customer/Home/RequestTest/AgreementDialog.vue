@@ -72,8 +72,7 @@ import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { getCreateRequestFee } from "@/common/lib/polkadot-provider/command/info"
 import errorMessage from "@/common/constants/error-messages"
-
-
+import {errorHandler} from "@/common/lib/error-handler"
 
 export default {
   name: "AgreementDialog",
@@ -148,16 +147,6 @@ export default {
     async submitServiceRequestStaking() {
       this.isLoading = true
 
-      const balance = this.web3.utils.fromWei(String(this.walletBalance), "ether")
-
-      if ((Number(this.amount) + Number(this.txWeight)) > Number(balance)) {
-        this.errorTitle = "Insufficient Balance"
-        this.errorMsg =  "Your transaction cannot succeed due to insufficient balance, check your account balance"
-        this.showError = true
-        this.isLoading = false
-        return
-      }
-
       try {
         await createRequest(
           this.api,
@@ -170,7 +159,11 @@ export default {
         )
 
       } catch (err) {
-        this.errorMsg = err.message
+        const error = await errorHandler(err.message)
+        
+        this.errorTitle = error.title
+        this.errorMsg = error.message
+        this.showError = true
         this.isLoading = false
       }
     }
