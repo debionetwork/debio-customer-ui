@@ -144,7 +144,7 @@
 
               .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
                 Button(
-                  :disabled="completed"
+                  :disabled="orderDataDetails.analysis_info.status === 'InProgress' || completed"
                   width="130px"
                   outlined
                   color="secondary"
@@ -174,7 +174,7 @@
               :rules="$options.rules.document.description"
               variant="medium"
               rows="3"
-              placeholder="Spider bit me help omg The metabolism analysis uses a blood or saliva sample and body-related data (e.g. weight, physical activity, eating habits) to investigate how"
+              placeholder="Add comment / feedback"
               label="Comment / Feedback (Optional)"
               outlined
               block
