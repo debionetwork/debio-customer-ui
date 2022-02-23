@@ -1,13 +1,9 @@
-import { createLocalVue, shallowMount, config } from "@vue/test-utils"
-import CustomerEmrEdit from "@/views/Dashboard/Customer/Home/Emr/Edit"
+import { createLocalVue, shallowMount } from "@vue/test-utils"
+import GAServices from "@/views/Dashboard/GeneticAnalyst/Services"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 
-config.stubs["ui-debio-icon"] = { template: "<div></div>" }
-config.stubs["ui-debio-modal"] = { template: "<div></div>" }
-config.stubs["ui-debio-banner"] = { template: "<div></div>" }
-
-describe("Customer EMR Dashboard", () => {
+describe("Genetic Analyst Services Dashboard", () => {
   let container
   let localVue = null
 
@@ -22,12 +18,7 @@ describe("Customer EMR Dashboard", () => {
   })
 
   it("Should render", () => {
-    CustomerEmrEdit.methods = {
-      initialData: jest.fn(), 
-      initialDataKey: jest.fn(), 
-      fetchCategories: jest.fn(), 
-    };
-    container = shallowMount(CustomerEmrEdit, {
+    container = shallowMount(GAServices, {
       localVue,
       vuetify: new Vuetify(),
       store: new Vuex.Store({
