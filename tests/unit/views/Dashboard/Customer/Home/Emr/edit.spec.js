@@ -4,8 +4,10 @@ import Vuex from "vuex"
 import Vuetify from "vuetify"
 
 config.stubs["ui-debio-icon"] = { template: "<div></div>" }
+config.stubs["ui-debio-input"] = { template: "<div></div>" }
 config.stubs["ui-debio-modal"] = { template: "<div></div>" }
 config.stubs["ui-debio-banner"] = { template: "<div></div>" }
+config.stubs["ui-debio-dropdown"] = { template: "<div></div>" }
 
 describe("Customer EMR Dashboard", () => {
   let container
