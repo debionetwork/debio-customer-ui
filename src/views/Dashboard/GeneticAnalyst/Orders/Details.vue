@@ -144,7 +144,7 @@
 
               .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
                 Button(
-                  :disabled="orderDataDetails.analysis_info.status === 'InProgress' || completed"
+                  :disabled="computeDisabledRejection"
                   width="130px"
                   outlined
                   color="secondary"
@@ -242,6 +242,7 @@ export default {
     showTooltip: false,
     isLoading: false,
     showModalReject: false,
+    orderAccepted: false,
     messageError: null,
     publicKey: null,
     secretKey: null,
@@ -283,6 +284,10 @@ export default {
 
     completed() {
       return this.orderDataDetails?.analysis_info?.status === "ResultReady"
+    },
+
+    computeDisabledRejection() {
+      return this.orderAccepted || this.orderDataDetails?.analysis_info?.status === "InProgress" || this.completed
     },
 
     computeAvatar() {
@@ -447,6 +452,7 @@ export default {
           this.txWeight = "Calculating..."
           this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
           this.step = 2
+          this.orderAccepted = true
         }
         if (this.completed) {
           this.hilightDescription = this.orderDataDetails?.analysis_info?.comment
@@ -468,6 +474,7 @@ export default {
 
     async handleAcceptOrder() {
       if (this.orderDataDetails.analysis_info?.status === "InProgress") {
+        this.orderAccepted = true
         this.step = 2
         return
       }
@@ -476,6 +483,7 @@ export default {
         await updateStatusOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, "InProgress")
         await this.calculateDocumentFee()
 
+        this.orderAccepted = true
         this.step = 2
       } catch (e) {
         console.error(e)
