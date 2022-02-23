@@ -144,7 +144,7 @@
 
               .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
                 Button(
-                  :disabled="completed"
+                  :disabled="orderDataDetails.analysis_info.status === 'InProgress' || completed"
                   width="130px"
                   outlined
                   color="secondary"
@@ -174,7 +174,7 @@
               :rules="$options.rules.document.description"
               variant="medium"
               rows="3"
-              placeholder="Spider bit me help omg The metabolism analysis uses a blood or saliva sample and body-related data (e.g. weight, physical activity, eating habits) to investigate how"
+              placeholder="Add comment / feedback"
               label="Comment / Feedback (Optional)"
               outlined
               block
@@ -554,7 +554,22 @@ export default {
 
       try {
         this.isLoading = true
-        await this.processFile()
+        const dataFile = await this.processFile()
+        await this.upload({
+          encryptedFileChunks: dataFile.chunks,
+          fileName: dataFile.fileName,
+          fileType: dataFile.fileType
+        })
+
+        await submitOrderReport(
+          this.api,
+          this.wallet,
+          this.orderDataDetails.geneticAnalysisTrackingId,
+          this.document.recordLink,
+          this.document.description
+        )
+
+        await updateStatusOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
       } catch (e) {
         this.isLoading = false
         console.error(e)
@@ -562,43 +577,30 @@ export default {
     },
 
     async processFile() {
-      const context = this
-      const fr = new FileReader()
-      const { file } = this.document
+      return new Promise((res, rej) => {
+        const context = this
+        const fr = new FileReader()
+        const { file } = this.document
 
-      fr.onload = async function() {
-        try {
-          const encrypted = await context.encrypt({
-            text: fr.result,
-            fileType: file.type,
-            fileName: file.name
-          })
+        fr.onload = async function() {
+          try {
+            const encrypted = await context.encrypt({
+              text: fr.result,
+              fileType: file.type,
+              fileName: file.name
+            })
 
-          await context.upload({
-            encryptedFileChunks: encrypted.chunks,
-            fileName: encrypted.fileName,
-            fileType: encrypted.fileType
-          })
-
-          await submitOrderReport(
-            context.api,
-            context.wallet,
-            context.orderDataDetails.geneticAnalysisTrackingId,
-            context.document.recordLink,
-            context.document.description
-          )
-
-          await updateStatusOrder(context.api, context.wallet, context.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
-        } catch(e) {
-          console.error(e)
+            res(encrypted)
+          } catch(e) {
+            console.error(e)
+          }
         }
-      }
-
-      fr.readAsArrayBuffer(file)
+        fr.onerror = rej
+        fr.readAsArrayBuffer(file)
+      })
     },
 
     async encrypt({ text, fileType, fileName }) {
-      const context = this
       const arrChunks = []
       let chunksAmount
 
@@ -607,7 +609,7 @@ export default {
         publicKey: this.publicKey
       }
 
-      return await new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         try {
           cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }) // Access this object in e.data in worker
           cryptWorker.workerEncryptFile.onmessage = async (event) => {
@@ -617,7 +619,6 @@ export default {
             }
 
             arrChunks.push(event.data)
-            context.encryptProgress = (arrChunks.length / chunksAmount) * 100
 
             if (arrChunks.length === chunksAmount) {
               resolve({
@@ -638,16 +639,15 @@ export default {
       let offset = 0
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
-      const newBlobData = new File([blob], fileName)
 
       const uploaded = await new Promise((resolve, reject) => {
         try {
-          const fileSize = newBlobData.size
+          const fileSize = blob.size
           do {
-            let chunk = newBlobData.slice(offset, chunkSize + offset)
+            let chunk = blob.slice(offset, chunkSize + offset)
             ipfsWorker.workerUpload.postMessage({
               seed: chunk.seed,
-              file: newBlobData
+              file: blob
             })
             offset += chunkSize
           } while (chunkSize + offset < fileSize)
@@ -669,7 +669,7 @@ export default {
         }
       })
 
-      const path = `${uploaded.collection.data.ipfsFilePath}/${uploaded.fileName}`
+      const path = uploaded.collection.data.path
 
       this.document.recordLink = `https://ipfs.io/ipfs/${path}`
     },

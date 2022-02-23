@@ -240,7 +240,7 @@ export default {
         const fr = new FileReader()
 
         const { title, description, file } = value
-        
+
         fr.onload = async function () {
           try {
             const encrypted = await context.encrypt({
@@ -275,16 +275,15 @@ export default {
 
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
-      const newBlobData = new File([blob], fileName)
 
       const uploaded = await new Promise((res, rej) => {
         try{
-          const fileSize = newBlobData.size
+          const fileSize = blob.size
           do {
-            let chunk = newBlobData.slice(offset, chunkSize + offset)
+            let chunk = blob.slice(offset, chunkSize + offset)
             ipfsWorker.workerUpload.postMessage({
               seed: chunk.seed,
-              file: newBlobData
+              file: blob
             })
             offset += chunkSize
           } while (chunkSize + offset < fileSize)
@@ -313,7 +312,7 @@ export default {
     }, 
 
     getFileIpfsUrl(file) {
-      const path = `${file.collection.data.ipfsFilePath}/${file.fileName}`
+      const path = file.collection.data.path
       return `https://ipfs.io/ipfs/${path}`
     },
 

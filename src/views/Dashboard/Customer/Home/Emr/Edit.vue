@@ -386,7 +386,7 @@ export default {
     },
 
     getFileIpfsUrl(file) {
-      const path = file.ipfsPath.data.path
+      const path = file.collection.data.path
       return `https://ipfs.io/ipfs/${path}`
     },
     
