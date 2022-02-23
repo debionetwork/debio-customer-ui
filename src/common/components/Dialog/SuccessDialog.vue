@@ -13,8 +13,8 @@
           .dialog-success__image
             v-img(v-bind:src="checkCircle" max-width="80")
 
-          .dialog-success__message
-            b Your genetic data has been submitted, Do you want to proceed request analysis?
+          .dialog-success__message Your genetic data has been submitted.
+          .dialog-success__message Do you want to proceed request analysis?
 
           .dialog-success__border 
             .dialog-success__border-text A feature that allows you to request genetic/DNA analysis to Genetic Analyst in DeBio AppChain based on the genetic data uploaded
@@ -93,7 +93,6 @@ export default {
       margin: 30px 0px
 
     &__message
-      display: flex
       align-items: center
       text-align: center
       letter-spacing: -0.0075em
@@ -109,7 +108,7 @@ export default {
       padding: 12px 16px
       display: flex
       align-items: center
-      text-align: justify
+      text-align: justify-start
       letter-spacing: -0.004em
       @include body-text-3-opensans
 

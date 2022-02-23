@@ -11,6 +11,7 @@ import polkadotIcon from "./polkadot"
 import daiIcon from "./dai"
 import debioIcon from "./debio"
 import alertIcon from "./alert"
+import cableErrorIcon from "./cableError"
 import alertTriangleIcon from "./alertTriangle"
 import userIcon from "./user"
 import usersIcon from "./users"
@@ -73,6 +74,7 @@ export {
   creditCardIcon,
   layersIcon,
   alertIcon,
+  cableErrorIcon,
   alertTriangleIcon,
   downloadIcon,
   arrowTopRightIcon,
