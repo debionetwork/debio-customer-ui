@@ -29,7 +29,7 @@
           v-model="document.file"
           variant="small"
           :rules="fileRule"
-          :accept="['.pdf', '.vcf', '.vcg.gz']"
+          :accept="['.txt', '.vcf', '.gz']"
           label="Upload File"
           placeholder="Choose File"
           validate-on-blur
@@ -51,11 +51,14 @@
           
         Button(
           :disabled="!disable"
-          :loading="isLoading"
           block
           color="secondary"
           @click="onSubmit"
         ) Submit
+
+      UploadingDialog(
+        :show="isLoading"
+      )
 
       SuccessDialog(
         :show="isSuccess"
@@ -77,7 +80,7 @@ import { mapState } from "vuex"
 import { u8aToHex } from "@polkadot/util"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
+// import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
@@ -88,11 +91,13 @@ import { checkCircleIcon } from "@/common/icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
+import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
+import { uploadFile, getFileUrl } from "@/common/lib/pinata"
 
 export default {
   name: "AddGeneticData",
   
-  components: { Button, SuccessDialog, ErrorDialog },
+  components: { Button, SuccessDialog, UploadingDialog, ErrorDialog },
 
   mixins: [validateForms],
 
@@ -147,7 +152,7 @@ export default {
     fileRule() {
       return[
         rulesHandler.FIELD_REQUIRED,
-        rulesHandler.FILE_SIZE(1000000)
+        rulesHandler.FILE_SIZE(1000000000)
       ]
     }
   },
@@ -279,46 +284,28 @@ export default {
     },
 
     async upload({ encryptedFileChunks, fileName, fileType }) {
-      const chunkSize = 30 * 1024 * 1024
-      let offset = 0
+
+      console.log("encrypted file chunks.. >>", encryptedFileChunks)
+      console.log(fileName)
+
+      // const chunkSize = 30 * 1024 * 1024
+      // let offset = 0
 
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
-      const newBlobData = new File([blob], fileName)
+      // const newBlobData = new File([blob], fileName)
 
-      const uploaded = await new Promise((res, rej) => {
-        try{
-          const fileSize = newBlobData.size
-          do {
-            let chunk = newBlobData.slice(offset, chunkSize + offset)
-            ipfsWorker.workerUpload.postMessage({
-              seed: chunk.seed,
-              file: newBlobData
-            })
-            offset += chunkSize
-          } while (chunkSize + offset < fileSize)
+      console.log(">>>>", blob)
 
-          let uploadSize = 0
-          ipfsWorker.workerUpload.onmessage = async (event) => {
-            uploadSize += event.data.data.size
+      // UPLOAD TO PINATA API
 
-            if (uploadSize >= fileSize) {
-              res({
-                fileName: fileName,
-                fileType: fileType,
-                collection: event.data
-              })
-            }
-          }
-
-        } catch(e) {
-          rej(new Error(e.message))
-        }
+      const result = await uploadFile({
+        title: this.document.title,
+        type: this.document.description,
+        file: blob
       })
 
-      const link = this.getFileIpfsUrl(uploaded)
-      this.link = link
-
+      this.link = await getFileUrl(result.IpfsHash)
     }, 
 
     getFileIpfsUrl(file) {
@@ -333,6 +320,7 @@ export default {
         if (!this.document.file) return
 
         const dataFile = await this.setupFileReader(this.document)
+
         await this.upload({
           encryptedFileChunks: dataFile.chunks,
           fileName: dataFile.fileName,
