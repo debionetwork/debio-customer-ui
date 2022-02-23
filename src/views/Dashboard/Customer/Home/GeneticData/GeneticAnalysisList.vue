@@ -3,7 +3,7 @@
     DataTable(
       :headers="headers"
       :items="items"
-      :sort-by="'updatedAt'"
+      :sort-by="['updatedAt']"
       :sort-desc="[true]"
     )
       template(v-slot:[`item.serviceName`]="{ item }")
@@ -99,6 +99,14 @@ export default {
   watch: {
     mnemonicData(val) {
       if (val) this.initialData()
+    },
+    
+    async lastEventData(val) {
+      if(val !== null) {
+        if(val.method === "Withdraw" || val.section === "balances") {
+          await this.fetchGeneticAnalysisData()
+        }
+      }
     }
   },
 
