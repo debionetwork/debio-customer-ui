@@ -3,6 +3,8 @@
     DataTable(
       :headers="headers"
       :items="items"
+      :sort-by="'updatedAt'"
+      :sort-desc="[true]"
     )
       template(v-slot:[`item.serviceName`]="{ item }")
         .d-flex.flex-column.genetic-analysis-list__service
@@ -205,7 +207,7 @@ export default {
       width: 480px
 
     &__status
-      width: 65px
+      width: 80px
 
     &__actions
       width: 45px

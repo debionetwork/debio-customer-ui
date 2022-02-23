@@ -1,5 +1,5 @@
 <template lang="pug">
-  .layout-dashboard
+  .main-layout
     ui-debio-modal(
       :show="showModalPassword"
       title="Unlock Wallet"
@@ -58,57 +58,73 @@
           @click="signOut"
         ) Not you? Try different account
 
+    v-expansion-panels.main-layout__expantion(
+      v-model="panel"
+      flat
+    )
+      v-expansion-panel
+        v-expansion-panel-header.main-layout__expantion-title 
+          span Announcement for users who stake $DBIO for a service request with the "Others" category.
+        v-expansion-panel-content.main-layout__expantion-content
+          p Due to the medical lab establishment and medical equipment procurement executing according to a specific service category, we will take down the “Others” option from the list of service categories. DAOGenics, Ltd will determine the available specific service categories. 
+          p If you had staked $DBIO for request service with the "Others" category, please unstake your $DBIO by canceling your request.  Once unstaked, the $DBIO will be returned to your wallet after six days. After receiving your $DBIO, you can make another service request within the categories determined by DAOGenics, Ltd.
+          p If you have any categories you want to add, feel free to contact science@debio.network.
+          v-btn.main-layout__expantion-button(
+            outlined
+            @click="doClose"
+          ) OK
 
-    NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
-      template
-        v-tooltip(top)
-          template(v-slot:activator="{ on, attrs }")
-            Button(
-              outlined
-              height="35px"
-              style="font-size: 13px"
-              @click="goToRequestTestPage"
-              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-              color="primary"
-              :bind="attrs"
-              :on="on"
-            ) Request Test
-          span Get your biological sample tested or stake $DBIO to request Lab
+    .layout-dashboard
+      NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
+        template
+          v-tooltip(top)
+            template(v-slot:activator="{ on, attrs }")
+              Button(
+                outlined
+                height="35px"
+                style="font-size: 13px"
+                @click="goToRequestTestPage"
+                class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+                color="primary"
+                :bind="attrs"
+                :on="on"
+              ) Request Test
+            span Get your biological sample tested or stake $DBIO to request Lab
 
-        v-tooltip(bottom)
-          template(v-slot:activator="{ on, attrs }")
-            Button(
-              outlined
-              height="35px"
-              style="font-size: 13px"
-              @click="goToUploadEMR"
-              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-              color="primary"
-              :bind="attrs"
-              :on="on"
-            ) Upload EMR
-          span Upload your Electronic Medical Record
+          v-tooltip(bottom)
+            template(v-slot:activator="{ on, attrs }")
+              Button(
+                outlined
+                height="35px"
+                style="font-size: 13px"
+                @click="goToUploadEMR"
+                class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+                color="primary"
+                :bind="attrs"
+                :on="on"
+              ) Upload EMR
+            span Upload your Electronic Medical Record
 
-        v-tooltip(bottom)
-          template(v-slot:activator="{ on, attrs }")
-            Button(
-              style="font-size: 11px"
-              outlined
-              height="35px"
-              @click="goToRequestAnalysis"
-              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-              color="primary"
-              :bind="attrs"
-              :on="on"
-            ) Request Genetic Analysis
-          span Get your genetic data analyzed by Genetic Analyst
+          v-tooltip(bottom)
+            template(v-slot:activator="{ on, attrs }")
+              Button(
+                style="font-size: 11px"
+                outlined
+                height="35px"
+                @click="goToRequestAnalysis"
+                class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+                color="primary"
+                :bind="attrs"
+                :on="on"
+              ) Request Genetic Analysis
+            span Get your genetic data analyzed by Genetic Analyst
 
-    .layout-dashboard__wrapper
-      Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
-      .layout-dashboard__main
-        transition(name="transition-slide-x" mode="out-in")
-          maintenancePageLayout(v-if="pageError" :error="pageError")
-          router-view(v-else @onPageError="handlePageError")
+      .layout-dashboard__wrapper
+        Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
+        .layout-dashboard__main
+          transition(name="transition-slide-x" mode="out-in")
+            maintenancePageLayout(v-if="pageError" :error="pageError")
+            router-view(v-else @onPageError="handlePageError")
 </template>
 
 <script>
@@ -152,6 +168,7 @@ export default {
     success: false,
     error: null,
     password: null,
+    panel: -1,
 
     navs: [
       { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
@@ -267,12 +284,36 @@ export default {
       localStorage.clear()
       this.clearAuth()
       this.clearWallet()
+    },
+
+    doClose () {
+      this.panel = -1;
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
+.main-layout
+  display: flex
+  flex-direction: column
+
+  &__expantion-title,
+  &__expantion-content
+    background-color: #E3E3E3
+
+  &__expantion-title
+    font-weight: 600
+    font-size: 14px
+
+  &__expantion-content
+    font-size: 13px
+    font-weight: 400
+
+  &__expantion-button
+    width: 140px
+    border-color: #5640A5
+
 .layout-dashboard
   width: 100%
   min-height: 100vh
@@ -290,6 +331,8 @@ export default {
 
   &__main
     padding: 0 1.563rem 1.563rem !important
+
+
 
 .modal-password
   &__cta

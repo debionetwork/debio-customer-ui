@@ -43,6 +43,7 @@
                 @click="goToDashboardPage"
                 ) Back to Dashboard
             v-col(
+              cols="4"
               v-else
               v-for="(service, i) in serviceList"
               :key="i"
@@ -210,6 +211,8 @@ export default {
 
     &__main
       padding-bottom: 100px
+      padding-left: 20px
+      padding-right: 32px
       width: 100%
       display: flex
       flex-direction: column
