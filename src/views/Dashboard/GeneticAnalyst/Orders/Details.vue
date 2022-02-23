@@ -144,7 +144,7 @@
 
               .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
                 Button(
-                  :disabled="computeDisabledRejection"
+                  :disabled="computeDisabledRejection || isLoading"
                   width="130px"
                   outlined
                   color="secondary"
@@ -152,10 +152,11 @@
                 ) REJECT
                 Button(
                   :disabled="completed"
+                  :loading="isLoading"
                   width="130px"
                   color="secondary"
                   @click="handleAcceptOrder"
-                ) {{ orderDataDetails.analysis_info.status === 'InProgress' ? "Upload" :"ACCEPT" }}
+                ) {{ computeButtonText }}
 
       transition(name="transition-slide-x" mode="out-in")
         section.upload-section.mt-6(v-if="step === 2")
@@ -288,6 +289,12 @@ export default {
 
     computeDisabledRejection() {
       return this.orderAccepted || this.orderDataDetails?.analysis_info?.status === "InProgress" || this.completed
+    },
+
+    computeButtonText() {
+      return this.orderDataDetails.analysis_info.status === "InProgress" || this.orderAccepted
+        ? "Upload"
+        : "ACCEPT"
     },
 
     computeAvatar() {
@@ -473,13 +480,13 @@ export default {
     },
 
     async handleAcceptOrder() {
-      if (this.orderDataDetails.analysis_info?.status === "InProgress") {
-        this.orderAccepted = true
+      if (this.orderDataDetails.analysis_info?.status === "InProgress" || this.orderAccepted) {
         this.step = 2
         return
       }
 
       try {
+        this.isLoading = true
         await updateStatusOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, "InProgress")
         await this.calculateDocumentFee()
 
@@ -487,6 +494,8 @@ export default {
         this.step = 2
       } catch (e) {
         console.error(e)
+      } finally {
+        this.isLoading = false
       }
     },
 

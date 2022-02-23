@@ -126,7 +126,8 @@ export default {
       mnemonicData: (state) => state.substrate.mnemonicData,
       walletBalance: (state) => state.substrate.walletBalance,
       selectedGeneticData: (state) => state.geneticData.selectedData,
-      selectedAnalysisService: (state) => state.geneticData.selectedAnalysisSerivice
+      selectedAnalysisService: (state) => state.geneticData.selectedAnalysisSerivice,
+      lastEventData: (state) => state.substrate.lastEventData
     }),
 
     setStyleColor() {
@@ -229,6 +230,19 @@ export default {
       const details = await queryGeneticAnalysisStorage(this.api, this.trackingId)
       if (details.status !== "Registered") {
         this.isRegistered = false
+      }
+    }
+  },
+
+  watch: {
+    async lastEventData(val) {
+      if(val !== null) {
+        const dataEvent = JSON.parse(val.data.toString())
+        if (dataEvent[0].customerId === this.wallet.address) {
+          if(val.method === "GeneticAnalysisOrderPaid") {
+            await this.getGeneticAnalysisOrderDetail()
+          }
+        }
       }
     }
   }
