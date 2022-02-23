@@ -1,11 +1,13 @@
 import { createLocalVue, shallowMount, config } from "@vue/test-utils"
-import GeneticDataList from "@/views/Dashboard/Customer/Home/GeneticData/GeneticDataList"
+import GADashboard from "@/views/Dashboard/GeneticAnalyst/Home"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 
+config.stubs["router-link"] = { template: "<div></div>" }
 config.stubs["ui-debio-icon"] = { template: "<div></div>" }
+config.stubs["ui-debio-banner"] = { template: "<div></div>" }
 
-describe("Genetic Data List", () => {
+describe("Genetic Analyst Dashboard", () => {
   let container
   let localVue = null
 
@@ -20,11 +22,10 @@ describe("Genetic Data List", () => {
   })
 
   it("Should render", () => {
-    GeneticDataList.methods = {
-      fetchGeneticData: jest.fn(), 
-      getRemoveDataFee: jest.fn(), 
+    GADashboard.methods = {
+        getOrdersData: jest.fn(),
     };
-    container = shallowMount(GeneticDataList, {
+    container = shallowMount(GADashboard, {
       localVue,
       vuetify: new Vuetify(),
       store: new Vuex.Store({
