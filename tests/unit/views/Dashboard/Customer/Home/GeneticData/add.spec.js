@@ -1,11 +1,13 @@
 import { createLocalVue, shallowMount, config } from "@vue/test-utils"
-import GeneticDataList from "@/views/Dashboard/Customer/Home/GeneticData/GeneticDataList"
+import AddGeneticData from "@/views/Dashboard/Customer/Home/GeneticData/Add"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 
-config.stubs["ui-debio-icon"] = { template: "<div></div>" }
+config.stubs["ui-debio-file"] = { template: "<div></div>" }
+config.stubs["ui-debio-input"] = { template: "<div></div>" }
+config.stubs["ui-debio-textarea"] = { template: "<div></div>" }
 
-describe("Genetic Data List", () => {
+describe("Add Genetic Data Page", () => {
   let container
   let localVue = null
 
@@ -20,13 +22,20 @@ describe("Genetic Data List", () => {
   })
 
   it("Should render", () => {
-    GeneticDataList.methods = {
-      fetchGeneticData: jest.fn(), 
-      getRemoveDataFee: jest.fn(), 
+    AddGeneticData.mixins = [];
+    AddGeneticData.methods = {
+      initialDataKey: jest.fn(), 
+      getTxWeight: jest.fn(), 
+      getDetails: jest.fn(), 
     };
-    container = shallowMount(GeneticDataList, {
+    container = shallowMount(AddGeneticData, {
       localVue,
       vuetify: new Vuetify(),
+      $route: {
+        params: {
+            id: "ID"
+        }
+      },
       store: new Vuex.Store({
         state: {
           substrate: {
