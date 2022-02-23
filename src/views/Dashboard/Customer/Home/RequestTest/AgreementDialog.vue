@@ -67,13 +67,12 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import {mapState} from "vuex"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
-import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
-import { getCreateRequestFee } from "@/common/lib/polkadot-provider/command/info"
+import {createRequest} from "@/common/lib/polkadot-provider/command/service-request"
+import {getCreateRequestFee} from "@/common/lib/polkadot-provider/command/info"
 import errorMessage from "@/common/constants/error-messages"
-
-
+import {errorHandler} from "@/common/lib/error-handler"
 
 export default {
   name: "AgreementDialog",
@@ -88,7 +87,7 @@ export default {
 
   data: () => ({
     errorMessage,
-    currencyList: ["DBIO"], 
+    currencyList: ["DBIO"],
     currencyType: "DBIO",
     agree: false,
     amount: "",
@@ -106,10 +105,10 @@ export default {
     ...mapState({
       api: (state) => state.substrate.api,
       pair: (state) => state.substrate.wallet,
-      country: state => state.lab.country,
-      region: state => state.lab.region,
-      city: state => state.lab.city,
-      category: state => state.lab.category,
+      country: (state) => state.lab.country,
+      region: (state) => state.lab.region,
+      city: (state) => state.lab.city,
+      category: (state) => state.lab.category,
       lastEventData: (state) => state.substrate.lastEventData,
       web3: (state) => state.metamask.web3,
       walletBalance: (state) => state.substrate.walletBalance
@@ -117,15 +116,27 @@ export default {
 
     amountRules() {
       return [
-        val => !!val || this.errorMessage.REQUIRED,
-        val => !!/^[0-9]\d*(\.\d{0,9})?$/.test(val) || this.errorMessage.INPUT_CHARACTER("Numbers (e.g. 20.005)")
+        (val) => !!val || this.errorMessage.REQUIRED,
+        (val) =>
+          !!/^[0-9]\d*(\.\d{0,9})?$/.test(val) ||
+          this.errorMessage.INPUT_CHARACTER("Numbers (e.g. 20.005)")
       ]
     }
   },
 
-  async mounted () {
-    const txWeight = await getCreateRequestFee(this.api, this.pair, this.country, this.region, this.city, this.category)
-    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+  async mounted() {
+    const txWeight = await getCreateRequestFee(
+      this.api,
+      this.pair,
+      this.country,
+      this.region,
+      this.city,
+      this.category
+    )
+    this.txWeight = this.web3.utils.fromWei(
+      String(txWeight.partialFee),
+      "ether"
+    )
   },
 
   watch: {
@@ -136,10 +147,10 @@ export default {
           this.dialogAlert = true
           this.$emit("click")
         }
-      }      
+      }
     }
   },
-  
+
   methods: {
     closeDialog() {
       this.$emit("close")
@@ -147,16 +158,6 @@ export default {
 
     async submitServiceRequestStaking() {
       this.isLoading = true
-
-      const balance = this.web3.utils.fromWei(String(this.walletBalance), "ether")
-
-      if ((Number(this.amount) + Number(this.txWeight)) > Number(balance)) {
-        this.errorTitle = "Insufficient Balance"
-        this.errorMsg =  "Your transaction cannot succeed due to insufficient balance, check your account balance"
-        this.showError = true
-        this.isLoading = false
-        return
-      }
 
       try {
         await createRequest(
@@ -168,9 +169,12 @@ export default {
           this.category,
           this.amount
         )
-
       } catch (err) {
-        this.errorMsg = err.message
+        const error = await errorHandler(err.message)
+
+        this.errorTitle = error.title
+        this.errorMsg = error.message
+        this.showError = true
         this.isLoading = false
       }
     }
@@ -179,68 +183,67 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  @import "@/common/styles/mixins.sass"
-  
-  .staking-dialog
-    &__title
-      display: flex
-      align-items: center
-      letter-spacing: 0.0075em
-      margin-left: 20px
-      margin-top: 10px
-      @include button-1
-    
-    &__dialog
-      padding-bottom: 20px
+@import "@/common/styles/mixins.sass"
 
-    &__card
-      background-color: #F5F7F9
-      margin: 0px 30px
+.staking-dialog
+  &__title
+    display: flex
+    align-items: center
+    letter-spacing: 0.0075em
+    margin-left: 20px
+    margin-top: 10px
+    @include button-1
 
-    &__card-text
-      padding: 18px 12px
-      letter-spacing: -0.004em
+  &__dialog
+    padding-bottom: 20px
 
-    &__card-text-content
-      @include body-text-3-opensans
+  &__card
+    background-color: #F5F7F9
+    margin: 0px 30px
 
-    &__input
-      margin: 11px 30px
+  &__card-text
+    padding: 18px 12px
+    letter-spacing: -0.004em
 
-    &__input-label
-      display: flex
-      align-items: center
-      letter-spacing: -0.0075em
-      margin-bottom: 11px
-      @include button-2
-    
-    &__input-field
-      max-height: 18px
-      letter-spacing: -0.004em
-      margin-bottom: 50px
-      @include body-text-3-opensans
-   
-    &__trans-weight
-      margin-top: 20px
-      margin-bottom: 20px
-      display: flex
-      justify-content: space-between
+  &__card-text-content
+    @include body-text-3-opensans
 
-    &__trans-weight-text
-      letter-spacing: -0.004em
-      display: flex
-      align-items: center
-      @include body-text-3-opensans
+  &__input
+    margin: 11px 30px
 
-    &__input-button
-      display: flex
-      align-items: center
-      text-align: center
-      letter-spacing: -0.015em
-      margin-top: 20px
-      @include tiny-semi-bold
+  &__input-label
+    display: flex
+    align-items: center
+    letter-spacing: -0.0075em
+    margin-bottom: 11px
+    @include button-2
 
-    &__trans-weight-icon
-      margin-left: 5px
+  &__input-field
+    max-height: 18px
+    letter-spacing: -0.004em
+    margin-bottom: 50px
+    @include body-text-3-opensans
 
+  &__trans-weight
+    margin-top: 20px
+    margin-bottom: 20px
+    display: flex
+    justify-content: space-between
+
+  &__trans-weight-text
+    letter-spacing: -0.004em
+    display: flex
+    align-items: center
+    @include body-text-3-opensans
+
+  &__input-button
+    display: flex
+    align-items: center
+    text-align: center
+    letter-spacing: -0.015em
+    margin-top: 20px
+    @include tiny-semi-bold
+
+  &__trans-weight-icon
+    margin-left: 5px
 </style>
