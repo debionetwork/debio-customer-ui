@@ -49,7 +49,7 @@ import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util"
 import Button from "@/common/components/Button"
 import { fileTextIcon } from "@/common/icons"
-import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
+import { downloadFile, decryptFile } from "@/common/lib/pinata"
 import {
   queryElectronicMedicalRecordById,
   queryElectronicMedicalRecordFileById
@@ -122,10 +122,7 @@ export default {
         files.push(dataFile)
       }
 
-      this.emrDocument.files = files.map(file => ({
-        ...file,
-        recordLink: file.recordLink.split("/").slice(4, 6).join("/")
-      }))
+      this.emrDocument.files = files
 
       if (this.emrDocument?.files.length) this.parseResult(
         0,
@@ -138,34 +135,22 @@ export default {
 
       this.selected = idx
 
-      const path = recordLink
-
-      const pair = {
-        secretKey: this.secretKey,
-        publicKey: this.publicKey
-      }
-
-      const typeFile = "application/pdf"
-      const channel = new MessageChannel()
-
       try {
         this.isLoading = true
-        channel.port1.onmessage = ipfsWorker.workerDownload
 
-        await ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [
-          channel.port2
-        ])
+        const pair = { publicKey: this.publicKey, secretKey: this.secretKey }
+        const type = "application/pdf"
+        const data = await downloadFile(recordLink)
 
-        ipfsWorker.workerDownload.onmessage = (event) => {
-          const blob = window.URL.createObjectURL(new Blob([event.data], { type: typeFile }))
+        const decryptedFile = decryptFile(data, pair, type)
+        const fileBlob = window.URL.createObjectURL(new Blob([decryptedFile], { type }))
 
-          this.result = blob
-          this.isLoading = false
-        }
+        this.result = fileBlob
       } catch {
         this.message = "Oh no! Something went wrong. Please try again later"
+      } finally {
+        this.isLoading = false
       }
-
     }
   }
 }
