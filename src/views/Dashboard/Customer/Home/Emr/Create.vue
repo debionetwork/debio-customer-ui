@@ -280,7 +280,7 @@ export default {
     disabledDocumentForm() {
       return this.document.title === "" || this.document.description === "" || this.document.file === null
     },
-    
+
     disabledFinish() {
       return this.computeFiles?.some(file => file.percent !== 100)
     }
@@ -406,7 +406,7 @@ export default {
 
       this.onCloseModalDocument()
     },
-    
+
     onEdit(item) {
       Object.assign(this.document, { ...item })
       this.showModal = true

@@ -16,12 +16,11 @@
         .d-flex.flex-column.genetic-data-list__upload
           span {{ item.createdAt }}
 
-    
       template(v-slot:[`item.actions`]="{ item }")
         .genetic-data-list__actions
           ui-debio-icon(:icon="pencilIcon" size="16" role="button" stroke @click="onEdit(item)")
           ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="onDelete(item)")
-    
+
     ConfirmationDialog(
       :show="showDialog"
       :txWeight="Number(txWeight).toFixed(4)"
@@ -98,7 +97,7 @@ export default {
         if (dataEvent[1] === this.wallet.address) {
           if (e.method === "GeneticDataRemoved") {
             this.fetchGeneticData()
-            this.showDialog = false          
+            this.showDialog = false
           }
         }
       }
@@ -121,7 +120,7 @@ export default {
         const geneticData = await queryGeneticDataById(this.api, dataList[i])
 
         let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = geneticData
-        
+
         if (updatedAt !== "0") {
           createdAt = this.formatDate(updatedAt)
         } else {
@@ -174,7 +173,7 @@ export default {
 
     &__title
       width: 117px
-    
+
     &__description
       width: 480px
 
