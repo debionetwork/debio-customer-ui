@@ -1,57 +1,31 @@
-import Kilt from "@kiltprotocol/sdk-js"
-import axios from "axios"
-import NodeFormData from "form-data"
+const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
+import { uploadFile } from "@debionetwork/pinata-ipfs"
 
-export const uploadFile = val => {
-  const pinataKey = process.env.VUE_APP_PINATA_KEY
-  const pinataSecretKey = process.env.VUE_APP_PINATA_SECRET_KEY
-  const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
-
+export async function uploadFileToPinata (val) { 
+  
+  const file = val.file
   const options = {
-    pinataMetadata: { name: `${val.title}` },
-    pinataOptions: { cidVersion: 0 }
+    pinataMetadata: {
+      name: `${val.title}`
+    },
+    pinataOptions: {
+      cidVersion: 0
+    }
   }
 
-  return new Promise((resolve, reject) => {
-    const data = new NodeFormData()
-    const endpoint = "https://api.pinata.cloud/pinning/pinFileToIPFS"
-
-    data.append("file", val.file)
-
-    if (options?.pinataMetadata) data.append("pinataMetadata", JSON.stringify(options?.pinataMetadata))
-    if (options?.pinataOptions) data.append("pinataOptions", JSON.stringify(options?.pinataOptions))
-
-    axios.post(endpoint, data, {
-      withCredentials: true,
-      maxContentLength: "Infinity", // NOTE: Allow axios to upload large file
-      maxBodyLength: "Infinity",
-      headers: {
-        "Content-type": `multipart/form-data boundary=${data._boundary}`,
-        "authorization": `Bearer ${pinataJwtKey}`,
-        "pinata_api_key": pinataKey,
-        "pinata_secret_api_key": pinataSecretKey
-      }
-    }).then(result => {
-      if (result.status !== 200) reject(new Error(`unknown server response while pinning File to IPFS: ${result}`))
-      else resolve(result.data)
-    }).catch(error => {
-      reject(error)
-    })
-  })
+  const result = await uploadFile(options, file, pinataJwtKey)
+  return result
 }
 
-export const getFileUrl = cid => {
-  return `https://ipfs.debio.network/ipfs/${cid}`
+export function getFileUrl (cid) {
+  return `${process.env.VUE_APP_PINATA_GATEWAY}/ipfs/${cid}`
 }
 
-export const downloadFile = async ipfsLink => {
-  console.log("Downloading...")
-  
-  const response = await fetch(ipfsLink)
-  const data = await response.json()
-
-  console.log("Success Downloaded!")
-
+export async function downloadFile(link) {
+  console.log("Downloading..")
+  const result = await fetch(link)
+  const data = await result.json()
+  console.log("Downloaded !")
   return data
 }
 
@@ -102,3 +76,4 @@ export const downloadDocumentFile = (data, fileName, type) => {
     console.error(error)
   }
 }
+
