@@ -29,8 +29,6 @@
             rounded
           )
 
-
-
         v-col(cols="9")
           .analyst-detail__profil-name {{ service.analystsInfo.info.firstName }} {{ service.analystsInfo.info.lastName }}
           .analyst-detail__profil-desc {{ service.analystsInfo.info.specialization }}
@@ -88,8 +86,7 @@ export default {
   },
 
   data: () => ({
-    price: null,
-    profileImage: null
+    price: null
   }),
 
   props: {
@@ -100,7 +97,6 @@ export default {
 
   mounted() {
     this.price = `${this.formatBalance(this.service.priceDetail[0].totalPrice)} ${this.service.priceDetail[0].currency}`
-    this.profileImage = this.service.analystsInfo.info.profileImage
   },
 
   computed: {
@@ -111,7 +107,9 @@ export default {
     }),
 
     computeAvatar() {
-      return this.profileImage ? this.profileImage : require("@/assets/defaultAvatar.svg")
+      const profile = this.service.analystsInfo.info.profileImage
+
+      return profile ? profile : require("@/assets/defaultAvatar.svg")
     }
 
   },
