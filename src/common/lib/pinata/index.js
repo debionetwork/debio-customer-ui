@@ -1,9 +1,8 @@
 import axios from "axios";
 import NodeFormData from "form-data"
+const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
 
-export function uploadFile (val) {
-  const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
-  
+export function uploadFile (val) { 
   const options = {
     pinataMetadata: {
       name: `${val.title}`
@@ -17,7 +16,7 @@ export function uploadFile (val) {
     const data = new NodeFormData();
     data.append("file", val.file);
 
-    const endpoint = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
+    const endpoint = process.env.VUE_APP_PINATA_ENDPOINT
 
     if (options) {
       if (options.pinataMetadata) {
@@ -27,6 +26,8 @@ export function uploadFile (val) {
         data.append("pinataOptions", JSON.stringify(options.pinataOptions));
       }
     }
+
+    console.log("uploading..")
 
     axios.post(
       endpoint,
@@ -43,6 +44,7 @@ export function uploadFile (val) {
       if (result.status !== 200) {
         reject(new Error(`unknown server response while pinning File to IPFS: ${result}`));
       }
+      console.log("uploaded!")
       resolve(result.data);
     }).catch(function (error) {
       reject(error);
@@ -51,5 +53,13 @@ export function uploadFile (val) {
 }
 
 export function getFileUrl (cid) {
-  return `https://ipfs.debio.network/ipfs/${cid}`
+  return `${process.env.VUE_APP_PINATA_GATEWAY}/ipfs/${cid}`
+}
+
+export async function downloadFile(link) {
+  console.log("Downloading..")
+  const result = await fetch(link)
+  const data = await result.json()
+  console.log("Downloaded !")
+  return data
 }

@@ -63,6 +63,7 @@
       SuccessDialog(
         :show="isSuccess"
         title="Success"
+        :orderId="orderId"
         @close="closeDialog"
       )
 
@@ -112,11 +113,13 @@ export default {
     isEdit: false,
     isSuccess: false,
     checkCircleIcon,
+    links: [],
     link: null,
     txWeight: 0,
     isLoading: false,
     dataId: null,
-    error: null
+    error: null,
+    orderId: null
   }),
 
   computed: {
@@ -184,6 +187,7 @@ export default {
         if (e.method === "GeneticDataAdded" || e.method === "GeneticDataUpdated") {
           if (dataEvent[1] === this.wallet.address) {
             this.isLoading = false
+            this.orderId = dataEvent[0].id
             this.isSuccess = true
           }
         }
@@ -283,29 +287,23 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, fileName, fileType }) {
+    async upload({ encryptedFileChunks, fileType }) {
 
-      console.log("encrypted file chunks.. >>", encryptedFileChunks)
-      console.log(fileName)
+      for (let i = 0; i < encryptedFileChunks.length; i++) {
+        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large 
+        const blob = new Blob([data], { type: fileType })
+        // UPLOAD TO PINATA API
+        const result = await uploadFile({
+          title: `${this.document.title} (${i})`,
+          type: this.document.description,
+          file: blob
+        })
+        const link = await getFileUrl(result.IpfsHash)
+        this.links.push(link)
+      }
+      this.link = JSON.stringify(this.links)
 
-      // const chunkSize = 30 * 1024 * 1024
-      // let offset = 0
 
-      const data = JSON.stringify(encryptedFileChunks)
-      const blob = new Blob([data], { type: fileType })
-      // const newBlobData = new File([blob], fileName)
-
-      console.log(">>>>", blob)
-
-      // UPLOAD TO PINATA API
-
-      const result = await uploadFile({
-        title: this.document.title,
-        type: this.document.description,
-        file: blob
-      })
-
-      this.link = await getFileUrl(result.IpfsHash)
     }, 
 
     getFileIpfsUrl(file) {
@@ -343,7 +341,8 @@ export default {
             this.wallet, 
             this.document.title, 
             this.document.description, 
-            this.link)
+            this.link
+          )
         }
 
 
