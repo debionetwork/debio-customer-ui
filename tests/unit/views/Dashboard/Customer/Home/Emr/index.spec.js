@@ -22,6 +22,10 @@ describe("Customer EMR Dashboard", () => {
   })
 
   it("Should render", () => {
+    CustomerEmr.methods = {
+      initialDataKey: jest.fn(), 
+      metamaskDispatchAction: jest.fn(), 
+    };
     container = shallowMount(CustomerEmr, {
       localVue,
       vuetify: new Vuetify(),

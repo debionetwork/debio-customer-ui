@@ -46,9 +46,9 @@
       .customer-my-test__tabs
         template
           v-tabs(v-model="tabs")
-            v-tab Test List
+            v-tab.tab-section Test List
             
-            v-tab Stake Service
+            v-tab.tab-section Stake Service
               
         v-tabs-items(v-model="tabs")
           v-tab-item
@@ -115,6 +115,7 @@
               :loading="isLoading"
               :txWeight="Number(txWeight).toFixed(4)"
               title="Unstake"
+              btnMessage="Unstake"
               message="Your staking amount will be returned after 144 hours or 6 days"
               @click="unstakeService"
               this.isLoding = true
@@ -585,4 +586,8 @@ export default {
     
   .degenics-data-table
     margin-top: 0px !important
+
+  .tab-section
+    text-transform: unset !important
+    @include button-1
 </style>

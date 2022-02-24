@@ -26,7 +26,7 @@ export default {
         const links = formated.slice(1, formated?.length)
         if (!this.$router.options.routes) return 
         const routeChildren = this.$router.options.routes
-          .find(route => /^\/customer/.test(route.path))
+          .find(route => route.path.split("/")[1] === val.path.split("/")[1])
           .children
 
         const parentRoute = routeChildren.find(route => route.name === val.meta?.parent)

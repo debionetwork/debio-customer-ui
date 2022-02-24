@@ -1,5 +1,5 @@
 <template lang="pug">
-  .layout-dashboard
+  .main-layout
     ui-debio-modal(
       :show="showModalPassword"
       title="Unlock Wallet"
@@ -12,6 +12,7 @@
       ui-debio-input(
         v-if="!success"
         :error="!!error"
+        autofocus
         :errorMessages="!!error ? error.message : null"
         :rules="$options.rules.password"
         :type="showPassword ? 'text' : 'password'"
@@ -53,49 +54,81 @@
           span.modal-password__cta-forgot OR
           div.modal-password__divider
           
-        router-link.modal-password__cta-forgot(
-          :to="{ name: 'landing-page' }"
+        .modal-password__cta-change-account(
+          @click="signOut"
         ) Not you? Try different account
 
+    v-expansion-panels.main-layout__expantion(
+      v-model="panel"
+      flat
+    )
+      v-expansion-panel
+        v-expansion-panel-header.main-layout__expantion-title 
+          span Announcement for users who stake $DBIO for a service request with the "Others" category.
+        v-expansion-panel-content.main-layout__expantion-content
+          p Due to the medical lab establishment and medical equipment procurement executing according to a specific service category, we will take down the “Others” option from the list of service categories. DAOGenics, Ltd will determine the available specific service categories. 
+          p If you had staked $DBIO for request service with the "Others" category, please unstake your $DBIO by canceling your request.  Once unstaked, the $DBIO will be returned to your wallet after six days. After receiving your $DBIO, you can make another service request within the categories determined by DAOGenics, Ltd.
+          p If you have any categories you want to add, feel free to contact science@debio.network.
+          v-btn.main-layout__expantion-button(
+            outlined
+            @click="doClose"
+          ) OK
 
-    NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
-      template
-        v-tooltip(top)
-          template(v-slot:activator="{ on, attrs }")
-            Button(
-              outlined
-              height="35px"
-              @click="goToRequestTestPage"
-              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-              color="primary"
-              :bind="attrs"
-              :on="on"
-            ) Request a Test
-          span Get your biological sample tested or stake $DBIO to request Lab
+    .layout-dashboard
+      NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
+        template
+          v-tooltip(top)
+            template(v-slot:activator="{ on, attrs }")
+              Button(
+                outlined
+                height="35px"
+                style="font-size: 13px"
+                @click="goToRequestTestPage"
+                class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+                color="primary"
+                :bind="attrs"
+                :on="on"
+              ) Request Test
+            span Get your biological sample tested or stake $DBIO to request Lab
 
-        v-tooltip(bottom)
-          template(v-slot:activator="{ on, attrs }")
-            Button(
-              outlined
-              height="35px"
-              @click="goToUploadEMR"
-              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-              color="primary"
-              :bind="attrs"
-              :on="on"
-            ) Upload EMR
-          span Upload your Electronic Medical Record
+          v-tooltip(bottom)
+            template(v-slot:activator="{ on, attrs }")
+              Button(
+                outlined
+                height="35px"
+                style="font-size: 13px"
+                @click="goToUploadEMR"
+                class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+                color="primary"
+                :bind="attrs"
+                :on="on"
+              ) Upload EMR
+            span Upload your Electronic Medical Record
 
-    .layout-dashboard__wrapper
-      Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
-      .layout-dashboard__main
-        transition(name="transition-slide-x" mode="out-in")
-          maintenancePageLayout(v-if="pageError" :error="pageError")
-          router-view(v-else @onPageError="handlePageError")
+          v-tooltip(bottom)
+            template(v-slot:activator="{ on, attrs }")
+              Button(
+                style="font-size: 11px"
+                outlined
+                height="35px"
+                @click="goToRequestAnalysis"
+                class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+                color="primary"
+                :bind="attrs"
+                :on="on"
+              ) Request Genetic Analysis
+            span Get your genetic data analyzed by Genetic Analyst
+
+      .layout-dashboard__wrapper
+        Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
+        .layout-dashboard__main
+          transition(name="transition-slide-x" mode="out-in")
+            maintenancePageLayout(v-if="pageError" :error="pageError")
+            router-view(v-else @onPageError="handlePageError")
 </template>
 
 <script>
-import {mapState} from "vuex"
+import {mapState, mapMutations, mapActions} from "vuex"
 import store from "@/store"
 import {validateForms} from "@/common/lib/validate"
 import {
@@ -106,14 +139,16 @@ import {
   databaseIcon,
   checkCircleIcon,
   fileTextIcon,
-  creditCardIcon
+  creditCardIcon,
+  geneticDnaIcon
 } from "@/common/icons"
 
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
-import maintenancePageLayout from "@/views/Dashboard/Customer/maintenancePageLayout"
+import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
+import localStorage from "@/common/lib/local-storage"
 
 export default {
   name: "MainPage",
@@ -133,43 +168,15 @@ export default {
     success: false,
     error: null,
     password: null,
+    panel: -1,
 
     navs: [
-      {
-        text: "Dashboard",
-        disabled: false,
-        active: false,
-        route: "customer-dashboard",
-        icon: gridIcon
-      },
-      {
-        text: "My Test",
-        disabled: false,
-        active: false,
-        route: "my-test",
-        icon: boxIcon
-      },
-      {
-        text: "My EMR",
-        disabled: false,
-        active: false,
-        route: "customer-emr",
-        icon: fileTextIcon
-      },
-      {
-        text: "Data Bounty",
-        disabled: false,
-        active: false,
-        route: "customer-data-bounty",
-        icon: databaseIcon
-      },
-      {
-        text: "Payment History",
-        disabled: false,
-        active: false,
-        route: "customer-payment-history",
-        icon: creditCardIcon
-      }
+      { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
+      { text: "My Test", disabled: false, active: false, route: "my-test", icon: boxIcon },
+      { text: "My EMR", disabled: false, active: false, route: "customer-emr", icon: fileTextIcon },
+      { text: "My Genetic Data", disabled: false, active: false, route: "customer-genetic-data", icon: geneticDnaIcon},
+      { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", icon: databaseIcon },
+      { text: "Payment History", disabled: false, active: false, route: "customer-payment-history", icon: creditCardIcon }
     ]
   }),
 
@@ -179,6 +186,10 @@ export default {
       wallet: (state) => state.substrate.wallet,
       localListNotification: (state) => state.substrate.localListNotification,
       mnemonicData: (state) => state.substrate.mnemonicData
+    }),
+
+    ...mapActions({
+      clearAuth: "auth/clearAuth"
     }),
 
     computeNavs() {
@@ -220,6 +231,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      clearWallet: "metamask/CLEAR_WALLET"
+    }),
+
     handlePageError(error) {
       this.pageError = error
     },
@@ -237,6 +252,10 @@ export default {
 
     goToUploadEMR() {
       this.$router.push({name: "customer-emr-create"})
+    },
+
+    goToRequestAnalysis() {
+      this.$router.push({ name: "customer-request-analysis"})
     },
 
     handleShowPassword() {
@@ -258,12 +277,43 @@ export default {
       } catch (e) {
         this.error = e
       }
+    },
+
+    signOut() {
+      this.$router.push({name: "landing-page"})
+      localStorage.clear()
+      this.clearAuth()
+      this.clearWallet()
+    },
+
+    doClose () {
+      this.panel = -1;
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
+.main-layout
+  display: flex
+  flex-direction: column
+
+  &__expantion-title,
+  &__expantion-content
+    background-color: #E3E3E3
+
+  &__expantion-title
+    font-weight: 600
+    font-size: 14px
+
+  &__expantion-content
+    font-size: 13px
+    font-weight: 400
+
+  &__expantion-button
+    width: 140px
+    border-color: #5640A5
+
 .layout-dashboard
   width: 100%
   min-height: 100vh
@@ -282,6 +332,8 @@ export default {
   &__main
     padding: 0 1.563rem 1.563rem !important
 
+
+
 .modal-password
   &__cta
     gap: 20px
@@ -291,11 +343,15 @@ export default {
   &__cta-submit
     font-size: 10px
 
-  &__cta-forgot
+  &__cta-forgot,
+  &__cta-change-account
     color: #5640A5 !important
     font-weight: bold
     text-transform: uppercase
+
+  &__cta-change-account
     font-size: 12px
+    cursor: pointer
 
   &__divider
     border-top: 1px solid #E9E9E9

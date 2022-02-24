@@ -11,6 +11,7 @@ import polkadotIcon from "./polkadot"
 import daiIcon from "./dai"
 import debioIcon from "./debio"
 import alertIcon from "./alert"
+import cableErrorIcon from "./cableError"
 import alertTriangleIcon from "./alertTriangle"
 import userIcon from "./user"
 import usersIcon from "./users"
@@ -44,9 +45,12 @@ import phoneIcon from "./phone"
 import bookIcon from "./book";
 import doctorDashboardIllustrator from "./doctorDashboardIllustrator"
 import constructIllustration from "./constructIllustration"
+import geneticAnalystIllustration from "./geneticAnalystIllustration"
 import microscopeIcon from "./microscope"
 import weightLifterIcon from "./weightLifter"
 import fileSearchIcon from "./fileSearch"
+import chevronLeftIcon from "./chevronLeft"
+import timerIcon from "./timer"
 import hairIcon from "./hair"
 import familyTreeIcon from "./familyTree"
 import debioFullIcon from "./debioFull"
@@ -61,11 +65,16 @@ import resultReadyBanner from "./resultReadyBanner"
 import qualityControlBanner from "./qualityControlBanner"
 import rejectedQCBanner from "./rejectedQCBanner"
 import medicalResearchIllustration from "./medicalResearchIllustration"
+import geneticDnaIcon from "./geneticDna"
+import plusCircle from "./plus-circle"
+import geneticIllustration from "./geneticIllustration"
+import emptyDataIllustration from "./emptyDataIllustration"
 
 export {
   creditCardIcon,
   layersIcon,
   alertIcon,
+  cableErrorIcon,
   alertTriangleIcon,
   downloadIcon,
   arrowTopRightIcon,
@@ -109,9 +118,12 @@ export {
   bookIcon,
   doctorDashboardIllustrator,
   constructIllustration,
+  geneticAnalystIllustration,
   microscopeIcon,
   weightLifterIcon,
   fileSearchIcon,
+  chevronLeftIcon,
+  timerIcon,
   hairIcon,
   familyTreeIcon,
   debioFullIcon,
@@ -125,5 +137,9 @@ export {
   resultReadyBanner,
   qualityControlBanner,
   rejectedQCBanner,
-  medicalResearchIllustration
+  medicalResearchIllustration,
+  geneticDnaIcon,
+  plusCircle,
+  geneticIllustration,
+  emptyDataIllustration
 }

@@ -18,6 +18,7 @@
       v-else-if="!$slots['icon'] && !showInitial"
       :src="computeAvatarImage"
       :style="computeBorderedStyle"
+      v-bind="$attrs"
       @error="handleErrorImage"
       @click.prevent="handleClick"
     )
@@ -49,6 +50,8 @@ import { metamaskFoxIcon } from "@/common/icons"
 
 export default {
   name: "UiDebioAvatar",
+  inheritAttrs: false,
+
   props: {
     src: { type: String, default: "" },
     size: { type: [String, Number], default: 44 },
@@ -72,6 +75,7 @@ export default {
   data: () => ({
     showOption: false,
     isHovered: false,
+    imageError: false,
     metamaskFoxIcon
   }),
 
@@ -91,13 +95,15 @@ export default {
 
       return [
         "ui-debio-avatar",
+        { "ui-debio-avatar--error": this.imageError || !this.src },
+        { "ui-debio-avatar--default-avatar": /(defaultAvatar)/.test(this.src) },
         { [roundedType]: this.rounded },
         { [`elevation-${this.elevation}`]: this.elevation }
       ]
     },
     
     computeAvatarImage() {
-      return this.src ? this.src : require("@/assets/image-placeholder.png")
+      return this.src ? this.src : require("@/assets/defaultImage.svg")
     },
 
     computeStyle() {
@@ -126,7 +132,8 @@ export default {
     },
 
     handleErrorImage(e) {
-      if (e.type === "error") e.target.src = require("@/assets/image-placeholder.png")
+      this.imageError = true
+      if (e.type === "error") e.target.src = require("@/assets/defaultImage.svg")
     },
 
     handleOptionClick() {
@@ -220,9 +227,22 @@ export default {
   &__image
     position: relative
     z-index: 7
-    width: 100%
     height: 100%
     object-fit: cover
+
+  &--default-avatar,
+  &--error
+    border-radius: 50%
+    background: #FFF
+    box-shadow: 0px 0px 10px 0px rgba(#999999, .3)
+
+  &--error
+    .ui-debio-avatar__image
+      transform: scale(.85)
+
+  &--default-avatar
+    .ui-debio-avatar__image
+      transform: scale(.73) translateY(-3px)
 
   &--rounded
     border-radius: 0.25rem

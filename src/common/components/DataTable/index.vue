@@ -73,8 +73,8 @@ export default {
     
   }),
   methods: {
-    clickedRow() {
-      console.log("clicked")
+    clickedRow(item) {
+      this.$emit("click", item)
     },
 
     setEntriesPerPage(val) {

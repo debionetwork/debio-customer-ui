@@ -245,13 +245,13 @@ export default {
       this.stakingFlow = true
       const debioBalance = await getDbioBalance()
 
-      const stakingAmount = Number(this.stakingData.staking_amount.replaceAll(",", "")) * debioBalance
+      const stakingAmount = Number(this.stakingData.staking_amount.replaceAll(",", "")) * debioBalance.dbioToDai
 
       this.stakingAmount = Number(this.formatPrice(stakingAmount)).toFixed(3)
       const remainingStaking = this.dataService.price - stakingAmount
       this.remainingDai = remainingStaking
       this.remainingStaking = Number(this.formatPrice(remainingStaking)).toFixed(3)
-      this.remainingDbio = Number(this.formatPrice(remainingStaking / debioBalance)).toFixed(3)
+      this.remainingDbio = Number(this.formatPrice(remainingStaking / debioBalance.dbioToDai)).toFixed(3)
 
       const excessAmount = stakingAmount - this.dataService.price
       this.excessAmount = Number(this.formatPrice(excessAmount)).toFixed(3)
@@ -422,7 +422,6 @@ export default {
 
     async getDataService() {
       const data = await fetchPaymentDetails(this.$route.params.id)
-      console.log("DATA PAYMENT DETAIL", data)
 
       if (data.status !== "Unpaid") {
         this.$router.push({ name: "customer-payment-history" })

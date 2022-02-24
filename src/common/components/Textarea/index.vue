@@ -70,6 +70,9 @@ export default {
         ...this.$listeners,
         input: event => {
           this.$emit("input", event.target.value)
+        },
+        change: event => {
+          this.$emit("change", event.target.value)
         }
       }
     }

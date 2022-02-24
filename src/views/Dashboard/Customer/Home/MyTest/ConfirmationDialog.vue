@@ -36,7 +36,7 @@
             width="280px"
             height="35px"
             @click="onSubmit"
-          ) Unstake
+          ) {{ btnMessage }}
   
       v-progress-linear(
         v-if="loading"
@@ -61,7 +61,8 @@ export default {
     message:String,
     title: String,
     loading:Boolean,
-    txWeight: String
+    txWeight: String,
+    btnMessage: String
   },
 
   methods: {
