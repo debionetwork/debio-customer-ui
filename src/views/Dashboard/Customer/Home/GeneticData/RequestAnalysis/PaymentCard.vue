@@ -89,7 +89,7 @@ import {
 } from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
 import { lastAnlysisOrderByCustomer, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
-import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
+import {downloadFile, uploadFileToPinata, getFileUrl } from "@/common/lib/pinata"
 import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
 
 
@@ -297,7 +297,7 @@ export default {
         const blob = new Blob([data], { type: fileType })
 
         // UPLOAD TO PINATA API
-        const result = await uploadFile({
+        const result = await uploadFileToPinata({
           title: `${fileName} (${i})`,
           type: fileType,
           file: blob

@@ -93,7 +93,7 @@ import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
-import { uploadFile, getFileUrl } from "@/common/lib/pinata"
+import { uploadFileToPinata, getFileUrl } from "@/common/lib/pinata"
 
 export default {
   name: "AddGeneticData",
@@ -293,7 +293,7 @@ export default {
         const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large 
         const blob = new Blob([data], { type: fileType })
         // UPLOAD TO PINATA API
-        const result = await uploadFile({
+        const result = await uploadFileToPinata({
           title: `${this.document.title} (${i})`,
           type: this.document.description,
           file: blob
