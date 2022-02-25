@@ -58,6 +58,7 @@
 
       UploadingDialog(
         :show="isLoading"
+        type="upload"
       )
 
       SuccessDialog(
@@ -345,7 +346,7 @@ export default {
           )
         }
 
-
+        this.isLoading = false
       } catch (e) {
         const error = await errorHandler(e.message)
 

@@ -5,7 +5,7 @@
         v-app-bar( flat dense color="white" ) 
 
         v-card-text
-          .dialog-uploading__title {{ renderTitle }} in Progress...
+          .dialog-uploading__title Payment in Progress...
 
           .dialog-uploading__card-loading
             SpinnerLoader(
@@ -14,13 +14,11 @@
             )
 
           .dialog-uploading__message
-            b Your file is still {{ renderTitle }}. 
             b Please wait, do not close this tab. 
-          .dialog-uploading__border-text We support file sizes up to 200 MB, there may be longer upload time associated with larger files on slower Internet connections.
-          .dialog-uploading__border-text The larger the file size, the longer it will take to upload 
+          .dialog-uploading__border-text It may take a while, 
             a.link(
               target="_blank"
-              :href="renderUrlDownload"
+              href="https://docs.debio.network/complete-guidelines/user-guideline/upload-and-encrypt-data"
               @click.stop
             ) here’s why
 
@@ -30,15 +28,11 @@
 import checkCircle from "@/assets/check-circle-primary.png"
 import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
 
-
-
 export default {
-  name: "UploadingDialog",
+  name: "PaymentDialog",
 
   data: () => ({
-    checkCircle,
-    urlUpload: "https://docs.debio.network/complete-guidelines/user-guideline/upload-and-encrypt-data",
-    urlDownload: "https://docs.debio.network/complete-guidelines/genetic-analyst-guideline/download-and-decrypt-data"
+    checkCircle
   }),
 
   components: {
@@ -46,19 +40,7 @@ export default {
   },
 
   props: {
-    show: Boolean,
-    type: String,
-    url: String
-  },
-
-  computed: {
-    renderTitle() {
-      return this.type === "download" ? "Downloading" : "Uploading"
-    },
-
-    renderUrlDownload() {
-      return this.type === "download" ? this.urlDownload : this.urlUpload
-    }
+    show: Boolean
   }
 }
 </script>
@@ -98,13 +80,16 @@ export default {
       margin: 20px 27px
 
     &__border-text
+      display: flex
       padding: 12px 16px
-      align-items: center
-      text-align: justify
+      justify-content: center
       letter-spacing: -0.004em
       @include body-text-3-opensans
 
     &__card-loading
       padding: 50px 0 50px 105px
+
+  .link
+    margin-left: 3px
 
 </style>

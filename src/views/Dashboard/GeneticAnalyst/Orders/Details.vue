@@ -203,6 +203,11 @@
 
             span.upload-section__tx-price {{ txWeight }}
           Button(block :loading="isLoading" :disabled="isLoading" @click="handleSubmitForms" color="secondary") SUBMIT
+    
+    UploadingDialog(
+      :show="downloading"
+      type="download"
+    )
 </template>
 
 <script>
@@ -232,12 +237,13 @@ import rulesHandler from "@/common/constants/rules"
 
 import Card from "./Card.vue"
 import Button from "@/common/components/Button"
+import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
 
 export default {
   name: "GAOrderDetails",
   mixins: [validateForms],
 
-  components: { Card, Button },
+  components: { Card, Button, UploadingDialog },
 
   data: () => ({
     chevronLeftIcon,
@@ -248,6 +254,7 @@ export default {
     readMore: false,
     showTooltip: false,
     isLoading: false,
+    downloading: false,
     showModalReject: false,
     orderAccepted: false,
     messageError: null,
