@@ -69,6 +69,10 @@
         @close="showCancelDialog = false"
       )
 
+      PaymentDialog(
+        :show="isLoading"
+      )
+
 </template>
 
 <script>
@@ -91,12 +95,12 @@ import { lastAnlysisOrderByCustomer, queryGeneticAnalysisOrders } from "@/common
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 import {downloadFile, uploadFileToPinata, getFileUrl } from "@/common/lib/pinata"
 import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
-
+import PaymentDialog from "@/common/components/Dialog/PaymentDialog"
 
 export default {
   name: "PaymentCard",
 
-  components: { Button, ImportantDialog, ConfirmationDialog },
+  components: { Button, ImportantDialog, ConfirmationDialog, PaymentDialog },
 
   props: {
     geneticData: Object,
@@ -173,6 +177,7 @@ export default {
     },
 
     async onSubmit() {
+      this.isLoading = true
       this.customerBoxPublicKey = await this.getCustomerPublicKey()
       const links = JSON.parse(this.selectedGeneticData.reportLink)
 
@@ -213,6 +218,7 @@ export default {
         fileName: dataFile.fileName,
         fileType: "text/directory"
       })
+      this.isLoading = false
     },
 
     setupFileReader(file) {
