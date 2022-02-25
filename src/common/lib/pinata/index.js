@@ -46,7 +46,7 @@ export const getFileUrl = cid => {
 
 export const downloadFile = async ipfsLink => {
   console.log("Downloading...")
-  
+
   const response = await fetch(ipfsLink)
   const data = await response.json()
 

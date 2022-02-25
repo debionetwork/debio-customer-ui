@@ -29,7 +29,7 @@
           v-model="document.file"
           variant="small"
           :rules="fileRule"
-          :accept="['.pdf', '.vcf', '.vcg.gz']"
+          :accept="['.txt', '.vcf', '.gz']"
           label="Upload File"
           placeholder="Choose File"
           validate-on-blur
@@ -51,15 +51,19 @@
           
         Button(
           :disabled="!disable"
-          :loading="isLoading"
           block
           color="secondary"
           @click="onSubmit"
         ) Submit
 
+      UploadingDialog(
+        :show="isLoading"
+      )
+
       SuccessDialog(
         :show="isSuccess"
         title="Success"
+        :orderId="orderId"
         @close="closeDialog"
       )
 
@@ -77,7 +81,7 @@ import { mapState } from "vuex"
 import { u8aToHex } from "@polkadot/util"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
+// import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
@@ -88,11 +92,13 @@ import { checkCircleIcon } from "@/common/icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
+import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
+import { uploadFileToPinata, getFileUrl } from "@/common/lib/pinata"
 
 export default {
   name: "AddGeneticData",
   
-  components: { Button, SuccessDialog, ErrorDialog },
+  components: { Button, SuccessDialog, UploadingDialog, ErrorDialog },
 
   mixins: [validateForms],
 
@@ -107,11 +113,13 @@ export default {
     isEdit: false,
     isSuccess: false,
     checkCircleIcon,
+    links: [],
     link: null,
     txWeight: 0,
     isLoading: false,
     dataId: null,
-    error: null
+    error: null,
+    orderId: null
   }),
 
   computed: {
@@ -147,7 +155,7 @@ export default {
     fileRule() {
       return[
         rulesHandler.FIELD_REQUIRED,
-        rulesHandler.FILE_SIZE(1000000)
+        rulesHandler.FILE_SIZE(1000000000)
       ]
     }
   },
@@ -179,6 +187,7 @@ export default {
         if (e.method === "GeneticDataAdded" || e.method === "GeneticDataUpdated") {
           if (dataEvent[1] === this.wallet.address) {
             this.isLoading = false
+            this.orderId = dataEvent[0].id
             this.isSuccess = true
           }
         }
@@ -278,46 +287,22 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, fileName, fileType }) {
-      const chunkSize = 30 * 1024 * 1024
-      let offset = 0
+    async upload({ encryptedFileChunks, fileType }) {
 
-      const data = JSON.stringify(encryptedFileChunks)
-      const blob = new Blob([data], { type: fileType })
-      const newBlobData = new File([blob], fileName)
+      for (let i = 0; i < encryptedFileChunks.length; i++) {
+        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large 
+        const blob = new Blob([data], { type: fileType })
+        // UPLOAD TO PINATA API
+        const result = await uploadFileToPinata({
+          title: `${this.document.title} (${i})`,
+          type: this.document.description,
+          file: blob
+        })
+        const link = await getFileUrl(result.IpfsHash)
+        this.links.push(link)
+      }
+      this.link = JSON.stringify(this.links)
 
-      const uploaded = await new Promise((res, rej) => {
-        try{
-          const fileSize = newBlobData.size
-          do {
-            let chunk = newBlobData.slice(offset, chunkSize + offset)
-            ipfsWorker.workerUpload.postMessage({
-              seed: chunk.seed,
-              file: newBlobData
-            })
-            offset += chunkSize
-          } while (chunkSize + offset < fileSize)
-
-          let uploadSize = 0
-          ipfsWorker.workerUpload.onmessage = async (event) => {
-            uploadSize += event.data.data.size
-
-            if (uploadSize >= fileSize) {
-              res({
-                fileName: fileName,
-                fileType: fileType,
-                collection: event.data
-              })
-            }
-          }
-
-        } catch(e) {
-          rej(new Error(e.message))
-        }
-      })
-
-      const link = this.getFileIpfsUrl(uploaded)
-      this.link = link
 
     }, 
 
@@ -333,6 +318,7 @@ export default {
         if (!this.document.file) return
 
         const dataFile = await this.setupFileReader(this.document)
+
         await this.upload({
           encryptedFileChunks: dataFile.chunks,
           fileName: dataFile.fileName,
@@ -355,7 +341,8 @@ export default {
             this.wallet, 
             this.document.title, 
             this.document.description, 
-            this.link)
+            this.link
+          )
         }
 
 
