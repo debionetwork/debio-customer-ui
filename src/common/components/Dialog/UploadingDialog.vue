@@ -14,9 +14,14 @@
             )
 
           .dialog-uploading__message
-            b Please wait, do not close this tab.
-          .dialog-uploading__border-text PS : the larger the file size, the longer it will take to upload.
-
+            b Your file is still uploading. 
+            b Please wait, do not close this tab. 
+          .dialog-uploading__border-text We support file sizes up to 200 MB, there may be longer upload time associated with larger files on slower Internet connections.
+          .dialog-uploading__border-text The larger the file size, the longer it will take to upload 
+            a.link(target="_blank"
+              href="https://docs.debio.network/complete-guidelines/user-guideline/upload-and-encrypt-data"
+              @click.stop
+            ) here’s why
 
 </template>
 
@@ -64,6 +69,7 @@ export default {
 
     &__message
       display: flex
+      flex-direction: column
       justify-content: center
       align-items: center
       text-align: center
@@ -77,7 +83,6 @@ export default {
 
     &__border-text
       padding: 12px 16px
-      display: flex
       align-items: center
       text-align: justify
       letter-spacing: -0.004em
