@@ -1,7 +1,7 @@
 <template lang="pug">
   .genetic-data-add
     .genetic-data-add__wrapper
-      .genetic-data-add__title {{ isEdit ? "Edit Genetic Data" : "Add Genetic Data"}} 
+      .genetic-data-add__title {{ isEdit ? "Edit Genetic Data" : "Add Genetic Data"}}
       .genetic-data-add__forms
         ui-debio-input(
           :rules="titleRule"
@@ -9,8 +9,8 @@
           variant="small"
           label="Title"
           placeholder="Add title"
-          outlined 
-          block 
+          outlined
+          block
           validate-on-blur
         )
 
@@ -20,8 +20,8 @@
           variant="small"
           label="Description"
           placeholder="Add Description"
-          outlined 
-          block 
+          outlined
+          block
           validate-on-blur
         )
 
@@ -35,7 +35,7 @@
           validate-on-blur
         )
         .genetic-data-add__tx-weight
-          span.genetic-data-add__tx-weight-text Estimated transaction weight 
+          span.genetic-data-add__tx-weight-text Estimated transaction weight
             v-tooltip.visible(right)
               template(v-slot:activator="{ on, attrs }")
                 v-icon.dialog-confirmation__trans-weight-icon(
@@ -44,11 +44,11 @@
                   dark
                   v-bind="attrs"
                   v-on="on"
-                ) mdi-alert-circle-outline 
+                ) mdi-alert-circle-outline
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
 
           span( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
-          
+
         Button(
           :disabled="!disable"
           block
@@ -94,11 +94,11 @@ import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
-import { uploadFileToPinata, getFileUrl } from "@/common/lib/pinata"
+import { uploadFile, getFileUrl } from "@/common/lib/pinata"
 
 export default {
   name: "AddGeneticData",
-  
+
   components: { Button, SuccessDialog, UploadingDialog, ErrorDialog },
 
   mixins: [validateForms],
@@ -211,7 +211,7 @@ export default {
       this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
     },
 
-    async encrypt({ text, fileType, fileName}) {      
+    async encrypt({ text, fileType, fileName}) {
       const context = this
       const arrChunks = []
       let chunksAmount
@@ -259,7 +259,7 @@ export default {
         const fr = new FileReader()
 
         const { title, description, file } = value
-        
+
         fr.onload = async function () {
           try {
             const encrypted = await context.encrypt({
@@ -269,7 +269,7 @@ export default {
             })
 
             const { chunks, fileName, fileType } = encrypted
-            const dataFile = { 
+            const dataFile = {
               title,
               description,
               file,
@@ -281,7 +281,7 @@ export default {
             res(dataFile)
           } catch (e) {
             console.error(e)
-          }          
+          }
         }
         fr.onerror = rej
         fr.readAsArrayBuffer(value.file)
@@ -291,10 +291,10 @@ export default {
     async upload({ encryptedFileChunks, fileType }) {
 
       for (let i = 0; i < encryptedFileChunks.length; i++) {
-        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large 
+        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large
         const blob = new Blob([data], { type: fileType })
         // UPLOAD TO PINATA API
-        const result = await uploadFileToPinata({
+        const result = await uploadFile({
           title: `${this.document.title} (${i})`,
           type: this.document.description,
           file: blob
@@ -305,7 +305,7 @@ export default {
       this.link = JSON.stringify(this.links)
 
 
-    }, 
+    },
 
     getFileIpfsUrl(file) {
       const path = `${file.collection.data.ipfsFilePath}/${file.fileName}`
@@ -335,13 +335,13 @@ export default {
             this.document.description,
             this.link
           )
-          
+
         } else {
           await addGeneticData(
-            this.api, 
-            this.wallet, 
-            this.document.title, 
-            this.document.description, 
+            this.api,
+            this.wallet,
+            this.document.title,
+            this.document.description,
             this.link
           )
         }
@@ -349,7 +349,7 @@ export default {
         this.isLoading = false
       } catch (e) {
         const error = await errorHandler(e.message)
-        
+
         this.error = error
         this.isLoading = false
       }
@@ -405,6 +405,4 @@ export default {
     &__tx-weight-text
       letter-spacing: -0.004em
       @include body-text-3-opensans
-
-
 </style>
