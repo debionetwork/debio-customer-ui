@@ -79,6 +79,7 @@ export const downloadDocumentFile = (data, fileName, type) => {
     a.download = fileName
     a.href = window.URL.createObjectURL(blob)
     a.dataset.downloadurl = ["text/json", a.download, a.href].join(":")
+    a.click()
   } catch (error) {
     console.error(error)
   }
