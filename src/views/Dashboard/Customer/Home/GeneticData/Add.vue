@@ -96,7 +96,6 @@ import { mapState } from "vuex"
 import { u8aToHex } from "@polkadot/util"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-// import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
@@ -174,7 +173,7 @@ export default {
     fileRule() {
       return[
         rulesHandler.FIELD_REQUIRED,
-        rulesHandler.FILE_SIZE(1000000000)
+        rulesHandler.FILE_SIZE(200000000)
       ]
     }
   },
