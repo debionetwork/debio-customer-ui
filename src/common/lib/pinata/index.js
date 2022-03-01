@@ -78,7 +78,7 @@ export const downloadFile = async (ipfsLink, withMetaData = false) => {
   return { ...(withMetaData ? metadata : null), data }
 }
 
-export const decryptFile = (obj, pair, type) => {
+export const decryptFile = (obj, pair) => {
   const box = Object.values(obj[0].data.box)
   const nonce = Object.values(obj[0].data.nonce)
   let decryptedFile
@@ -88,8 +88,7 @@ export const decryptFile = (obj, pair, type) => {
     nonce: Uint8Array.from(nonce)
   }
 
-  if (type === "application/pdf") decryptedFile = Kilt.Utils.Crypto.decryptAsymmetric(toDecrypt, pair.publicKey, pair.secretKey)
-  else decryptedFile = Kilt.Utils.Crypto.decryptAsymmetricAsStr(toDecrypt, pair.publicKey, pair.secretKey)
+  decryptedFile = Kilt.Utils.Crypto.decryptAsymmetric(toDecrypt, pair.publicKey, pair.secretKey)
 
   if (!decryptedFile) console.log("Undefined File", decryptedFile)
   else return decryptedFile
