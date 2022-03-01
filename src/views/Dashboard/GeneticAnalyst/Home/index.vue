@@ -14,36 +14,48 @@
             view-box="0 0 120 120"
             fill
           )
+      transition(name="transition-slide-x" mode="out-in")
+        .ga-dashboard__verification-status(v-if="verificationStatus !== 'Verified'")
+          .verification-status
+            ui-debio-icon.verification-status__icon(
+              :icon="alertIcon"
+              size="25"
+              stroke
+            )
+            .verification-status__text
+              | Your verification submission {{ verificationStatus === 'Unverified' ? "is being reviewed" : verificationStatus }} by Daogenic
 
-      DataTable(:headers="headers" :items="orderLists")
-        template(slot="prepend")
-          .ga-dashboard__text
-            h2.ga-dashboard__table-title Order Lists
-            p.ga-dashboard__table-subtitle.mb-0 List of all services ordered by Customers
+        DataTable(:headers="headers" :items="orderLists" v-else)
+          template(slot="prepend")
+            .ga-dashboard__text
+              h2.ga-dashboard__table-title Order Lists
+              p.ga-dashboard__table-subtitle.mb-0 List of all services ordered by Customers
 
-        template(v-slot:[`item.id`]="{ item }")
-          span {{ `${item.id.substr(0, 4)}...${item.id.substr(item.id.length - 3)}` }}
+          template(v-slot:[`item.id`]="{ item }")
+            span {{ `${item.id.substr(0, 4)}...${item.id.substr(item.id.length - 3)}` }}
 
-        template(v-slot:[`item.action`]="{ item }")
-          .ga-dashboard__table-action.d-flex.justify-center
-            router-link(:to="{ name: 'ga-order-details', params: { id: item.id, item } }")
-              ui-debio-icon(
-                :icon="eyeIcon"
-                role="button"
-                size="16"
-                stroke
-              )
-
+          template(v-slot:[`item.action`]="{ item }")
+            .ga-dashboard__table-action.d-flex.justify-center
+              router-link(:to="{ name: 'ga-order-details', params: { id: item.id, item } }")
+                ui-debio-icon(
+                  :icon="eyeIcon"
+                  role="button"
+                  size="16"
+                  stroke
+                )
 </template>
 
 <script>
 import { GAGetOrders } from "@/common/lib/api"
 import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
+import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { generalDebounce } from "@/common/lib/utils"
-import { geneticAnalystIllustration, eyeIcon } from "@/common/icons"
+import { geneticAnalystIllustration, eyeIcon, alertIcon } from "@/common/icons"
+import { mapState } from "vuex"
+
+import localStorage from "@/common/lib/local-storage";
 
 import DataTable from "@/common/components/DataTable"
-import { mapState } from "vuex"
 
 
 export default {
@@ -53,8 +65,10 @@ export default {
   data: () => ({
     geneticAnalystIllustration,
     eyeIcon,
+    alertIcon,
 
     cardBlock: false,
+    verificationStatus: null,
     orderLists: [],
     headers: [
       {
@@ -105,11 +119,13 @@ export default {
       immediate: true,
       handler: generalDebounce(async function(val) {
         if (val?.section === "geneticAnalysisOrders") await this.getOrdersData()
+        if (val?.method === "GeneticAnalystUpdateVerificationStatus") await this.getVerificationStatus()
       }, 100)
     }
   },
 
   async created() {
+    await this.getVerificationStatus()
     await this.getOrdersData()
   },
 
@@ -121,6 +137,11 @@ export default {
   },
 
   methods: {
+    async getVerificationStatus() {
+      const { verificationStatus } = await analystDetails(this.api, localStorage.getAddress())
+      this.verificationStatus = verificationStatus
+    },
+
     async getOrdersData() {
       this.orderLists = []
 
@@ -167,12 +188,13 @@ export default {
 
 <style lang="sass" scoped>
   @import "@/common/styles/mixins.sass"
+  @import "@/common/styles/functions.sass"
 
   .ga-dashboard
     &__wrapper
       display: flex
       flex-direction: column
-      gap: 35px
+      gap: toRem(35px)
 
     &__table-title
       @include body-text-medium-1
@@ -190,4 +212,37 @@ export default {
 
       .banner__subtitle
         max-width: 32.2rem !important
+
+  .verification-status
+    display: flex
+    align-items: center
+    background: #FFFFFF
+    border-radius: toRem(8px)
+    transition: all cubic-bezier(.7,-0.04,.61,1.14) .3s
+    padding: toRem(20px)
+
+    &:hover
+      box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1)
+      border-bottom: toRem(5px) solid rgba(0, 0, 0, 0.15)
+      transform: translateY(toRem(-5px))
+
+    &__icon
+      margin-right: toRem(18px)
+
+    &__text
+      pointer-events: none
+      @include body-text-medium-1
+
+  .transition-slide-x
+    &-enter-active,
+    &-leave-active
+      transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+
+    &-enter
+      opacity: 0
+      transform: translateX(1.563rem)
+
+    &-leave-to
+      opacity: 0
+      transform: translateX(-12.813rem)
 </style>
