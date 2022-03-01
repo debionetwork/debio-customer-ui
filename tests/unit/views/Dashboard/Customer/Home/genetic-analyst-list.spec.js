@@ -21,7 +21,7 @@ describe("Genetic Analysis List", () => {
 
   it("Should render", () => {
     GeneticAnalysisList.methods = {
-      initialData: jest.fn(), 
+      initialData: jest.fn() 
     };
     container = shallowMount(GeneticAnalysisList, {
       localVue,

@@ -1,7 +1,6 @@
 import Vue from "vue"
 import Vuetify from "vuetify"
 import { createLocalVue, shallowMount, config } from "@vue/test-utils"
-import VueRouter from "vue-router"
 import Button from "@/common/components/Button"
 import EmptyDataCard from "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/EmptyDataCard"
 
