@@ -586,7 +586,8 @@ export default {
             decryptedArrays = [...decryptedArrays, ...decryptedFile]
           }
 
-          await downloadDocumentFile(decryptedArrays, computeFileName, fileType)
+          const unit8Arr = new Uint8Array(decryptedArrays)
+          await downloadDocumentFile(unit8Arr, computeFileName, fileType)
         } else {
           const { type, data } = await downloadFile(link, true)
           const decryptedFile = decryptFile(data, pair, type)

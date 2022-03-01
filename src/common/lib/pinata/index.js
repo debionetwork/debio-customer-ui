@@ -89,7 +89,7 @@ export const decryptFile = (obj, pair, type) => {
   }
 
   if (type === "application/pdf") decryptedFile = Kilt.Utils.Crypto.decryptAsymmetric(toDecrypt, pair.publicKey, pair.secretKey)
-  else decryptedFile = Kilt.Utils.Crypto.decryptAsymmetricAsStr(toDecrypt, pair.publicKey, pair.secretKey)
+  else decryptedFile = Kilt.Utils.Crypto.decryptAsymmetric(toDecrypt, pair.publicKey, pair.secretKey)
 
   if (!decryptedFile) console.log("Undefined File", decryptedFile)
   else return decryptedFile
