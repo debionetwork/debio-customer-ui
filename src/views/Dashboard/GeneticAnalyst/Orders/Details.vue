@@ -56,7 +56,7 @@
             ) Total fee paid in DBIO to execute this transaction.
 
           span.upload-section__tx-price {{ txWeight }}
-    
+
     ui-debio-icon.ga-order-details__back-button(
       :icon="chevronLeftIcon"
       size="20"
@@ -81,7 +81,14 @@
               p {{ orderDataDetails.analysis_info.rejectedTitle }}
               p.order-section__subtitle Reason of rejection
 
-            p(v-if="step === 3 && !rejectedOrder") {{ orderDataDetails.analysis_info.fileName }}
+            p.order-section__result-file(
+              v-if="step === 3 && !rejectedOrder"
+              :title="`Download ${orderDataDetails.analysis_info.fileName}`"
+              :aria-label="orderDataDetails.analysis_info.fileName"
+              role="button"
+              @click="handleDownloadFile(orderDataDetails.analysis_info.reportLink)"
+            ) {{ orderDataDetails.analysis_info.fileName }}
+
             p(v-if="hilightDescription")
               | {{ readMore ? hilightDescription : hilightDescription.substr(0, 130) }}
               a(
@@ -136,10 +143,10 @@
                 :aria-label="orderDataDetails.document.title"
               ) {{ orderDataDetails.document.title }}
               span.order-details__file(
-                :title="orderDataDetails.document.fileName"
+                :title="`Download ${orderDataDetails.document.fileName}`"
                 :aria-label="orderDataDetails.document.fileName"
                 role="button"
-                @click="handleDownloadFile"
+                @click="handleDownloadFile(orderDataDetails.geneticLink, orderDataDetails.document.title)"
               ) {{ orderDataDetails.document.fileName }}
 
               .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
@@ -196,12 +203,16 @@
 
             span.upload-section__tx-price {{ txWeight }}
           Button(block :loading="isLoading" :disabled="isLoading" @click="handleSubmitForms" color="secondary") SUBMIT
+    
+    UploadingDialog(
+      :show="downloading"
+      type="download"
+    )
 </template>
 
 <script>
-import CryptoJS from "crypto-js"	
+import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
-import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 
 import { u8aToHex } from "@polkadot/util"
@@ -220,18 +231,19 @@ import { geneticDataById } from "@/common/lib/polkadot-provider/query/genetic-an
 import { serviceDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/services"
 import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { mapState } from "vuex"
-import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { generalDebounce } from "@/common/lib/utils"
+import { uploadFile, getFileUrl, downloadFile, decryptFile, downloadDocumentFile } from "@/common/lib/pinata"
 import rulesHandler from "@/common/constants/rules"
 
 import Card from "./Card.vue"
 import Button from "@/common/components/Button"
+import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
 
 export default {
   name: "GAOrderDetails",
   mixins: [validateForms],
-  
-  components: { Card, Button },
+
+  components: { Card, Button, UploadingDialog },
 
   data: () => ({
     chevronLeftIcon,
@@ -242,6 +254,7 @@ export default {
     readMore: false,
     showTooltip: false,
     isLoading: false,
+    downloading: false,
     showModalReject: false,
     orderAccepted: false,
     messageError: null,
@@ -308,7 +321,7 @@ export default {
         if (stepper.number === 1) return {
           ...stepper,
           active: stepper.number === this.step
-        } 
+        }
         return { ...stepper, active: stepper.number === this.step }
       })
     },
@@ -331,7 +344,7 @@ export default {
         REJECTED: "Rejected",
         RESULTREADY: "Done"
       }
-      
+
       if (this.step === 1) return this.orderDataDetails?.analysis_info?.status === "Registered"
         ? "Awaiting Order"
         : `${GENETIC_STATUS[this.orderDataDetails?.analysis_info?.status?.toUpperCase()]} Order`
@@ -399,7 +412,7 @@ export default {
       this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
       this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
     },
-    
+
     async prepareData(id) {
       try {
         const data = await orderDetails(this.api, id)
@@ -419,11 +432,11 @@ export default {
           ...data,
           analysis_info: {
             ...analysisData,
-            fileName: analysisData.reportLink.replaceAll("%20", " ").split("/").pop()
+            fileName: analysisData.reportLink.split("/").pop()
           },
           document: {
             ...geneticData,
-            fileName: geneticData.reportLink.replaceAll("%20", " ").split("/").pop()
+            fileName: geneticData.reportLink.split("/").pop()
           },
           createdAt: new Date(+data.createdAt.replaceAll(",", "")).toLocaleString("en-GB", {
             day: "numeric",
@@ -469,7 +482,7 @@ export default {
         this.messageError = "Something went wrong. Please try again later"
       }
     },
-    
+
     handlePrevious() {
       if (this.step === 1 || (this.step === 3 && this.completed)) {
         this.$router.go(-1)
@@ -512,7 +525,13 @@ export default {
 
     async handleSubmitRejection() {
       try {
-        await rejectOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, this.rejectionTitle, this.rejectionDesc)
+        await rejectOrder(
+          this.api,
+          this.wallet,
+          this.orderDataDetails.geneticAnalysisTrackingId,
+          this.rejectionTitle,
+          this.rejectionDesc
+        )
 
         this.showModalReject = false
       } catch (e) {
@@ -549,18 +568,20 @@ export default {
       this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 
-    async handleDownloadFile() {
-      const fileName = this.orderDataDetails.document.fileName
-      const path = `${this.orderDataDetails.document.reportLink.split("/").slice(4, 5).join("")}/${fileName}`
-      await Promise.all[
-        downloadDecryptedFromIPFS(
-          path,
-          this.secretKey,
-          this.publicKey,
-          fileName,
-          "application/pdf"
-        )
-      ]
+    async handleDownloadFile(link, name) {
+      try {
+        this.downloading = true
+        const pair = { publicKey: this.orderDataDetails.customerBoxPublicKey, secretKey: this.secretKey }
+        const type = "application/pdf"
+        const computeFileName = name ? name : link.split("/").pop()
+  
+        const data = await downloadFile(link)
+        const decryptedFile = decryptFile(data, pair, type)
+        await downloadDocumentFile(decryptedFile, computeFileName, type)
+      } catch (error) {
+        console.log(error)
+        this.downloading = false
+      }
     },
 
     async handleSubmitForms() {
@@ -571,7 +592,22 @@ export default {
 
       try {
         this.isLoading = true
-        await this.processFile()
+        const dataFile = await this.processFile()
+        await this.upload({
+          encryptedFileChunks: dataFile.chunks,
+          fileName: dataFile.fileName,
+          fileType: dataFile.fileType
+        })
+
+        await submitOrderReport(
+          this.api,
+          this.wallet,
+          this.orderDataDetails.geneticAnalysisTrackingId,
+          this.document.recordLink,
+          this.document.description
+        )
+
+        await updateStatusOrder(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
       } catch (e) {
         this.isLoading = false
         console.error(e)
@@ -582,36 +618,24 @@ export default {
       const context = this
       const fr = new FileReader()
       const { file } = this.document
+      return new Promise((resolve, reject) => {
+        fr.onload = async function() {
+          try {
+            const encrypted = await context.encrypt({
+              text: fr.result,
+              fileType: file.type,
+              fileName: file.name
+            })
 
-      fr.onload = async function() {
-        try {
-          const encrypted = await context.encrypt({
-            text: fr.result,
-            fileType: file.type,
-            fileName: file.name
-          })
-
-          await context.upload({
-            encryptedFileChunks: encrypted.chunks,
-            fileName: encrypted.fileName,
-            fileType: encrypted.fileType
-          })
-
-          await submitOrderReport(
-            context.api,
-            context.wallet,
-            context.orderDataDetails.geneticAnalysisTrackingId,
-            context.document.recordLink,
-            context.document.description
-          )
-
-          await updateStatusOrder(context.api, context.wallet, context.orderDataDetails.geneticAnalysisTrackingId, "ResultReady")
-        } catch(e) {
-          console.error(e)
+            resolve(encrypted)
+          } catch(e) {
+            console.error(e)
+          }
         }
-      }
 
-      fr.readAsArrayBuffer(file)
+        fr.onerror = reject
+        fr.readAsArrayBuffer(file)
+      })
     },
 
     async encrypt({ text, fileType, fileName }) {
@@ -621,7 +645,7 @@ export default {
 
       const pair = {
         secretKey: this.secretKey,
-        publicKey: this.publicKey
+        publicKey: this.orderDataDetails.customerBoxPublicKey
       }
 
       return await new Promise((resolve, reject) => {
@@ -650,45 +674,19 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, fileName, fileType }) {
-      const chunkSize = 30 * 1024 * 1024 // 30 MB
-      let offset = 0
+    async upload({ encryptedFileChunks, fileType }) {
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
-      const newBlobData = new File([blob], fileName)
 
-      const uploaded = await new Promise((resolve, reject) => {
-        try {
-          const fileSize = newBlobData.size
-          do {
-            let chunk = newBlobData.slice(offset, chunkSize + offset)
-            ipfsWorker.workerUpload.postMessage({
-              seed: chunk.seed,
-              file: newBlobData
-            })
-            offset += chunkSize
-          } while (chunkSize + offset < fileSize)
-
-          let uploadSize = 0
-          ipfsWorker.workerUpload.onmessage = async (event) => {
-            uploadSize += event.data.data.size
-
-            if (uploadSize >= fileSize) {
-              resolve({
-                fileName: fileName,
-                fileType: fileType,
-                collection: event.data
-              })
-            }
-          }
-        } catch (err) {
-          reject(new Error(err.message))
-        }
+      const result = await uploadFile({
+        title: this.document.description,
+        type: this.document.description,
+        file: blob
       })
 
-      const path = `${uploaded.collection.data.ipfsFilePath}/${uploaded.fileName}`
+      const link = getFileUrl(result.IpfsHash)
 
-      this.document.recordLink = `https://ipfs.io/ipfs/${path}`
+      this.document.recordLink = link
     },
 
     handleShowTooltip(e) {
@@ -742,9 +740,17 @@ export default {
     flex-direction: column
     align-items: center
     justify-content: center
-    
+
     &__hilight-description
       width: 100%
+
+    &__result-file
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: pre
+      width: max-content
+      max-width: 470px
+      color: #5640A5
 
     &__subtitle
       @include button-2
@@ -816,7 +822,7 @@ export default {
 
     &__tx-price
       color: #444444
-    
+
   .service-details
     &__description
       width: 280px

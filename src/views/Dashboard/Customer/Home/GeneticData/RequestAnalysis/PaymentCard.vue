@@ -15,9 +15,9 @@
           b.customer-analysis-payment-card__data-text(:style="setStyleColor") {{ formatBalance(service.priceDetail[0].totalPrice) }} {{ service.priceDetail[0].currency }}
         .customer-analysis-payment-card__rate ( {{ formatPriceInUsd(service.priceDetail[0].totalPrice) }} USD )
 
-      
+
         .customer-analysis-payment-card__amount
-          .customer-analysis-payment-card__data-tx-weight Estimated transaction weight 
+          .customer-analysis-payment-card__data-tx-weight Estimated transaction weight
             v-tooltip.visible(bottom )
               template(v-slot:activator="{ on, attrs }")
                 v-icon.staking-dialog__trans-weight-icon(
@@ -26,16 +26,16 @@
                   dark
                   v-bind="attrs"
                   v-on="on"
-                ) mdi-alert-circle-outline 
+                ) mdi-alert-circle-outline
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
-          .customer-analysis-payment-card__data-tx-weight {{ Number(txWeight).toFixed(4) }} DBIO        
+          .customer-analysis-payment-card__data-tx-weight {{ Number(txWeight).toFixed(4) }} DBIO
 
         Button.customer-analysis-payment-card__button(
           :disabled="isDeficit"
           width="280"
-          height="35"  
+          height="35"
           color="secondary"
-          @click="showInformation = true"
+          @click="onSubmit"
         ) Pay Now
 
       div(v-if="isCreated")
@@ -50,7 +50,7 @@
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Service Price
           b.customer-analysis-payment-card__data-text {{ orderPrice }} {{ orderCurrency }}
-        .customer-analysis-payment-card__rate ( {{ orderPriceInUsd }} USD )    
+        .customer-analysis-payment-card__rate ( {{ orderPriceInUsd }} USD )
 
       ImportantDialog(
         @close="showInformation = false"
@@ -69,12 +69,16 @@
         @close="showCancelDialog = false"
       )
 
+      PaymentDialog(
+        :show="isLoading"
+      )
+
 </template>
 
 <script>
 
 import { mapState } from "vuex"
-import CryptoJS from "crypto-js"	
+import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
@@ -82,7 +86,7 @@ import Button from "@/common/components/Button"
 import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
 import ImportantDialog from "./Information.vue"
 import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
-import { 
+import {
   createGeneticAnalysisOrder,
   cancelGeneticAnalysisOrder,
   getCreateGeneticAnalysisOrderFee
@@ -91,12 +95,12 @@ import { lastAnlysisOrderByCustomer, queryGeneticAnalysisOrders } from "@/common
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
 import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
-
+import PaymentDialog from "@/common/components/Dialog/PaymentDialog"
 
 export default {
   name: "PaymentCard",
 
-  components: { Button, ImportantDialog, ConfirmationDialog },
+  components: { Button, ImportantDialog, ConfirmationDialog, PaymentDialog },
 
   props: {
     geneticData: Object,
@@ -124,6 +128,7 @@ export default {
     geneticLink: null,
     links: [],
     customerBoxPublicKey: null
+    // showLoading: false
   }),
 
   computed: {
@@ -143,7 +148,7 @@ export default {
         return "color: red"
       } else {
         return "color: black"
-      }      
+      }
     }
   },
 
@@ -173,12 +178,13 @@ export default {
     },
 
     async onSubmit() {
+      this.$emit("click")
       this.customerBoxPublicKey = await this.getCustomerPublicKey()
       const links = JSON.parse(this.selectedGeneticData.reportLink)
 
       let download = []
       for (let i = 0; i < links.length; i++) {
-        const res = await downloadFile(links[i]) 
+        const res = await downloadFile(links[i])
         download.push(res)
       }
 
@@ -195,8 +201,8 @@ export default {
 
         console.log("Decrypting...")
         const decryptedObject = await Kilt.Utils.Crypto.decryptAsymmetric(
-          toDecrypt, 
-          this.publicKey, 
+          toDecrypt,
+          this.publicKey,
           this.secretKey
         )
         arr = [...arr, ...decryptedObject]
@@ -213,12 +219,13 @@ export default {
         fileName: dataFile.fileName,
         fileType: "text/directory"
       })
+      this.isLoading = false
     },
 
     setupFileReader(file) {
       return new Promise((res, rej) => {
         const context = this
-        const fr = new FileReader()        
+        const fr = new FileReader()
         fr.onload = async function () {
           try {
             const encrypted = await context.encrypt({
@@ -228,7 +235,7 @@ export default {
             })
 
             const { chunks, fileName, fileType } = encrypted
-            const dataFile = { 
+            const dataFile = {
               title: "title",
               description: "description",
               file,
@@ -240,7 +247,7 @@ export default {
             res(dataFile)
           } catch (e) {
             console.error(e)
-          }          
+          }
         }
         fr.onerror = rej
         fr.readAsArrayBuffer(file)
@@ -249,7 +256,7 @@ export default {
 
     async encrypt({ text, fileType, fileName}) {
       console.log("encrypting..")
-      const analystPublicKey = await this.getAnalystPublicKey()  
+      const analystPublicKey = await this.getAnalystPublicKey()
       const context = this
       const arrChunks = []
       let chunksAmount
@@ -293,7 +300,7 @@ export default {
 
     async upload({ encryptedFileChunks, fileName, fileType }) {
       for (let i = 0; i < encryptedFileChunks.length; i++) {
-        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large 
+        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large
         const blob = new Blob([data], { type: fileType })
 
         // UPLOAD TO PINATA API
@@ -309,8 +316,8 @@ export default {
       this.geneticLink = JSON.stringify(this.links)
       if (this.geneticLink) {
         await this.createOrder()
-      }      
-    }, 
+      }
+    },
 
     async createOrder() {
       const priceIndex = 0
@@ -414,7 +421,7 @@ export default {
     &__data
       padding: 27px 30px
 
-    &__data-service 
+    &__data-service
       margin-bottom: 24px
 
     &__text-label
@@ -430,7 +437,7 @@ export default {
 
     &__button
       margin-top: 16px
-      
+
     &__amount
       display: flex
       align-items: center
@@ -441,5 +448,13 @@ export default {
       align-items: center
       justify-content: flex-end
       @include tiny-reg
+
+  .dialog-loading
+    width: 500
+    height: 450
+
+    &__card
+      background-color: white
+      padding-bottom: 51px
 
 </style>

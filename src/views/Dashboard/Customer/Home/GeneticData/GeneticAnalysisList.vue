@@ -9,7 +9,7 @@
       template(v-slot:[`item.serviceName`]="{ item }")
         .d-flex.flex-column.genetic-analysis-list__service
           span {{ item.serviceName }}
-      
+
       template(v-slot:[`item.fullName`]="{ item }")
         .d-flex.flex-column.genetic-analysis-list__name
           span {{ item.fullName }}
@@ -30,12 +30,14 @@
 import { mapState } from "vuex"
 import { eyeIcon, downloadIcon } from "@/common/icons"
 import DataTable from "@/common/components/DataTable"
+import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
+import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { queryGeneticAnalysisByOwner, queryGeneticAnalysisStorage, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 import { queryGeneticAnalysts, queryGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { downloadFile, decryptFile, downloadDocumentFile } from "@/common/lib/pinata"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import CryptoJS from "crypto-js"
-import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 
 export default {
   name: "GeneticAnalysisList",
@@ -100,7 +102,7 @@ export default {
     mnemonicData(val) {
       if (val) this.initialData()
     },
-    
+
     async lastEventData(val) {
       if(val !== null) {
         if(val.method === "Withdraw" || val.section === "balances") {
@@ -135,11 +137,13 @@ export default {
 
       for (let i = 0; i < trackingId.length; i++) {
         const geneticAnalysis = await queryGeneticAnalysisStorage(this.api, trackingId[i])
+        const { sellerId } = await orderDetails(this.api, geneticAnalysis.geneticAnalysisOrderId)
+        const { info: analystInfo } = await analystDetails(this.api, sellerId)
 
         const dateCreated = new Date(parseInt(geneticAnalysis.createdAt.replace(/,/g, "")))
         const dateUpdated = new Date(parseInt(geneticAnalysis.updatedAt.replace(/,/g, "")))
 
-        const updatedAt = dateUpdated.toLocaleString("en-GB", { 
+        const updatedAt = dateUpdated.toLocaleString("en-GB", {
           day: "numeric", // numeric, 2-digit
           year: "numeric", // numeric, 2-digit
           month: "short" // numeric, 2-digit, long, short, narrow
@@ -167,6 +171,7 @@ export default {
             trackingId: trackingId[i],
             serviceName: geneticAnalystServicesData.info.name,
             analystName: fullName,
+            analystInfo,
             createdAt: createdAt,
             updatedAt: updatedAt,
             status: geneticAnalysis.status,
@@ -185,16 +190,12 @@ export default {
     async toDownload(item){
       if (item.status !== "ResultReady") return
 
-      const fileName = item.ipfsLink.split("/").pop().replaceAll("%20", " ")
-      const path = `${item.ipfsLink.split("/").slice(4, 5).join("")}/${fileName}`
-      
-      await downloadDecryptedFromIPFS(
-        path,
-        this.secretKey,
-        this.publicKey,
-        `[${item.serviceName} - ${item.analystName}] - ${fileName}`,
-        "application/pdf"
-      )
+      const pair = { publicKey: item.analystInfo.boxPublicKey, secretKey: this.secretKey }
+      const type = "application/pdf"
+
+      const data = await downloadFile(item.ipfsLink)
+      const decryptedFile = decryptFile(data, pair, type)
+      await downloadDocumentFile(decryptedFile, item.ipfsLink.split("/").pop(), type)
     }
   }
 }
@@ -210,7 +211,7 @@ export default {
 
     &__service
       width: 117px
-    
+
     &__fullName
       width: 480px
 

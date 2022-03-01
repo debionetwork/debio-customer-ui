@@ -20,9 +20,12 @@
           PaymentCard(
             :genetic-data="selectedGeneticData"
             :service="selectedAnalysisService"
+            @click="showLoading"
           )
 
-
+          LoadingDialog(
+            :show="isloading"
+          )
 
 </template>
 
@@ -31,6 +34,8 @@
 import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
+import LoadingDialog from "@/common/components/Dialog/LoadingDialog"
+
 
 export default {
   name: "CheckoutPayment",
@@ -41,12 +46,14 @@ export default {
       { number: 2, title: "Select Service & Analyst", active: false },
       { number: 3, title: "Checkout and Payment", active: true },
       { number: 4, title: "Success", active: false }
-    ]
+    ],
+    isloading: false
   }),
 
   components: {
     ServiceAnalysisCard,
-    PaymentCard
+    PaymentCard,
+    LoadingDialog
   },
 
 
@@ -66,6 +73,9 @@ export default {
   methods: {
     handleBack() {
       this.$router.push({ name: "customer-request-analysis-service" })
+    },
+    showLoading() {
+      this.isloading = true
     }
   }
 }

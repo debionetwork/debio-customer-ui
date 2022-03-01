@@ -59,7 +59,12 @@
           :experiences="selectedAnalystExperiences"
           @close="closeDetailDialog"
         )
-          
+        
+        ImportantDialog(
+          @close="showInformationDialog = false"
+          @click="showInformationDialog = false"
+          :show="showInformationDialog"
+        )
 </template>
 
 <script>
@@ -71,6 +76,7 @@ import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genet
 import { queryGetAllGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
 import { queryGeneticAnalystQualifications } from "@/common/lib/polkadot-provider/query/genetic-analyst-qualifications"
 import Button from "@/common/components/Button"
+import ImportantDialog from "./Information.vue"
 
 export default {
   name: "SelectServiceAnalyst",
@@ -86,7 +92,8 @@ export default {
     serviceList: [],
     selectedService: null,
     selectedAnalystExperiences: null,
-    isLoading: false
+    isLoading: false,
+    showInformationDialog: false
   }),
 
   computed: {
@@ -99,7 +106,8 @@ export default {
   components: {
     ServiceAnalysisCard,
     AnalystDetail,
-    Button
+    Button,
+    ImportantDialog
   },
 
   async mounted () {
@@ -109,6 +117,7 @@ export default {
     }
 
     await this.getGeneticAnalystService()
+    this.showInformationDialog = true
   },
 
 

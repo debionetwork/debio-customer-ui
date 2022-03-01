@@ -204,7 +204,6 @@ import { mapState } from "vuex"
 
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/api"
@@ -217,6 +216,7 @@ import { validateForms } from "@/common/lib/validate"
 import { errorHandler } from "@/common/lib/error-handler"
 import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
+import { uploadFile, getFileUrl } from "@/common/lib/pinata"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
 
 const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
@@ -280,7 +280,7 @@ export default {
     disabledDocumentForm() {
       return this.document.title === "" || this.document.description === "" || this.document.file === null
     },
-    
+
     disabledFinish() {
       return this.computeFiles?.some(file => file.percent !== 100)
     }
@@ -357,11 +357,6 @@ export default {
       this.password = ""
     },
 
-    getFileIpfsUrl(file) {
-      const path = `${file.collection.data.ipfsFilePath}/${file.fileName}`
-      return `https://ipfs.io/ipfs/${path}`
-    },
-    
     handleNewFile() {
       this._touchForms("document")
       const { title: docTitle, description: docDescription, file: docFile } = this.isDirty?.document
@@ -411,7 +406,7 @@ export default {
 
       this.onCloseModalDocument()
     },
-    
+
     onEdit(item) {
       Object.assign(this.document, { ...item })
       this.showModal = true
@@ -549,43 +544,17 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, fileName, index, fileType }) {
-      const chunkSize = 30 * 1024 * 1024 // 30 MB
-      let offset = 0
+    async upload({ encryptedFileChunks, index, fileType }) {
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
-      const newBlobData = new File([blob], fileName)
 
-      const uploaded = await new Promise((resolve, reject) => {
-        try {
-          const fileSize = newBlobData.size
-          do {
-            let chunk = newBlobData.slice(offset, chunkSize + offset)
-            ipfsWorker.workerUpload.postMessage({
-              seed: chunk.seed,
-              file: newBlobData
-            })
-            offset += chunkSize
-          } while (chunkSize + offset < fileSize)
-
-          let uploadSize = 0
-          ipfsWorker.workerUpload.onmessage = async (event) => {
-            uploadSize += event.data.data.size
-
-            if (uploadSize >= fileSize) {
-              resolve({
-                fileName: fileName,
-                fileType: fileType,
-                collection: event.data
-              })
-            }
-          }
-        } catch (err) {
-          reject(new Error(err.message))
-        }
+      const result = await uploadFile({
+        title: this.emr.title,
+        type: this.emr.category,
+        file: blob
       })
 
-      const link = this.getFileIpfsUrl(uploaded)
+      const link = getFileUrl(result.IpfsHash)
 
       this.emr.files[index].recordLink = link
     },
