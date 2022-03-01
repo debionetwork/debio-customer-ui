@@ -2,13 +2,19 @@ import Kilt from "@kiltprotocol/sdk-js"
 import axios from "axios"
 import NodeFormData from "form-data"
 
-export const uploadFile = val => {
-  const pinataKey = process.env.VUE_APP_PINATA_KEY
-  const pinataSecretKey = process.env.VUE_APP_PINATA_SECRET_KEY
-  const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
+const pinataKey = process.env.VUE_APP_PINATA_KEY
+const pinataSecretKey = process.env.VUE_APP_PINATA_SECRET_KEY
+const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
 
+export const uploadFile = val => {
   const options = {
-    pinataMetadata: { name: `${val.title}` },
+    pinataMetadata: {
+      name: val.title,
+      keyvalues: {
+        type: val.type,
+        date: +new Date()
+      }
+    },
     pinataOptions: { cidVersion: 0 }
   }
 
@@ -44,15 +50,32 @@ export const getFileUrl = cid => {
   return `https://ipfs.debio.network/ipfs/${cid}`
 }
 
-export const downloadFile = async ipfsLink => {
+export const downloadFile = async (ipfsLink, withMetaData = false) => {
   console.log("Downloading...")
 
+  const cid = ipfsLink.split("/").pop()
   const response = await fetch(ipfsLink)
   const data = await response.json()
+  let metadata
+
+  if (withMetaData) {
+    const listResponse = await fetch(`https://api.pinata.cloud/data/pinList?status=pinned&hashContains=${cid}`, {
+      headers: {
+        "pinata_api_key": pinataKey,
+        "pinata_secret_api_key": pinataSecretKey
+      }
+    })
+    const { rows } = await listResponse.json()
+
+    metadata = {
+      name: rows[0].metadata.name,
+      type: rows[0].metadata.keyvalues.type
+    }
+  }
 
   console.log("Success Downloaded!")
 
-  return data
+  return { ...(withMetaData ? metadata : null), data }
 }
 
 export const decryptFile = (obj, pair, type) => {
@@ -78,7 +101,7 @@ export const downloadDocumentFile = (data, fileName, type) => {
     const a = document.createElement("a")
     a.download = fileName
     a.href = window.URL.createObjectURL(blob)
-    a.dataset.downloadurl = ["text/json", a.download, a.href].join(":")
+    a.dataset.downloadurl = [type, a.download, a.href].join(":")
     a.click()
   } catch (error) {
     console.error(error)

@@ -305,7 +305,7 @@ export default {
 
         // UPLOAD TO PINATA API
         const result = await uploadFile({
-          title: `${fileName} (${i})`,
+          title: fileName,
           type: fileType,
           file: blob
         })

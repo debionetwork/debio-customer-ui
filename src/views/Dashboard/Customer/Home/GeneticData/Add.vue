@@ -330,15 +330,15 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, fileType }) {
+    async upload({ encryptedFileChunks, fileType, fileName }) {
 
       for (let i = 0; i < encryptedFileChunks.length; i++) {
         const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large
         const blob = new Blob([data], { type: fileType })
         // UPLOAD TO PINATA API
         const result = await uploadFile({
-          title: `${this.document.title} (${i})`,
-          type: this.document.description,
+          title: fileName,
+          type: fileType,
           file: blob
         })
         const link = await getFileUrl(result.IpfsHash)

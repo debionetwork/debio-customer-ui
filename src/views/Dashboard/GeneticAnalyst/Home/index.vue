@@ -109,8 +109,8 @@ export default {
     }
   },
 
-  created() {
-    this.getOrdersData()
+  async created() {
+    await this.getOrdersData()
   },
 
   mounted() {

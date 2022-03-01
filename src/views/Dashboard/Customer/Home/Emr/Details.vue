@@ -139,8 +139,7 @@ export default {
         this.isLoading = true
 
         const pair = { publicKey: this.publicKey, secretKey: this.secretKey }
-        const type = "application/pdf"
-        const data = await downloadFile(recordLink)
+        const { type, data } = await downloadFile(recordLink, true)
 
         const decryptedFile = decryptFile(data, pair, type)
         const fileBlob = window.URL.createObjectURL(new Blob([decryptedFile], { type }))
