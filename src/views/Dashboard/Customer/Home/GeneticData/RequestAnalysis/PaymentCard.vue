@@ -35,7 +35,7 @@
           width="280"
           height="35"
           color="secondary"
-          @click="showInformation = true"
+          @click="onSubmit"
         ) Pay Now
 
       div(v-if="isCreated")
@@ -128,6 +128,7 @@ export default {
     geneticLink: null,
     links: [],
     customerBoxPublicKey: null
+    // showLoading: false
   }),
 
   computed: {
@@ -177,7 +178,7 @@ export default {
     },
 
     async onSubmit() {
-      this.isLoading = true
+      this.$emit("click")
       this.customerBoxPublicKey = await this.getCustomerPublicKey()
       const links = JSON.parse(this.selectedGeneticData.reportLink)
 
@@ -447,5 +448,13 @@ export default {
       align-items: center
       justify-content: flex-end
       @include tiny-reg
+
+  .dialog-loading
+    width: 500
+    height: 450
+
+    &__card
+      background-color: white
+      padding-bottom: 51px
 
 </style>

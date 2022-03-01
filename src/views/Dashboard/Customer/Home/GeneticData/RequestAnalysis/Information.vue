@@ -8,9 +8,8 @@
       .information-dialog__title Important Information
 
       .information-dialog__card
-        ol.information-dialog__card-text 
-          li We do not provide medical or diagnostic advice. Any service on the DeBio platform is provided for research, informational, and educational use only. You should always seek the advice of your physician or other health care provider with any questions you may have regarding diagnosis, cure, treatment, mitigation, or prevention of any disease or other medical condition or impairment or the status of your health.
-          li You can cancel your request as long as the Genetic Analyst has not proceed your request. Your payment will be refunded immediately.
+        div.information-dialog__card-text 
+          span.information-dialog__text We do not provide medical or diagnostic advice. Any service on the DeBio platform is provided for research, informational, and educational use only. You should always seek the advice of your physician or other health care provider with any questions you may have regarding diagnosis, cure, treatment, mitigation, or prevention of any disease or other medical condition or impairment or the status of your health.
 
 
       .information-dialog__button
@@ -19,7 +18,7 @@
           height="35" 
           color="secondary" 
           @click="onSubmit"
-        ) Continue and Pay
+        ) Continue
 
 </template>
 
@@ -67,14 +66,15 @@ export default {
       @include button-1
 
     &__card
-      width: 335
-      height: 340
+      width: 340
+      height: 335
       background-color: #F5F7F9
       margin: 0 50px 
-      padding: 16px
+      padding: 24px
 
     &__card-text
-      @include new-body-text-2
+      @include new-body-text-2-medium
+      text-align: justify
 
     &__button
       margin-top: 32px
@@ -87,11 +87,10 @@ export default {
       display: flex
       justify-content: flex-end
       padding: 1.013rem !important
-      
 
-  li
-    margin-bottom: 10px
-
+    &__text
+      margin-bottom: 10px
+  
   .fixed-button
     position: fixed
     width: 50px
