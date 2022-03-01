@@ -213,7 +213,7 @@ export default {
 
       const unit8Arr = new Uint8Array(arr)
       const blob = new Blob([unit8Arr], { type: fileType })
-      this.file = new File([blob], this.orderId)
+      this.file = new File([blob], this.selectedGeneticData.id)
 
       const dataFile = await this.setupFileReader(this.file)      
       await this.upload({
