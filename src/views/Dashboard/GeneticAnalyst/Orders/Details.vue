@@ -86,7 +86,7 @@
               :title="`Download ${orderDataDetails.analysis_info.fileName}`"
               :aria-label="orderDataDetails.analysis_info.fileName"
               role="button"
-              @click="handleDownloadFile(orderDataDetails.analysis_info.reportLink)"
+              @click="handleDownloadFile(orderDataDetails.analysis_info.reportLink, orderDataDetails.analysis_info.fileName)"
             ) {{ orderDataDetails.analysis_info.fileName }}
 
             p(v-if="hilightDescription")
@@ -146,7 +146,7 @@
                 :title="`Download ${orderDataDetails.document.fileName}`"
                 :aria-label="orderDataDetails.document.fileName"
                 role="button"
-                @click="handleDownloadFile(orderDataDetails.geneticLink, orderDataDetails.document.title)"
+                @click="handleDownloadFile(orderDataDetails.geneticLink, orderDataDetails.document.fileName)"
               ) {{ orderDataDetails.document.fileName }}
 
               .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
@@ -232,7 +232,7 @@ import { serviceDetails } from "@/common/lib/polkadot-provider/query/genetic-ana
 import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { mapState } from "vuex"
 import { generalDebounce } from "@/common/lib/utils"
-import { uploadFile, getFileUrl, downloadFile, decryptFile, downloadDocumentFile } from "@/common/lib/pinata"
+import { uploadFile, getFileUrl, downloadFile, decryptFile, downloadDocumentFile, getIpfsMetaData } from "@/common/lib/pinata"
 import rulesHandler from "@/common/constants/rules"
 
 import Card from "./Card.vue"
@@ -429,17 +429,18 @@ export default {
         const analysisData = await analysisDetails(this.api, data.geneticAnalysisTrackingId)
         const geneticData = await geneticDataById(this.api, data.geneticDataId)
 
-        const geneticLinkName = JSON.parse(data.geneticLink)[0]
+        const geneticLinkName = await getIpfsMetaData(JSON.parse(data.geneticLink)[0].split("/").pop())
+        const analystReportDocument = await getIpfsMetaData(analysisData.reportLink.split("/").pop())
 
         this.orderDataDetails = {
           ...data,
           analysis_info: {
             ...analysisData,
-            fileName: analysisData.reportLink.split("/").pop()
+            fileName: analystReportDocument?.rows[0].metadata.name
           },
           document: {
             ...geneticData,
-            fileName: geneticLinkName.split("/").pop() || ""
+            fileName: geneticLinkName?.rows[0].metadata.name
           },
           createdAt: new Date(+data.createdAt.replaceAll(",", "")).toLocaleString("en-GB", {
             day: "numeric",
