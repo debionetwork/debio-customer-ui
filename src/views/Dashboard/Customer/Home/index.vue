@@ -13,7 +13,7 @@
       ui-debio-card(
         :to="{ name: 'customer-request-test'}"
         title="Request a Test"
-        sub-title="Get your biological sample tested or stake $DBIO to request Lab"
+        sub-title="Get your biological sample tested or stake $DBIO to request a Lab"
         tiny-card
         with-icon
         width="250"
@@ -22,7 +22,7 @@
         ui-debio-icon(:icon="creditCardIcon" slot="icon" size="34" color="#C400A5" fill)
       ui-debio-card(
         :to="{ name: 'customer-emr-create' }"
-        title="Upload your EMR"
+        title="Upload EMR"
         sub-title="Upload your Electronic Medical Record"
         tiny-card
         with-icon
@@ -459,7 +459,7 @@ export default {
 
     async checkPaymentLength() {
       if (!this.paymentHistory.length) {
-        this.titlePaymentWording = "You dont have made any order"
+        this.titlePaymentWording = "You haven't made any order yet"
         return
       }
       this.titlePaymentWording = "Your recent payments"
@@ -467,7 +467,7 @@ export default {
 
     async checkTestLength() {
       if (!this.testResult.length) {
-        this.titleTestWording = "You dont have any test result"
+        this.titleTestWording = "You dont have any test result yet"
         return
       }
       this.titleTestWording = "Your recent tests"
