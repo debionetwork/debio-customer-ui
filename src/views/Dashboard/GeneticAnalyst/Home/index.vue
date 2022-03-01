@@ -23,7 +23,7 @@
               stroke
             )
             .verification-status__text
-              | Your verification submission {{ verificationStatus === 'Unverified' ? "is being reviewed" : verificationStatus }} by Daogenic
+              | Your verification submission is {{ verificationStatus === 'Unverified' ? " being reviewed" : verificationStatus }} by Daogenic
 
         DataTable(:headers="headers" :items="orderLists" v-else)
           template(slot="prepend")
