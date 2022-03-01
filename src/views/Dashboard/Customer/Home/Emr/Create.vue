@@ -544,13 +544,13 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, index, fileType }) {
+    async upload({ encryptedFileChunks, index, fileType, fileName }) {
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
 
       const result = await uploadFile({
-        title: this.emr.title,
-        type: this.emr.category,
+        title: fileName,
+        type: fileType,
         file: blob
       })
 
@@ -680,7 +680,7 @@ export default {
       margin-top: 10px
       display: -webkit-box
       -webkit-line-clamp: 2
-      -webkit-box-orient: vertical  
+      -webkit-box-orient: vertical
       overflow: hidden
       color: #595959
       @include body-text-4
@@ -701,7 +701,7 @@ export default {
       cursor: pointer
 
     &::v-deep
-      
+
       .ui-debio-modal__card-title
         @include h2
         font-weight: 700
@@ -800,7 +800,7 @@ export default {
 
     &__file-percent
       color: #8C8C8C
-      
+
     &__progress-check
       width: 12px
       height: 12px

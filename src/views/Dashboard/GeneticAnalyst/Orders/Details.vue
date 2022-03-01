@@ -573,21 +573,22 @@ export default {
         this.downloading = true
         let decryptedArrays = []
         const pair = { publicKey: this.orderDataDetails.customerBoxPublicKey, secretKey: this.secretKey }
-        const type = "application/pdf"
         const computeFileName = name ? name : link.split("/").pop()
 
         if (/^\[/.test(link)) {
           const links = JSON.parse(link)
+          let fileType
 
           for (let i = 0; i < links.length; i++) {
-            const data = await downloadFile(links[i])
+            const { type, data } = await downloadFile(links[i], true)
             const decryptedFile = decryptFile([data], pair, type)
+            fileType = type
             decryptedArrays = [...decryptedArrays, ...decryptedFile]
           }
 
-          await downloadDocumentFile(decryptedArrays, computeFileName, type)
+          await downloadDocumentFile(decryptedArrays, computeFileName, fileType)
         } else {
-          const data = await downloadFile(link)
+          const { type, data } = await downloadFile(link, true)
           const decryptedFile = decryptFile(data, pair, type)
           await downloadDocumentFile(decryptedFile, computeFileName, type)
         }
@@ -689,13 +690,13 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, fileType }) {
+    async upload({ encryptedFileChunks, fileType, fileName }) {
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
 
       const result = await uploadFile({
-        title: this.document.description,
-        type: this.document.description,
+        title: fileName,
+        type: fileType,
         file: blob
       })
 
