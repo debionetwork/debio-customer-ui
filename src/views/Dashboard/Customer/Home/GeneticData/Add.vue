@@ -228,7 +228,8 @@ export default {
       const link = JSON.parse(detail.reportLink)  
       const fileName = link[0].split("/").pop()
       const res = await downloadFile(link[0])
-      let { box, nonce } = res.data
+      
+      let { box, nonce } = res.data.data
       box = Object.values(box) // Convert from object to Array
       nonce = Object.values(nonce) // Convert from object to Array
 
