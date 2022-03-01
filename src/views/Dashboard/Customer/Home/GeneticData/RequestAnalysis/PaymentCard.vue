@@ -184,8 +184,8 @@ export default {
 
       let download = []
       for (let i = 0; i < links.length; i++) {
-        const res = await downloadFile(links[i])
-        download.push(res)
+        const { data } = await downloadFile(links[i])
+        download.push(data)
       }
 
       let arr = []
