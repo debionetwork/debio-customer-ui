@@ -15,7 +15,7 @@
             fill
           )
       transition(name="transition-slide-x" mode="out-in")
-        .ga-dashboard__verification-status(v-if="verificationStatus !== 'Verified'")
+        .ga-dashboard__verification-status(v-if="verificationStatus !== null && verificationStatus !== 'Verified'")
           .verification-status
             ui-debio-icon.verification-status__icon(
               :icon="alertIcon"

@@ -568,31 +568,31 @@ export default {
       this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 
-    async handleDownloadFile(link, name) {
+    async handleDownloadFile(link) {
       try {
         this.downloading = true
         let decryptedArrays = []
         const pair = { publicKey: this.orderDataDetails.customerBoxPublicKey, secretKey: this.secretKey }
-        const computeFileName = name ? name : link.split("/").pop()
 
         if (/^\[/.test(link)) {
           const links = JSON.parse(link)
           let fileType
+          let fileName
 
           for (let i = 0; i < links.length; i++) {
-            const { type, data } = await downloadFile(links[i], true)
+            const { name, type, data } = await downloadFile(links[i], true)
             const decryptedFile = decryptFile([data], pair, type)
             fileType = type
+            fileName = name
             decryptedArrays = [...decryptedArrays, ...decryptedFile]
           }
 
-          await downloadDocumentFile(decryptedArrays, computeFileName, fileType)
+          await downloadDocumentFile(decryptedArrays, fileName, fileType)
         } else {
-          const { type, data } = await downloadFile(link, true)
+          const { name, type, data } = await downloadFile(link, true)
           const decryptedFile = decryptFile(data, pair, type)
-          await downloadDocumentFile(decryptedFile, computeFileName, type)
+          await downloadDocumentFile(decryptedFile, name, type)
         }
-
       } catch (error) {
         console.error(error)
       } finally {
