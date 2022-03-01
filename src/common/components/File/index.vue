@@ -1,7 +1,7 @@
 <template lang="pug">
   .ui-debio-file(:class="classes" @click="active = true" v-click-outside="{ handler: handleBlur, closeConditional }")
     .ui-debio-file__label(v-if="label" :aria-label="label")
-      div {{ label }} 
+      span {{ label }} 
         small {{ notes }}
       span.ui-debio-file__label-rules.ml-2(v-if="labelRules") {{ labelRules }}
       v-tooltip.visible(right v-if="withTooltip")
