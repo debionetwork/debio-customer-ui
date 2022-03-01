@@ -33,7 +33,7 @@
           :rules="fileRule"
           :accept="['.txt', '.vcf', '.gz', '.zip', '.rar', '.7zip']"
           label="Upload File"
-          notes="(.vcf.gx, .vcf, .txt - Maximum file size is 200MB) "
+          notes="(.vcf.gz, .vcf, .txt - Maximum file size is 200MB) "
           placeholder="Choose File"
           validate-on-blur
         )
