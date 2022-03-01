@@ -257,6 +257,7 @@ export default {
     downloading: false,
     showModalReject: false,
     orderAccepted: false,
+    orderRejected: false,
     messageError: null,
     publicKey: null,
     secretKey: null,
@@ -301,7 +302,7 @@ export default {
     },
 
     computeDisabledRejection() {
-      return this.orderAccepted || this.orderDataDetails?.analysis_info?.status === "InProgress" || this.completed
+      return this.orderAccepted || this.orderDataDetails?.analysis_info?.status === "InProgress" || this.completed || this.orderRejected
     },
 
     computeButtonText() {
@@ -428,6 +429,8 @@ export default {
         const analysisData = await analysisDetails(this.api, data.geneticAnalysisTrackingId)
         const geneticData = await geneticDataById(this.api, data.geneticDataId)
 
+        const geneticLinkName = JSON.parse(data.geneticLink)[0]
+
         this.orderDataDetails = {
           ...data,
           analysis_info: {
@@ -436,7 +439,7 @@ export default {
           },
           document: {
             ...geneticData,
-            fileName: geneticData.reportLink.split("/").pop()
+            fileName: geneticLinkName.split("/").pop() || ""
           },
           createdAt: new Date(+data.createdAt.replaceAll(",", "")).toLocaleString("en-GB", {
             day: "numeric",
@@ -534,7 +537,9 @@ export default {
         )
 
         this.showModalReject = false
+        this.orderRejected = true
       } catch (e) {
+        this.orderRejected = false
         console.error(e);
       } finally {
         this.txWeight = null
