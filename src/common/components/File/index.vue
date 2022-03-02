@@ -1,8 +1,19 @@
 <template lang="pug">
   .ui-debio-file(:class="classes" @click="active = true" v-click-outside="{ handler: handleBlur, closeConditional }")
     .ui-debio-file__label(v-if="label" :aria-label="label")
-      span {{ label }}
+      span {{ label }} 
+        small {{ notes }}
       span.ui-debio-file__label-rules.ml-2(v-if="labelRules") {{ labelRules }}
+      v-tooltip.visible(right v-if="withTooltip")
+        template(v-slot:activator="{ on, attrs }")
+          v-icon.ml-1(
+            style="font-size: 12px;"
+            color="primary"
+            dark
+            v-bind="attrs"
+            v-on="on"
+          ) mdi-alert-circle-outline 
+        span(style="font-size: 10px;") {{ tooltipDesc }}
 
     .ui-debio-file__wrapper
       input.ui-debio-file__input(type="file" ref="input-file" :accept="accept" @change="handleFileChange")
@@ -27,11 +38,14 @@ export default {
   props: {
     accept: { type: [Array, String], default: () => [".docx", ".pdf", ".doc"] },
     label: { type: String, default: null },
+    notes: { type: String, default: null },
     labelRules: { type: String, default: null },
     placeholder: { type: String, default: "Choose File" },
     variant: { type: String, default: "default" },
     validateOnBlur: Boolean,
-    clearFile: Boolean
+    clearFile: Boolean,
+    withTooltip: Boolean,
+    tooltipDesc: { type: String, default: null }
   },
 
   data: () => ({ selectedFile: null, active: false, alertIcon }),

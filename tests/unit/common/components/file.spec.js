@@ -78,7 +78,7 @@ describe("File input component", () => {
     const label = fileComponent.find(".ui-debio-file__label")
     const childComponent = fileComponent.find("span")
     expect(label.attributes("aria-label")).toBe("input")
-    expect(childComponent.html()).toBe("<span>input</span>")
+    expect(childComponent.html()).toBe("<span>input <small></small></span>")
   })
 
   it("Should render with default placeholder", () => {

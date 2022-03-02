@@ -3,7 +3,7 @@
     DataTable(
       :headers="headers"
       :items="items"
-      :sort-by="['updatedAt']"
+      :sort-by="['timestamp']"
       :sort-desc="[true]"
     )
       template(v-slot:[`item.serviceName`]="{ item }")
@@ -142,6 +142,7 @@ export default {
 
         const dateCreated = new Date(parseInt(geneticAnalysis.createdAt.replace(/,/g, "")))
         const dateUpdated = new Date(parseInt(geneticAnalysis.updatedAt.replace(/,/g, "")))
+        const timestamp = geneticAnalysis.updatedAt
 
         const updatedAt = dateUpdated.toLocaleString("en-GB", {
           day: "numeric", // numeric, 2-digit
@@ -175,7 +176,8 @@ export default {
             createdAt: createdAt,
             updatedAt: updatedAt,
             status: geneticAnalysis.status,
-            ipfsLink: geneticAnalysis.reportLink
+            ipfsLink: geneticAnalysis.reportLink,
+            timestamp
           }
           this.items.push(dataResult)
         }

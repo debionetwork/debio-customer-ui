@@ -183,9 +183,13 @@ export default {
       const links = JSON.parse(this.selectedGeneticData.reportLink)
 
       let download = []
+      let fileType
+      let fileName
       for (let i = 0; i < links.length; i++) {
-        const res = await downloadFile(links[i])
-        download.push(res)
+        const { name, type, data } = await downloadFile(links[i], true)
+        fileType = type
+        fileName = name
+        download.push(data)
       }
 
       let arr = []
@@ -210,14 +214,14 @@ export default {
       console.log("Decrypted!")
 
       const unit8Arr = new Uint8Array(arr)
-      const blob = new Blob([unit8Arr], { type: "text/directory" })
-      this.file = new File([blob], "fileName")
+      const blob = new Blob([unit8Arr], { type: fileType })
+      this.file = new File([blob], fileName)
 
-      const dataFile = await this.setupFileReader(this.file)
+      const dataFile = await this.setupFileReader(this.file)      
       await this.upload({
         encryptedFileChunks: dataFile.chunks,
         fileName: dataFile.fileName,
-        fileType: "text/directory"
+        fileType: fileType
       })
       this.isLoading = false
     },

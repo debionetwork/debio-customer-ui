@@ -23,7 +23,7 @@
             @click="showLoading"
           )
 
-          LoadingDialog(
+          PaymentDialog(
             :show="isloading"
           )
 
@@ -34,7 +34,7 @@
 import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
-import LoadingDialog from "@/common/components/Dialog/LoadingDialog"
+import PaymentDialog from "@/common/components/Dialog/PaymentDialog"
 
 
 export default {
@@ -53,7 +53,7 @@ export default {
   components: {
     ServiceAnalysisCard,
     PaymentCard,
-    LoadingDialog
+    PaymentDialog
   },
 
 

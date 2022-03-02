@@ -26,11 +26,14 @@
         )
 
         ui-debio-file(
+          withTooltip
+          tooltipDesc="To upload file that bigger than 200 MB, you may compress the file into a .gz, .zip, .rar, .7zip file"
           v-model="document.file"
           variant="small"
           :rules="fileRule"
-          :accept="['.txt', '.vcf', '.gz']"
+          :accept="['.txt', '.vcf', '.gz', '.zip', '.rar', '.7zip']"
           label="Upload File"
+          notes="(.vcf.gz, .vcf, .txt - Maximum file size is 200MB) "
           placeholder="Choose File"
           validate-on-blur
         )
@@ -75,6 +78,17 @@
         @close="error = null"
       )
 
+      AlertDialog(
+        :show="isUpdated"
+        :width="289"
+        title="Success"
+        message="Your genetic data has been edited successfully"
+        imgPath="check-circle-primary.png"
+        btn-message="Back to Dashboard"
+        @close="showAlert = false"
+        @click="toDashboard"
+      )
+
 </template>
 
 <script>
@@ -82,7 +96,6 @@ import { mapState } from "vuex"
 import { u8aToHex } from "@polkadot/util"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-// import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
@@ -94,12 +107,15 @@ import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
-import { uploadFile, getFileUrl } from "@/common/lib/pinata"
+import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
+import AlertDialog from "@/common/components/Dialog/AlertDialog"
+
+
 
 export default {
   name: "AddGeneticData",
-
-  components: { Button, SuccessDialog, UploadingDialog, ErrorDialog },
+  
+  components: { Button, SuccessDialog, UploadingDialog, ErrorDialog, AlertDialog },
 
   mixins: [validateForms],
 
@@ -120,7 +136,8 @@ export default {
     isLoading: false,
     dataId: null,
     error: null,
-    orderId: null
+    orderId: null,
+    isUpdated: false
   }),
 
   computed: {
@@ -156,7 +173,7 @@ export default {
     fileRule() {
       return[
         rulesHandler.FIELD_REQUIRED,
-        rulesHandler.FILE_SIZE(1000000000)
+        rulesHandler.FILE_SIZE(200000000)
       ]
     }
   },
@@ -185,11 +202,16 @@ export default {
     lastEventData(e) {
       if (e !== null) {
         const dataEvent = JSON.parse(e.data.toString())
-        if (e.method === "GeneticDataAdded" || e.method === "GeneticDataUpdated") {
+        if (e.method === "GeneticDataAdded") {
           if (dataEvent[1] === this.wallet.address) {
             this.isLoading = false
             this.orderId = dataEvent[0].id
             this.isSuccess = true
+          }
+        } else if (e.method === "GeneticDataUpdated") {
+          if (dataEvent[1] === this.wallet.address) {
+            this.isLoading = false
+            this.isUpdated = true
           }
         }
       }
@@ -202,7 +224,27 @@ export default {
       const detail = await queryGeneticDataById(this.api, this.dataId)
       this.document.title = detail.title
       this.document.description = detail.description
-      this.document.file = detail.reportLink
+      const link = JSON.parse(detail.reportLink)  
+      const fileName = link[0].split("/").pop()
+      const res = await downloadFile(link[0])
+      
+      let { box, nonce } = res.data.data
+      box = Object.values(box) // Convert from object to Array
+      nonce = Object.values(nonce) // Convert from object to Array
+
+      const toDecrypt = {
+        box: Uint8Array.from(box),
+        nonce: Uint8Array.from(nonce)
+      }
+      console.log("Decrypting...")
+      const decryptedObject = await Kilt.Utils.Crypto.decryptAsymmetric(
+        toDecrypt, 
+        this.publicKey, 
+        this.secretKey
+      )
+      const blob = new Blob([decryptedObject], { type: "text/directory" })
+      console.log("Decrypted!")
+      this.document.file = new File([blob], fileName)
     },
 
     initialDataKey() {
@@ -365,6 +407,11 @@ export default {
       this.document.title = null
       this.document.description = null
       this.document.file = null
+    },
+
+    toDashboard() {
+      this.isUpdated = false
+      this.$router.push({ name: "customer-genetic-data" })
     }
   }
 }
