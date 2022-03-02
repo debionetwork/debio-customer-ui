@@ -59,13 +59,7 @@ export const downloadFile = async (ipfsLink, withMetaData = false) => {
   let metadata
 
   if (withMetaData) {
-    const listResponse = await fetch(`https://api.pinata.cloud/data/pinList?status=pinned&hashContains=${cid}`, {
-      headers: {
-        "pinata_api_key": pinataKey,
-        "pinata_secret_api_key": pinataSecretKey
-      }
-    })
-    const { rows } = await listResponse.json()
+    const { rows } = await getIpfsMetaData(cid)
 
     metadata = {
       name: rows[0].metadata.name,
@@ -76,6 +70,17 @@ export const downloadFile = async (ipfsLink, withMetaData = false) => {
   console.log("Success Downloaded!")
 
   return { ...(withMetaData ? metadata : null), data }
+}
+
+export const getIpfsMetaData = async (cid) => {
+  const listResponse = await fetch(`https://api.pinata.cloud/data/pinList?status=pinned&hashContains=${cid}`, {
+    headers: {
+      "pinata_api_key": pinataKey,
+      "pinata_secret_api_key": pinataSecretKey
+    }
+  })
+
+  return await listResponse.json()
 }
 
 export const decryptFile = (obj, pair, type) => {
