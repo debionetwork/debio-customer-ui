@@ -183,10 +183,12 @@ export default {
       const links = JSON.parse(this.selectedGeneticData.reportLink)
 
       let download = []
-      let fileType 
+      let fileType
+      let fileName
       for (let i = 0; i < links.length; i++) {
-        const { type, data } = await downloadFile(links[i], true)
+        const { name, type, data } = await downloadFile(links[i], true)
         fileType = type
+        fileName = name
         download.push(data)
       }
 
@@ -213,7 +215,7 @@ export default {
 
       const unit8Arr = new Uint8Array(arr)
       const blob = new Blob([unit8Arr], { type: fileType })
-      this.file = new File([blob], this.selectedGeneticData.id)
+      this.file = new File([blob], fileName)
 
       const dataFile = await this.setupFileReader(this.file)      
       await this.upload({
