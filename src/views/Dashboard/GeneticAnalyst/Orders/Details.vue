@@ -498,7 +498,7 @@ export default {
     },
 
     scrollToFormsSection() {
-      let observer = new MutationObserver((mutations) => {
+      const observer = new MutationObserver((mutations) => {
         const formFinded = mutations.find(m =>
           m.addedNodes[0]?.classList?.contains("upload-section") &&
           m.addedNodes[0]?.classList?.contains("mt-6")
