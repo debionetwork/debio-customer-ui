@@ -34,8 +34,8 @@ export default {
       return this.items.map(item => {
         return {
           "ui-debio-stepper__item--active": item.active,
-          "ui-debio-stepper__item--active-line": this.withLineIndicator && item.active 
-        } 
+          "ui-debio-stepper__item--active-line": this.withLineIndicator && item.active
+        }
       })
     }
   }
@@ -82,12 +82,12 @@ export default {
           height: 0.188rem
           background: #F5F7F9
           transition: all cubic-bezier(.7,-0.04,.61,1.14) .3s
-          z-index: 1 
+          z-index: 1
 
       &:last-child
         &::before
           z-index: 0
-  
+
     &__number
       display: flex
       align-items: center
@@ -103,6 +103,7 @@ export default {
       @include h3-opensans
 
     &__title
+      width: 7rem
       max-width: 8.25rem
       text-align: center
       @include body-text-medium-4
