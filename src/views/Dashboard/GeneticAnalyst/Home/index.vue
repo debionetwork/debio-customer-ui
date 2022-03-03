@@ -15,7 +15,7 @@
             fill
           )
 
-      UiDebioDataTable(:headers="headers" :items="orderLists")
+      ui-debio-data-table(:headers="headers" :items="orderLists")
         template(slot="prepend")
           .ga-dashboard__text
             h2.ga-dashboard__table-title Order Lists
@@ -42,13 +42,11 @@ import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-an
 import { generalDebounce } from "@/common/lib/utils"
 import { geneticAnalystIllustration, eyeIcon } from "@/common/icons"
 
-import UiDebioDataTable from "@debionetwork/ui-components"
 import { mapState } from "vuex"
 
 
 export default {
   name: "GADashboard",
-  components: { UiDebioDataTable },
 
   data: () => ({
     geneticAnalystIllustration,

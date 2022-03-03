@@ -12,7 +12,7 @@
     .no-data-card__message You can add your genetic data by clicking the "Add Genetic Data" button.
 
     .no-data-card__button
-      UiDebioButton(
+      ui-debio-button(
         color="secondary" 
         width=255
         @click="goToAddPage"
@@ -24,7 +24,6 @@
 
 <script>
 import { emptyDataIllustration } from "@/common/icons"
-import UiDebioButton from "@debionetwork/ui-components"
 
 
 
@@ -34,8 +33,6 @@ export default {
   data: () => ({
     emptyDataIllustration
   }),
-
-  components: { UiDebioButton },
 
   methods: {
     goToAddPage() {

@@ -25,18 +25,17 @@
                 @confirmFulfilled="handleConfirmPayload"
                 @showModal="showModal = $event"
               )
-          UiDebioButton(block height="40" color="secondary" @click="handleContinue") Continue
+          ui-debio-button(block height="40" color="secondary" @click="handleContinue") Continue
 </template>
 
 <script>
-import UiDebioButton from "@debionetwork/ui-components"
 import Upload from "./Upload"
 import Confirm from "./Confirm"
 
 export default {
   name: "CustomerEmrCreate",
 
-  components: { UiDebioButton, Upload, Confirm },
+  components: { Upload, Confirm },
 
   data: () => ({
     error: null,

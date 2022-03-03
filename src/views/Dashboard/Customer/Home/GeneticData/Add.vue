@@ -52,7 +52,7 @@
 
           span( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
           
-        UiDebioButton(
+        ui-debio-button(
           :disabled="!disable"
           block
           color="secondary"
@@ -64,14 +64,14 @@
         type="upload"
       )
 
-      UiDebioSuccessDialog(
+      SuccessDialog(
         :show="isSuccess"
         title="Success"
         :orderId="orderId"
         @close="closeDialog"
       )
 
-      UiDebioErrorDialog(
+      ui-debio-error-dialog(
         :show="!!error"
         :title="error ? error.title : ''"
         :message="error ? error.message : ''"
@@ -99,23 +99,20 @@ import CryptoJS from "crypto-js"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
-import UiDebioButton from "@debionetwork/ui-components"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
 import { checkCircleIcon } from "@/common/icons"
-import UiDebioSuccessDialog from "@debionetwork/ui-components"
+import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
-import UiDebioErrorDialog from "@debionetwork/ui-components"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
 import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
-import UiDebioAlertDialog from "@debionetwork/ui-components"
 
 
 
 export default {
   name: "AddGeneticData",
   
-  components: { UiDebioButton, UiDebioSuccessDialog, UiDebioErrorDialog, UploadingDialog, UiDebioAlertDialog },
+  components: { SuccessDialog, UploadingDialog },
 
   mixins: [validateForms],
 

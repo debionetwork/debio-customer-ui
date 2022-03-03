@@ -142,7 +142,7 @@
                 )
     v-flex
       .drawer-item.pt-1.pb-1(v-for="(item, key) in items" :key="key")
-        UiDebioButton.btn-drawer(
+        ui-debio-button.btn-drawer(
           :class="customClass(item.active)"
           :to="{ name: item.route }"
           :height="'50px'"
@@ -182,12 +182,10 @@
 
 <script>
 
-import UiDebioButton from "@debionetwork/ui-components"
 import { bookIcon } from "@/common/icons"
 
 export default {
   name: "NavigationDrawer",
-  components: { UiDebioButton },
 
   props: {
     items: { type: Array, default: () => [] },

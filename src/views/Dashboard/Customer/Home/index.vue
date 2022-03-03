@@ -41,7 +41,7 @@
               v-row
                 span.botomHead {{ titlePaymentWording }}
             v-col(cols="3")
-              UiDebioButton.btnHead(
+              ui-debio-button.btnHead(
                 :width="'75px'"
                 :height="'25px'"
                 color="#5640A5"
@@ -50,7 +50,7 @@
               ) View All
 
         div
-          UiDebioDataTable.content(
+          ui-debio-data-table.content(
             :headers="headers"
             :items="paymentHistory"
             :sortBy="['timestamp']"
@@ -94,7 +94,7 @@
               v-row
                 span.botomHead {{ titleTestWording }}
             v-col(cols="3")
-              UiDebioButton.btnHead(
+              ui-debio-button.btnHead(
                 width="75px"
                 height="25px"
                 outlined
@@ -103,7 +103,7 @@
               ) View All
 
         div
-          UiDebioDataTable.content(
+          ui-debio-data-table.content(
             :headers="headers"
             :items="testResult"
             :sortBy="['timestamp']"
@@ -138,9 +138,6 @@
 <script>
 import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator, eyeIcon } from "@/common/icons"
 
-import UiDebioBanner from "@debionetwork/ui-components"
-import UiDebioDataTable from "@debionetwork/ui-components"
-import UiDebioButton from "@debionetwork/ui-components"
 import {
   ordersByCustomer,
   getOrdersData
@@ -163,8 +160,6 @@ import {
 
 export default {
   name: "CustomerHome",
-
-  components: {UiDebioBanner, UiDebioDataTable, UiDebioButton },
 
   data: () => ({
     creditCardIcon,

@@ -123,18 +123,9 @@ import { hexToU8a } from "@polkadot/util";
 import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/api";
 import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
 import errorMessage from "@/common/constants/error-messages"
-import UiDebioModal from "@debionetwork/ui-components"
-import UiDebioRating from "@debionetwork/ui-components"
-import UiDebioTextarea from "@debionetwork/ui-components"
 
 export default {
   name: "TestResult",
-
-  components: { 
-    UiDebioModal,
-    UiDebioRating,
-    UiDebioTextarea
-  },
 
   data: () => ({
     downloadIcon,

@@ -47,7 +47,6 @@ import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util"
-import UiDebioButton from "@debionetwork/ui-components"
 import { fileTextIcon } from "@/common/icons"
 import { downloadFile, decryptFile } from "@/common/lib/pinata"
 import {
@@ -57,8 +56,6 @@ import {
 
 export default {
   name: "CustomerEmrDetails",
-
-  components: { UiDebioButton },
 
   data: () => ({
     fileTextIcon,

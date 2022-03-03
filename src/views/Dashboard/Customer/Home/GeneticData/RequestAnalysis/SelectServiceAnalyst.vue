@@ -36,7 +36,7 @@
               )
               span.no-items__text-alert Oops! Looks like there is no Service and Analyst available
               span Please try again later
-              UiDebioButton.no-items__button-dashboard(
+              ui-debio-button.no-items__button-dashboard(
                 color="secondary" 
                 width="255"
                 height="35"
@@ -75,7 +75,6 @@ import AnalystDetail from "./AnalystDetail"
 import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
 import { queryGetAllGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
 import { queryGeneticAnalystQualifications } from "@/common/lib/polkadot-provider/query/genetic-analyst-qualifications"
-import UiDebioButton from "@debionetwork/ui-components"
 import ImportantDialog from "./Information.vue"
 
 export default {
@@ -106,7 +105,6 @@ export default {
   components: {
     ServiceAnalysisCard,
     AnalystDetail,
-    UiDebioButton,
     ImportantDialog
   },
 

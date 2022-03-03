@@ -1,7 +1,7 @@
 <template lang="pug">
   .payment-history
     .payment-history__wrapper
-      UiDebioDataTable(:headers="paymentHeaders" :items="payments")
+      ui-debio-data-table(:headers="paymentHeaders" :items="payments")
         template(slot="prepend")
           .payment-history__nav
             .payment-history__nav-text
@@ -35,7 +35,7 @@
           span(:style="{ color: setButtonBackground(item.status) }") {{ item.status }}
 
         template(v-slot:[`item.actions`]="{ item }")
-          UiDebioButton(
+          ui-debio-button(
             :color="item.status === 'Unpaid' ? 'secondary' : 'primary'"
             width="80"
             height="25"
@@ -47,8 +47,6 @@
 
 <script>
 import { mapState } from "vuex"
-import UiDebioDataTable from "@debionetwork/ui-components"
-import UiDebioButton from "@debionetwork/ui-components"
 import { searchIcon } from "@/common/icons"
 import { generalDebounce } from "@/common/lib/utils"
 import { fetchPaymentHistories } from "@/common/lib/api";
@@ -60,7 +58,6 @@ export default {
 
   mixins: [metamaskServiceHandler],
 
-  components: { UiDebioDataTable, UiDebioButton },
 
   data: () => ({
     searchIcon,

@@ -15,7 +15,7 @@
             fill
           )
 
-      UiDebioDataTable(:headers="headers" :items="bounties")
+      ui-debio-data-table(:headers="headers" :items="bounties")
         template(slot="prepend")
           .customer-data-bounty__text
             h2.customer-data-bounty__title Data Bounty
@@ -31,13 +31,11 @@
         template(v-slot:[`item._id`]="{ item }")
           .customer-data-bounty__hash.d-flex.align-center
             .customer-data-bounty__item-hash {{ item._id }}
-            UiDebioButton.customer-data-bounty__copy(color="primary" width="60" height="22" @click="handleCopy($event, item._id)") Copy
+            ui-debio-button.customer-data-bounty__copy(color="primary" width="60" height="22" @click="handleCopy($event, item._id)") Copy
               
 </template>
 
 <script>
-import UiDebioDataTable from "@debionetwork/ui-components"
-import UiDebioButton from "@debionetwork/ui-components"
 import { fetchBountyLists } from "@/common/lib/api"
 import { researchIllustration } from "@/common/icons" 
 import { mapState } from "vuex"
@@ -45,7 +43,6 @@ import { mapState } from "vuex"
 export default {
   name: "CustomerDataBounty",
 
-  components: { UiDebioDataTable, UiDebioButton },
 
   data: () => ({
     researchIllustration,

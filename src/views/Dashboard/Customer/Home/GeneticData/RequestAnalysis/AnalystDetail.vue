@@ -49,7 +49,7 @@
       ) - {{ experience.title }}
 
       .analyst-detail__button
-        UiDebioButton.analyst-detail__button-text(
+        ui-debio-button.analyst-detail__button-text(
           color="secondary" 
           width="48%"
           height="38"
@@ -57,7 +57,7 @@
           @click="handleDownloadFile"
         ) Download Sample Report
 
-        UiDebioButton.analyst-detail__button-text(
+        ui-debio-button.analyst-detail__button-text(
           color="secondary" 
           width="48%"
           height="38" 
@@ -70,7 +70,6 @@
 <script>
 
 import { mapMutations, mapState } from "vuex"
-import UiDebioButton from "@debionetwork/ui-components"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util"
@@ -80,10 +79,6 @@ import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 
 export default {
   name: "AnalystDetail",
-
-  components: {
-    UiDebioButton
-  },
 
   data: () => ({
     price: null

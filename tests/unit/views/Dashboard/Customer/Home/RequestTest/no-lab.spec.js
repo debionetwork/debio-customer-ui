@@ -1,10 +1,10 @@
 import Vue from "vue"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
-import { createLocalVue, shallowMount } from "@vue/test-utils"
-import UiDebioDialog from "@debionetwork/ui-components"
-import UiDebioButton from "@debionetwork/ui-components"
+import { createLocalVue, shallowMount, config } from "@vue/test-utils"
 import NoLab from "@/views/Dashboard/Customer/Home/RequestTest/NoLab"
+
+config.stubs["ui-debio-dialog"] = { template: "<div></div>"}
 
 Vue.use(Vuetify)
 const localVue = createLocalVue()
@@ -12,7 +12,6 @@ const localVue = createLocalVue()
 describe("No Lab", () => {
   let vuetify
   let container
-  let stubs = { UiDebioDialog, UiDebioButton }
 
   beforeEach(() => {
     vuetify =  new Vuetify()
@@ -22,7 +21,6 @@ describe("No Lab", () => {
     container = shallowMount(NoLab, {
       localVue,
       vuetify,
-      stubs,
       store: new Vuex.Store({
         state: {
           lab: {

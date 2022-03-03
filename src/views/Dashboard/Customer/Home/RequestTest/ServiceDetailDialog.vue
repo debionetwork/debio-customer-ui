@@ -36,7 +36,7 @@
          
 
       .dialog-service__button
-        UiDebioButton.dialog-service__button-text(
+        ui-debio-button.dialog-service__button-text(
           color="secondary" 
           width="48%"
           height="38" 
@@ -44,7 +44,7 @@
           @click="downloadFile"
         ) Download Sample Report
 
-        UiDebioButton.dialog-service__button-text(
+        ui-debio-button.dialog-service__button-text(
           color="secondary" 
           width="48%"
           height="38" 
@@ -57,7 +57,6 @@
 <script>
 
 import { mapState } from "vuex"
-import UiDebioButton from "@debionetwork/ui-components"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { getLocations } from "@/common/lib/api"
 import Kilt from "@kiltprotocol/sdk-js"
@@ -78,10 +77,6 @@ export default {
 
   async mounted () {
     await this.getCountries()
-  },
-
-  components: {
-    UiDebioButton
   },
 
   props: {

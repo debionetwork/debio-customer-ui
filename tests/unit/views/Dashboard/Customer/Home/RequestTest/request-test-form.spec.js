@@ -1,9 +1,10 @@
-import { createLocalVue, shallowMount } from "@vue/test-utils"
+import { createLocalVue, shallowMount, config } from "@vue/test-utils"
 import Vue from "vue"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 import RequestTestForm from "@/views/Dashboard/Customer/Home/RequestTest/RequestTestForm"
-import UiDebioButton from "@debionetwork/ui-components"
+
+config.stubs["ui-debio-button"] = { template: "<div></div>"}
 
 Vue.use(Vuetify)
 
@@ -38,10 +39,7 @@ describe("Request Test Form component", () => {
     container = shallowMount(RequestTestForm, {
       localVue,
       vuetify,
-      store,
-      stubs: {
-        UiDebioButton
-      }
+      store
     })
 
     expect(container.exists()).toBe(true)

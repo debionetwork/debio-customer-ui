@@ -1,6 +1,6 @@
 <template lang="pug">
   .genetic-analysis-list
-    UiDebioDataTable.genetic-analysis-list__table(
+    ui-debio-data-table.genetic-analysis-list__table(
       :headers="headers"
       :items="items"
     )
@@ -30,12 +30,10 @@ import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { u8aToHex } from "@polkadot/util"
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
-import UiDebioDataTable from "@debionetwork/ui-components"
 import { mapState } from "vuex"
 
 export default {
   name: "GeneticAnalysisList",
-  components: { UiDebioDataTable },
 
   data: () => ({
     medicalResearchIllustration,

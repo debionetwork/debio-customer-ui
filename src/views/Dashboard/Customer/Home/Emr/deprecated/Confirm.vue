@@ -49,14 +49,11 @@
 <script>
 import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@/common/icons"
 import { validateForms } from "@/common/lib/validate"
-import UiDebioButton from "@debionetwork/ui-components"
 import errorMessage from "@/common/constants/error-messages"
 
 export default {
   name: "CustomerEmrConfirm",
   mixins: [validateForms],
-
-  components: { UiDebioButton },
 
   props: {
     payload: { type: Object, default: () => {} },
