@@ -2,7 +2,7 @@ import Vue from "vue"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 import { createLocalVue, shallowMount, config } from "@vue/test-utils"
-import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
+import UiDebioErrorDialog from "@debionetwork/ui-components"
 import AgreementDialog from "@/views/Dashboard/Customer/Home/RequestTest/AgreementDialog.vue"
 
 config.stubs["ui-debio-input"] = { template: "<div></div>"}
@@ -13,7 +13,7 @@ const localVue = createLocalVue()
 describe("Agreement dialog", () => {
   let vuetify
   let container
-  let stubs = { ErrorDialog }
+  let stubs = { UiDebioErrorDialog }
 
   beforeEach(() => {
     vuetify = new Vuetify()

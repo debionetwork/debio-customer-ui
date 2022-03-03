@@ -3,7 +3,7 @@ import Vue from "vue"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 import RequestTestForm from "@/views/Dashboard/Customer/Home/RequestTest/RequestTestForm"
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 
 Vue.use(Vuetify)
 
@@ -40,7 +40,7 @@ describe("Request Test Form component", () => {
       vuetify,
       store,
       stubs: {
-        Button
+        UiDebioButton
       }
     })
 

@@ -15,7 +15,7 @@
         .customer-request-analysis__title Select Genetic Data
 
         EmptyDataCard(v-if="isEmpty" )
-        DataTable.customer-request-analysis__table(v-if="!isEmpty"
+        UiDebioDataTable.customer-request-analysis__table(v-if="!isEmpty"
           :headers="headers"
           :items="items"
           @click="selectData"
@@ -39,7 +39,7 @@
 import { mapMutations, mapState } from "vuex"
 import { queryGeneticDataByOwner, queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import EmptyDataCard from "./EmptyDataCard"
-import DataTable from "@/common/components/DataTable"
+import UiDebioDataTable from "@debionetwork/ui-components"
 
 export default {
   name: "RequestAnalysis",
@@ -85,7 +85,7 @@ export default {
 
   components: {
     EmptyDataCard,
-    DataTable
+    UiDebioDataTable
   },
 
   methods: {

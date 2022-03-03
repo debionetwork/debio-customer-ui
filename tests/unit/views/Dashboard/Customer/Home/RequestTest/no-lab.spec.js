@@ -2,8 +2,8 @@ import Vue from "vue"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 import { createLocalVue, shallowMount } from "@vue/test-utils"
-import Dialog from "@/common/components/Dialog"
-import Button from "@/common/components/Button"
+import UiDebioDialog from "@debionetwork/ui-components"
+import UiDebioButton from "@debionetwork/ui-components"
 import NoLab from "@/views/Dashboard/Customer/Home/RequestTest/NoLab"
 
 Vue.use(Vuetify)
@@ -12,7 +12,7 @@ const localVue = createLocalVue()
 describe("No Lab", () => {
   let vuetify
   let container
-  let stubs = { Dialog, Button }
+  let stubs = { UiDebioDialog, UiDebioButton }
 
   beforeEach(() => {
     vuetify =  new Vuetify()

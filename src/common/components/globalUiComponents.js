@@ -1,18 +1,30 @@
 import Vue from "vue"
+import {
+  UiDebioCard,
+  UiDebioBanner,
+  UiDebioAvatar,
+  UiDebioRating,
+  UiDebioBreadcrumbs,
+  UiDebioIcon,
+  UiDebioStepper,
+  UiDebioModal,
+  UiDebioInput,
+  UiDebioFile,
+  UiDebioDropdown
+} from "@debionetwork/ui-components"
 
 // Components
-Vue.component("ui-debio-card", () => import("@/common/components/Card"))
-Vue.component("ui-debio-banner", () => import("@/common/components/Banner"))
-Vue.component("ui-debio-avatar", () => import("@/common/components/Avatar"))
-Vue.component("ui-debio-banner", () => import("@/common/components/Banner"))
-Vue.component("ui-debio-rating", () => import("@/common/components/Rating"))
-Vue.component("ui-debio-breadcrumbs", () => import("@/common/components/Breadcrumbs"))
-Vue.component("ui-debio-icon", () => import("@/common/components/Icon"))
-Vue.component("ui-debio-stepper", () => import("@/common/components/Stepper"))
-Vue.component("ui-debio-modal", () => import("@/common/components/Modal"))
+Vue.component("ui-debio-card", UiDebioCard)
+Vue.component("ui-debio-banner", UiDebioBanner)
+Vue.component("ui-debio-avatar", UiDebioAvatar)
+Vue.component("ui-debio-rating", UiDebioRating)
+Vue.component("ui-debio-breadcrumbs", UiDebioBreadcrumbs)
+Vue.component("ui-debio-icon", UiDebioIcon)
+Vue.component("ui-debio-stepper", UiDebioStepper)
+Vue.component("ui-debio-modal", UiDebioModal)
 
 // Forms
-Vue.component("ui-debio-input", () => import("@/common/components/Input"))
-Vue.component("ui-debio-textarea", () => import("@/common/components/Textarea"))
-Vue.component("ui-debio-file", () => import("@/common/components/File"))
-Vue.component("ui-debio-dropdown", () => import("@/common/components/Dropdown"))
+Vue.component("ui-debio-input", UiDebioInput)
+Vue.component("ui-debio-textarea", UiDebioFile)
+Vue.component("ui-debio-file", UiDebioFile)
+Vue.component("ui-debio-dropdown", UiDebioDropdown)

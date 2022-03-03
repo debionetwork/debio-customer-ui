@@ -8,7 +8,7 @@
       :loading="modalBountyLoading"
     )
       .modal-bounty__cta.d-flex.mt-8.justify-center
-        Button(
+        UiDebioButton(
           v-if="!!isBountyError"
           color="secondary"
           block
@@ -16,7 +16,7 @@
           @click="isBountyError = null"
         ) Try again
 
-        Button(
+        UiDebioButton(
           v-else-if="isSuccessBounty"
           color="secondary"
           width="100"
@@ -25,8 +25,8 @@
         ) Ok
 
         template(v-else)
-          Button(outlined color="secondary" width="100" @click="isShowModalBounty = false") Cancel
-          Button(color="secondary" width="100" @click="downloadFile") Yes
+          UiDebioButton(outlined color="secondary" width="100" @click="isShowModalBounty = false") Cancel
+          UiDebioButton(color="secondary" width="100" @click="downloadFile") Yes
 
     ui-debio-banner.customer-test__banner(
       title="My Test"
@@ -53,7 +53,7 @@
         v-tabs-items(v-model="tabs")
           v-tab-item
             .customer-my-test__table
-              DataTable(
+              UiDebioDataTable(
                 :headers="headers"
                 :items="testResult"
               )
@@ -73,7 +73,7 @@
 
                 template(v-slot:[`item.actions`]="{ item }")
                   .customer-my-test__actions
-                    Button(
+                    UiDebioButton(
                       height="25px"
                       width="50%"
                       dark
@@ -81,7 +81,7 @@
                       :to="{ name: 'order-history-detail', params: item}"
                     ) Details
                     
-                    Button(
+                    UiDebioButton(
                       v-if="item.status !== 'ResultReady'"
                       v-show="item.status === 'Registered'"
                       height="25px"
@@ -91,7 +91,7 @@
                       @click="goToInstruction(item.serviceInfo.dnaCollectionProcess)"
                     ) Instruction
 
-                    Button(
+                    UiDebioButton(
                       v-if="item.status !== 'Registered'"
                       v-show="item.status === 'ResultReady'"
                       height="25px"
@@ -127,8 +127,8 @@
 import { layersIcon, noteIllustration, medicalResearchIllustration } from "@/common/icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
 import modalBounty from "./modalBounty.vue"
-import DataTable from "@/common/components/DataTable"
-import Button from "@/common/components/Button"
+import UiDebioDataTable from "@debionetwork/ui-components"
+import UiDebioButton from "@debionetwork/ui-components"
 import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
@@ -165,8 +165,8 @@ export default {
 
   components: {
     StakingServiceTab,
-    DataTable,
-    Button,
+    UiDebioDataTable,
+    UiDebioButton,
     modalBounty,
     ConfirmationDialog
   },

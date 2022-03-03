@@ -35,14 +35,14 @@
 
       .modal-password__cta.d-flex.flex-column(slot="cta")
         .modal-password__cta.d-flex.align-center.justify-between
-          Button.router-link.modal-password__cta-submit(
+          UiDebioButton.router-link.modal-password__cta-submit(
             color="secondary"
             width="130"
             :to="{ name: 'forgot-password' }"
             outlined
           ) Forgot Password
 
-          Button.modal-password__cta-submit(
+          UiDebioButton.modal-password__cta-submit(
             color="secondary"
             width="130"
             @click="handleSubmitPassword"
@@ -83,7 +83,7 @@ import {
 
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 import localStorage from "@/common/lib/local-storage"
@@ -93,7 +93,7 @@ export default {
 
   mixins: [validateForms],
 
-  components: { NavigationDrawer, Navbar, Button, maintenancePageLayout },
+  components: { NavigationDrawer, Navbar, UiDebioButton, maintenancePageLayout },
 
   data: () => ({
     checkCircleIcon,

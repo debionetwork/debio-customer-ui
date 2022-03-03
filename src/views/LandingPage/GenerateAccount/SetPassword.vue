@@ -41,7 +41,7 @@
                 @keyup.enter="onPasswordSet"
                 outlined
             )
-            Recaptcha(
+            UiDebioRecaptcha(
                 :verify="onVerifyRecaptcha"
             )
             v-btn(
@@ -57,7 +57,7 @@
 <script>
 import apiClientRequest from "@/common/lib/api"
 import { mapActions, mapState, mapMutations } from "vuex"
-import Recaptcha from "@/common/components/Recaptcha.vue"
+import UiDebioRecaptcha from "@debionetwork/ui-components"
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 import errorMessage from "@/common/constants/error-messages"
 
@@ -67,7 +67,7 @@ export default {
 
   components: {
     LandingPagePopUp,
-    Recaptcha
+    UiDebioRecaptcha
   },
 
   data: () => ({

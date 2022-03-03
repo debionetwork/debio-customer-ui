@@ -37,14 +37,14 @@
 
 <script>
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 
 export default {
   name: "MainPage",
 
   components: {
     LandingPagePopUp,
-    Button
+    UiDebioButton
   },
 
   methods: {

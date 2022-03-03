@@ -61,7 +61,7 @@
 
       div(class="text-center" v-if="!isCancelled")
         div(v-if="!success" class="mt-3 d-flex justify-center align-center")
-          Button(
+          UiDebioButton(
             :class="setMargin"
             color="secondary"
             width="280"
@@ -70,7 +70,7 @@
             ) Submit Order
 
         div(v-if="success && status === 'Paid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
-          Button(
+          UiDebioButton(
             color="secondary" 
             width="46%"
             height="35"
@@ -79,7 +79,7 @@
             outlined 
             ) View Instruction
 
-          Button(
+          UiDebioButton(
             color="secondary" 
             width="46%"
             height="35"
@@ -88,7 +88,7 @@
             ) View Etherscan
 
         div(v-if="success && status === 'Unpaid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
-          Button(
+          UiDebioButton(
             color="secondary" 
             width="46%"
             height="35"
@@ -97,7 +97,7 @@
             outlined 
             ) Cancel
 
-          Button(
+          UiDebioButton(
             color="secondary" 
             width="46%"
             height="35"
@@ -112,7 +112,7 @@
         @close="showReceipt = false"
       )
 
-      CancelDialog(
+      UiDebioCancelDialog(
         :show="cancelDialog"
         :orderId="orderId"
         @cancel="setCancelled"
@@ -127,7 +127,7 @@
         @close="showPayRemainingDialog = false"
       ) 
 
-      AlertDialog(
+      UiDebioAlertDialog(
         :show="showAlert"
         :width="289"
         title="Unpaid Order"
@@ -146,10 +146,10 @@ import { mapState, mapMutations } from "vuex"
 import CryptoJS from "crypto-js"	
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
-import Button from "@/common/components/Button"
-import CancelDialog from "@/common/components/Dialog/CancelDialog"
+import UiDebioButton from "@debionetwork/ui-components"
+import UiDebioCancelDialog from "@debionetwork/ui-components"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
-import AlertDialog from "@/common/components/Dialog/AlertDialog"
+import UiDebioAlertDialog from "@debionetwork/ui-components"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
@@ -169,11 +169,11 @@ export default {
   name: "PaymentDetailCard",
   
   components: {
-    Button,
+    UiDebioButton,
     PaymentReceiptDialog,
-    CancelDialog,
+    UiDebioCancelDialog,
     PayRemainingDialog,
-    AlertDialog
+    UiDebioAlertDialog
   },
 
   data: () => ({

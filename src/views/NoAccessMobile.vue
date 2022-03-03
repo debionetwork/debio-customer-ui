@@ -10,12 +10,12 @@
 
 <script>
 import { debioFullIcon } from "@/common/icons"
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 
 export default {
   name: "NoAccessMobile",
 
-  components: { Button },
+  components: { UiDebioButton },
 
   data: () => ({ debioFullIcon })
 }

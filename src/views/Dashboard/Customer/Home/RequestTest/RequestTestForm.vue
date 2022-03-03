@@ -59,7 +59,7 @@
         autocomplete="off"
         outlined)
 
-      Button.request-test-button(
+      UiDebioButton.request-test-button(
         :disabled="disable"
         color="secondary" 
         width="100%"
@@ -72,7 +72,7 @@
 import { mapState, mapMutations } from "vuex"
 import { getLocations, getStates, getCities } from "@/common/lib/api"
 import { getCategories } from "@/common/lib/api"
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 import errorMessage from "@/common/constants/error-messages"
 
 
@@ -80,7 +80,7 @@ export default {
   name: "RequestTestForm",
 
   components: {
-    Button
+    UiDebioButton
   },
 
   data: () => ({

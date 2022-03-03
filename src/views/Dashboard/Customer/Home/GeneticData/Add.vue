@@ -51,8 +51,8 @@
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
 
           span( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
-
-        Button(
+          
+        UiDebioButton(
           :disabled="!disable"
           block
           color="secondary"
@@ -64,14 +64,14 @@
         type="upload"
       )
 
-      SuccessDialog(
+      UiDebioSuccessDialog(
         :show="isSuccess"
         title="Success"
         :orderId="orderId"
         @close="closeDialog"
       )
 
-      ErrorDialog(
+      UiDebioErrorDialog(
         :show="!!error"
         :title="error ? error.title : ''"
         :message="error ? error.message : ''"
@@ -99,23 +99,23 @@ import CryptoJS from "crypto-js"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
 import { checkCircleIcon } from "@/common/icons"
-import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
+import UiDebioSuccessDialog from "@debionetwork/ui-components"
 import { errorHandler } from "@/common/lib/error-handler"
-import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
+import UiDebioErrorDialog from "@debionetwork/ui-components"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
 import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
-import AlertDialog from "@/common/components/Dialog/AlertDialog"
+import UiDebioAlertDialog from "@debionetwork/ui-components"
 
 
 
 export default {
   name: "AddGeneticData",
   
-  components: { Button, SuccessDialog, UploadingDialog, ErrorDialog, AlertDialog },
+  components: { UiDebioButton, UiDebioSuccessDialog, UiDebioErrorDialog, UploadingDialog, UiDebioAlertDialog },
 
   mixins: [validateForms],
 

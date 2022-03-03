@@ -13,7 +13,7 @@
 
 
       .information-dialog__button
-        Button(
+        UiDebioButton(
           width="340"
           height="35" 
           color="secondary" 
@@ -25,7 +25,7 @@
 
 
 <script>
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 
 export default {
   name: "InformationDialog",
@@ -34,7 +34,7 @@ export default {
     show: Boolean
   },
 
-  components: { Button },
+  components: { UiDebioButton },
 
   methods: {
     closeDialog() {

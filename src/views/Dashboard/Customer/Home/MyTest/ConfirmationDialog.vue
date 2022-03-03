@@ -31,7 +31,7 @@
           div( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
 
         .dialog-confirmation__button
-          Button(
+          UiDebioButton(
             color="secondary" 
             width="280px"
             height="35px"
@@ -47,13 +47,13 @@
 </template>
 
 <script>
-import Button from "@/common/components/Button"
+import UiDebioButton from "@debionetwork/ui-components"
 
 export default {
   name: "ConfirmationDialog",
 
   components: {
-    Button
+    UiDebioButton
   },
 
   props: {
