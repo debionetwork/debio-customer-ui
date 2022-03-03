@@ -37,7 +37,7 @@
 
 <script>
 import { fetchBountyLists } from "@/common/lib/api"
-import { researchIllustration } from "@/common/icons" 
+import { researchIllustration } from "@debionetwork/ui-icons" 
 import { mapState } from "vuex"
 
 export default {

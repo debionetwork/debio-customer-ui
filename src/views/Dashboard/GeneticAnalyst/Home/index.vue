@@ -40,7 +40,7 @@
 import { GAGetOrders } from "@/common/lib/api"
 import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
 import { generalDebounce } from "@/common/lib/utils"
-import { geneticAnalystIllustration, eyeIcon } from "@/common/icons"
+import { geneticAnalystIllustration, eyeIcon } from "@debionetwork/ui-icons"
 
 import { mapState } from "vuex"
 

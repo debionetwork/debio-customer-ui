@@ -47,7 +47,7 @@ import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util"
-import { fileTextIcon } from "@/common/icons"
+import { fileTextIcon } from "@debionetwork/ui-icons"
 import { downloadFile, decryptFile } from "@/common/lib/pinata"
 import {
   queryElectronicMedicalRecordById,

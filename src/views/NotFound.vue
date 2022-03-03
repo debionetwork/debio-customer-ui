@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { Illustration404 } from "@/common/icons"
+import { Illustration404 } from "@debionetwork/ui-icons"
 
 export default {
   name: "NotFound",

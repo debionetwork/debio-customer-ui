@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { medicalResearchIllustration, downloadIcon, eyeIcon } from "@/common/icons"
+import { medicalResearchIllustration, downloadIcon, eyeIcon } from "@debionetwork/ui-icons"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { u8aToHex } from "@polkadot/util"
 import CryptoJS from "crypto-js"

@@ -136,7 +136,7 @@
 </template>
 
 <script>
-import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator, eyeIcon } from "@/common/icons"
+import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator, eyeIcon } from "@debionetwork/ui-icons"
 
 import {
   ordersByCustomer,

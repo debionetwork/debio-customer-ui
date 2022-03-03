@@ -121,7 +121,7 @@ import { getOrdersDetail } from "@/common/lib/polkadot-provider/query/orders";
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services";
 import { hexToU8a } from "@polkadot/util";
 import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/api";
-import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
+import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@debionetwork/ui-icons"
 import errorMessage from "@/common/constants/error-messages"
 
 export default {

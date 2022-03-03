@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import { layersIcon, noteIllustration, medicalResearchIllustration } from "@/common/icons"
+import { layersIcon, noteIllustration, medicalResearchIllustration } from "@debionetwork/ui-icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
 import modalBounty from "./modalBounty.vue"
 import { mapState } from "vuex"

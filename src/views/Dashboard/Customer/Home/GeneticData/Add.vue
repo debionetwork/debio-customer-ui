@@ -101,7 +101,7 @@ import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genet
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
-import { checkCircleIcon } from "@/common/icons"
+import { checkCircleIcon } from "@debionetwork/ui-icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"

@@ -23,7 +23,7 @@
 
 
 <script>
-import { emptyDataIllustration } from "@/common/icons"
+import { emptyDataIllustration } from "@debionetwork/ui-icons"
 
 
 

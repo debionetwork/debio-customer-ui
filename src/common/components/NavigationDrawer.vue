@@ -182,7 +182,7 @@
 
 <script>
 
-import { bookIcon } from "@/common/icons"
+import { bookIcon } from "@debionetwork/ui-icons"
 
 export default {
   name: "NavigationDrawer",

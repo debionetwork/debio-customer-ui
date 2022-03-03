@@ -89,7 +89,7 @@ import {
   alertIcon,
   trashIcon,
   downloadIcon
-} from "@/common/icons"
+} from "@debionetwork/ui-icons"
 import {
   deregisterElectronicMedicalRecord,
   getDeleteEMRFee

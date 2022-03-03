@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@/common/icons"
+import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@debionetwork/ui-icons"
 import { validateForms } from "@/common/lib/validate"
 import errorMessage from "@/common/constants/error-messages"
 

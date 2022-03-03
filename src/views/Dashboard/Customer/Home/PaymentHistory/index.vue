@@ -47,7 +47,7 @@
 
 <script>
 import { mapState } from "vuex"
-import { searchIcon } from "@/common/icons"
+import { searchIcon } from "@debionetwork/ui-icons"
 import { generalDebounce } from "@/common/lib/utils"
 import { fetchPaymentHistories } from "@/common/lib/api";
 

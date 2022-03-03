@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { debioFullIcon } from "@/common/icons"
+import { debioFullIcon } from "@debionetwork/ui-icons"
 
 export default {
   name: "NoAccessMobile",

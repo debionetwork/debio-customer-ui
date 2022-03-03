@@ -216,7 +216,7 @@ import Kilt from "@kiltprotocol/sdk-js"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 
 import { u8aToHex } from "@polkadot/util"
-import { chevronLeftIcon, timerIcon, alertIcon } from "@/common/icons"
+import { chevronLeftIcon, timerIcon, alertIcon } from "@debionetwork/ui-icons"
 import { validateForms } from "@/common/lib/validate"
 import {
   updateStatusOrder,

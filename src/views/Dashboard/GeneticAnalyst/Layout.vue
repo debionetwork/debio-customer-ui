@@ -79,7 +79,7 @@ import {
   checkCircleIcon,
   userIcon,
   fileTextIcon
-} from "@/common/icons"
+} from "@debionetwork/ui-icons"
 
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"

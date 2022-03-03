@@ -28,7 +28,7 @@
 <script>
 
 import { mapState } from "vuex"
-import { eyeIcon, downloadIcon } from "@/common/icons"
+import { eyeIcon, downloadIcon } from "@debionetwork/ui-icons"
 import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
 import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { queryGeneticAnalysisByOwner, queryGeneticAnalysisStorage, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
