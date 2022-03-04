@@ -11,8 +11,6 @@ config.stubs["v-row"] = { template: "<div></div>" }
 config.stubs["v-col"] = { template: "<div></div>" }
 config.stubs["v-skeleton-loader"] = { template: "<div></div>" }
 
-
-
 const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueRouter)
@@ -33,7 +31,7 @@ describe("Select Service Analys page", () => {
           api: "API"
         },
         geneticData: {
-          selectedGeneticData: {
+          selectedData: {
             id: "0x961467d9e2a510d777c7a89a15f54d6c6b354c3fd1c78bcf8d06202285e4894b",
             ownerId: "5DygXy2zxyYNhF7MRcxp1cBGirEHFXiWHgywVboC3Us1DVHs",
             title: "file",
