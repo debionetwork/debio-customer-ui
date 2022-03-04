@@ -1,7 +1,6 @@
 import Vue from "vue"
 import Vuetify from "vuetify"
 import { createLocalVue, shallowMount, config } from "@vue/test-utils"
-import Button from "@/common/components/Button"
 import EmptyDataCard from "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/EmptyDataCard"
 
 
@@ -12,7 +11,6 @@ const localVue = createLocalVue()
 describe("Empty Data Card", () => {
   let vuetify
   let container
-  let stubs = { Button }
 
   beforeEach(() => {
     vuetify =  new Vuetify()
@@ -21,8 +19,7 @@ describe("Empty Data Card", () => {
   it("should render", () => {
     container = shallowMount(EmptyDataCard, {
       localVue,
-      vuetify,
-      stubs
+      vuetify
     })
     expect(container.exists()).toBe(true)
   })
