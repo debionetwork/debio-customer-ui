@@ -52,7 +52,7 @@ export default {
   data: () => ({
     showDetail: false,
     serviceName: null,
-    description: null,
+    description: "",
     duration: null,
     durationType: null,
     price: null,
@@ -95,15 +95,17 @@ export default {
       await this.getServiceDetail()
     }
 
-    this.serviceName = this.service.serviceName
-    this.description = this.service.description
-    this.duration = this.service.duration
-    this.durationType = this.service.durationType
-    this.price = `${this.formatBalance(this.service.priceDetail[0].totalPrice)} ${this.service.priceDetail[0].currency}`
-    this.analystName = `${this.service.analystsInfo.info.firstName} ${this.service.analystsInfo.info.lastName}`
-    this.specialization = this.service.analystsInfo.info.specialization
-    this.profileImage = this.service.analystsInfo.info.profileImage
-    this.profileLink = this.service.analystsInfo.info.profileLink
+    if (this.service) {
+      this.serviceName = this.service.serviceName
+      this.description = this.service.description
+      this.duration = this.service.duration
+      this.durationType = this.service.durationType
+      this.price = `${this.formatBalance(this.service.priceDetail[0].totalPrice)} ${this.service.priceDetail[0].currency}`
+      this.analystName = `${this.service.analystsInfo.info.firstName} ${this.service.analystsInfo.info.lastName}`
+      this.specialization = this.service.analystsInfo.info.specialization
+      this.profileImage = this.service.analystsInfo.info.profileImage
+      this.profileLink = this.service.analystsInfo.info.profileLink
+    }
   },
 
   methods: {
