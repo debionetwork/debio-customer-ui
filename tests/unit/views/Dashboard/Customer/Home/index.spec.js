@@ -3,6 +3,7 @@ import Home from "@/views/Dashboard/Customer/Home"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 
+
 jest.mock("../../../../../../src/common/lib/polkadot-provider/query/orders", () => ({
   ordersByCustomer: jest.fn(() => {
     return {
@@ -130,6 +131,7 @@ jest.mock("../../../../../../src/common/lib/polkadot-provider/query/services", (
 config.stubs["ui-debio-icon"] = { template: "<div></div>" }
 config.stubs["ui-debio-card"] = { template: "<div></div>" }
 config.stubs["ui-debio-avatar"] = { template: "<div></div>" }
+config.stubs["ui-debio-banner"] = { template: "<div></div>" }
 
 describe("Dashboard Customer Home", () => {
   let container
