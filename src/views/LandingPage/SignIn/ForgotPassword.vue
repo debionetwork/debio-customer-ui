@@ -8,12 +8,12 @@
     h2 {
         width: 492px;
 
-        font-family: Raleway;
+        font-family: "Raleway";
         font-style: normal;
         font-weight: normal;
         font-size: 18px;
         line-height: 150%;
-        
+
         text-align: center;
     }
 }

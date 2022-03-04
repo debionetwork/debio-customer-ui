@@ -2,7 +2,7 @@
 @import "../styles/mixins.sass"
 
 .dg-raleway-font
-  font-family: 'Raleway'
+  font-family: "Raleway"
 
 .drawer
   background: unset !important
@@ -25,7 +25,6 @@
   text-align: left
   padding-left: 0%
   justify-content: left
-  
   &::before
     background-color: #FFFFFF
 
@@ -48,7 +47,7 @@
 .footerDrawer
   margin: 65px 0 0
 
-.footerDrawer div 
+.footerDrawer div
   display: flex
   font-weight: 400
 
@@ -61,37 +60,37 @@
   align-content: flex-start
   text-align: left
 
-.dbioLogo 
+.dbioLogo
   margin: 0 32px
   margin-bottom: 72px
 
-.iconLogo 
+.iconLogo
   height: 125px
   width: 125px
 
-.textBox 
+.textBox
   margin-bottom: -15px
   margin-top: -15px
 
-.textLogo 
+.textLogo
   font-size: 30px
   color: #FF56E0
 
-.subtexBox 
+.subtexBox
   margin-top: -5px
 
-.subTextLogo 
+.subTextLogo
   font-size: 10px
   margin-top: -10px
   color: #FF56E0
 
-.text-left 
+.text-left
   align-content: flex-start
 
-.activeButton 
+.activeButton
   background: linear-gradient(270deg, rgba(255, 255, 255, 0) 75.23%, rgba(195, 0, 164, 0.31) 150.85%)
   border-left: solid #C400A5 5px
-  margin-left: -5px 
+  margin-left: -5px
 
 
 </style>
@@ -157,7 +156,7 @@
             :color="item.active ? '#C400A5' : '#363636'"
           )
           span.navTitle {{ item.text }}
-      
+
       v-divider.lineDivider
       .d-flex.flex-column.align-center
         slot

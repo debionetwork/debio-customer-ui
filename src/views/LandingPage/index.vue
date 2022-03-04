@@ -4,21 +4,19 @@
         width: 462px;
         height: 76px;
 
-        font-family: Roboto;
+        font-family: "Roboto";
         font-style: normal;
         font-weight: bold;
         font-size: 24px;
         line-height: 41px;
         color: #363636;
-        
         margin-top: 20px;
         margin-bottom: 50px;
     }
     .v-btn {
         width: 452px;
         height: 53px !important;
-        
-        font-family: Raleway;
+        font-family: "Raleway";
         font-style: normal;
         font-weight: 600;
         font-size: 20px !important;

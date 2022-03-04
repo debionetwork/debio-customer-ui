@@ -6,7 +6,7 @@
         width: 504px;
         height: 51px;
 
-        font-family: Raleway;
+        font-family: "Raleway";
         font-style: normal;
         font-weight: normal;
         font-size: 15px;

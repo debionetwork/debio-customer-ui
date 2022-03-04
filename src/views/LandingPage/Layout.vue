@@ -11,7 +11,7 @@
     display: grid;
     grid-template-rows: 120px calc(100vh - 120px);
     grid-auto-columns: 40% 60%;
-    grid-template-areas: 
+    grid-template-areas:
         "header main"
         "welcome main";
 }
@@ -37,7 +37,6 @@
 }
 .welcome {
     grid-area: welcome;
-
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -46,32 +45,28 @@
         h2 {
             width: 397px;
             height: 44px;
-
-            font-family: Roboto;
+            font-family: "Roboto";
             font-style: normal;
             font-weight: bold;
             font-size: 35px;
             line-height: 41px;
             color: #363636;
-
             /* Remove existing margins */
-            margin: 0; 
+            margin: 0;
             /* Re-add margins accordingly */
             margin-bottom: 27px;
         }
         h4 {
             width: 434px;
             height: 129px;
-
-            font-family: Raleway;
+            font-family: "Raleway";
             font-style: normal;
             font-weight: 600;
             font-size: 20px;
             line-height: 150%;
             color: #363636;
-
             /* Remove existing margins */
-            margin: 0; 
+            margin: 0;
         }
     }
 }
