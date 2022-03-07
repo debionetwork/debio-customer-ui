@@ -2,7 +2,7 @@
 @import "../styles/mixins.sass"
 
 .dg-raleway-font
-  font-family: "Raleway"
+  font-family: "Raleway", sans-serif
 
 .drawer
   background: unset !important

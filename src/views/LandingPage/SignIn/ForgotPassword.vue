@@ -8,7 +8,7 @@
     h2 {
         width: 492px;
 
-        font-family: "Raleway";
+        font-family: "Raleway", sans-serif;
         font-style: normal;
         font-weight: normal;
         font-size: 18px;

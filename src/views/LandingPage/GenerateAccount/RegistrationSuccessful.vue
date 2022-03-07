@@ -8,7 +8,7 @@
     h2 {
         width: 337px;
         height: 76px;
-        font-family: "Roboto";
+        font-family: "Roboto", sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 25px;

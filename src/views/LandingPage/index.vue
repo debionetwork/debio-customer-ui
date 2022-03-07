@@ -4,7 +4,7 @@
         width: 462px;
         height: 76px;
 
-        font-family: "Roboto";
+        font-family: "Roboto", sans-serif;
         font-style: normal;
         font-weight: bold;
         font-size: 24px;
@@ -16,7 +16,7 @@
     .v-btn {
         width: 452px;
         height: 53px !important;
-        font-family: "Raleway";
+        font-family: "Raleway", sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 20px !important;

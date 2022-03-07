@@ -2,7 +2,7 @@
 .v-input--checkbox {
     width: 437px;
     height: 53px;
-    font-family: "Raleway";
+    font-family: "Raleway", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 18px;
@@ -14,7 +14,7 @@
       font-size: 18px;
       line-height: 150%;
       margin-left: 20px;
-      font-family: "Raleway";
+      font-family: "Raleway", sans-serif;
     }
 }
 .m1{

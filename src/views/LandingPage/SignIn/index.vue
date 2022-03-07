@@ -9,7 +9,7 @@
         width: 100%;
         height: 51px;
 
-        font-family: "Raleway";
+        font-family: "Raleway", sans-serif;
         font-style: normal;
         font-weight: normal;
         font-size: 15px;
@@ -32,7 +32,7 @@
     }
 
     .pop-up-title{
-      font-family: "Roboto";
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: bold;
       font-size: 35px;

@@ -45,7 +45,7 @@
         h2 {
             width: 397px;
             height: 44px;
-            font-family: "Roboto";
+            font-family: "Roboto", sans-serif;
             font-style: normal;
             font-weight: bold;
             font-size: 35px;
@@ -59,7 +59,7 @@
         h4 {
             width: 434px;
             height: 129px;
-            font-family: "Raleway";
+            font-family: "Raleway", sans-serif;
             font-style: normal;
             font-weight: 600;
             font-size: 20px;

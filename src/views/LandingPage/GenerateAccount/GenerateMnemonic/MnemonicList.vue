@@ -7,7 +7,7 @@
 
   /* body-text-2-medium */
 
-  font-family: "Raleway";
+  font-family: "Raleway", sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 12px;
