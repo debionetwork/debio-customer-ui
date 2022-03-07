@@ -343,6 +343,16 @@ export default {
         console.error(error)
         this.isLoadingTestResults = false
       }
+
+      this.testResult.sort((a, b) => {
+        if(a.orderDate < b.orderDate) {
+          return 1
+        } else if  (a.orderDate > b.orderDate) {
+          return -1
+        } else {
+          return 0
+        }
+      })
     },
 
     prepareTestResult(dnaTestResults, detailOrder, dnaSample, detailLab, detailService) {
