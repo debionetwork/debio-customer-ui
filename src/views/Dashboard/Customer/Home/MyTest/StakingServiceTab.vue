@@ -3,6 +3,9 @@
     :headers="headers"
     :items="items"
   )
+    template(v-slot:[`item.id`]="{ item }")
+      div {{ formatId(item.request.hash) }}
+
     template(v-slot:[`item.country`]="{ item }")
       div {{ item.request.country ? country(item.request.country) : "N/A"}}
 
@@ -71,6 +74,11 @@ export default {
   data: () => ({
     status: "",
     headers: [
+      {
+        text: "Staking ID",
+        value: "id",
+        sortable: true
+      },
       {
         text: "Country",
         value: "country",
@@ -208,6 +216,10 @@ export default {
         day: "numeric", month: "short", year: "numeric"
       })
       return formattedDate
+    },
+    
+    formatId(id) {
+      return `${id.slice(0, 4)}...${id.slice(id.length - 3, id.length)}`
     }
   }
 }

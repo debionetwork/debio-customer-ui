@@ -79,7 +79,7 @@
         template
           v-tooltip(top)
             template(v-slot:activator="{ on, attrs }")
-              Button(
+              ui-debio-button(
                 outlined
                 height="35px"
                 style="font-size: 13px"
@@ -107,7 +107,7 @@
 
           v-tooltip(bottom)
             template(v-slot:activator="{ on, attrs }")
-              Button(
+              ui-debio-button(
                 style="font-size: 11px"
                 outlined
                 height="35px"
