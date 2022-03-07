@@ -20,14 +20,14 @@
             .dialog-success__border-text A feature that allows you to request genetic/DNA analysis to Genetic Analyst in DeBio AppChain based on the genetic data uploaded
 
           .dialog-success__buttons
-            Button(
+            ui-debio-button(
               width="140"
               color="secondary"
               style="font-size: 10px;"
               outlined
               @click="toGeneticDataList"
             ) Maybe Later
-            Button(
+            ui-debio-button(
               width="140"
               color="secondary"
               style="font-size: 10px;"
@@ -39,17 +39,12 @@
 <script>
 
 import { mapMutations, mapState } from "vuex"
-import Button from "@/common/components/Button"
 import checkCircle from "@/assets/check-circle-primary.png"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 
 
 export default {
   name: "SuccessDialog",
-
-  components: {
-    Button
-  },
 
   data: () => ({
     checkCircle

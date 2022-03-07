@@ -8,7 +8,7 @@
       div 3. You will receive notification when requested service is available. You can proceed to request a test. If the staked amount is bigger than the service price, you will get refund for overpayment. If staked amount is smaller than the service price, to complete the purchase, you should pay for the outstanding amount to complete the purchase.
 
     v-row(class="d-flex justify-center mt-16")
-      Button.mt-5.mb-10(
+      ui-debio-button.mt-5.mb-10(
         color="secondary" 
         width="560"
         height="38"
@@ -23,7 +23,7 @@
       )
 
     template
-      Dialog(
+      ui-debio-dialog(
         :show="showSuccessDialog"
         :width="289"
         title="Request service submitted!"
@@ -38,17 +38,13 @@
 <script>
 import { mapState } from "vuex"
 import AgreementDialog from "./AgreementDialog.vue"
-import Dialog from "@/common/components/Dialog"
-import Button from "@/common/components/Button"
 
 
 export default {
   name: "NoLab",
 
   components: {
-    Dialog,
-    AgreementDialog,
-    Button
+    AgreementDialog
   },
 
   data: () => ({

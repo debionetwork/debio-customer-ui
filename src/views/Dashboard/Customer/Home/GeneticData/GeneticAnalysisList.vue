@@ -1,6 +1,6 @@
 <template lang="pug">
   .genetic-analysis-list
-    DataTable(
+    ui-debio-data-table(
       :headers="headers"
       :items="items"
       :sort-by="['timestamp']"
@@ -28,8 +28,7 @@
 <script>
 
 import { mapState } from "vuex"
-import { eyeIcon, downloadIcon } from "@/common/icons"
-import DataTable from "@/common/components/DataTable"
+import { eyeIcon, downloadIcon } from "@debionetwork/ui-icons"
 import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
 import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
 import { queryGeneticAnalysisByOwner, queryGeneticAnalysisStorage, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
@@ -41,10 +40,6 @@ import CryptoJS from "crypto-js"
 
 export default {
   name: "GeneticAnalysisList",
-
-  components: {
-    DataTable
-  },
 
   computed: {
     ...mapState({

@@ -1,6 +1,6 @@
 <template lang="pug">
   .genetic-analysis-list
-    DataTable.genetic-analysis-list__table(
+    ui-debio-data-table.genetic-analysis-list__table(
       :headers="headers"
       :items="items"
     )
@@ -25,17 +25,15 @@
 </template>
 
 <script>
-import { medicalResearchIllustration, downloadIcon, eyeIcon } from "@/common/icons"
+import { medicalResearchIllustration, downloadIcon, eyeIcon } from "@debionetwork/ui-icons"
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { u8aToHex } from "@polkadot/util"
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
-import DataTable from "@/common/components/DataTable"
 import { mapState } from "vuex"
 
 export default {
   name: "GeneticAnalysisList",
-  components: { DataTable },
 
   data: () => ({
     medicalResearchIllustration,

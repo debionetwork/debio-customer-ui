@@ -51,8 +51,8 @@
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
 
           span( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
-
-        Button(
+          
+        ui-debio-button(
           :disabled="!disable"
           block
           color="secondary"
@@ -71,7 +71,7 @@
         @close="closeDialog"
       )
 
-      ErrorDialog(
+      ui-debio-error-dialog(
         :show="!!error"
         :title="error ? error.title : ''"
         :message="error ? error.message : ''"
@@ -99,23 +99,20 @@ import CryptoJS from "crypto-js"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
-import Button from "@/common/components/Button"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
-import { checkCircleIcon } from "@/common/icons"
+import { checkCircleIcon } from "@debionetwork/ui-icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
-import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
 import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
-import AlertDialog from "@/common/components/Dialog/AlertDialog"
 
 
 
 export default {
   name: "AddGeneticData",
   
-  components: { Button, SuccessDialog, UploadingDialog, ErrorDialog, AlertDialog },
+  components: { SuccessDialog, UploadingDialog },
 
   mixins: [validateForms],
 

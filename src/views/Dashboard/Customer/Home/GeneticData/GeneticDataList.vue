@@ -1,6 +1,6 @@
 <template lang="pug">
   .genetic-data-list
-    DataTable(
+    ui-debio-data-table(
       :headers="headers"
       :items="items"
     )
@@ -35,10 +35,9 @@
 
 <script>
 import { mapState } from "vuex"
-import { pencilIcon, trashIcon } from "@/common/icons"
+import { pencilIcon, trashIcon } from "@debionetwork/ui-icons"
 import { queryGeneticDataByOwner, queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { removeGeneticData, getRemoveGeneticDataFee} from "@/common/lib/polkadot-provider/command/genetic-data"
-import DataTable from "@/common/components/DataTable"
 import ConfirmationDialog from "../MyTest/ConfirmationDialog"
 
 
@@ -46,7 +45,6 @@ export default {
   name: "GeneticDataList",
 
   components: {
-    DataTable,
     ConfirmationDialog
   },
 

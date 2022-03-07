@@ -72,7 +72,7 @@
           style="font-size: 12px;"
         ) {{ error }}
 
-        Button(
+        ui-debio-button(
           color="secondary" 
           width="100%"
           height="38"
@@ -88,7 +88,7 @@
       .dialog-payment__card-loading-text Loading...
       .dialog-payment__card-loading-desc Please wait while we're processing your payment
 
-    ErrorDialog(
+    ui-debio-error-dialog(
       :show="showError"
       :title="errorTitle"
       :message="errorMsg"
@@ -99,8 +99,6 @@
 
 <script>
 
-import Button from "@/common/components/Button"
-import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import { mapState } from "vuex"
 import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
@@ -124,8 +122,6 @@ export default {
   name: "PaymentReceiptDialog",
 
   components: {
-    Button,
-    ErrorDialog,
     SpinnerLoader
   },
 

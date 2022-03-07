@@ -14,7 +14,7 @@
 
 <script>
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
-import { usersIcon, userIcon } from "@/common/icons"
+import { usersIcon, userIcon } from "@debionetwork/ui-icons"
 
 export default {
   name: "InputPassword",

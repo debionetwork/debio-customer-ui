@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { geneticIllustration, plusCircle } from "@/common/icons"
+import { geneticIllustration, plusCircle } from "@debionetwork/ui-icons"
 import GeneticDataList from "./GeneticDataList.vue"
 import GeneticAnalysisList from "./GeneticAnalysisList.vue"
 

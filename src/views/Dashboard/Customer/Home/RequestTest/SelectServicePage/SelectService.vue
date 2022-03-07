@@ -32,7 +32,7 @@
           @close="showServiceDetailDialog = false"
           )
 
-        AlertDialog(
+        ui-debio-alert-dialog(
           :show="showAlert"
           :width="289"
           title="Unpaid Order"
@@ -50,7 +50,6 @@
 import { mapState, mapMutations } from "vuex"
 import NoLab from "../NoLab.vue"
 import MenuCard from "../MenuCard.vue"
-import AlertDialog from "@/common/components/Dialog/AlertDialog"
 import ServiceDetailDialog from "../ServiceDetailDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 
@@ -61,8 +60,7 @@ export default {
   components: {
     NoLab,
     MenuCard,
-    ServiceDetailDialog,
-    AlertDialog
+    ServiceDetailDialog
   },
 
   props: {

@@ -59,7 +59,7 @@
         autocomplete="off"
         outlined)
 
-      Button.request-test-button(
+      ui-debio-button.request-test-button(
         :disabled="disable"
         color="secondary" 
         width="100%"
@@ -72,16 +72,11 @@
 import { mapState, mapMutations } from "vuex"
 import { getLocations, getStates, getCities } from "@/common/lib/api"
 import { getCategories } from "@/common/lib/api"
-import Button from "@/common/components/Button"
 import errorMessage from "@/common/constants/error-messages"
 
 
 export default {
   name: "RequestTestForm",
-
-  components: {
-    Button
-  },
 
   data: () => ({
     errorMessage,

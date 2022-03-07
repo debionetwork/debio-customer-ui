@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { alertIcon } from "@/common/icons"
+import { alertIcon } from "@debionetwork/ui-icons"
 import { fetchPaymentDetails } from "@/common/lib/api";
 import { getRatingService } from "@/common/lib/api"
 import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"

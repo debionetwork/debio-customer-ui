@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { doctorsIllustration } from "@/common/icons"
+import { doctorsIllustration } from "@debionetwork/ui-icons"
 
 export default {
   name: "modalBounty",

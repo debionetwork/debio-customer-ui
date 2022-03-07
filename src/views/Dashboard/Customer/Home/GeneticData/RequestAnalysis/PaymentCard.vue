@@ -30,7 +30,7 @@
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
           .customer-analysis-payment-card__data-tx-weight {{ Number(txWeight).toFixed(4) }} DBIO
 
-        Button.customer-analysis-payment-card__button(
+        ui-debio-button.customer-analysis-payment-card__button(
           :disabled="isDeficit"
           width="280"
           height="35"
@@ -82,7 +82,6 @@ import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
-import Button from "@/common/components/Button"
 import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
 import ImportantDialog from "./Information.vue"
 import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
@@ -100,7 +99,7 @@ import PaymentDialog from "@/common/components/Dialog/PaymentDialog"
 export default {
   name: "PaymentCard",
 
-  components: { Button, ImportantDialog, ConfirmationDialog, PaymentDialog },
+  components: { ImportantDialog, ConfirmationDialog, PaymentDialog },
 
   props: {
     geneticData: Object,

@@ -25,18 +25,17 @@
                 @confirmFulfilled="handleConfirmPayload"
                 @showModal="showModal = $event"
               )
-          Button(block height="40" color="secondary" @click="handleContinue") Continue
+          ui-debio-button(block height="40" color="secondary" @click="handleContinue") Continue
 </template>
 
 <script>
-import Button from "@/common/components/Button"
 import Upload from "./Upload"
 import Confirm from "./Confirm"
 
 export default {
   name: "CustomerEmrCreate",
 
-  components: { Button, Upload, Confirm },
+  components: { Upload, Confirm },
 
   data: () => ({
     error: null,

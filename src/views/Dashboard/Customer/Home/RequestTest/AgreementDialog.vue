@@ -57,7 +57,7 @@
         indeterminate
         color="primary"
       )
-    ErrorDialog(
+    ui-debio-error-dialog(
       :show="showError"
       :title="errorTitle"
       :message="errorMsg"
@@ -68,7 +68,6 @@
 
 <script>
 import { mapState } from "vuex"
-import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { getCreateRequestFee } from "@/common/lib/polkadot-provider/command/info"
 import errorMessage from "@/common/constants/error-messages"
@@ -79,10 +78,6 @@ export default {
 
   props: {
     show: Boolean
-  },
-
-  components: {
-    ErrorDialog
   },
 
   data: () => ({

@@ -150,14 +150,14 @@
               ) {{ orderDataDetails.document.fileName }}
 
               .order-details__actions.d-flex.justify-space-between(v-if="orderDataDetails.analysis_info.status !== 'Rejected' && step === 1")
-                Button(
+                ui-debio-button(
                   :disabled="computeDisabledRejection || isLoading"
                   width="130px"
                   outlined
                   color="secondary"
                   @click="handleShowModalReject"
                 ) REJECT
-                Button(
+                ui-debio-button(
                   :disabled="completed"
                   :loading="isLoading"
                   width="130px"
@@ -202,7 +202,7 @@
               ) Total fee paid in DBIO to execute this transaction.
 
             span.upload-section__tx-price {{ txWeight }}
-          Button(block :loading="isLoading" :disabled="isLoading" @click="handleSubmitForms" color="secondary") SUBMIT
+          ui-debio-button(block :loading="isLoading" :disabled="isLoading" @click="handleSubmitForms" color="secondary") SUBMIT
 
     UploadingDialog(
       :show="downloading"
@@ -216,7 +216,7 @@ import Kilt from "@kiltprotocol/sdk-js"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 
 import { u8aToHex } from "@polkadot/util"
-import { chevronLeftIcon, timerIcon, alertIcon } from "@/common/icons"
+import { chevronLeftIcon, timerIcon, alertIcon } from "@debionetwork/ui-icons"
 import { validateForms } from "@/common/lib/validate"
 import {
   updateStatusOrder,
@@ -236,14 +236,13 @@ import { uploadFile, getFileUrl, downloadFile, decryptFile, downloadDocumentFile
 import rulesHandler from "@/common/constants/rules"
 
 import Card from "./Card.vue"
-import Button from "@/common/components/Button"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
 
 export default {
   name: "GAOrderDetails",
   mixins: [validateForms],
 
-  components: { Card, Button, UploadingDialog },
+  components: { Card, UploadingDialog },
 
   data: () => ({
     chevronLeftIcon,

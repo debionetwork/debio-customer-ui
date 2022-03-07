@@ -61,7 +61,7 @@
 
       div(class="text-center" v-if="!isCancelled")
         div(v-if="!success" class="mt-3 d-flex justify-center align-center")
-          Button(
+          ui-debio-button(
             :class="setMargin"
             color="secondary"
             width="280"
@@ -70,7 +70,7 @@
             ) Submit Order
 
         div(v-if="success && status === 'Paid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
-          Button(
+          ui-debio-button(
             color="secondary" 
             width="46%"
             height="35"
@@ -79,7 +79,7 @@
             outlined 
             ) View Instruction
 
-          Button(
+          ui-debio-button(
             color="secondary" 
             width="46%"
             height="35"
@@ -88,7 +88,7 @@
             ) View Etherscan
 
         div(v-if="success && status === 'Unpaid'" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
-          Button(
+          ui-debio-button(
             color="secondary" 
             width="46%"
             height="35"
@@ -97,7 +97,7 @@
             outlined 
             ) Cancel
 
-          Button(
+          ui-debio-button(
             color="secondary" 
             width="46%"
             height="35"
@@ -112,7 +112,7 @@
         @close="showReceipt = false"
       )
 
-      CancelDialog(
+      ui-debio-cancel-dialog(
         :show="cancelDialog"
         :orderId="orderId"
         @cancel="setCancelled"
@@ -127,7 +127,7 @@
         @close="showPayRemainingDialog = false"
       ) 
 
-      AlertDialog(
+      ui-debio-alert-dialog(
         :show="showAlert"
         :width="289"
         title="Unpaid Order"
@@ -146,10 +146,7 @@ import { mapState, mapMutations } from "vuex"
 import CryptoJS from "crypto-js"	
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
-import Button from "@/common/components/Button"
-import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
-import AlertDialog from "@/common/components/Dialog/AlertDialog"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
@@ -169,11 +166,8 @@ export default {
   name: "PaymentDetailCard",
   
   components: {
-    Button,
     PaymentReceiptDialog,
-    CancelDialog,
-    PayRemainingDialog,
-    AlertDialog
+    PayRemainingDialog
   },
 
   data: () => ({

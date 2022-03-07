@@ -25,7 +25,7 @@
       span.modal-password__tx-value {{ txWeight }}
 
     .modal-password__cta.d-flex(slot="cta")
-      Button(
+      ui-debio-button(
         block
         color="secondary"
         :loading="isLoading"
@@ -41,7 +41,7 @@
     template(slot="illustration")
       ui-debio-icon.banner-illustration(:icon="analiticIllustration" :size="cardBlock ? 250 : 180" view-box="0 0 252 252" fill)
 
-  DataTable(
+  ui-debio-data-table(
     :headers="headers"
     :loading="isLoading"
     :items="emrDocuments"
@@ -89,7 +89,7 @@ import {
   alertIcon,
   trashIcon,
   downloadIcon
-} from "@/common/icons"
+} from "@debionetwork/ui-icons"
 import {
   deregisterElectronicMedicalRecord,
   getDeleteEMRFee
@@ -104,15 +104,12 @@ import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 
-import DataTable from "@/common/components/DataTable"
-import Button from "@/common/components/Button"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "CustomerEmr",
   mixins: [metamaskServiceHandler],
 
-  components: { DataTable, Button },
 
   data: () => ({
     layersIcon,

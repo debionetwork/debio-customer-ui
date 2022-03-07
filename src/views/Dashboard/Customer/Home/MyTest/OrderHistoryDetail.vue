@@ -160,7 +160,7 @@ import {
   resultReadyBanner, //"-20 0 300 150" size 295
   qualityControlBanner, //"-20 0 300 125" size 295
   rejectedQCBanner
-} from "@/common/icons";
+} from "@debionetwork/ui-icons";
 export default {
   name: "OrderHistoryDetail",
   data: () => ({

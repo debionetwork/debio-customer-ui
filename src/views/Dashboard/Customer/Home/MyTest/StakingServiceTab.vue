@@ -1,5 +1,5 @@
 <template lang="pug">
-  DataTable(
+  ui-debio-data-table(
     :headers="headers"
     :items="items"
   )
@@ -23,7 +23,7 @@
 
     template(v-slot:[`item.actions`]="{ item }")
       .customer-staking-tab__actions(v-if="item.request.status !== 'WaitingForUnstaked'" )
-        Button.pa-4(
+        ui-debio-button.pa-4(
           height="25px"
           width="100px"
           style="font-size: 1em"
@@ -32,7 +32,7 @@
           :disabled="item.request.status === 'Unstaked' || item.request.status === 'Processed'"
         ) Unstake
 
-        Button.pa-4(
+        ui-debio-button.pa-4(
           v-if="item.request.status === 'Open' || item.request.status === 'Claimed'" 
           height="25px"
           style="font-size: 1em"
@@ -43,7 +43,7 @@
         ) Proceed
 
       .customer-staking-tab__actions(v-else)
-        Button(disabled width="220px" color="white" )
+        ui-debio-button(disabled width="220px" color="white" )
           vue-countdown-timer(
             :start-time="new Date().getTime()"
             :end-time="setRemainingStakingDate(item.request.unstaked_at)"
@@ -60,8 +60,6 @@
 <script>
 
 import { mapState, mapMutations } from "vuex"
-import DataTable from "@/common/components/DataTable"
-import Button from "@/common/components/Button"
 import stakingStatus from "@/common/constants/staking-status"
 import { getServiceRequestByCustomer } from "@/common/lib/api"
 import { getLocations } from "@/common/lib/api"
@@ -69,11 +67,6 @@ import { getLocations } from "@/common/lib/api"
 
 export default {
   name: "StakingServiceTab",
-
-  components: {
-    DataTable,
-    Button
-  },
 
   data: () => ({
     status: "",

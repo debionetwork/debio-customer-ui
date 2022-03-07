@@ -13,7 +13,7 @@
 
 
       .information-dialog__button
-        Button(
+        ui-debio-button(
           width="340"
           height="35" 
           color="secondary" 
@@ -25,7 +25,6 @@
 
 
 <script>
-import Button from "@/common/components/Button"
 
 export default {
   name: "InformationDialog",
@@ -33,8 +32,6 @@ export default {
   props: {
     show: Boolean
   },
-
-  components: { Button },
 
   methods: {
     closeDialog() {

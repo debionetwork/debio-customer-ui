@@ -1,6 +1,6 @@
 <template lang="pug">
   .customer-create-emr
-    ErrorDialog(
+    ui-debio-error-dialog(
       :show="!!error"
       :title="error ? error.title : ''"
       :message="error ? error.message : ''"
@@ -84,7 +84,7 @@
           @isError="handleError"
         )
 
-        Button.secondary--text(
+        ui-debio-button.secondary--text(
           color="secondary"
           height="2.5rem"
           block
@@ -119,13 +119,13 @@
                 )
                   span.modal-confirm__title By deleting this file, your file will not be uploaded
                   .modal-confirm__cta.d-flex.justify-space-between(slot="cta")
-                    Button(
+                    ui-debio-button(
                       outlined
                       width="100"
                       color="secondary"
                       @click="showModalConfirm = null"
                     ) No
-                    Button(
+                    ui-debio-button(
                       width="100"
                       color="secondary"
                       @click="onDelete(item.id)"
@@ -174,7 +174,7 @@
             ) Total fee paid in DBIO to execute this transaction.
           span {{ txWeight }}
 
-        Button.white--text(
+        ui-debio-button.white--text(
           color="secondary"
           height="2.5rem"
           @click="handleModalPassword"
@@ -188,7 +188,6 @@ import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
-import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/api"
 import {
@@ -203,8 +202,7 @@ import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import { errorHandler } from "@/common/lib/error-handler"
 import errorMessage from "@/common/constants/error-messages"
-import Button from "@/common/components/Button"
-import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
+import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@debionetwork/ui-icons"
 
 const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
 
@@ -212,8 +210,6 @@ export default {
   name: "CustomerEmrEdit",
 
   mixins: [validateForms],
-
-  components: { Button, ErrorDialog },
 
   data: () => ({
     errorMessage,

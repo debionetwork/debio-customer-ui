@@ -47,16 +47,13 @@
 </template>
 
 <script>
-import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@/common/icons"
+import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@debionetwork/ui-icons"
 import { validateForms } from "@/common/lib/validate"
-import Button from "@/common/components/Button"
 import errorMessage from "@/common/constants/error-messages"
 
 export default {
   name: "CustomerEmrConfirm",
   mixins: [validateForms],
-
-  components: { Button },
 
   props: {
     payload: { type: Object, default: () => {} },
