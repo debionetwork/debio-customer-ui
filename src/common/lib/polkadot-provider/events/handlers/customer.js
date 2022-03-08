@@ -66,7 +66,7 @@ const handler = {
 
     if (event.method === "ServiceRequestCreated") {
       const formatedHash = `${data[1]?.hash?.substr(0, 4)}...${data[1]?.hash?.substr(data[1]?.hash?.length - 4)}`
-      wording = `${valueMessage} ${formatedHash}.`
+      wording = `${valueMessage} (${formatedHash}).`
     }
 
     return { data, id, params, wording}
