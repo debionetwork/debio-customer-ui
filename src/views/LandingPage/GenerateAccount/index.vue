@@ -33,10 +33,10 @@
 
 <template lang="pug">
   LandingPagePopUp(:previous='previous')
-    template(v-slot:header) Backup your account
+    template(v-slot:header) Generate an Account
     template(v-slot:main)
-      h3.m1 We will give you 12 words that allows you to recover an account
-      p.m40 You need to carefully save the  words. Copy-paste it, screenshot it, write it down, and keep it safe. If you lose it, we won't be able to help you recover it.
+      h3.m1 Generate an account to use our features on the AppChain
+      p.m40.text-justify You will receive 12 words as mnemonic phrase that allow you to recover an account, make sure you save by copy paste, write it down, and put in somewhere safe
       v-checkbox(v-model="agreeConditions"): template(v-slot:label): div#checkboxLabel I understand with DeBio 
         v-tooltip(bottom)
           template(v-slot:activator="{ on }")
@@ -48,7 +48,7 @@
             a.link(target="_blank"
               href="https://docs.debio.network/legal/terms-and-condition"
               @click.stop
-            ) terms and condition
+            ) Terms and Condition
       .button.mt20
         v-btn(elevation='0' color='primary' :disabled="!agreeConditions" @click="generateMnemonic") Continue
 </template>
