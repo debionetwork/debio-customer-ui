@@ -58,11 +58,16 @@ const handler = {
     const wording = `${coin} DBIO for registering in Debio Appchain`;
     return { data, id, params, wording }
   },
-  serviceRequest: async (dataEvent, value, valueMessage) => {
+  serviceRequest: async (dataEvent, value, valueMessage, event) => {
     const data = dataEvent
     const id = isNaN(value) ? data[0][value] : data[value]
     const params = { page: 1 }
-    const wording = valueMessage    
+    let wording = valueMessage
+
+    if (event.method === "ServiceRequestCreated") {
+      const formatedHash = `${data[1]?.hash?.substr(0, 4)}...${data[1]?.hash?.substr(data[1]?.hash?.length - 4)}`
+      wording = `${valueMessage} ${formatedHash}.`
+    }
 
     return { data, id, params, wording}
   }

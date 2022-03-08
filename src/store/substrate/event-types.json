@@ -90,9 +90,9 @@
           "identity": 0
         },
         "ServiceRequestCreated": {
-          "message": "Congrats! Your requested service has been submitted.",
-          "value": "serviceId",
-          "value_message": "",
+          "message": "",
+          "value": "hash",
+          "value_message": "Congrats! You successfully submitted your requested service with staking ID ",
           "route": "",
           "params": "",
           "identity": 0

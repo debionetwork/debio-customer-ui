@@ -25,8 +25,8 @@ export async function processEvent(state, address, event, role) {
     const valueMessage = state.configEvent["role"][role][event.section][event.method].value_message
     const identity = state.configEvent["role"][role][event.section][event.method].identity
 
-    const res = await handler(dataEvent, value, valueMessage)
-    
+    const res = await handler(dataEvent, value, valueMessage, { section: event.section, method: event.method })
+
     if (res.data[identity] || res.data[1][identity] == address) {
       statusAdd = true
       message = state.configEvent["role"][role][event.section][event.method].message + " " + res.wording
