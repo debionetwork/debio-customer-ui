@@ -152,13 +152,17 @@ export default {
       this.items.sort((a, b) => {
         const dateA = (a.request.created_at).replace(/,/g, "")
         const dateB = (b.request.created_at).replace(/,/g, "")
+
         if(new Date(parseInt(dateA)) < new Date(parseInt(dateB))) {
           return 1
-        } else if (new Date(parseInt(dateA)) > new Date(parseInt(dateB))) {
+        } 
+        
+        if (new Date(parseInt(dateA)) > new Date(parseInt(dateB))) {
           return -1
-        } else {
-          return 0
-        }
+        } 
+        
+        return 0
+        
       })
     },
 

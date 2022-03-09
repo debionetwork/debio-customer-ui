@@ -347,11 +347,11 @@ export default {
       this.testResult.sort((a, b) => {
         if(a.orderDate < b.orderDate) {
           return 1
-        } else if  (a.orderDate > b.orderDate) {
+        } 
+        if  (a.orderDate > b.orderDate) {
           return -1
-        } else {
-          return 0
-        }
+        } 
+        return 0
       })
     },
 
