@@ -263,7 +263,7 @@ export default {
     disabledDocumentForm() {
       return this.document.title === "" || this.document.description === "" || this.document.file === null
     },
-    
+
     disabledFinish() {
       return this.computeFiles?.some(file => file.percent !== 100)
     }
@@ -419,7 +419,7 @@ export default {
 
           if (context.isEdit) {
             const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
-            
+
             context.emr.files[index] = dataFile
 
             context.emr.files = context.emr.files.map(file => file)
@@ -449,7 +449,7 @@ export default {
 
       if (context.isEdit) {
         const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
-        
+
         context.emr.files[index] = dataFile
 
         context.emr.files = context.emr.files.map(file => file)
@@ -458,7 +458,7 @@ export default {
 
       this.onCloseModalDocument()
     },
-    
+
     onEdit(item) {
       Object.assign(this.document, { ...item })
       this.showModal = true
@@ -513,7 +513,7 @@ export default {
       this.txWeight = "Calculating..."
 
       const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, this.emr)
-      this.txWeight = `${this.web3.utils.fromWei(String(txWeight.partialFee), "ether")} DBIO`
+      this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 
     handleShowPassword() {
@@ -759,7 +759,7 @@ export default {
       margin-top: 10px
       display: -webkit-box
       -webkit-line-clamp: 2
-      -webkit-box-orient: vertical  
+      -webkit-box-orient: vertical
       overflow: hidden
       color: #595959
       @include body-text-4
@@ -780,7 +780,6 @@ export default {
       cursor: pointer
 
     &::v-deep
-      
       .ui-debio-modal__card-title
         @include h2
         font-weight: 700
@@ -879,7 +878,7 @@ export default {
 
     &__file-percent
       color: #8C8C8C
-      
+
     &__progress-check
       width: 12px
       height: 12px
