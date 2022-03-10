@@ -1,13 +1,9 @@
 import { config, shallowMount } from "@vue/test-utils"
-import Banner from "@/common/components/Banner"
-import Card from "@/common/components/Card"
-import Icon from "@/common/components/Icon"
 import Vue from "vue"
 import Vuetify from "vuetify"
 import Vuex from "vuex"
 import VueRouter from "vue-router"
 import Home from "@/views/Dashboard/Customer/Home"
-import DataTable from "@/common/components/DataTable"
 
 
 jest.mock("../../../../../../src/common/lib/polkadot-provider/query/orders", () => ({
@@ -159,7 +155,6 @@ let store = new Vuex.Store({
 })
 
 describe("Home Page customer", () => {
-  const stubs = { Banner, Card, Icon, DataTable }
   beforeEach(() => {
     const nodeCrypto = require("crypto")
     vuetify = new Vuetify()
@@ -174,7 +169,6 @@ describe("Home Page customer", () => {
     const wrapper = shallowMount(Home, {
       vuetify,
       router,
-      stubs,
       store
     })
 
