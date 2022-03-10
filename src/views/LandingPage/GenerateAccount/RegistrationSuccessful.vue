@@ -22,7 +22,7 @@
 <template lang="pug">
      LandingPagePopUp
         template(v-slot:main): div.pop-up-main
-            img(src='@/assets/check-circle.png')
+            img(src='@/assets/check-circle-primary.png')
             h2 Your account has been successfully created.
             v-btn.white--text(elevation='0' color='primary' @click="onContinue") Continue
 </template>
