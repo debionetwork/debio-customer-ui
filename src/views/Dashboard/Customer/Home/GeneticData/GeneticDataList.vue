@@ -128,6 +128,17 @@ export default {
         const item = { id, owenerId, reportLink, title, description, createdAt, updatedAt }
         this.items.push(item)
       }
+
+      this.items.sort((a, b) => {
+        if(new Date(a.createdAt) < new Date(b.createdAt)) {
+          return 1
+        } 
+        if  (new Date(a.createdAt) > new Date(b.createdAt)) {
+          return -1
+        } 
+        return 0
+      })
+
     },
 
     onEdit(item) {

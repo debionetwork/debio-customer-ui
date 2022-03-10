@@ -193,6 +193,7 @@
 
         ui-debio-button.white--text(
           color="secondary"
+          :loading="isLoading"
           height="2.5rem"
           @click="handleModalPassword"
           block
@@ -289,6 +290,8 @@ export default {
         if (event.method === "ElectronicMedicalRecordAdded") {
           if (dataEvent[1] === this.wallet.address) {
             this.resetState()
+            this.isLoading = false
+            this.showModalPassword = false
             this.$router.push({ name: "customer-emr" })
           }
         }
@@ -454,7 +457,7 @@ export default {
       this.txWeight = "Calculating..."
 
       const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, this.emr)
-      this.txWeight = `${this.web3.utils.fromWei(String(txWeight.partialFee), "ether")} DBIO`
+      this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 
     handleShowPassword() {
@@ -478,13 +481,11 @@ export default {
         }
 
         await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
-
-        this.showModalPassword = false
-        this.isLoading = false
       } catch (e) {
         const error = await errorHandler(e.message)
         this.error = error
         this.isLoading = false
+        this.showModalPassword = false
       }
     },
 

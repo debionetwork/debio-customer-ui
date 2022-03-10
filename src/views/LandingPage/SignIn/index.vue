@@ -237,7 +237,7 @@ export default {
 
       if (!result.success) {
         if (result.error === "Unable to decode using the supplied passphrase") {
-          return this.errorMsg = this.errorMessage.INCORRECT_PASSWORD
+          return this.errorMsg = this.errorMessage.INCORRECT("Password")
         }
       }
 

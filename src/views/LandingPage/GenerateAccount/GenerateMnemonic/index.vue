@@ -32,7 +32,7 @@
 
 <template lang="pug">
      LandingPagePopUp(:previous='previous')
-        template(v-slot:header) Your Secret Backup Phrase
+        template(v-slot:header) Your Mnemonic Phrase
         template(v-slot:main)
             h3 Write down or copy these words in the right order and save them safely.
             MnemonicList(:mnemonicCollection="mnemonicCollection")
