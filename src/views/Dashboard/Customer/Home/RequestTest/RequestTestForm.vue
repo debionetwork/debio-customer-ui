@@ -88,6 +88,9 @@ export default {
     cities: [],
     categories: [],
     countries: [],
+    noState: false,
+    noCity: false,
+    countryName: "",
     status: "RequestTest"
   }),
 
@@ -120,23 +123,65 @@ export default {
     },
       
     async getCountries() {
+      
+      this.noState = false
+      this.noCity = false
+
       const { data : { data }} = await getLocations()
       this.countries = data
     },
 
     async onCountryChange(selectedCountry) {
+
+      this.states = []
+      this.cities = []
+
+      this.countryName = this.countries.filter((c) => c.iso2 === selectedCountry)[0].name
       const { data : { data }} = await getStates(selectedCountry)
+
+      if (data.length < 1) {
+        this.states.push(this.countryName)
+        this.noState = true
+        this.country = selectedCountry
+        return
+      }
+
       this.states = data
       this.country = selectedCountry
+      this.noState = false
+
     },
 
     async onStateChange(selectedState) {
+
+      this.noCity = false
+
+      if (this.noState) {
+        this.state = this.country
+        this.cities.push(this.countryName)
+        return
+      }
+
       const { data : { data }} = await getCities(this.country, selectedState)
-      this.cities = data
+
+      if (data.length < 1) {
+        this.noCity = true
+        this.stateName = this.states.filter((s) => s.state_code === selectedState)[0].name
+        this.cities.push(this.stateName)
+      } else {
+        this.cities = data
+      }
+      
       this.state = selectedState
+
     },
     
     async onCityChange(selectedCity) {
+      if (this.noState || this.noCity) {
+        this.city = selectedCity
+        return
+      }
+
       this.city = selectedCity.name
     },
 

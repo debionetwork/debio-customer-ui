@@ -5,7 +5,7 @@
         v-app-bar( flat dense color="white" ) 
 
         v-card-text
-          .dialog-uploading__title {{ renderTitle }} in Progress...
+          .dialog-uploading__title {{ renderTitle }} in Progress {{ progress }}
 
           .dialog-uploading__card-loading
             SpinnerLoader(
@@ -29,6 +29,7 @@
 <script>
 import checkCircle from "@/assets/check-circle-primary.png"
 import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
+import { mapState } from "vuex"
 
 
 
@@ -36,6 +37,7 @@ export default {
   name: "UploadingDialog",
 
   data: () => ({
+    progress: "0%",
     checkCircle,
     urlUpload: "https://docs.debio.network/complete-guidelines/user-guideline/upload-and-encrypt-data",
     urlDownload: "https://docs.debio.network/complete-guidelines/genetic-analyst-guideline/download-and-decrypt-data"
@@ -51,7 +53,18 @@ export default {
     url: String
   },
 
+  watch: {
+    loadingProgress() {
+      this.progress = `${this.loadingProgress.progress}%`
+    }
+  },
+
+
   computed: {
+    ...mapState({
+      loadingProgress: (state) => state.geneticData.loadingProgress
+    }),
+
     renderTitle() {
       return this.type === "download" ? "Downloading" : "Uploading"
     },
