@@ -149,6 +149,21 @@ export default {
     async fetchData () {
       const { data } = await getServiceRequestByCustomer(this.pair.address)
       this.items = data
+      this.items.sort((a, b) => {
+        const dateA = (a.request.created_at).replace(/,/g, "")
+        const dateB = (b.request.created_at).replace(/,/g, "")
+
+        if(new Date(parseInt(dateA)) < new Date(parseInt(dateB))) {
+          return 1
+        } 
+        
+        if (new Date(parseInt(dateA)) > new Date(parseInt(dateB))) {
+          return -1
+        } 
+        
+        return 0
+        
+      })
     },
 
     setAmount(amount) {
