@@ -345,12 +345,15 @@ export default {
       }
 
       this.testResult.sort((a, b) => {
-        if(a.orderDate < b.orderDate) {
+
+        if( new Date(a.orderDate) < new Date(b.orderDate)) {
           return 1
         } 
-        if  (a.orderDate > b.orderDate) {
+
+        if( new Date(a.orderDate) > new Date(b.orderDate)) {
           return -1
-        } 
+        }
+
         return 0
       })
     },
