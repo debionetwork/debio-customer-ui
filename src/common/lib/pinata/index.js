@@ -1,6 +1,7 @@
 import Kilt from "@kiltprotocol/sdk-js"
 import axios from "axios"
 import NodeFormData from "form-data"
+import store from "@/store"
 
 const pinataKey = process.env.VUE_APP_PINATA_KEY
 const pinataSecretKey = process.env.VUE_APP_PINATA_SECRET_KEY
@@ -18,6 +19,9 @@ export const uploadFile = val => {
     pinataOptions: { cidVersion: 0 }
   }
 
+  const CancelToken = axios.CancelToken
+  const source = CancelToken.source()
+  
   return new Promise((resolve, reject) => {
     const data = new NodeFormData()
     const endpoint = "https://api.pinata.cloud/pinning/pinFileToIPFS"
@@ -36,13 +40,27 @@ export const uploadFile = val => {
         "authorization": `Bearer ${pinataJwtKey}`,
         "pinata_api_key": pinataKey,
         "pinata_secret_api_key": pinataSecretKey
+      },
+      onUploadProgress: (progressEvent) => {
+        if(progressEvent.lengthComputable) {
+          let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total )
+          store.dispatch("geneticData/getLoadingProgress", {
+            progress: percentCompleted
+          })
+        }
       }
+    }, {
+      cancelToken: source.token
     }).then(result => {
       if (result.status !== 200) reject(new Error(`unknown server response while pinning File to IPFS: ${result}`))
       else resolve(result.data)
     }).catch(error => {
       reject(error)
     })
+    store.dispatch("geneticData/cancelUpload", {
+      source
+    })
+
   })
 }
 

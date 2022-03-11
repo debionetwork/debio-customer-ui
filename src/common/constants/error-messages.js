@@ -3,8 +3,11 @@
 export default Object.freeze({
   REQUIRED: "This field is required",
   EMAIL: "Email is invalid. It should contain @ followed by a domain",
-  INCORRECT_PASSWORD: "The password you entered is incorrect",
-
+  INCORRECT: (type) => {
+    const message = `The ${type} you entered is incorrect`
+    return message
+  },
+  
   /**
    *
    * @param {string} format
@@ -51,16 +54,6 @@ export default Object.freeze({
     const message = `Password must have at least ${length} character`
     if (includeChars) return message + `, that include at least ${includeChars}`
 
-    return message
-  },
-
-  /**
-   * 
-   * @param { string } label 
-   * @returns {string}
-  */
-  INVALID: (label) => {
-    const message = `${label} is Invalid`
     return message
   },
 

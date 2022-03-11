@@ -50,7 +50,7 @@
                 ) mdi-alert-circle-outline
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
 
-          span( style="font-size: 12px;" ) {{ Number(txWeight).toFixed(4) }} DBIO
+          span( style="font-size: 12px;" ) {{ txWeight }} 
           
         ui-debio-button(
           :disabled="!disable"
@@ -78,7 +78,7 @@
         @close="error = null"
       )
 
-      AlertDialog(
+      ui-debio-alert-dialog(
         :show="isUpdated"
         :width="289"
         title="Success"
@@ -101,6 +101,7 @@ import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genet
 import { addGeneticData, getAddGeneticDataFee, updateGeneticData } from "@/common/lib/polkadot-provider/command/genetic-data"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
+import { generalDebounce } from "@/common/lib/utils"
 import { checkCircleIcon } from "@debionetwork/ui-icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
@@ -129,7 +130,7 @@ export default {
     checkCircleIcon,
     links: [],
     link: null,
-    txWeight: 0,
+    txWeight: null,
     isLoading: false,
     dataId: null,
     error: null,
@@ -212,6 +213,14 @@ export default {
           }
         }
       }
+    },
+
+    document: {
+      deep: true,
+      immediate: true,
+      handler: generalDebounce(async function() {
+        await this.getTxWeight()
+      }, 500)
     }
   },
 
@@ -395,8 +404,11 @@ export default {
     },
 
     async getTxWeight() {
-      const txWeight = await getAddGeneticDataFee(this.api, this.wallet, "title", "description", "link")
-      this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+      const txWeight = await getAddGeneticDataFee(this.api, this.wallet, this.document.title, this.document.description)
+      const res = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+
+      this.txWeight = "Calculating..."
+      this.txWeight = `${(Number(res) + 0.0081 ).toFixed(4)} DBIO`      
     },
 
     closeDialog() {

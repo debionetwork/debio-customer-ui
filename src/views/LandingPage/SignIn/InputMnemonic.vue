@@ -56,7 +56,7 @@ export default {
         return this.errorMessage.REQUIRED
       }
       if(!mnemonicValidate(this.mnemonic)) {
-        return this.errorMessage.INVALID("Mnemonic")
+        return this.errorMessage.INCORRECT("Mnemonic")
       }
       return true
     },

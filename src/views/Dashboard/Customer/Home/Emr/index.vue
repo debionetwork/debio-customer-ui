@@ -216,6 +216,7 @@ export default {
     },
 
     async getEMRHistory() {
+      this.showModal = false
       this.emrDocuments = []
 
       const dataEMR = await this.metamaskDispatchAction(queryGetEMRList, this.api, this.wallet.address)
@@ -313,13 +314,14 @@ export default {
 
     async onDelete() {
       const { id } = this.selectedFile
+      this.isLoading = true
 
       try {
-        await this.metamaskDispatchAction(deregisterElectronicMedicalRecord, this.api, this.wallet, id)
-        this.showModal = false
+        await deregisterElectronicMedicalRecord(this.api, this.wallet, id)
         this.error = null
         this.selectedFile = null
       } catch (e) {
+        this.isLoading = false
         this.error = e?.message
       }
     }
