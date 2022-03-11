@@ -77,7 +77,7 @@
                         .reward__popup-text You will get the reward after your request test from requested service is completed/fulfilled
                   .service__field-colon :
                   .service__field-value - DBIO
-            Button.payment-details__etherscan-link(
+            ui-debio-button.payment-details__etherscan-link(
               color="secondary"
               @click="handleViewEtherscan"
               outlined
