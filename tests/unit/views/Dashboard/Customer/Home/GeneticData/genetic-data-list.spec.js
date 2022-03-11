@@ -4,6 +4,8 @@ import Vuex from "vuex"
 import Vuetify from "vuetify"
 
 config.stubs["ui-debio-icon"] = { template: "<div></div>" }
+config.stubs["ui-debio-error-dialog"] = { template: "<div></div>" }
+config.stubs["ui-debio-data-table"] = { template: "<div></div>" }
 
 describe("Genetic Data List", () => {
   let container

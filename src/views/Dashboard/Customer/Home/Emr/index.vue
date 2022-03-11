@@ -1,5 +1,13 @@
 <template lang="pug">
 .customer-emr
+
+  ui-debio-error-dialog(
+    :show="!!error"
+    :title="error ? error.title : ''"
+    :message="error ? error.message : ''"
+    @close="error = null"
+  )
+
   ui-debio-modal(
     :show="showModal"
     :show-title="false"
@@ -103,7 +111,7 @@ import {
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
-
+import { errorHandler } from "@/common/lib/error-handler"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
@@ -301,7 +309,7 @@ export default {
       this.showModal = true
 
       const txWeight = await getDeleteEMRFee(this.api, this.wallet, item.id)
-      this.txWeight = `${this.web3.utils.fromWei(String(txWeight.partialFee), "ether")} DBIO`
+      this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 
     handleShowTooltip(e) {
@@ -321,8 +329,9 @@ export default {
         this.error = null
         this.selectedFile = null
       } catch (e) {
+        const error = await(errorHandler(e.message))
         this.isLoading = false
-        this.error = e?.message
+        this.error = error
       }
     }
   }

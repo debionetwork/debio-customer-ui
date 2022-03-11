@@ -1,6 +1,6 @@
-export async function getCreateOrderFee(api, pair, address, indexPrice, publicKey) {
+export async function getCreateOrderFee(api, pair, address, indexPrice, publicKey, serviceFlow) {
   const info = await api.tx.orders
-    .createOrder(address, indexPrice, publicKey, "RequestTest")
+    .createOrder(address, indexPrice, publicKey, serviceFlow)
     .paymentInfo(pair)
   return info
 }

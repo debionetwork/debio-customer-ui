@@ -1,5 +1,12 @@
 <template lang="pug">
   .genetic-data-list
+    ui-debio-error-dialog(
+      :show="!!error"
+      :title="error ? error.title : ''"
+      :message="error ? error.message : ''"
+      @close="error = null"
+    )
+
     ui-debio-data-table(
       :headers="headers"
       :items="items"
@@ -38,6 +45,7 @@ import { mapState } from "vuex"
 import { pencilIcon, trashIcon } from "@debionetwork/ui-icons"
 import { queryGeneticDataByOwner, queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { removeGeneticData, getRemoveGeneticDataFee} from "@/common/lib/polkadot-provider/command/genetic-data"
+import { errorHandler } from "@/common/lib/error-handler"
 import ConfirmationDialog from "../MyTest/ConfirmationDialog"
 
 
@@ -85,7 +93,8 @@ export default {
     items: [],
     showDialog: false,
     selectedDataId: null,
-    txWeight: 0
+    txWeight: 0,
+    error: null
   }),
 
   watch: {
@@ -157,7 +166,13 @@ export default {
     },
 
     async confirmedDelete() {
-      await removeGeneticData(this.api, this.wallet, this.selectedDataId)
+      try{
+        await removeGeneticData(this.api, this.wallet, this.selectedDataId)
+      } catch (e) {
+        const error = await(errorHandler(e.message))
+        this.error = error
+        this.showDialog = false
+      }
     },
 
     formatDate(date) {
