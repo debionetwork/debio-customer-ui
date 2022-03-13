@@ -19,7 +19,7 @@
           .dialog-payment__detail Service Price
           .dialog-payment__detail
             | {{ servicePrice }} 
-            | {{ currency }}
+            | {{ currency }} 
 
         .dialog-payment__desc
           .dialog-payment__detail Quality Control Price
@@ -50,29 +50,7 @@
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
           .dialog-payment__trans-weight-amount {{ Number(txWeight).toFixed(4) }} DBIO
 
-
-        .dialog-payment__desc
-          v-text-field(
-            label="Input Password"
-            v-model="password"
-            class="password-field"
-            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            :type="showPassword ? 'text' : 'password'"
-            :rules="[val => !!val || errorMessage.REQUIRED]"
-            :disabled="isLoading"
-            @click:append="showPassword = !showPassword"
-            outlined
-          )
-      
-        v-alert.mt-5.mb-5(
-          v-if="error" 
-          dense 
-          text 
-          type="error"
-          style="font-size: 12px;"
-        ) {{ error }}
-
-        ui-debio-button(
+        ui-debio-button.mt-10(
           color="secondary" 
           width="100%"
           height="38"
@@ -104,15 +82,14 @@ import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
+import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
 import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
 import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
-import localStorage from "@/common/lib/local-storage"
 import CryptoJS from "crypto-js"	
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import { errorHandler } from "@/common/lib/error-handler"
-import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
 import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
 import errorMessage from "@/common/constants/error-messages"
 import { postTxHash } from "@/common/lib/api"
@@ -143,7 +120,6 @@ export default {
     ethAccount: null,
     isCompleted: false,
     isLoading: false,
-    dataEvent: null,
     lastOrder: null,
     detailOrder: null,
     status: "",
@@ -156,7 +132,8 @@ export default {
     servicePrice: "",
     qcPrice: "",
     totalPrice: "",
-    currency: ""
+    currency: "",
+    customerBoxPublicKey: null
   }),
 
   computed: {
@@ -164,6 +141,7 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       lastEventData: (state) => state.substrate.lastEventData,
+      mnemonicData: (state) => state.substrate.mnemonicData,
       selectedService: (state) => state.testRequest.products,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
       web3: (state) => state.metamask.web3
@@ -188,15 +166,14 @@ export default {
   },
 
   async mounted () {
-    const txWeight = await getCreateOrderFee(this.api, this.wallet, this.selectedService.labId, this.selectedService.indexPrice)
-    this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+    await this.getCustomerPublicKey()
+    await this.calculateTxWeight()
 
     if (this.lastEventData) {
       if (this.lastEventData.method === "OrderCreated") {
         this.dataEvent = JSON.parse(this.lastEventData.data.toString())[0]
       }
     }
-
     // get last order id
     this.lastOrder = await lastOrderByCustomer(
       this.api,
@@ -216,12 +193,30 @@ export default {
 
   methods: {
 
+    async getCustomerPublicKey() {
+      const identity = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+      this.customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
+    },
+
+    async calculateTxWeight() {
+      const txWeight = await getCreateOrderFee(
+        this.api,
+        this.wallet,
+        this.selectedService.serviceId,
+        this.selectedService.indexPrice,
+        this.customerBoxPublicKey,
+        this.selectedService.serviceFlow
+      )
+      this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
+    },
+
     async onSubmit () {
       this.isLoading = true
       this.error = ""
       try {
-        this.wallet.decodePkcs8(this.password)        
+
         this.ethAccount = await startApp()
+        
         if (this.ethAccount.currentAccount === "no_install") {
           this.isLoading = false
           this.password = ""
@@ -269,20 +264,14 @@ export default {
           return
         }
 
-        const mnemonic = localStorage.getLocalStorageByName("mnemonic_data")
-        const decryptedMnemonic = CryptoJS.AES.decrypt(mnemonic, this.password).toString(CryptoJS.enc.Utf8)
-        
-        const identity = await Kilt.Identity.buildFromMnemonic(decryptedMnemonic)
-        const customerBoxPublicKey = u8aToHex(identity.boxKeyPair.publicKey)
 
         if (this.status !== "Unpaid") {
-          const serviceFlow = "RequestTest"
           await createOrder(
             this.api,
             this.wallet,
             this.selectedService.serviceId,
-            customerBoxPublicKey,
-            serviceFlow,
+            this.customerBoxPublicKey,
+            this.selectedService.serviceFlow,
             this.selectedService.indexPrice,
             this.payOrder
           )

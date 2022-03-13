@@ -25,7 +25,8 @@ describe("Payment Receipt dialog", () => {
         substrate: {
           api: "API",
           wallet: "WALLET",
-          lastEventData: "LAST_EVENT"
+          lastEventData: "LAST_EVENT",
+          mnemonicData: "claw spare illegal parrot crack chase buddy answer slim weird write uncle"
         },
         metamask: {
           metamaskWalletAddress: "WALLET_ADDRESS"

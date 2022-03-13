@@ -112,7 +112,7 @@
         @close="showReceipt = false"
       )
 
-      ui-debio-cancel-dialog(
+      CancelDialog(
         :show="cancelDialog"
         :orderId="orderId"
         @cancel="setCancelled"
@@ -146,6 +146,7 @@ import { mapState, mapMutations } from "vuex"
 import CryptoJS from "crypto-js"	
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
+import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
 import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
@@ -167,7 +168,8 @@ export default {
   
   components: {
     PaymentReceiptDialog,
-    PayRemainingDialog
+    PayRemainingDialog,
+    CancelDialog
   },
 
   data: () => ({

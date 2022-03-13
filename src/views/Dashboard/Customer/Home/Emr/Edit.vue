@@ -199,6 +199,7 @@ import {
   queryElectronicMedicalRecordFileById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
 import { u8aToHex } from "@polkadot/util"
+import { generalDebounce } from "@/common/lib/utils"
 import { validateForms } from "@/common/lib/validate"
 import { errorHandler } from "@/common/lib/error-handler"
 import errorMessage from "@/common/constants/error-messages"
@@ -284,6 +285,14 @@ export default {
 
     mnemonicData(val) {
       if (val) this.initialDataKey()
+    },
+
+    emr: {
+      deep: true,
+      immediate: true,
+      handler: generalDebounce(async function() {
+        await this.calculateTxWeight()
+      }, 500)
     }
   },
 
