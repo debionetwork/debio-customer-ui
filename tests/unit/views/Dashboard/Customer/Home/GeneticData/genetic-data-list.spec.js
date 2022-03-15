@@ -24,7 +24,7 @@ describe("Genetic Data List", () => {
   it("Should render", () => {
     GeneticDataList.methods = {
       fetchGeneticData: jest.fn(), 
-      getRemoveDataFee: jest.fn(), 
+      getRemoveDataFee: jest.fn() 
     };
     container = shallowMount(GeneticDataList, {
       localVue,

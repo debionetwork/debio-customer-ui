@@ -23,7 +23,7 @@ describe("Genetic Analyst Dashboard", () => {
 
   it("Should render", () => {
     GADashboard.methods = {
-        getOrdersData: jest.fn(),
+      getOrdersData: jest.fn()
     };
     container = shallowMount(GADashboard, {
       localVue,
