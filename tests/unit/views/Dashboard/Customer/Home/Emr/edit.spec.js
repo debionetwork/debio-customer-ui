@@ -27,7 +27,7 @@ describe("Customer EMR Dashboard", () => {
     CustomerEmrEdit.methods = {
       initialData: jest.fn(), 
       initialDataKey: jest.fn(), 
-      fetchCategories: jest.fn(), 
+      fetchCategories: jest.fn() 
     };
     container = shallowMount(CustomerEmrEdit, {
       localVue,
