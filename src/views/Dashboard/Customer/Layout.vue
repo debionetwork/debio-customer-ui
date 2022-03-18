@@ -1,6 +1,6 @@
 <template lang="pug">
   .main-layout
-    ui-debio-modal.app-modal-error(
+    ui-debio-modal.modal-error(
       :show="showModalError"
       disable-dismiss
       :show-title="false"
@@ -10,8 +10,8 @@
       :ctaAction="goToDashboard"
     )
       ui-debio-icon(:icon="cableErrorIcon" fill size="100")
-      h6.app-modal-error__title Aw, Snap!
-      p.app-modal-error__subtitle An Internal error occured during your request! try again later!
+      h6.modal-error__title Aw, Snap!
+      p.modal-error__subtitle An Internal error occured during your request! try again later!
     ui-debio-modal(
       :show="showModalPassword"
       title="Unlock Wallet"
@@ -320,6 +320,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap')
+@import "@/common/styles/variables.scss"
+@import "@/common/styles/mixins.sass"
+
 .main-layout
   display: flex
   flex-direction: column
@@ -396,5 +400,19 @@ export default {
   &-leave-to
     opacity: 0
     transform: translateX(-12.813rem)
+
+.modal-error 
+  .ui-debio-modal__card 
+    width: 300px
+    gap: 1rem
+
+  &__title
+    @include h6-opensans
+  
+  &__subtitle 
+    max-width: 200px
+    text-align: center
+    color: #595959
+    @include body-text-3-opensans
     
 </style>
