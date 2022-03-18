@@ -38,7 +38,7 @@ describe("Genetic Analysis Checkout Payment", () => {
           },
           geneticData: {
             selectedData: {}
-          },
+          }
         }
       })
     })

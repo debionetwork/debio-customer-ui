@@ -26,14 +26,14 @@ describe("Add Genetic Data Page", () => {
     AddGeneticData.methods = {
       initialDataKey: jest.fn(), 
       getTxWeight: jest.fn(), 
-      getDetails: jest.fn(), 
+      getDetails: jest.fn() 
     };
     container = shallowMount(AddGeneticData, {
       localVue,
       vuetify: new Vuetify(),
       $route: {
         params: {
-            id: "ID"
+          id: "ID"
         }
       },
       store: new Vuex.Store({
