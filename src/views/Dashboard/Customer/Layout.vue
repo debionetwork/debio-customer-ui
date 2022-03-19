@@ -224,9 +224,9 @@ export default {
   watch: {
     $route() {
       const query = VueRouter?.history?.current?.query
-      console.log("VueRouterLayout", VueRouter)
+      
       this.pageError = null
-      if (query) this.showModalError = true
+      if (query?.error) this.showModalError = true
     },
     
 
