@@ -13,6 +13,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
+    "install-hooks": ".maintain/install-hooks.sh",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
