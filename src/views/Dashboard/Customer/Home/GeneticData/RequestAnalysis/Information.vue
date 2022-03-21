@@ -8,9 +8,9 @@
       .information-dialog__title Important Information
 
       .information-dialog__card
-        div.information-dialog__card-text 
-          span.information-dialog__text We do not provide medical or diagnostic advice. Any service on the DeBio platform is provided for research, informational, and educational use only. You should always seek the advice of your physician or other health care provider with any questions you may have regarding diagnosis, cure, treatment, mitigation, or prevention of any disease or other medical condition or impairment or the status of your health.
-
+        ol.information-dialog__card-text 
+          li.information-dialog__text We do not provide medical or diagnostic advice. Any service on the DeBio platform is provided for research, informational, and educational use only. You should always seek the advice of your physician or other health care provider with any questions you may have regarding diagnosis, cure, treatment, mitigation, or prevention of any disease or other medical condition or impairment or the status of your health.
+          li.information-dialog__text The results obtained from the genetic analysis feature will adhere to current and present updated scientific research. As a word of caution, the results may not deduce new information and may be identical to the previous results.
 
       .information-dialog__button
         ui-debio-button(
@@ -55,7 +55,7 @@ export default {
     height: 570px
 
     &__title
-      padding: 40px 0px
+      padding: 10px 0px 24px 0px
       display: flex
       align-items: center
       justify-content: center
@@ -63,19 +63,20 @@ export default {
       @include button-1
 
     &__card
-      width: 340
+      width: 440
       height: 335
       background-color: #F5F7F9
       margin: 0 50px 
-      padding: 24px
+      padding: 10px 14px 0px 14px
 
     &__card-text
-      @include new-body-text-2-medium
       text-align: justify
+      letter-spacing: -0.0044em
+      @include new-body-text-2-medium
 
     &__button
       margin-top: 32px
-      padding-bottom: 50px
+      padding-bottom: 26px
       display: flex
       align-items: center
       justify-content: center
