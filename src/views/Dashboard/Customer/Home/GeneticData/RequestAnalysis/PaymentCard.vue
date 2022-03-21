@@ -15,8 +15,9 @@
           b.customer-analysis-payment-card__data-text(:style="setStyleColor") {{ formatBalance(service.priceDetail[0].totalPrice) }} {{ service.priceDetail[0].currency }}
         .customer-analysis-payment-card__rate ( {{ formatPriceInUsd(service.priceDetail[0].totalPrice) }} USD )
 
-        .customer-analysis-payment-card__text-notes In adherence to the law of the country at which the transaction is taking place, all jurisdiction regarding the transaction process will be in accordance with the country's regulation and fiat currencies.
-
+        .customer-analysis-payment-card__text-notes In adherence to the law and regulations of the country where your transaction will take place, service provider payouts may be processed in fiat currency. See our 
+          a.link(target="_blank" href="https://docs.debio.network/legal/terms-and-condition" ) terms and conditions 
+          span for more details.
 
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-tx-weight Estimated transaction weight 
