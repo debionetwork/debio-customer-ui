@@ -15,9 +15,11 @@
           b.customer-analysis-payment-card__data-text(:style="setStyleColor") {{ formatBalance(service.priceDetail[0].totalPrice) }} {{ service.priceDetail[0].currency }}
         .customer-analysis-payment-card__rate ( {{ formatPriceInUsd(service.priceDetail[0].totalPrice) }} USD )
 
+        .customer-analysis-payment-card__text-notes In adherence to the law of the country at which the transaction is taking place, all jurisdiction regarding the transaction process will be in accordance with the country's regulation and fiat currencies.
+
 
         .customer-analysis-payment-card__amount
-          .customer-analysis-payment-card__data-tx-weight Estimated transaction weight
+          .customer-analysis-payment-card__data-tx-weight Estimated transaction weight 
             v-tooltip.visible(bottom )
               template(v-slot:activator="{ on, attrs }")
                 v-icon.staking-dialog__trans-weight-icon(
@@ -425,18 +427,23 @@ export default {
       padding: 27px 30px
 
     &__data-service
-      margin-bottom: 24px
+      margin-bottom: 10px
 
     &__text-label
       @include button-2
 
+    &__text-notes
+      text-align: justify
+      text-justify: inter-word
+      margin-top: 10px
+      @include super-tiny
+
     &__data-text
-      margin-top: 16px
       @include new-body-text-2
 
     &__data-tx-weight
-      margin-top: 16px
-      @include body-text-3
+      margin-top: 10px
+      @include tiny-reg
 
     &__button
       margin-top: 16px
