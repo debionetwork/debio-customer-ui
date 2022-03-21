@@ -27,7 +27,7 @@
 
         ui-debio-file(
           withTooltip
-          tooltipDesc="To upload file that bigger than 200 MB, you may compress the file into a .gz, .zip, .rar, .7zip file"
+          tooltipDesc="To upload file that bigger than 200 MB, you may compress the file into a .zip, .rar, .7zip file"
           v-model="document.file"
           variant="small"
           :rules="fileRule"
