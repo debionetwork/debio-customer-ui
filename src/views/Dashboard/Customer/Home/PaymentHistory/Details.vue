@@ -80,6 +80,7 @@
             ui-debio-button.payment-details__etherscan-link(
               color="secondary"
               @click="handleViewEtherscan"
+              :loading="isLoading"
               outlined
               block
             ) VIEW ON ETHERSCAN
@@ -119,6 +120,7 @@ export default {
 
     alertIcon,
     messageError: null,
+    txHash: null,
     rewardPopup: false,
     payment: {}
   }),
@@ -154,13 +156,16 @@ export default {
       try {
         const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
         const data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
-        const rating = await getRatingService(dataPayment.service_id);
+        const rating = await getRatingService(dataPayment.service_id)
+        const txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.id)
 
         this.payment = {
           ...dataPayment,
           test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim(),
           rating
         }
+        // eslint-disable-next-line camelcase
+        this.txHash = txDetails.transaction_hash
       } catch(e) {
         if (e.response.status === 404)
           this.messageError = "Oh no! We can't find your selected order. Please select another one"
@@ -203,12 +208,10 @@ export default {
 
     async handleViewEtherscan() {
       const anchor = document.createElement("a")
-      const orderId = this.payment?.id
-      const { transaction_hash } = await fetchTxHashOrder(orderId)
 
       // NOTE: Use anchor tag with "noreferrer noopener" for security
       // eslint-disable-next-line camelcase
-      anchor.href = `https://rinkeby.etherscan.io/tx/${transaction_hash}`
+      anchor.href = `https://rinkeby.etherscan.io/tx/${this.txHash}`
       anchor.target = "_blank"
       anchor.rel = "noreferrer noopener"
       anchor.click()

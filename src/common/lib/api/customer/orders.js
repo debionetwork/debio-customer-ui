@@ -36,7 +36,7 @@ export async function fetchBountyLists(hash) {
 }
 
 export async function fetchTxHashOrder(orderId) {
-  const { data: { data } } = await apiClientRequest.get("transaction/hash", {
+  const { data } = await apiClientRequest.get("transaction/hash", {
     params: { order_id: orderId }
   })
 
