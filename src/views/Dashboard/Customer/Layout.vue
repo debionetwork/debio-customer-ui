@@ -1,5 +1,17 @@
 <template lang="pug">
   .main-layout
+    ui-debio-modal.modal-error(
+      :show="showModalError"
+      disable-dismiss
+      :show-title="false"
+      :showCta="true"
+      ctaTitle="Back To Home"
+      :ctaOutlined="false"
+      :ctaAction="goToDashboard"
+    )
+      ui-debio-icon(:icon="cableErrorIcon" fill size="100")
+      h6.modal-error__title Aw, Snap!
+      p.modal-error__subtitle An Internal error occured during your request! try again later!
     ui-debio-modal(
       :show="showModalPassword"
       title="Unlock Wallet"
@@ -140,7 +152,8 @@ import {
   checkCircleIcon,
   fileTextIcon,
   creditCardIcon,
-  geneticDnaIcon
+  geneticDnaIcon,
+  cableErrorIcon
 } from "@debionetwork/ui-icons"
 
 import NavigationDrawer from "@/common/components/NavigationDrawer"
@@ -148,6 +161,7 @@ import Navbar from "@/common/components/Navbar.vue"
 import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 import localStorage from "@/common/lib/local-storage"
+import VueRouter from "@/router"
 
 export default {
   name: "MainPage",
@@ -160,7 +174,9 @@ export default {
     checkCircleIcon,
     eyeIcon,
     eyeOffIcon,
+    cableErrorIcon,
 
+    showModalError: false,
     showModalPassword: false,
     pageError: null,
     showPassword: false,
@@ -184,7 +200,8 @@ export default {
       lastEventData: (state) => state.substrate.lastEventData,
       wallet: (state) => state.substrate.wallet,
       localListNotification: (state) => state.substrate.localListNotification,
-      mnemonicData: (state) => state.substrate.mnemonicData
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      api: (state) => state.api
     }),
 
     ...mapActions({
@@ -206,8 +223,12 @@ export default {
 
   watch: {
     $route() {
+      const query = VueRouter?.history?.current?.query
+      
       this.pageError = null
+      if (query?.error) this.showModalError = true
     },
+    
 
     lastEventData(event) {
       if (event !== null) {
@@ -221,6 +242,7 @@ export default {
   },
 
   async mounted() {
+    // console.log("api", this.state)
     if (!this.mnemonicData) this.showModalPassword = true
     await this.getListNotification()
   },
@@ -255,6 +277,11 @@ export default {
 
     goToRequestAnalysis() {
       this.$router.push({ name: "customer-request-analysis"})
+    },
+
+    goToDashboard() {
+      this.showModalError = false
+      this.$router.push({ name: "dashboard"})
     },
 
     handleShowPassword() {
@@ -293,6 +320,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap')
+@import "@/common/styles/variables.scss"
+@import "@/common/styles/mixins.sass"
+
 .main-layout
   display: flex
   flex-direction: column
@@ -369,4 +400,19 @@ export default {
   &-leave-to
     opacity: 0
     transform: translateX(-12.813rem)
+
+.modal-error 
+  .ui-debio-modal__card 
+    width: 300px
+    gap: 1rem
+
+  &__title
+    @include h6-opensans
+  
+  &__subtitle 
+    max-width: 200px
+    text-align: center
+    color: #595959
+    @include body-text-3-opensans
+    
 </style>

@@ -21,19 +21,24 @@ const apiClientRequest = axios.create({
   }
 })
 
+
+const responseValidation = (response) => {
+  if (response?.status === 503) VueRouter.push({ name: "maintenance" })
+  else if (String(response?.status)[0] == 4 || String(response?.status)[0] == 5) VueRouter.push({ query: { error: true } })
+
+  return response;
+}
+
 apiClientRequest.interceptors.response.use(
   response => {
-    if (response?.status === 503) VueRouter.push({ name: "maintenance" })
-
+    responseValidation(response)
+    
     return response;
   },
   error => {
     Sentry.captureException(error);
 
-    if (error?.response?.status === 503 || !error?.response) {
-      VueRouter.push({ name: "maintenance" })
-      return
-    }
+    responseValidation(error)
 
     return Promise.reject(error);
   }
