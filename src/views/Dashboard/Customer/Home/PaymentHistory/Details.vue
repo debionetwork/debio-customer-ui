@@ -211,7 +211,7 @@ export default {
 
       // NOTE: Use anchor tag with "noreferrer noopener" for security
       // eslint-disable-next-line camelcase
-      anchor.href = `https://rinkeby.etherscan.io/tx/${this.txHash}`
+      anchor.href = `${process.env.VUE_APP_ETHERSCAN}${this.txHash}`
       anchor.target = "_blank"
       anchor.rel = "noreferrer noopener"
       anchor.click()
