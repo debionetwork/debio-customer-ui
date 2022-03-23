@@ -51,14 +51,14 @@
                   .service__field-title Service Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ formatPrice(payment.service_info.prices_by_currency[0].total_price) }}
-                    | {{ payment.service_info.prices_by_currency[0].currency }}
-                .service__field(v-if="payment.service_info.prices_by_currency[0].additional_prices.length")
+                    | {{ formatPrice(payment.prices[0].value) }}
+                    | {{ payment.currency }}
+                .service__field(v-if="payment.additional_prices.length")
                   .service__field-title Quality Control Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ formatPrice(payment.service_info.prices_by_currency[0].additional_prices[0].value) }}
-                    | {{ payment.service_info.prices_by_currency[0].currency }}
+                    | {{ formatPrice(payment.additional_prices[0].value) }}
+                    | {{ payment.currency }}
                 .service__field(v-if="payment.status === 'Refunded'")
                   .service__field-title Refund amount
                   .service__refund -

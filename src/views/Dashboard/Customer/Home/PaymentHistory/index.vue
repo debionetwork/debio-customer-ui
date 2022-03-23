@@ -28,9 +28,6 @@
             | {{ formatPrice((item.service_info.prices_by_currency[0].total_price).replaceAll(",", "")) }}
             | {{ item.service_info.prices_by_currency[0].currency }}
 
-        template(v-slot:[`item.reward`]="{ item }")
-          span N/A
-
         template(v-slot:[`item.status`]="{ item }")
           span(:style="{ color: setButtonBackground(item.status) }") {{ item.status }}
 
@@ -65,10 +62,9 @@ export default {
     searchQuery: "",
     paymentHeaders: [
       { text: "Service Name", value: "service_info.name", sortable: true },
-      { text: "Lab Name", value: "lab_info.name", sortable: true },
+      { text: "Service Provider", value: "lab_info.name", sortable: true },
       { text: "Order Date", value: "created_at", sortable: true },
       { text: "Price", value: "service_info.prices_by_currency[0].total_price", sortable: true },
-      { text: "Reward", value: "reward", align: "right", sortable: true },
       { text: "Status", value: "status", align: "right", sortable: true },
       {
         text: "Actions",
@@ -149,7 +145,7 @@ export default {
       display: flex
       align-items: center
       justify-content: space-between
-    
+
     &__name-details
       display: flex
       gap: 15px

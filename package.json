@@ -10,6 +10,7 @@
     "url": "https://github.com/debionetwork/debio-customer-ui.git"
   },
   "scripts": {
+    "install:hooks": ".maintain/install-hooks.sh",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
