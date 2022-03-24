@@ -138,10 +138,9 @@ export default {
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
-      web3: (state) => state.metamask.web3,
-      mnemonicData: (state) => state.substrate.mnemonicData,
       walletBalance: (state) => state.substrate.walletBalance,
-      lastEventData: (state) => state.substrate.lastEventData
+      lastEventData: (state) => state.substrate.lastEventData,
+      web3: (state) => state.metamask.web3
     }),
 
     setStyleColor() {

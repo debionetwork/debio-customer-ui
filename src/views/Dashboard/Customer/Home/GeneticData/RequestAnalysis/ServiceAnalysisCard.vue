@@ -52,7 +52,7 @@ export default {
   data: () => ({
     showDetail: false,
     serviceName: null,
-    description: null,
+    description: "",
     duration: null,
     durationType: null,
     price: null,
