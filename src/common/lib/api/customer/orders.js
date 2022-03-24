@@ -2,11 +2,7 @@ import apiClientRequest from "@/common/lib/api";
 import localStorage from "@/common/lib/local-storage";
 
 export async function fetchPaymentHistories(searchQuery) {
-  const {
-    data: {
-      data
-    }
-  } = await apiClientRequest.get(`substrate/orders/list/${localStorage.getAddress()}`, {
+  const { data } = await apiClientRequest.get(`substrate/orders/list/${localStorage.getAddress()}`, {
     params: {
       size: 1000,
       page: 1,
