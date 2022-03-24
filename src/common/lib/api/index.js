@@ -10,10 +10,10 @@ export * from "./genetic-analyst"
 // PLEASE DISCUSS BEFORE YOU WANT TO EDIT THIS SCRIPT
 const apiClientRequest = axios.create({
   baseURL: process.env.VUE_APP_BACKEND_API,
-  headers: { 
+  headers: {
     "Content-Type": "application/json",
     "debio-api-key": process.env.VUE_APP_DEBIO_API_KEY
-  
+
   },
   auth: {
     username: process.env.VUE_APP_USERNAME,
@@ -32,7 +32,7 @@ const responseValidation = (response) => {
 apiClientRequest.interceptors.response.use(
   response => {
     responseValidation(response)
-    
+
     return response;
   },
   error => {
