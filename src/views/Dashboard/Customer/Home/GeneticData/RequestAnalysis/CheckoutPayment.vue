@@ -14,12 +14,9 @@
         .customer-request-analyst-checkout__title Checkout and Payment
         
         .customer-request-analyst-checkout__cards
-          ServiceAnalysisCard(
-            :service="selectedAnalysisService"
-          )
+          ServiceAnalysisCard
           PaymentCard(
             :genetic-data="selectedGeneticData"
-            :service="selectedAnalysisService"
             @click="showLoading"
           )
 
@@ -59,15 +56,8 @@ export default {
 
   computed: {
     ...mapState({
-      selectedGeneticData: (state) => state.geneticData.selectedData,
-      selectedAnalysisService: (state) => state.geneticData.selectedAnalysisSerivice
+      selectedGeneticData: (state) => state.geneticData.selectedData
     })
-  },
-
-  mounted() {
-    if (!this.selectedGeneticData) {
-      this.$router.push({ name: "customer-request-analysis" })
-    }
   },
 
   methods: {

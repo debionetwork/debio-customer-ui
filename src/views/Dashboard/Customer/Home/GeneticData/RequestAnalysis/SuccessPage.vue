@@ -10,14 +10,14 @@
             :items="stepperItems"
           )
 
-        div(v-if="!isCancelled && !isRejected")
+        div(v-if="orderStatus === 'Paid' && !isRejected")
           .customer-request-analyst-success__title Thank you for your order!
-          .customer-request-analyst-success__sub-title(v-if="!isProcessing") Please wait, Genetic Analyst will confirm your order soon
-          .customer-request-analyst-success__sub-title(v-else) Please wait while your genetic data is being analyzed
+          .customer-request-analyst-success__sub-title(v-if="isRegistered") Please wait, Genetic Analyst will confirm your order soon
+          .customer-request-analyst-success__sub-title(v-if="isInProgress") Please wait while your genetic data is being analyzed
 
         
-        div(v-if="isCancelled")
-          .customer-request-analyst-success__title Your service has been cancelled!
+        div(v-if="orderStatus === 'Cancelled'")
+          .customer-request-analyst-success__title Your service has been Cancelled!
 
 
         div(v-if="isRejected")
@@ -32,12 +32,8 @@
 
         
         .customer-request-analyst-success__cards
-          ServiceAnalysisCard(
-            :service="service"
-          )
-          PaymentCard(
-            :genetic-data="geneticData"
-          )
+          ServiceAnalysisCard
+          PaymentCard
         
 
   
@@ -49,9 +45,6 @@ import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
 import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
-import { queryGetGeneticAnalystServiceById } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
-import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
-import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 
 
@@ -70,11 +63,12 @@ export default {
     geneticData: null,
     service: null,
     orderStatus: null,
-    isProcessing: false,
-    isRejected: false,
-    isCancelled: false,
+    geneticAnalysis: null,
     rejectTitle: null,
-    rejectDesc: null
+    rejectDesc: null,
+    isRejected: false,
+    isRegistered: false,
+    isInProgress: false
   }),
 
   computed: {
@@ -91,82 +85,50 @@ export default {
 
   async mounted() {
     await this.getAnalysisOrderDetail()
-    await this.getServiceDetail()
-    await this.getGeneticData()
-    await this.getAnalysisStatus()
 
+    if (this.orderStatus === "Cancelled") {
+      this.stepperItems[3].title = "Cancelled"
+    }
+
+    if (this.orderStatus === "Paid") {
+      this.getAnalysisStatus()
+    }
   },
 
   methods: {
     async getAnalysisOrderDetail() {
       const analysisOrderId = this.$route.params.id
       const analysisOrderDetail = await queryGeneticAnalysisOrders(this.api, analysisOrderId)
-      this.geneticOrderAnalysisDetail = analysisOrderDetail
-      this.orderStatus = this.geneticOrderAnalysisDetail.status
-      this.trackingId = this.geneticOrderAnalysisDetail.geneticAnalysisTrackingId
+
+      if (analysisOrderDetail) {
+        this.orderStatus = analysisOrderDetail.status
+        this.geneticOrderAnalysisDetail = analysisOrderDetail
+        this.trackingId = this.geneticOrderAnalysisDetail.geneticAnalysisTrackingId
+      }
     },
 
     async getAnalysisStatus() {
-      const details = await queryGeneticAnalysisStorage(this.api, this.trackingId)
-      if (details.status === "InProgress") {
-        this.isProcessing = true
-      }
+      this.isRegistered = false
+      this.isRejected = false
+      this.isInProgress = false
 
-      if (this.orderStatus === "Cancelled") {
-        this.stepperItems[3].title = "Cancelled"
-        this.isCancelled = true
-      }
+      this.geneticAnalysis = await queryGeneticAnalysisStorage(this.api, this.trackingId)
 
-      if (this.orderStatus === "Failed") {
-        this.stepperItems[3].title = "Rejeted"
+      if (this.geneticAnalysis.status === "Rejected") {
+        this.stepperItems[3].title = "Rejected"
         this.isRejected = true
       }
 
-      this.rejectTitle = details.rejectedTitle
-      this.rejectDesc = details.rejectedDescription
-      
-    },
-
-    async getServiceDetail() {
-      const serviceDetail = await queryGetGeneticAnalystServiceById(this.api, this.geneticOrderAnalysisDetail.serviceId)
-    
-      let {
-        id: serviceId,
-        ownerId: analystId,
-        info: {
-          name: serviceName,
-          pricesByCurrency: priceDetail,
-          expectedDuration: {
-            duration,
-            durationType
-          },
-          description,
-          testResultSample
-        }     
-      } = serviceDetail
-
-      const analystsInfo = await queryGeneticAnalysts(this.api, analystId)
-      const service = {
-        serviceId,
-        analystId,
-        serviceName,
-        priceDetail,
-        duration,
-        durationType,
-        description,
-        testResultSample,
-        analystsInfo
+      if (this.geneticAnalysis.status === "Registere") {
+        this.isRegistered = true
       }
 
-      this.service = service
+      if (this.geneticAnalysis.status === "InProgress") {
+        this.isInProgress = true
+      }
 
-    },
 
-    async getGeneticData() {
-      const geneticData = await queryGeneticDataById(this.api, this.geneticOrderAnalysisDetail.geneticDataId)
-      this.geneticData = geneticData
     }
-
   }
 
 

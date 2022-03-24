@@ -26,8 +26,6 @@ describe("Success page", () => {
   it("Should render", () => {
     SuccessPage.methods = {
       getAnalysisOrderDetail: jest.fn(),
-      getServiceDetail: jest.fn(),
-      getGeneticData: jest.fn(),
       getAnalysisStatus: jest.fn()
     };
     container = shallowMount(SuccessPage, {

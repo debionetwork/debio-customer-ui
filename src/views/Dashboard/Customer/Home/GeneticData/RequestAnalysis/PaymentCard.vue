@@ -5,15 +5,15 @@
         .customer-analysis-payment-card__text-label Genetic Data Name
         .customer-analysis-payment-card__data-text {{ geneticData.title }}
 
-      .customer-analysis-payment-card__text-label Payment
-      div(v-if="!isCreated")
+      .customer-analysis-payment-card__text-label.mt-5 Payment
+      div(v-if="orderStatus === 'Unpaid'")
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Account Balance
-          b.customer-analysis-payment-card__data-text {{ formatBalance(walletBalance) }}  {{ service.priceDetail[0].currency }}
+          .customer-analysis-payment-card__data-text {{ formatBalance(walletBalance) }} DBIO
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Service Price
-          b.customer-analysis-payment-card__data-text(:style="setStyleColor") {{ formatBalance(service.priceDetail[0].totalPrice) }} {{ service.priceDetail[0].currency }}
-        .customer-analysis-payment-card__rate ( {{ formatPriceInUsd(service.priceDetail[0].totalPrice) }} USD )
+          .customer-analysis-payment-card__data-text(:style="setStyleColor") {{ orderPrice }} {{ orderCurrency }}
+        .customer-analysis-payment-card__rate ({{ orderPriceInUsd }} USD )
 
         .customer-analysis-payment-card__text-notes In adherence to the law and regulations of the country where your transaction will take place, service provider payouts may be processed in fiat currency. See our 
           a.link(target="_blank" href="https://docs.debio.network/legal/terms-and-condition" ) terms and conditions 
@@ -33,33 +33,52 @@
               span(style="font-size: 10px;") Total fee paid in DBIO to execute this transaction.
           .customer-analysis-payment-card__data-tx-weight {{ Number(txWeight).toFixed(4) }} DBIO
 
-        ui-debio-button.customer-analysis-payment-card__button(
-          :disabled="isDeficit"
-          width="280"
-          height="35"
-          color="secondary"
-          @click="onSubmit"
-        ) Pay Now
+        .customer-analysis-payment-card__button
+          ui-debio-button(
+            width="130" 
+            color="red" 
+            outlined
+            @click="showCancelDialog = true"
+          ) Cancel
 
-      div(v-if="isCreated")
+          ui-debio-button(
+            :disabled="isDeficit"
+            width="130" 
+            color="primary" 
+            outlined
+            :loading="isLoading"
+            @click="setPaid"
+          ) Pay Now
+
+      div(v-else)
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Date
-          .customer-analysis-payment-card__data-text {{ createdDate }}
+          .customer-analysis-payment-card__data-text.mt-3 {{ createdDate }}
 
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Status
-          b.customer-analysis-payment-card__data-text {{ orderStatus }}
+          b.customer-analysis-payment-card__data-text.mt-3 {{ orderStatus }}
 
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Service Price
-          b.customer-analysis-payment-card__data-text {{ orderPrice }} {{ orderCurrency }}
+          b.customer-analysis-payment-card__data-text.mt-3 {{ orderPrice }} {{ orderCurrency }}
         .customer-analysis-payment-card__rate ( {{ orderPriceInUsd }} USD )
 
-      ImportantDialog(
-        @close="showInformation = false"
-        @click="onSubmit"
-        :show="showInformation"
-      )
+        .customer-analysis-payment-card__button.mt-8(v-if="orderStatus === 'Paid'")
+          ui-debio-button(
+            width="280" 
+            color="red" 
+            outlined
+            @click="showCancelDialog = true"
+          ) Cancel Request
+
+        .customer-analysis-payment-card__button.mt-8(v-if="orderStatus === 'Fulfilled'")
+          ui-debio-button(
+            width="280" 
+            color="secondary" 
+            outlined
+            @click="showCancelDialog = true"
+          ) View Result
 
       ConfirmationDialog(
         :show="showCancelDialog"
@@ -72,49 +91,31 @@
         @close="showCancelDialog = false"
       )
 
-      PaymentDialog(
-        :show="isLoading"
-      )
-
 </template>
 
 <script>
 
 import { mapState } from "vuex"
-import CryptoJS from "crypto-js"
-import Kilt from "@kiltprotocol/sdk-js"
-import { u8aToHex } from "@polkadot/util"
-import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
-import ImportantDialog from "./Information.vue"
 import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
 import {
-  createGeneticAnalysisOrder,
   cancelGeneticAnalysisOrder,
   getCreateGeneticAnalysisOrderFee
 } from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
-import { lastAnlysisOrderByCustomer, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
+import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
-import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
-import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
 import PaymentDialog from "@/common/components/Dialog/PaymentDialog"
 
 export default {
   name: "PaymentCard",
 
-  components: { ImportantDialog, ConfirmationDialog, PaymentDialog },
-
-  props: {
-    geneticData: Object,
-    service: Object
-  },
+  components: { ConfirmationDialog, PaymentDialog },
 
   data: () => ({
-    showInformation: false,
     rate: null,
     isDeficit : false,
     txWeight: 0,
-    isCreated: false,
     orderId: null,
     geneticOrderDetail: null,
     createdDate: null,
@@ -129,8 +130,8 @@ export default {
     newFile: null,
     geneticLink: null,
     links: [],
+    geneticData: {},
     customerBoxPublicKey: null
-    // showLoading: false
   }),
 
   computed: {
@@ -140,8 +141,6 @@ export default {
       web3: (state) => state.metamask.web3,
       mnemonicData: (state) => state.substrate.mnemonicData,
       walletBalance: (state) => state.substrate.walletBalance,
-      selectedGeneticData: (state) => state.geneticData.selectedData,
-      selectedAnalysisService: (state) => state.geneticData.selectedAnalysisSerivice,
       lastEventData: (state) => state.substrate.lastEventData
     }),
 
@@ -150,6 +149,28 @@ export default {
         return "color: red"
       } else {
         return "color: black"
+      }
+    }
+  },
+
+  watch: {
+    lastEventData(e) {
+      if (e !== null) {
+        const dataEvent = JSON.parse(e.data.toString())
+        if (e.method === "GeneticAnalysisOrderPaid") {
+          if (dataEvent[0].customerId === this.wallet.address) {
+            this.isLoading = false
+            this.$router.push({ name: "customer-request-analysis-success", params: {id: this.orderId} })
+          }
+        }
+
+        if (e.method === "GeneticAnalysisOrderCancelled") {
+          if (dataEvent[0].customerId === this.wallet.address) {
+            this.isLoading = false
+            this.showCancelDialog = false
+            this.$router.push({ name: "customer-request-analysis-success", params: {id: this.orderId} })
+          }
+        }
       }
     }
   },
@@ -163,186 +184,23 @@ export default {
       this.orderId = this.$route.params.id
 
       await this.getGeneticAnalysisOrderDetail()
+      await this.getGeneticData()
       await this.getAnalysisStatus()
     }
 
-    if (Number(this.walletBalance) < Number((this.service.priceDetail[0].totalPrice).replaceAll(",", ""))) {
+    if (Number(this.walletBalance) < Number(this.web3.utils.toWei(this.orderPrice))) {
       this.isDeficit = true
     }
   },
 
   methods: {
-    getCustomerPublicKey() {
-      const identity = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
-      this.publicKey = u8aToHex(identity.boxKeyPair.publicKey)
-      this.secretKey = u8aToHex(identity.boxKeyPair.secretKey)
-      return u8aToHex(identity.boxKeyPair.publicKey)
-    },
-
-    async onSubmit() {
-      this.$emit("click")
-      this.customerBoxPublicKey = await this.getCustomerPublicKey()
-      const links = JSON.parse(this.selectedGeneticData.reportLink)
-
-      let download = []
-      let fileType
-      let fileName
-      for (let i = 0; i < links.length; i++) {
-        const { name, type, data } = await downloadFile(links[i], true)
-        fileType = type
-        fileName = name
-        download.push(data)
-      }
-
-      let arr = []
-      for (let i = 0; i < download.length; i++) {
-        let { box, nonce } = download[i].data
-        box = Object.values(box) // Convert from object to Array
-        nonce = Object.values(nonce) // Convert from object to Array
-
-        const toDecrypt = {
-          box: Uint8Array.from(box),
-          nonce: Uint8Array.from(nonce)
-        }
-
-        console.log("Decrypting...")
-        const decryptedObject = await Kilt.Utils.Crypto.decryptAsymmetric(
-          toDecrypt,
-          this.publicKey,
-          this.secretKey
-        )
-        arr = [...arr, ...decryptedObject]
-      }
-      console.log("Decrypted!")
-
-      const unit8Arr = new Uint8Array(arr)
-      const blob = new Blob([unit8Arr], { type: fileType })
-      this.file = new File([blob], fileName)
-
-      const dataFile = await this.setupFileReader(this.file)      
-      await this.upload({
-        encryptedFileChunks: dataFile.chunks,
-        fileName: dataFile.fileName,
-        fileType: fileType
-      })
-      this.isLoading = false
-    },
-
-    setupFileReader(file) {
-      return new Promise((res, rej) => {
-        const context = this
-        const fr = new FileReader()
-        fr.onload = async function () {
-          try {
-            const encrypted = await context.encrypt({
-              text: fr.result,
-              fileType: file.type,
-              fileName: file.name
-            })
-
-            const { chunks, fileName, fileType } = encrypted
-            const dataFile = {
-              title: "title",
-              description: "description",
-              file,
-              chunks,
-              fileName,
-              fileType,
-              createdAt: new Date().getTime()
-            }
-            res(dataFile)
-          } catch (e) {
-            console.error(e)
-          }
-        }
-        fr.onerror = rej
-        fr.readAsArrayBuffer(file)
-      })
-    },
-
-    async encrypt({ text, fileType, fileName}) {
-      console.log("encrypting..")
-      const analystPublicKey = await this.getAnalystPublicKey()
-      const context = this
-      const arrChunks = []
-      let chunksAmount
-      const pair = {
-        secretKey: this.secretKey,
-        publicKey: analystPublicKey
-      }
-
-      return await new Promise((res, rej) => {
-        try {
-          cryptWorker.workerEncryptFile.postMessage({
-            pair,
-            text,
-            fileType
-          })
-
-          cryptWorker.workerEncryptFile.onmessage = async (event) => {
-            if (event.data.chunksAmount) {
-              chunksAmount = event.data.chunksAmount
-              return
-            }
-
-            arrChunks.push(event.data)
-            context.encryptProgress = (arrChunks.length / chunksAmount) * 100
-
-            if (arrChunks.length === chunksAmount ) {
-              res({
-                fileName: fileName,
-                chunks: arrChunks,
-                fileType: fileType
-              })
-            }
-          }
-          console.log("encrypted")
-        } catch (e) {
-          rej(new Error(e.message))
-        }
-      })
-
-    },
-
-    async upload({ encryptedFileChunks, fileName, fileType }) {
-      for (let i = 0; i < encryptedFileChunks.length; i++) {
-        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large
-        const blob = new Blob([data], { type: fileType })
-
-        // UPLOAD TO PINATA API
-        const result = await uploadFile({
-          title: fileName,
-          type: fileType,
-          file: blob
-        })
-        const link = await getFileUrl(result.IpfsHash)
-        this.links.push(link)
-      }
-
-      this.geneticLink = JSON.stringify(this.links)
-      if (this.geneticLink) {
-        await this.createOrder()
-      }
-    },
-
-    async createOrder() {
-      const priceIndex = 0
-      await createGeneticAnalysisOrder(
-        this.api,
-        this.wallet,
-        this.selectedGeneticData.id,
-        this.selectedAnalysisService.serviceId,
-        priceIndex,
-        this.customerBoxPublicKey,
-        this.geneticLink,
-        this.setPaid
-      )
+    async getGeneticData() {
+      this.geneticData = await queryGeneticDataById(this.api, this.geneticOrderDetail.geneticDataId)
     },
 
     async setPaid() {
-      const lastOrder = await lastAnlysisOrderByCustomer(this.api, this.wallet.address)
-      this.$router.push({ name: "customer-request-analysis-success", params: {id: lastOrder} })
-      await setGeneticAnalysisPaid(lastOrder)
+      this.isLoading = true
+      await setGeneticAnalysisPaid(this.orderId)
     },
 
     async getGeneticAnalysisOrderDetail () {
@@ -353,13 +211,6 @@ export default {
       this.orderCurrency = this.geneticOrderDetail.currency
       this.orderPriceInUsd = this.formatPriceInUsd(this.geneticOrderDetail.prices[0].value)
       this.trackingId = this.geneticOrderDetail.geneticAnalysisTrackingId
-    },
-
-    async getAnalystPublicKey () {
-      const id = this.service.analystId
-      const analystDetail = await queryGeneticAnalysts(this.api, id)
-      const analystPublicKey = analystDetail.info.boxPublicKey
-      return analystPublicKey
     },
 
     formatBalance(val) {
@@ -390,6 +241,7 @@ export default {
     },
 
     async cancelOrder() {
+      this.isLoading = true
       await cancelGeneticAnalysisOrder(this.api, this.wallet, this.orderId)
     },
 
@@ -397,19 +249,6 @@ export default {
       const details = await queryGeneticAnalysisStorage(this.api, this.trackingId)
       if (details.status !== "Registered") {
         this.isRegistered = false
-      }
-    }
-  },
-
-  watch: {
-    async lastEventData(val) {
-      if(val !== null) {
-        const dataEvent = JSON.parse(val.data.toString())
-        if (dataEvent[0].customerId === this.wallet.address) {
-          if(val.method === "GeneticAnalysisOrderPaid") {
-            await this.getGeneticAnalysisOrderDetail()
-          }
-        }
       }
     }
   }
@@ -448,6 +287,10 @@ export default {
 
     &__button
       margin-top: 16px
+      display: flex
+      align-items: center
+      justify-content: space-between
+
 
     &__amount
       display: flex

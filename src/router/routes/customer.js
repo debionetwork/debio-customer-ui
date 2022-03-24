@@ -150,7 +150,7 @@ export default [
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/SelectServiceAnalyst")
       },
       {
-        path: "request-analysis/checkout-payment",
+        path: "request-analysis/checkout-payment/:id?",
         name: "customer-request-analysis-payment",
         meta: { pageHeader: "My Genetic Data" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/CheckoutPayment")

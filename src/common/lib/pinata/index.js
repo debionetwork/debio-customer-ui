@@ -57,7 +57,7 @@ export const uploadFile = val => {
     }).catch(error => {
       reject(error)
     })
-    store.dispatch("geneticData/cancelUpload", {
+    store.dispatch("geneticData/setCancel", {
       source
     })
 
