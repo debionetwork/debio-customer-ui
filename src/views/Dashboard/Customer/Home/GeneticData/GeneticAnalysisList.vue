@@ -20,7 +20,7 @@
 
       template(v-slot:[`item.actions`]="{ item }")
         .genetic-analysis-list__actions
-          ui-debio-icon(v-show="!iconShow" :icon="eyeIcon" size="16" role="button" stroke @click="toDetail()")
+          ui-debio-icon( :icon="eyeIcon" size="16" role="button" stroke @click="toDetail(item)")
           ui-debio-icon(v-show="item.status === 'ResultReady'" :icon="downloadIcon" size="16" role="button" stroke @click="toDownload(item)")
 
 </template>
@@ -172,16 +172,21 @@ export default {
             updatedAt: updatedAt,
             status: geneticAnalysis.status,
             ipfsLink: geneticAnalysis.reportLink,
-            timestamp
+            timestamp,
+            orderId
           }
           this.items.push(dataResult)
         }
       }
     },
 
-    toDetail() {
-      // console.log(geneticId)
-      // Open new tab with sending props geneticId for fetch detail
+    toDetail(item) {
+      this.$router.push({ 
+        name: "customer-genetic-analysis-detail", 
+        params: {
+          id: item.orderId 
+        }
+      })
     },
 
     async toDownload(item){

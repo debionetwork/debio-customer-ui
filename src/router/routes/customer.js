@@ -135,6 +135,12 @@ export default [
         meta: { pageHeader: "My Genetic Data" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/Add")
       },
+      {
+        path: "genetic-analysis-detail/:id?",
+        name: "customer-genetic-analysis-detail",
+        meta: { pageHeader: "Request Genetic Data"},
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/Details")
+      },
 
       // Request Analysis
       {
