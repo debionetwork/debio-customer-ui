@@ -8,38 +8,6 @@
     )
 
     ui-debio-modal(
-      :show="showModalPassword"
-      title="Encrypt EMR files"
-      iconSize="100"
-      @onClose="showModalPassword = false; error = null"
-    )
-      template
-        ui-debio-icon(:icon="fileTextIcon" size="100" stroke)
-
-        p.modal-password__tx-info.mb-0.d-flex
-          span.modal-password__tx-text.mr-6.d-flex.align-center
-            | Estimated transaction weight
-            ui-debio-icon.ml-1(
-              :icon="alertIcon"
-              size="14"
-              stroke
-              @mouseenter="handleShowTooltip"
-            )
-            span.modal-password__tooltip(
-              @mouseleave="handleShowTooltip"
-              :class="{ 'modal-password__tooltip--show': showTooltip }"
-            ) Total fee paid in DBIO to execute this transaction.
-          span {{ txWeight }}
-
-        .modal-password__cta.d-flex(slot="cta")
-          ui-debio-button(
-            block
-            :loading="isLoading"
-            color="secondary"
-            @click="finalSubmit"
-          ) Submit
-
-    ui-debio-modal(
       :show="showModal"
       :title="isEdit ? 'Edit EMR File' : 'Add EMR File'"
       cta-title="Submit"
@@ -191,13 +159,29 @@
                       @click="showModalConfirm = item.createdAt"
                     )
 
-        ui-debio-button.white--text(
-          color="secondary"
-          :loading="isLoading"
-          height="2.5rem"
-          @click="handleModalPassword"
-          block
-        ) Submit
+        .d-flex.flex-column
+          p.transaction-weight__info.d-flex.justify-space-between(
+            @mouseleave="handleShowTooltip"
+          )
+            span.transaction-weight__text.mr-6.d-flex.align-center
+              | Estimated transaction weight
+              ui-debio-icon.ml-1(
+                :icon="alertIcon"
+                size="14"
+                stroke
+                @mouseenter="handleShowTooltip"
+              )
+              span.transaction-weight__tooltip(
+                :class="{ 'transaction-weight__tooltip--show': showTooltip }"
+              ) Total fee paid in DBIO to execute this transaction.
+            span {{ txWeight }}
+          ui-debio-button.white--text(
+            color="secondary"
+            :loading="isLoading"
+            height="2.5rem"
+            @click="handleSubmit"
+            block
+          ) Submit
 </template>
 
 <script>
@@ -214,6 +198,7 @@ import {
 import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import { errorHandler } from "@/common/lib/error-handler"
+import { generalDebounce } from "@/common/lib/utils"
 import errorMessage from "@/common/constants/error-messages"
 import { uploadFile, getFileUrl } from "@/common/lib/pinata"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@debionetwork/ui-icons"
@@ -238,7 +223,6 @@ export default {
     showModal: false,
     showPassword: false,
     showModalConfirm: null,
-    showModalPassword: false,
     error: null,
     isLoading: false,
     fileEmpty: false,
@@ -291,7 +275,6 @@ export default {
           if (dataEvent[1] === this.wallet.address) {
             this.resetState()
             this.isLoading = false
-            this.showModalPassword = false
             this.$router.push({ name: "customer-emr" })
           }
         }
@@ -300,6 +283,17 @@ export default {
 
     mnemonicData(val) {
       if (val) this.initialDataKey()
+    },
+
+    emr: {
+      deep: true,
+      immediate: true,
+      handler: generalDebounce(async function (val) {
+        this.txWeight = "Calculating..."
+
+        const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, val)
+        this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
+      }, 500)
     }
   },
 
@@ -439,7 +433,7 @@ export default {
       this.clearFile = false
     },
 
-    async handleModalPassword() {
+    async handleSubmit() {
       this._touchForms("emr")
       const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
       const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
@@ -452,12 +446,8 @@ export default {
 
       this.fileEmpty = false
       this.clearFile = true
-      this.showModalPassword = true
 
-      this.txWeight = "Calculating..."
-
-      const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, this.emr)
-      this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
+      await this.finalSubmit()
     },
 
     handleShowPassword() {
@@ -485,7 +475,6 @@ export default {
         const error = await errorHandler(e.message)
         this.error = error
         this.isLoading = false
-        this.showModalPassword = false
       }
     },
 
@@ -716,7 +705,8 @@ export default {
     &__cta
       gap: 20px
 
-    &__tx-text
+  .transaction-weight
+    &__text
       position: relative
 
     &__tooltip
