@@ -179,7 +179,7 @@
             color="secondary"
             :loading="isLoading"
             height="2.5rem"
-            @click="handleModalPassword"
+            @click="handleSubmit"
             block
           ) Submit
 </template>
@@ -289,7 +289,7 @@ export default {
       deep: true,
       immediate: true,
       handler: generalDebounce(async function (val) {
-        this.txWeight = "Calculatding..."
+        this.txWeight = "Calculating..."
 
         const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, val)
         this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
@@ -433,7 +433,7 @@ export default {
       this.clearFile = false
     },
 
-    async handleModalPassword() {
+    async handleSubmit() {
       this._touchForms("emr")
       const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
       const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
@@ -446,6 +446,8 @@ export default {
 
       this.fileEmpty = false
       this.clearFile = true
+
+      await this.finalSubmit()
     },
 
     handleShowPassword() {
