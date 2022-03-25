@@ -119,7 +119,7 @@ export default {
         this.isRejected = true
       }
 
-      if (this.geneticAnalysis.status === "Registere") {
+      if (this.geneticAnalysis.status === "Registered") {
         this.isRegistered = true
       }
 
