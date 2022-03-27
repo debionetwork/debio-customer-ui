@@ -117,6 +117,8 @@ export default {
       if (this.geneticAnalysis.status === "Rejected") {
         this.stepperItems[3].title = "Rejected"
         this.isRejected = true
+        this.rejectTitle = this.geneticAnalysis.rejectedTitle
+        this.rejectDesc = this.geneticAnalysis.rejectedDescription
       }
 
       if (this.geneticAnalysis.status === "Registered") {
@@ -126,8 +128,6 @@ export default {
       if (this.geneticAnalysis.status === "InProgress") {
         this.isInProgress = true
       }
-
-
     }
   }
 

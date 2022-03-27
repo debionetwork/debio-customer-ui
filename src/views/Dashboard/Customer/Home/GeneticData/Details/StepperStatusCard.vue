@@ -14,7 +14,8 @@
       .step-indicator
         .status-card__step
           div(:class="setClass(1)")
-            v-icon.icon mdi-check
+            v-icon.icon(v-if="orderStatus === 'Rejected'") mdi-close 
+            v-icon.icon(v-else) mdi-check
           small Order Confirmation
         .status-card__indicator-line
         .status-card__step
@@ -32,13 +33,16 @@
         width="100%" 
         color="red"
         outlined 
+        @click="cancelOrder"
+        :loading="isLoading"
       ) Cancel Request
 
       ui-debio-button(
         v-else
-        :disabled="orderStatus === 'InProgress'"
+        :disabled="orderStatus === 'InProgress' || orderStatus === 'Cancelled'"
         width="100%" 
-        color="secondary"
+        color="primary"
+        @click="viewResult"
       ) View Result
 
 
@@ -52,7 +56,6 @@ import { registeredBanner } from "@debionetwork/ui-icons"
 import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 
-
 export default {
   name: "StepperStatusCard",
 
@@ -61,6 +64,7 @@ export default {
     orderId: null,
     status: null,
     message: null,
+    isLoading: false,
     activeStep: 1,
     orderDetail: {
       Registered: {
@@ -68,14 +72,14 @@ export default {
         message: "Your request has been sent.",
         active: 1
       },
-      InProgress: {
-        status: "Confirmation Order",
-        message: "Your request has been registered. You may send your sample to selected lab.",
-        active: 2
-      },
       Rejected: {
         status: "Order Rejected",
         message: "Your request has been rejected by Genetic Analyst.",
+        active: 1
+      },
+      InProgress: {
+        status: "Confirmation Order",
+        message: "Your request has been registered. You may send your sample to selected lab.",
         active: 2
       },
       ResultReady: {
@@ -84,12 +88,14 @@ export default {
         active: 3
       }
     },
-    orderStatus: null
+    orderStatus: null,
+    stepper: ["Order Confirmation", "Analyzed", "QualityControl"]
   }),
 
   computed: {
     ...mapState({
-      api: (state) => state.substrate.api
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet
     })
   },
 
@@ -111,10 +117,24 @@ export default {
 
     setClass(step) {
       if (this.activeStep >= step) {
+        if (this.orderStatus === "Rejected") {
+          return ["step-icon", "border-error", "error"]
+        }
+
         return ["step-icon", "active"]
       }
 
       return "step-icon"
+    },
+
+    async cancelOrder() {
+      this.$emit("cancel")
+    },
+
+    async viewResult() {
+      if (this.orderStatus === "Rejected") {
+        this.$emit("reject")
+      }
     }
 
   }
@@ -176,6 +196,12 @@ export default {
       height: 1px
       background: #A868FF
       flex: 1
+
+    &__indicator-line-error
+      height: 1px
+      background: red
+      flex: 1
+      
 
   .step-indicator
     display: flex
