@@ -55,8 +55,10 @@ export default {
   },
 
   async mounted() {
-    this.orderId = this.$route.params.id
-    await this.getGAOrder()
+    if (this.$route.params.id) {
+      this.orderId = this.$route.params.id
+      await this.getGAOrder()
+    }
   },
 
   methods: {
