@@ -11,9 +11,6 @@
           b.reason-of-rejection__textReason of Rejection
           .reason-of-rejection__text {{ reason }}
 
-
-          
-
       .reason-of-rejection__button
         ui-debio-button(
           width="340"
