@@ -86,28 +86,27 @@ export async function getTransactionReceiptMined(txHash, interval) {
 export async function setMetamaskWallet(address) {
   const ethAccount = await startApp()
 
-  if (ethAccount.currentAccount == "no_install") {
+  if (ethAccount.currentAccount === "no_install") {
     return ethAccount
   } 
 
   let accountList = []
-  
-  for (let i = 0; i < ethAccount.accountList.length; i++) {
-    const balance = await getBalanceETH(
-      ethAccount.accountList[i]
-    )
+  const balance = await getBalanceETH(
+    ethAccount.accountList[0]
+  )
 
-    let isActive = false
-    if (address == ethAccount.accountList[i]) {
-      isActive = true
-    }
-
-    accountList.push({
-      address: ethAccount.accountList[i],
-      name: "Account " + (i + 1),
-      balance: parseFloat(balance).toFixed(2),
-      active: isActive
-    })
-    return accountList     
+  let isActive = false
+  if (address == ethAccount.accountList[0]) {
+    isActive = true
   }
+
+  accountList.push({
+    address: ethAccount.accountList[0],
+    name: "Account 1",
+    balance: parseFloat(balance).toFixed(2),
+    active: isActive
+  })
+
+  return accountList     
+  
 }

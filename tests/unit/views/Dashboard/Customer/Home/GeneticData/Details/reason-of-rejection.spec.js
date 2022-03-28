@@ -33,7 +33,7 @@ describe("Reson of Rejections", () => {
       store: new Vuex.Store({
         state: {
           substrate: {
-            api: "API",
+            api: "API"
           },
           metamask: {
             web3: "WEB3"
