@@ -186,11 +186,15 @@ export default {
 
       &:hover
         background: #F9F9F9
-        border: 1px solid #6F4CEC
+        border-radius: : 1px 
+        border-style: solid 
+        border-color: #6F4CEC
 
       &--active
         background: #F9F9F9
-        border: 1px solid #6F4CEC
+        border-radius: : 1px 
+        border-style: solid 
+        border-color: #6F4CEC
 
     &__document-title
       max-width: 165px

@@ -348,7 +348,6 @@ export default {
     height: 3em
     width: 3em
     background-color: white
-    font-color: white
   
   .dialog-payment
     width: 400
