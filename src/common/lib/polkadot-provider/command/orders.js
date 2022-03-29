@@ -26,8 +26,8 @@ export async function fulfillOrder(api, pair, orderId) {
           )
           // we know that data for system.ExtrinsicFailed is
           // (DispatchError, DispatchInfo)
-          .forEach(({ event: { data: [error, info] } }) => {
-            info
+          .forEach(({ event: { data: [error] } }) => {
+            
             if (error.isModule) {
               // for module errors, we have the section indexed, lookup
               const decoded = api.registry.findMetaError(error.asModule)

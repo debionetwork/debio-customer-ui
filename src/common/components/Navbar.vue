@@ -380,7 +380,7 @@ export default {
 
     signOut () {
       localStorage.clear()
-      this.clearAuth
+      this.clearAuth()
       this.clearWallet()
       this.ethAccount = null
       this.loginStatus = false

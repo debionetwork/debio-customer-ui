@@ -31,8 +31,6 @@
 
     border-radius: 50px;
     /* or 22px */
-
-    display: flex;
     align-items: center;
     text-align: center;
 

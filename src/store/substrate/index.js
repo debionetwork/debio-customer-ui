@@ -399,10 +399,10 @@ export default {
       return state.lastEventData
     },
     getListNotification(state) {
-      state.localListNotification
+      return state.localListNotification
     },
     getMnemonicData(state) {
-      state.mnemonicData
+      return state.mnemonicData
     }
   }
 }

@@ -729,7 +729,8 @@ export default {
     &__file-item
       padding: 12px 20px
       border-radius: 4px
-      border: 2px dashed #8AC1FF
+      border-style: dashed 
+      border-color: #8AC1FF
       background: #F9F9FF
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
 
