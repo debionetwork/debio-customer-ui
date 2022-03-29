@@ -1,7 +1,7 @@
 import Kilt from "@kiltprotocol/sdk-js"
 import axios from "axios"
 import store from "@/store"
-import { uploadFile, downloadJson, getIpfsMetaData, downloadDocumentFileInBrowser } from "@debionetwork/pinata-ipfs"
+import { uploadFile as pinataIpfsUploadFile, downloadJson, getIpfsMetaData as pinataIpfsGetIpfsMetadata, downloadDocumentFileInBrowser } from "@debionetwork/pinata-ipfs"
 
 const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
 
@@ -24,19 +24,19 @@ export const uploadFile = val => {
     source
   })
   
-  return uploadFile(
-      options,
-      val.file,
-      pinataJwtKey,
-      source,
-      (progressEvent) => {
-        if(progressEvent.lengthComputable) {
-          let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total )
-          store.dispatch("geneticData/getLoadingProgress", {
-            progress: percentCompleted
-          })
-        }
+  return pinataIpfsUploadFile(
+    options,
+    val.file,
+    pinataJwtKey,
+    source,
+    (progressEvent) => {
+      if(progressEvent.lengthComputable) {
+        let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total )
+        store.dispatch("geneticData/getLoadingProgress", {
+          progress: percentCompleted
+        })
       }
+    }
   )
 }
 
@@ -57,7 +57,7 @@ export const downloadFile = async (ipfsLink, withMetaData = false) => {
 }
 
 export const getIpfsMetaData = async (cid) => {
-  return await getIpfsMetaData(
+  return await pinataIpfsGetIpfsMetadata(
     cid,
     pinataJwtKey
   )
@@ -82,9 +82,9 @@ export const decryptFile = (obj, pair) => {
 export const downloadDocumentFile = (data, fileName, type) => {
   try {
     downloadDocumentFileInBrowser(
-        data,
-        filename,
-        type
+      data,
+      fileName,
+      type
     )
   } catch (error) {
     console.error(error)
