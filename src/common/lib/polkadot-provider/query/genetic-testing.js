@@ -1,6 +1,4 @@
-import { queryServicesById } from "./services"
-import { queryLabsById } from "./labs"
-import { getOrdersDetail } from "./orders"
+import { queryServiceById, queryLabById, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 
 export async function queryDnaSamples(api, bytes) {
   const res = await api.query.geneticTesting.dnaSamples(bytes)
@@ -33,10 +31,10 @@ export async function getDnaTestResultsDetailByLab(api, labId) {
   if (resultIds != null) {
     for (let i = 0; i < resultIds.length; i++) {
       let resultDetail = await queryDnaSamples(api, resultIds[i])
-      let orderDetail = await getOrdersDetail(api, resultDetail.orderId)
+      let orderDetail = await queryOrderDetailByOrderID(api, resultDetail.orderId)
       let createdAtTimestamp = parseInt(orderDetail.createdAt.replace(/,/g, ""))
-      const service = await queryServicesById(api, orderDetail.serviceId)
-      const lab = await queryLabsById(api, service.ownerId)
+      const service = await queryServiceById(api, orderDetail.serviceId)
+      const lab = await queryLabById(api, service.ownerId)
       orderDetail["createdAt"] = (new Date(createdAtTimestamp)).toLocaleDateString()
       orderDetail["labName"] = lab.info.name
       orderDetail["serviceName"] = service.info.name

@@ -68,7 +68,7 @@ jest.mock("@debionetwork/polkadot-provider", () => ({
       }
     }
   }),
-  queryServicesById: jest.fn(() => {
+  queryServiceById: jest.fn(() => {
     return {
       id: "0xabd8224962152bae46333a82794c9b9d0654c57df1ba40cbc275fde415809b45",
       ownerId: "5EFb5C9AjhGnejq1f8k7bPGgAdQV4iM84EjwdopHhJidftfi",
