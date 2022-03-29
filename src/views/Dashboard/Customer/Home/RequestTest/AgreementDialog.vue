@@ -69,7 +69,7 @@
 <script>
 import { mapState } from "vuex"
 import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
-import { getCreateRequestFee } from "@/common/lib/polkadot-provider/command/info"
+import { getCreateRequestFee } from "@debionetwork/polkadot-provider"
 import errorMessage from "@/common/constants/error-messages"
 import {errorHandler} from "@/common/lib/error-handler"
 

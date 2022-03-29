@@ -29,10 +29,12 @@
 
 import { mapState } from "vuex"
 import { eyeIcon, downloadIcon } from "@debionetwork/ui-icons"
-import { orderDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/orders"
-import { analystDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analyst"
-import { queryGeneticAnalysisByOwner, queryGeneticAnalysisStorage, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
-import { queryGeneticAnalysts, queryGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { queryGeneticAnalysisById } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisByOwnerId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisStorage, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
+import { queryGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analysts"
 import { downloadFile, decryptFile, downloadDocumentFile } from "@/common/lib/pinata"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
@@ -128,12 +130,12 @@ export default {
     async fetchGeneticAnalysisData() {
       this.items = []
       const accountId = this.wallet.address
-      const trackingId = await queryGeneticAnalysisByOwner(this.api, accountId)
+      const trackingId = await queryGeneticAnalysisByOwnerId(this.api, accountId)
 
       for (let i = 0; i < trackingId.length; i++) {
         const geneticAnalysis = await queryGeneticAnalysisStorage(this.api, trackingId[i])
-        const { sellerId } = await orderDetails(this.api, geneticAnalysis.geneticAnalysisOrderId)
-        const { info: analystInfo } = await analystDetails(this.api, sellerId)
+        const { sellerId } = await queryGeneticAnalysisOrderById(this.api, geneticAnalysis.geneticAnalysisOrderId)
+        const { info: analystInfo } = await queryGeneticAnalystByAccountId(this.api, sellerId)
 
         const dateCreated = new Date(parseInt(geneticAnalysis.createdAt.replace(/,/g, "")))
         const dateUpdated = new Date(parseInt(geneticAnalysis.updatedAt.replace(/,/g, "")))
@@ -153,7 +155,7 @@ export default {
 
         const geneticAnalysisTrackingId = geneticAnalysis.geneticAnalystId
 
-        const geneticAnalystsData = await queryGeneticAnalysts(this.api, geneticAnalysisTrackingId)
+        const geneticAnalystsData = await queryGeneticAnalysisById(this.api, geneticAnalysisTrackingId)
         const fullName = (geneticAnalystsData.info.firstName + " " + geneticAnalystsData.info.lastName)
 
         const orderId = geneticAnalysis.geneticAnalysisOrderId

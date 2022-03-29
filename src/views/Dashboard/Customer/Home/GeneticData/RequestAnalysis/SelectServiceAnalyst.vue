@@ -72,7 +72,7 @@
 import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard"
 import AnalystDetail from "./AnalystDetail"
-import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
 import { queryGetAllGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
 import { queryGeneticAnalystQualifications } from "@/common/lib/polkadot-provider/query/genetic-analyst-qualifications"
 import ImportantDialog from "./Information.vue"
@@ -140,7 +140,7 @@ export default {
           }     
         } = geneticAnalystService[i][1].toHuman()  
         
-        const analystsInfo = await queryGeneticAnalysts(this.api, analystId)
+        const analystsInfo = await queryGeneticAnalystByAccountId(this.api, analystId)
 
         if (analystsInfo.verificationStatus === "Verified") {
           const service = {

@@ -79,10 +79,10 @@
 
 import { mapState } from "vuex"
 import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
-import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
-import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
-import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
-import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
+import { queryEthAdressByAccountId } from "@debionetwork/polkadot-provider"
+import { queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
+import { createOrder } from "@debionetwork/polkadot-provider"
+import { getCreateOrderFee } from "@debionetwork/polkadot-provider"
 import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
 import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
@@ -175,13 +175,13 @@ export default {
       }
     }
     // get last order id
-    this.lastOrder = await lastOrderByCustomer(
+    this.lastOrder = await queryLastOrderHashByCustomer(
       this.api,
       this.wallet.address
     )
 
     if (this.lastOrder) {
-      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      this.detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
       this.status = this.detailOrder.status
     }
 
@@ -252,7 +252,7 @@ export default {
 
 
         // Seller has no ETH address
-        this.ethSellerAddress = await ethAddressByAccountId(
+        this.ethSellerAddress = await queryEthAdressByAccountId(
           this.api,
           this.selectedService.labId
         )
@@ -297,11 +297,11 @@ export default {
     async payOrder () {
       try {
         // get last order id
-        this.lastOrder = await lastOrderByCustomer(
+        this.lastOrder = await queryLastOrderHashByCustomer(
           this.api,
           this.wallet.address
         )
-        this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+        this.detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
 
         const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
         const totalPrice = this.selectedService.price

@@ -116,8 +116,8 @@ import ipfsWorker from "@/common/lib/ipfs/ipfs-worker";
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs";
 import { mapState } from "vuex";
 import { queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing";
-import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs";
-import { getOrdersDetail } from "@/common/lib/polkadot-provider/query/orders";
+import { queryLabById } from "@debionetwork/polkadot-provider";
+import { queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider";
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services";
 import { hexToU8a } from "@polkadot/util";
 import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/api";
@@ -190,7 +190,7 @@ export default {
 
     async getTestResult() {
       try {
-        this.order = await getOrdersDetail(this.api, this.idOrder);
+        this.order = await queryOrderDetailByOrderID(this.api, this.idOrder);
         this.ownerAddress = this.order.customerEthAddress;
         
         this.testResult = await queryDnaTestResults(
@@ -205,7 +205,7 @@ export default {
 
     async getLabServices() {
       try {
-        this.lab = await queryLabsById(this.api, this.testResult.labId);
+        this.lab = await queryLabById(this.api, this.testResult.labId);
         this.services = await queryServicesById(this.api, this.order.serviceId);
 
         this.publicKey = this.lab.info.boxPublicKey;

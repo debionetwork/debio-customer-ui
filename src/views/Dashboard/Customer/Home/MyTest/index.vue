@@ -148,11 +148,10 @@ import {
 } from "@/common/constants/instruction-step.js"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 import ConfirmationDialog from "./ConfirmationDialog.vue"
-import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
 import { queryDnaSamples, queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
-import { ordersByCustomer } from "@/common/lib/polkadot-provider/query/orders"
-import { unstakeRequestFee } from "@/common/lib/polkadot-provider/command/info"
+import { unstakeRequest, unstakeRequestFee } from "@debionetwork/polkadot-provider"
+import { queryOrdersByCustomer } from "@debionetwork/polkadot-provider"
 
 
 
@@ -324,7 +323,7 @@ export default {
       try {
         this.testResult = []
         const address = this.wallet.address
-        const orders = await ordersByCustomer(this.api, address)
+        const orders = await queryOrdersByCustomer(this.api, address)
         if (orders != null) {
           orders.reverse()
           for (let i = 0; i < orders.length; i++) {

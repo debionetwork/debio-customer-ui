@@ -37,7 +37,7 @@
 
 <script>
 import { mapMutations, mapState } from "vuex"
-import { queryGeneticDataByOwner, queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
+import { queryGeneticDataByOwnerId, queryGeneticDataById } from "@debionetwork/polkadot-provider"
 import EmptyDataCard from "./EmptyDataCard"
 
 export default {
@@ -94,7 +94,7 @@ export default {
     async fetchGeneticData() {
       this.items = []
       const accountId = this.wallet.address
-      const dataList = await queryGeneticDataByOwner(this.api, accountId)
+      const dataList = await queryGeneticDataByOwnerId(this.api, accountId)
 
       if (!dataList) return this.isEmpty = true
 

@@ -51,7 +51,7 @@ import { mapState, mapMutations } from "vuex"
 import NoLab from "../NoLab.vue"
 import MenuCard from "../MenuCard.vue"
 import ServiceDetailDialog from "../ServiceDetailDialog.vue"
-import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
+import { queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 
 
 export default {
@@ -198,13 +198,13 @@ export default {
     },
     
     async getDetailService(service) {
-      this.lastOrder = await lastOrderByCustomer(
+      this.lastOrder = await queryLastOrderHashByCustomer(
         this.api,
         this.wallet.address
       )
 
       if (this.lastOrder) {
-        const detailOrder = await getOrdersData(this.api, this.lastOrder)
+        const detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
         if (detailOrder.status === "Unpaid") {
           this.showAlert = true
           return

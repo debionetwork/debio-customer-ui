@@ -139,14 +139,12 @@
 import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator, eyeIcon } from "@debionetwork/ui-icons"
 
 import {
-  ordersByCustomer,
-  getOrdersData
-} from "@/common/lib/polkadot-provider/query/orders"
-import {
-  queryDnaSamples
-} from "@/common/lib/polkadot-provider/query/genetic-testing"
-import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
-import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
+  queryOrdersByCustomer,
+  queryOrderDetailByOrderID
+} from "@debionetwork/polkadot-provider"
+import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"
+import { queryLabById } from "@debionetwork/polkadot-provider"
+import { queryServiceById } from "@debionetwork/polkadot-provider"
 import localStorage from "@/common/lib/local-storage"
 import { mapState } from "vuex"
 import {
@@ -209,18 +207,18 @@ export default {
         this.testResult = [];
         let maxResults = 5;
         const address = this.wallet.address
-        const orders = await ordersByCustomer(this.api, address)
+        const orders = await queryOrdersByCustomer(this.api, address)
         if (orders != null) {
           orders.reverse()
           if (orders.length < maxResults) {
             maxResults = orders.length;
           }
           for (let i = 0; i < orders.length; i++) {
-            const detailOrder = await getOrdersData(this.api, orders[i])
+            const detailOrder = await queryOrderDetailByOrderID(this.api, orders[i])
             if (detailOrder.status != "Cancelled" && detailOrder.status != "Unpaid") {
               const dnaSample = await queryDnaSamples(this.api, detailOrder.dnaSampleTrackingId)
-              const detailLab = await queryLabsById(this.api, dnaSample.labId)
-              const detailService = await queryServicesById(this.api, detailOrder.serviceId)
+              const detailLab = await queryLabById(this.api, dnaSample.labId)
+              const detailService = await queryServiceById(this.api, detailOrder.serviceId)
               this.prepareTestResult(detailOrder, dnaSample, detailLab, detailService)
             }
           }
@@ -236,7 +234,7 @@ export default {
       try {
         const address = this.wallet.address
         let maxResults = 5;
-        let listOrderId = await ordersByCustomer(this.api, address)
+        let listOrderId = await queryOrdersByCustomer(this.api, address)
         if (listOrderId != null) {
           listOrderId = listOrderId.reverse()
         }
@@ -244,9 +242,9 @@ export default {
           maxResults = listOrderId.length
         }
         for (let i = 0; i < maxResults; i++) {
-          const detailOrder = await getOrdersData(this.api, listOrderId[i])
-          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
-          const detailService = await queryServicesById(this.api, detailOrder.serviceId);
+          const detailOrder = await queryOrderDetailByOrderID(this.api, listOrderId[i])
+          const detaillab = await queryLabById(this.api, detailOrder.sellerId)
+          const detailService = await queryServiceById(this.api, detailOrder.serviceId);
           
           this.preparePaymentData(detailOrder, detaillab, detailService)
         }

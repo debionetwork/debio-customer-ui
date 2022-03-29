@@ -38,7 +38,7 @@
 
 <script>
 import { GAGetOrders } from "@/common/lib/api"
-import { analysisDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/analysis"
+import { queryGeneticAnalysisById } from "@debionetwork/polkadot-provider"
 import { generalDebounce } from "@/common/lib/utils"
 import { geneticAnalystIllustration, eyeIcon } from "@debionetwork/ui-icons"
 
@@ -128,7 +128,7 @@ export default {
 
         for (const order of orderData.data) {
           const sourceData = order._source
-          const analysisData = await analysisDetails(this.api, order._source.genetic_analysis_tracking_id)
+          const analysisData = await queryGeneticAnalysisById(this.api, order._source.genetic_analysis_tracking_id)
           const GENETIC_STATUS = {
             REGISTERED: "Open",
             INPROGRESS: "In Progress",

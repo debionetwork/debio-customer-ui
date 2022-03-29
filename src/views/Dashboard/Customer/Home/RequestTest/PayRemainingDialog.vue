@@ -61,10 +61,10 @@ import { mapState } from "vuex"
 import CryptoJS from "crypto-js"	
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
-import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
-import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
-import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
-import { getCreateOrderFee } from "@/common/lib/polkadot-provider/command/info"
+import { queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
+import { createOrder } from "@debionetwork/polkadot-provider"
+import { processRequest } from "@debionetwork/polkadot-provider"
+import { getCreateOrderFee } from "@debionetwork/polkadot-provider"
 
 export default {
   name: "PayRemainingDialog",
@@ -153,11 +153,11 @@ export default {
     },
 
     async processService () {
-      this.lastOrder = await lastOrderByCustomer(
+      this.lastOrder = await queryLastOrderHashByCustomer(
         this.api,
         this.pair.address
       )
-      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      this.detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
       const orderId = this.detailOrder.id
       const dnaSampleTrackingId = this.detailOrder.dnaSampleTrackingId
       const additional = (this.detailOrder.additionalPrices[0].value).replaceAll(",", "")

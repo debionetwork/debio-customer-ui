@@ -148,9 +148,9 @@ import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
-import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
-import { processRequest } from "@/common/lib/polkadot-provider/command/service-request"
-import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
+import { createOrder } from "@debionetwork/polkadot-provider"
+import { processRequest } from "@debionetwork/polkadot-provider"
+import { queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
 import { getDbioBalance, fetchPaymentDetails } from "@/common/lib/api"
 import {
@@ -226,13 +226,13 @@ export default {
     }
 
     // get last order id
-    this.lastOrder = await lastOrderByCustomer(
+    this.lastOrder = await queryLastOrderHashByCustomer(
       this.api,
       this.wallet.address
     )
 
     if (this.lastOrder) {
-      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+      this.detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
       this.status = this.detailOrder.status
       this.orderId = this.detailOrder.id
     }
@@ -305,13 +305,13 @@ export default {
     },
 
     async onSubmit () {
-      this.lastOrder = await lastOrderByCustomer(
+      this.lastOrder = await queryLastOrderHashByCustomer(
         this.api,
         this.wallet.address
       )
 
       if(this.lastOrder){
-        this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+        this.detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
 
         if (this.detailOrder.status === "Unpaid") {
           this.showAlert = true
@@ -343,12 +343,12 @@ export default {
 
     
     async processRequestService() {
-      const lastOrder = await lastOrderByCustomer(
+      const lastOrder = await queryLastOrderHashByCustomer(
         this.api,
         this.wallet.address
       )
 
-      const detailOrder = await getOrdersData(
+      const detailOrder = await queryOrderDetailByOrderID(
         this.api,
         lastOrder
       )

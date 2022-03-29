@@ -89,9 +89,9 @@ import CryptoJS from "crypto-js"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { u8aToHex } from "@polkadot/util"
 import { downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
-import { createGeneticAnalysisOrder } from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
-import { lastAnlysisOrderByCustomer } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
-import { queryGeneticAnalysts } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { createGeneticAnalysisOrder } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisOrderByCustomerId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
 import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
 
 export default {
@@ -174,7 +174,7 @@ export default {
 
     async getAnalystPublicKey () {
       const id = this.service.analystId
-      const analystDetail = await queryGeneticAnalysts(this.api, id)
+      const analystDetail = await queryGeneticAnalystByAccountId(this.api, id)
       const analystPublicKey = analystDetail.info.boxPublicKey
       return analystPublicKey
     },
@@ -359,7 +359,7 @@ export default {
     },
 
     async toCheckoutPage() {                  
-      const lastOrder = await lastAnlysisOrderByCustomer(this.api, this.wallet.address)
+      const lastOrder = await queryGeneticAnalysisOrderByCustomerId(this.api, this.wallet.address)
       this.$router.push({name: "customer-request-analysis-payment", params: { id: lastOrder}})
     }
   }

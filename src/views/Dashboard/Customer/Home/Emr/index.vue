@@ -100,14 +100,14 @@ import {
 } from "@debionetwork/ui-icons"
 import {
   deregisterElectronicMedicalRecord,
-  getDeleteEMRFee
-} from "@/common/lib/polkadot-provider/command/electronic-medical-record"
+  getRemoveElectronicMedicalRecordFee
+} from "@debionetwork/polkadot-provider"
 
 import {
   queryGetEMRList,
   queryElectronicMedicalRecordFileById,
   queryElectronicMedicalRecordById
-} from "@/common/lib/polkadot-provider/query/electronic-medical-record"
+} from "@debionetwork/polkadot-provider"
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
@@ -308,7 +308,7 @@ export default {
       this.selectedFile = item
       this.showModal = true
 
-      const txWeight = await getDeleteEMRFee(this.api, this.wallet, item.id)
+      const txWeight = await getRemoveElectronicMedicalRecordFee(this.api, this.wallet, item.id)
       this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 

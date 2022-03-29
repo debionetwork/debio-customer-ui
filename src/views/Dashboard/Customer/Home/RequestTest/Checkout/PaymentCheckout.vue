@@ -19,7 +19,7 @@
 import { mapState } from "vuex"
 import LabDetailCard from "../LabDetailCard.vue"
 import PaymentDetailCard from "../PaymentDetailCard.vue"
-import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
+import { queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 
 
 export default {
@@ -42,7 +42,7 @@ export default {
 
   async mounted () {
     if (this.$route.params.id) {
-      const detailOrder = await getOrdersData(this.api, this.$route.params.id)
+      const detailOrder = await queryOrderDetailByOrderID(this.api, this.$route.params.id)
       if (detailOrder.status === "Cancelled") {
         this.isCancelled = true
       }

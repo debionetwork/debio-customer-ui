@@ -99,12 +99,14 @@ import { mapState } from "vuex"
 import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
 import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
 import {
-  cancelGeneticAnalysisOrder,
   getCreateGeneticAnalysisOrderFee
 } from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
 import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
 import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
-import { queryGeneticDataById } from "@/common/lib/polkadot-provider/query/genetic-data"
+import { queryGeneticDataById } from "@debionetwork/polkadot-provider"
+import {
+  cancelGeneticAnalysisOrder
+} from "@debionetwork/polkadot-provider"
 import PaymentDialog from "@/common/components/Dialog/PaymentDialog"
 
 export default {

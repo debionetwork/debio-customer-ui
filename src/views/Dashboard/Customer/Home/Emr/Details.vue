@@ -52,7 +52,7 @@ import { downloadFile, decryptFile } from "@/common/lib/pinata"
 import {
   queryElectronicMedicalRecordById,
   queryElectronicMedicalRecordFileById
-} from "@/common/lib/polkadot-provider/query/electronic-medical-record"
+} from "@debionetwork/polkadot-provider"
 
 export default {
   name: "CustomerEmrDetails",
