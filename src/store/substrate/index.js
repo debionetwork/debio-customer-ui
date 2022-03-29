@@ -225,6 +225,7 @@ export default {
         commit("SET_MNEMONIC_DATA", CryptoJS.AES.decrypt(encryptedMnemonic, password));
       }
     },
+    // eslint-disable-next-line
     async getAllAccounts({ commit, state }, { address }) {
       try {
         commit("SET_LOADING_WALLET", true)
