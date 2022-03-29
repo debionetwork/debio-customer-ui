@@ -106,7 +106,7 @@ import { checkCircleIcon } from "@debionetwork/ui-icons"
 import SuccessDialog from "@/common/components/Dialog/SuccessDialog"
 import { errorHandler } from "@/common/lib/error-handler"
 import UploadingDialog from "@/common/components/Dialog/UploadingDialog"
-import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata"
+import {downloadFile, uploadFile, getFileUrl } from "@/common/lib/pinata-proxy"
 
 
 

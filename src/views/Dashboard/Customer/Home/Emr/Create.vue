@@ -200,7 +200,7 @@ import { validateForms } from "@/common/lib/validate"
 import { errorHandler } from "@/common/lib/error-handler"
 import { generalDebounce } from "@/common/lib/utils"
 import errorMessage from "@/common/constants/error-messages"
-import { uploadFile, getFileUrl } from "@/common/lib/pinata"
+import { uploadFile, getFileUrl } from "@/common/lib/pinata-proxy"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@debionetwork/ui-icons"
 
 const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
