@@ -6,8 +6,8 @@ import VueRouter from "vue-router"
 import Home from "@/views/Dashboard/Customer/Home"
 
 
-jest.mock("../../../../../../src/common/lib/polkadot-provider/query/orders", () => ({
-  ordersByCustomer: jest.fn(() => {
+jest.mock("@debionetwork/polkadot-provider", () => ({
+  queryOrdersByCustomer: jest.fn(() => {
     return {
       length: 1,
       reverse: jest.fn(() => {
@@ -17,7 +17,7 @@ jest.mock("../../../../../../src/common/lib/polkadot-provider/query/orders", () 
       })
     }
   }),
-  getOrdersData: jest.fn(() => {
+  queryOrderDetailByOrderID: jest.fn(() => {
     return {
       id: "0xd1531ceb36ecfc0afc3e1af6393d496ec67ad1be00c8fda19a46f3fc95142095",
       serviceId: "0x90a672ea5a9c171744c4dd86427da0ee6e9d7bca575baee160f0caf12b7f6c6d",
@@ -43,27 +43,8 @@ jest.mock("../../../../../../src/common/lib/polkadot-provider/query/orders", () 
       createdAt: "1,643,000,820,001",
       updatedAt: "1,643,012,070,001"
     }
-  })
-}))
-
-jest.mock("../../../../../../src/common/lib/polkadot-provider/query/genetic-testing", () => ({
-  queryDnaSamples: jest.fn(() => {
-    return {
-      trackingId: "CU6F63ADJ9RTWF5J10CU6",
-      labId:" 5FFEr8P3DnLHzVybCYV4JsM9d9SmHCJZcMEMB9dBowcnUx4z",
-      ownerId: "5G3gNkTpmv2dmnJs5je5tT2DpUy2w2yXtfUoAYwcaH7tVVnC",
-      status: "Registered",
-      orderId: "0x6ad6f473bc381f5a2e56faf9f3a69c7cbee2fbe5f395420b4921be5ef0f33cb5",
-      rejectedTitle: null,
-      rejectedDescription: null,
-      createdAt: "1,643,181,408,001",
-      updatedAt: "1,643,181,408,001"
-    }
-  })
-}))
-
-jest.mock("../../../../../../src/common/lib/polkadot-provider/query/labs", () => ({
-  queryLabsById: jest.fn(() => {
+  }),
+  queryLabById: jest.fn(() => {
     return {
       accountId: "5EFb5C9AjhGnejq1f8k7bPGgAdQV4iM84EjwdopHhJidftfi",
       services: [
@@ -86,10 +67,7 @@ jest.mock("../../../../../../src/common/lib/polkadot-provider/query/labs", () =>
         profileImage: null
       }
     }
-  })
-}))
-
-jest.mock("../../../../../../src/common/lib/polkadot-provider/query/services", () => ({
+  }),
   queryServicesById: jest.fn(() => {
     return {
       id: "0xabd8224962152bae46333a82794c9b9d0654c57df1ba40cbc275fde415809b45",
@@ -126,6 +104,22 @@ jest.mock("../../../../../../src/common/lib/polkadot-provider/query/services", (
         image: "https://ipfs.io/ipfs/QmcVYqPKp9ztSJ8TKqKY4gCDWtf4yPw712EdVQGwBhASMQ"
       },
       serviceFlow: "RequestTest"
+    }
+  })
+}))
+
+jest.mock("../../../../../../src/common/lib/polkadot-provider/query/genetic-testing", () => ({
+  queryDnaSamples: jest.fn(() => {
+    return {
+      trackingId: "CU6F63ADJ9RTWF5J10CU6",
+      labId:" 5FFEr8P3DnLHzVybCYV4JsM9d9SmHCJZcMEMB9dBowcnUx4z",
+      ownerId: "5G3gNkTpmv2dmnJs5je5tT2DpUy2w2yXtfUoAYwcaH7tVVnC",
+      status: "Registered",
+      orderId: "0x6ad6f473bc381f5a2e56faf9f3a69c7cbee2fbe5f395420b4921be5ef0f33cb5",
+      rejectedTitle: null,
+      rejectedDescription: null,
+      createdAt: "1,643,181,408,001",
+      updatedAt: "1,643,181,408,001"
     }
   })
 }))

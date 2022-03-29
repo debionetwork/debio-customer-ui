@@ -39,7 +39,7 @@ describe("Service card", () => {
           metamask: {
             web3: "WEB3"
           }
-        },
+        }
       }),
       data: () => ({
         activeStep: 1,
