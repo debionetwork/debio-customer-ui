@@ -13,20 +13,28 @@
         h2.payment-history-details__title {{ computeDetailsTitle }}
         .payment-history-details__content
           .payment-details__wrapper
-
             .payment-details__product
-              ui-debio-avatar.product__image(:src="payment.service_info.image" size="150" rounded)
+              ui-debio-avatar.product__image(
+                :src="payment.service_info.image || payment.genetic_analyst_info.profile_image"
+                size="150"
+                rounded
+              )
               .product__details
                 .product__name {{ payment.service_info.name }}
                 ui-debio-rating.product__lab-rating(
+                  v-if="payment.section === 'order'"
                   :rating="payment.rating.rating_service"
                   :total-reviews="payment.rating.count_rating_service"
                   size="15"
                 )
-                .product__lab-name {{ payment.lab_info.name }}
-                .product__lab-address
+                .product__provider(v-if="payment.section === 'order'") {{ payment.lab_info.name }}
+                .product__provider(v-else) {{ payment.genetic_analyst_info.name }}
+                .product__provider-address(v-if="payment.section === 'order'")
                   span.address__title Address
                   p.address__text.mb-0 {{ payment.lab_info.address }}, {{ payment.lab_info.city }}
+                .product__provider-specialist(v-else)
+                  span.address__title Specialization
+                  p.address__text.mb-0 {{ payment.genetic_analyst_info.specialization }}
 
             .payment-details__status
               .payment-details__field
@@ -37,9 +45,9 @@
                 .payment__status {{ payment.status }}
               .payment-details__field
                 .speciment__title Specimen number
-                .speciment__status {{ payment.dna_sample_tracking_id }}
+                .speciment__status {{ payment.dna_sample_tracking_id || payment.genetic_analysis_tracking_id }}
 
-            .payment-details__instruction(v-if="payment.status === 'Paid'")
+            .payment-details__instruction(v-if="payment.status === 'Paid' && payment.section === 'order'")
               ui-debio-icon.payment-details__instruction-icon(:icon="alertIcon" size="15" color="#52C41B" stroke)
               p.payment-details__instruction-text.mb-0
                 | Please proceed to send sample, see instruction 
@@ -53,16 +61,16 @@
                   .service__field-value
                     | {{ formatPrice(payment.prices[0].value) }}
                     | {{ payment.currency }}
-                .service__field(v-if="payment.additional_prices.length")
+                .service__field
                   .service__field-title Quality Control Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ formatPrice(payment.additional_prices[0].value) }}
+                    | {{ payment.additional_prices.length ? formatPrice(payment.additional_prices[0].value) : "-" }}
                     | {{ payment.currency }}
                 .service__field(v-if="payment.status === 'Refunded'")
                   .service__field-title Refund amount
                   .service__refund -
-                .service__field
+                .service__field(v-if="payment.section === 'order'")
                   .service__field-title.d-flex.align-center
                     | Reward
                     .reward(@mouseleave="handleShowPopup('leave')")
@@ -79,6 +87,7 @@
                   .service__field-value - DBIO
             ui-debio-button.payment-details__etherscan-link(
               color="secondary"
+              v-if="payment.section === 'order'"
               @click="handleViewEtherscan"
               :loading="isLoading"
               outlined
@@ -104,6 +113,11 @@ import {
 } from "@/common/constants/instruction-step.js"
 
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
+
+// NOTE: Use anchor tag with "noreferrer noopener nofollow" for security
+const anchor = document.createElement("a")
+anchor.target = "_blank"
+anchor.rel = "noreferrer noopener nofollow"
 
 export default {
   name: "CustomerPaymentDetails",
@@ -147,25 +161,44 @@ export default {
     if (!this.$route.params.id) this.$router.push({ name: "customer-payment-history" })
   },
 
-  async created() {
+  async mounted() {
     await this.fetchDetails()
   },
 
   methods: {
     async fetchDetails() {
       try {
+        let data
+        let rating
+        let txDetails
+        let isNotGAOrders = false
         const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
-        const data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
-        const rating = await getRatingService(dataPayment.service_id)
-        const txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.id)
 
-        this.payment = {
-          ...dataPayment,
-          test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim(),
-          rating
+        if (Object.keys(dataPayment.order).length) {
+          isNotGAOrders = true
+          data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
+          rating = await getRatingService(dataPayment.service_id)
+          txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.id)
+
+          // eslint-disable-next-line camelcase
+          this.txHash = txDetails.transaction_hash
         }
-        // eslint-disable-next-line camelcase
-        this.txHash = txDetails.transaction_hash
+
+        this.payment = isNotGAOrders
+          ? {
+            ...dataPayment.order,
+            section: "order",
+            test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim(),
+            rating
+          }
+          : {
+            ...dataPayment.orderGA,
+            genetic_analyst_info: {
+              ...dataPayment.orderGA.genetic_analyst_info,
+              name: `${dataPayment.orderGA.genetic_analyst_info.first_name} ${dataPayment.orderGA.genetic_analyst_info.last_name}`
+            },
+            section: "orderGA"
+          }
       } catch(e) {
         if (e.response.status === 404)
           this.messageError = "Oh no! We can't find your selected order. Please select another one"
@@ -178,22 +211,28 @@ export default {
       const dnaCollectionProcess = this.payment.service_info.dna_collection_process
 
       if (dnaCollectionProcess === "Covid 19 Saliva Test") {
-        window.open(this.COVID_19, "_blank")
+        anchor.href = this.COVID_19
+        anchor.click()
       }
       if (dnaCollectionProcess === "Blood Cells - Dried Blood Spot Collection Process") {
-        window.open(this.DRIED_BLOOD, "_blank")
+        anchor.href = this.DRIED_BLOOD
+        anchor.click()
       }
       if (dnaCollectionProcess === "Epithelial Cells - Buccal Swab Collection Process") {
-        window.open(this.BUCCAL_COLLECTION, "_blank")
+        anchor.href = this.BUCCAL_COLLECTION
+        anchor.click()
       }
       if (dnaCollectionProcess === "Fecal Matters - Stool Collection Process") {
-        window.open(this.FECAL_COLLECTION, "_blank")
+        anchor.href = this.FECAL_COLLECTION
+        anchor.click()
       }
       if (dnaCollectionProcess === "Saliva - Saliva Collection Process") {
-        window.open(this.SALIVA_COLLECTION, "_blank")
+        anchor.href = this.SALIVA_COLLECTION
+        anchor.click()
       }
       if (dnaCollectionProcess === "Urine - Clean Catch Urine Collection Process") {
-        window.open(this.URINE_COLLECTION, "_blank")
+        anchor.href = this.URINE_COLLECTION
+        anchor.click()
       }
     },
 
@@ -207,13 +246,7 @@ export default {
     },
 
     async handleViewEtherscan() {
-      const anchor = document.createElement("a")
-
-      // NOTE: Use anchor tag with "noreferrer noopener" for security
-      // eslint-disable-next-line camelcase
       anchor.href = `${process.env.VUE_APP_ETHERSCAN}${this.txHash}`
-      anchor.target = "_blank"
-      anchor.rel = "noreferrer noopener"
       anchor.click()
     }
   }
@@ -226,41 +259,41 @@ export default {
 
   .payment-history-details
     &__title
-      margin-top: 35px
+      margin-top: toRem(35px)
 
     &__content
-      min-width: 575px
-      max-width: 800px
-      padding: 30px
-      margin-top: 60px
-      border: 1px solid #E9E9E9
-      border-radius: 4px
+      min-width: toRem(575px)
+      max-width: toRem(800px)
+      padding: toRem(30px)
+      margin-top: toRem(60px)
+      border: toRem(1px) solid #E9E9E9
+      border-radius: toRem(4px)
 
     &::v-deep
       .ui-debio-card__body
         display: flex
         flex-direction: column
         align-items: center
-        padding-bottom: 100px
+        padding-bottom: toRem(100px)
 
   .payment-details
     &__product
       display: flex
-      gap: 25px
+      gap: toRem(25px)
 
     &__status
       display: flex
-      gap: 50px
-      margin: 40px 0 25px
+      gap: toRem(50px)
+      margin: toRem(40px) 0 toRem(25px)
 
     &__instruction
       background: #E7FFDC
       display: flex
       align-items: center
       justify-content: center
-      margin-bottom: 25px
-      gap: 15px
-      padding: 12px
+      margin-bottom: toRem(25px)
+      gap: toRem(15px)
+      padding: toRem(12px)
       color: #52C41B
 
     &__instruction-link
@@ -273,10 +306,10 @@ export default {
 
   .product
     &__details
-      width: calc(100% - 175px)
+      width: calc(100% - toRem(175px))
       display: flex
       flex-direction: column
-      gap: 15px
+      gap: toRem(15px)
 
     &__name
       @include h3-opensans
@@ -286,9 +319,9 @@ export default {
       display: flex
       align-items: center
       justify-content: space-between
-      gap: 80px
+      gap: toRem(80px)
       
-    &__lab-name
+    &__provider
       @include body-text-2
 
   .address
@@ -322,7 +355,7 @@ export default {
     &__field
       display: flex
       justify-content: space-between
-      padding: 10px 40px
+      padding: toRem(10px) toRem(40px)
       background: #FCFCFC
       @include body-text-2
 
@@ -340,34 +373,34 @@ export default {
     text-align: right
 
     &__popup
-      width: 290px
-      padding: 15px
+      width: toRem(290px)
+      padding: toRem(15px)
       position: absolute
-      font-size: 12px
-      top: 23px
-      left: -100px
+      font-size: toRem(12px)
+      top: toRem(23px)
+      left: toRem(-100px)
       background: #FFFFFF
-      border: 1px solid #E9E9E9
+      border: toRem(1px) solid #E9E9E9
 
       &::before
-        top: -22px
+        top: toRem(-22px)
         content: ""
         display: block
-        height: 20px
-        left: 98px
+        height: toRem(20px)
+        left: toRem(98px)
         position: absolute
         border-color: transparent transparent #E9E9E9 transparent
         border-style: solid
-        border-width: 11px
+        border-width: toRem(11px)
 
       &::after
-        border-left: solid transparent 10px
-        border-right: solid transparent 10px
-        border-bottom: solid #FFFFFF 10px
-        top: -10px
+        border-left: solid transparent toRem(10px)
+        border-right: solid transparent toRem(10px)
+        border-bottom: solid #FFFFFF toRem(10px)
+        top: toRem(-10px)
         content: " "
         height: 0
-        left: 99px
+        left: toRem(99px)
         position: absolute
         width: 0
 
