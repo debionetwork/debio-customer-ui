@@ -19,7 +19,7 @@ export const uploadFile = val => {
 
   const CancelToken = axios.CancelToken
   const source = CancelToken.source()
-
+ 
   store.dispatch("geneticData/setCancel", {
     source
   })
@@ -28,7 +28,7 @@ export const uploadFile = val => {
     options,
     val.file,
     pinataJwtKey,
-    source,
+    source.token,
     (progressEvent) => {
       if(progressEvent.lengthComputable) {
         let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total )
