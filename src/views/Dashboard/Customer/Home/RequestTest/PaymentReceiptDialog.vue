@@ -216,14 +216,14 @@ export default {
       try {
 
         this.ethAccount = await startApp()
-        
+
         if (this.ethAccount.currentAccount === "no_install") {
           this.isLoading = false
           this.password = ""
           this.error = "Please install MetaMask!"
           return
         }
-        
+
         // cek kalo udah binding wallet
         if (!this.metamaskWalletAddress) {
           this.isLoading = false
@@ -257,7 +257,7 @@ export default {
           this.selectedService.labId
         )
 
-        if (this.ethSellerAddress === null) {
+        if (this.ethSellerAddress === null || this.ethSellerAddress === "") {
           this.isLoading = false
           this.password = ""
           this.error = "The seller has no ETH Address."
@@ -265,14 +265,14 @@ export default {
         }
 
 
-        if (this.status !== "Unpaid") {
+        if (!this.status || this.status !== "Unpaid") {
           await createOrder(
             this.api,
             this.wallet,
             this.selectedService.serviceId,
+            this.selectedService.indexPrice,
             this.customerBoxPublicKey,
             this.selectedService.serviceFlow,
-            this.selectedService.indexPrice,
             this.payOrder
           )
         } else {
