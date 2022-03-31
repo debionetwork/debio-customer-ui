@@ -59,7 +59,7 @@
                   .service__field-title Service Price
                   .service__field-colon :
                   .service__field-value
-                    | {{ formatPrice(payment.prices[0].value) }}
+                    | {{ computeTotalPrices }}
                     | {{ payment.currency }}
                 .service__field
                   .service__field-title Quality Control Price
@@ -154,6 +154,11 @@ export default {
 
     hasPaymentDetails() {
       return Object.keys(this.payment)?.length
+    },
+
+    computeTotalPrices() {
+      if (!this.payment?.additional_prices?.length) return this.formatPrice(this.payment?.prices[0].value)
+      return this.formatPrice(this.payment?.prices[0].value) + this.formatPrice(this.payment?.additional_prices[0].value)
     }
   },
 
@@ -242,7 +247,7 @@ export default {
     },
 
     formatPrice(price) {
-      return this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether")
+      return parseInt(this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether"))
     },
 
     async handleViewEtherscan() {
