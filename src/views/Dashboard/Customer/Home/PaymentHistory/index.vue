@@ -106,8 +106,8 @@ export default {
         provider: result._index === "orders"
           ? result._source.lab_info.name
           : `${result._source.genetic_analyst_info.first_name} ${result._source.genetic_analyst_info.last_name}`,
-        created_at: new Date(parseInt(result._source.created_at.replaceAll(",", ""))).toLocaleDateString("id", {
-          day: "2-digit",
+        created_at: new Date(parseInt(result._source.created_at.replaceAll(",", ""))).toLocaleDateString("en-GB", {
+          day: "numeric",
           month: "short",
           year: "numeric"
         }),
