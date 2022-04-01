@@ -37,7 +37,7 @@
 
 <script>
 import { mapMutations, mapState } from "vuex"
-import { queryGeneticDataByOwnerId, queryGeneticDataById } from "@debionetwork/polkadot-provider"
+import { queryGeneticDataByOwnerId } from "@debionetwork/polkadot-provider"
 import EmptyDataCard from "./EmptyDataCard"
 
 export default {
@@ -99,8 +99,7 @@ export default {
       if (!dataList) return this.isEmpty = true
 
       for (let i = 0; i < dataList.length; i++) {
-        const geneticData = await queryGeneticDataById(this.api, dataList[i])
-        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = geneticData
+        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = dataList[i]
         
 
         if (updatedAt !== "0") {

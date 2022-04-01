@@ -43,7 +43,7 @@
 <script>
 import { mapState } from "vuex"
 import { pencilIcon, trashIcon } from "@debionetwork/ui-icons"
-import { queryGeneticDataByOwnerId, queryGeneticDataById } from "@debionetwork/polkadot-provider"
+import { queryGeneticDataByOwnerId } from "@debionetwork/polkadot-provider"
 import { removeGeneticData, getRemoveGeneticDataFee} from "@debionetwork/polkadot-provider"
 import { errorHandler } from "@/common/lib/error-handler"
 import ConfirmationDialog from "../MyTest/ConfirmationDialog"
@@ -124,9 +124,7 @@ export default {
       const dataList = await queryGeneticDataByOwnerId(this.api, accountId)
 
       for (let i = 0; i < dataList.length; i++) {
-        const geneticData = await queryGeneticDataById(this.api, dataList[i])
-
-        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = geneticData
+        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = dataList[i]
 
         if (updatedAt !== "0") {
           createdAt = this.formatDate(updatedAt)
