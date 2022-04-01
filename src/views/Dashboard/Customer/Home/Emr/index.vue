@@ -235,7 +235,7 @@ export default {
           return filtered
         }, [])
 
-        listEMR.reverse() // TODO: Remove this, it should be sorted from the backend side
+        listEMR.reverse()
 
         for (const emrDetail of listEMR) {
           await this.prepareEMRData(emrDetail)
