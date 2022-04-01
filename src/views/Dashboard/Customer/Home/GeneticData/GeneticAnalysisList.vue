@@ -33,7 +33,7 @@ import { queryGeneticAnalysisById } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalysisByOwnerId } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysiByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalystServices } from "@debionetwork/polkadot-provider"
 import { downloadFile, decryptFile, downloadDocumentFile } from "@/common/lib/pinata-proxy"
 import Kilt from "@kiltprotocol/sdk-js"
@@ -133,7 +133,7 @@ export default {
       const trackingId = await queryGeneticAnalysisByOwnerId(this.api, accountId)
 
       for (let i = 0; i < trackingId.length; i++) {
-        const geneticAnalysis = await queryGeneticAnalysiByGeneticAnalysisTrackingId(this.api, trackingId[i])
+        const geneticAnalysis = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, trackingId[i])
         const { sellerId } = await queryGeneticAnalysisOrderById(this.api, geneticAnalysis.geneticAnalysisOrderId)
         const { info: analystInfo } = await queryGeneticAnalystByAccountId(this.api, sellerId)
 

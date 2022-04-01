@@ -26,7 +26,7 @@
 <script>
 import { mapState } from "vuex"
 import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysiByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
 
 export default {
   name: "ReasonOfRejection",
@@ -69,7 +69,7 @@ export default {
         this.trackingId = analysisOrderDetail.geneticAnalysisTrackingId
       }
       
-      const GAStorage = await queryGeneticAnalysiByGeneticAnalysisTrackingId(this.api, this.trackingId)
+      const GAStorage = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, this.trackingId)
 
       this.title = GAStorage.rejectedTitle
       this.reason = GAStorage.rejectedDescription

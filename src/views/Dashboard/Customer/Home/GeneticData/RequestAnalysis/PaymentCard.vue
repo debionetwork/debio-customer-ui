@@ -102,7 +102,7 @@ import {
   createGeneticAnalysisOrderFee
 } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysiByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
 import { queryGeneticDataById } from "@debionetwork/polkadot-provider"
 import {
   cancelGeneticAnalysisOrder
@@ -247,7 +247,7 @@ export default {
     },
 
     async getAnalysisStatus() {
-      const details = await queryGeneticAnalysiByGeneticAnalysisTrackingId(this.api, this.trackingId)
+      const details = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, this.trackingId)
       if (details.status !== "Registered") {
         this.isRegistered = false
       }

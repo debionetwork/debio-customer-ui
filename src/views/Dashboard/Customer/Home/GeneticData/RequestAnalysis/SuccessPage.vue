@@ -45,7 +45,7 @@ import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
 import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysiByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
 
 
 export default {
@@ -112,7 +112,7 @@ export default {
       this.isRejected = false
       this.isInProgress = false
 
-      this.geneticAnalysis = await queryGeneticAnalysiByGeneticAnalysisTrackingId(this.api, this.trackingId)
+      this.geneticAnalysis = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, this.trackingId)
 
       if (this.geneticAnalysis.status === "Rejected") {
         this.stepperItems[3].title = "Rejected"
