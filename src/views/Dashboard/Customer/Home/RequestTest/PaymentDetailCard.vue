@@ -209,8 +209,8 @@ export default {
   async mounted () {
     this.stakingFlow = false
 
-    if(this.$route.params.id) {
-      await this.getDataService()
+    if(this.$route.params.hash) {
+      this.success = true
     }
 
     if (this.dataService.detailPrice) {
@@ -219,11 +219,7 @@ export default {
       this.totalPrice = this.formatPrice(this.dataService.price).replaceAll(",", "")
       this.currency = this.dataService.currency.toUpperCase()
     }
-
-    if (this.$route.params.id) {
-      this.success = true
-      this.orderId = this.$route.params.id.toString()
-    }
+    
 
     // get last order id
     this.lastOrder = await queryLastOrderHashByCustomer(
@@ -233,8 +229,8 @@ export default {
 
     if (this.lastOrder) {
       this.detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
-      this.status = this.detailOrder.status
       this.orderId = this.detailOrder.id
+      this.status = this.detailOrder.status
     }
 
     if (this.dataService.serviceFlow === "StakingRequestService") {
@@ -312,11 +308,6 @@ export default {
 
       if(this.lastOrder){
         this.detailOrder = await queryOrderDetailByOrderID(this.api, this.lastOrder)
-
-        if (this.detailOrder.status === "Unpaid") {
-          this.showAlert = true
-          return
-        }
       }
 
       if (this.isExcess && this.detailOrder !== "Unpaid") {
