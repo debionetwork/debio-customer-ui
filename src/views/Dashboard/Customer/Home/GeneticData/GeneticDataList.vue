@@ -123,8 +123,7 @@ export default {
       const accountId = this.wallet.address
       const dataList = await queryGeneticDataByOwnerId(this.api, accountId)
 
-      for (let i = 0; i < dataList.length; i++) {
-        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = dataList[i]
+      for (let {id, owenerId, reportLink, title, description, createdAt, updatedAt} of dataList) {
 
         if (updatedAt !== "0") {
           createdAt = this.formatDate(updatedAt)
@@ -134,6 +133,7 @@ export default {
 
         const item = { id, owenerId, reportLink, title, description, createdAt, updatedAt }
         this.items.push(item)
+        
       }
 
       this.items.sort((a, b) => {

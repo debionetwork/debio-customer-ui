@@ -98,10 +98,7 @@ export default {
 
       if (!dataList) return this.isEmpty = true
 
-      for (let i = 0; i < dataList.length; i++) {
-        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = dataList[i]
-        
-
+      for (let { id, owenerId, reportLink, title, description, createdAt, updatedAt } of dataList ) {
         if (updatedAt !== "0") {
           createdAt = this.formatDate(updatedAt)
         } else {
@@ -109,7 +106,7 @@ export default {
         }
 
         const item = { id, owenerId, reportLink, title, description, createdAt, updatedAt }
-        this.items.push(item)
+        this.items.push(item)        
       }
 
       this.items.sort((a, b) => {
