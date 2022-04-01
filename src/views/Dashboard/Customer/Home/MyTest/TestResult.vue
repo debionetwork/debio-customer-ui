@@ -115,7 +115,7 @@
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker";
 import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs";
 import { mapState } from "vuex";
-import { queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing";
+import { queryDnaTestResults } from "@debionetwork/polkadot-provider";
 import { queryLabById } from "@debionetwork/polkadot-provider";
 import { queryOrderDetailByOrderID, queryServiceById } from "@debionetwork/polkadot-provider";
 import { hexToU8a } from "@polkadot/util";

@@ -7,6 +7,7 @@ import NoLab from "@/views/Dashboard/Customer/Home/RequestTest/NoLab"
 config.stubs["ui-debio-dialog"] = { template: "<div></div>"}
 
 Vue.use(Vuetify)
+Vue.use(Vuex)
 const localVue = createLocalVue()
 
 describe("No Lab", () => {

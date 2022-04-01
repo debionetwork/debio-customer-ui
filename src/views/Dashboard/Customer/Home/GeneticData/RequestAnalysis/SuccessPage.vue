@@ -44,8 +44,8 @@
 import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
-import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
-import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
+import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
 
 
 export default {
@@ -98,7 +98,7 @@ export default {
   methods: {
     async getAnalysisOrderDetail() {
       const analysisOrderId = this.$route.params.id
-      const analysisOrderDetail = await queryGeneticAnalysisOrders(this.api, analysisOrderId)
+      const analysisOrderDetail = await queryGeneticAnalysisOrderById(this.api, analysisOrderId)
 
       if (analysisOrderDetail) {
         this.orderStatus = analysisOrderDetail.status
@@ -112,7 +112,7 @@ export default {
       this.isRejected = false
       this.isInProgress = false
 
-      this.geneticAnalysis = await queryGeneticAnalysisStorage(this.api, this.trackingId)
+      this.geneticAnalysis = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, this.trackingId)
 
       if (this.geneticAnalysis.status === "Rejected") {
         this.stepperItems[3].title = "Rejected"

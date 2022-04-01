@@ -102,10 +102,7 @@ jest.mock("@debionetwork/polkadot-provider", () => ({
       },
       serviceFlow: "RequestTest"
     }
-  })
-}))
-
-jest.mock("../../../../../../src/common/lib/polkadot-provider/query/genetic-testing", () => ({
+  }),
   queryDnaSamples: jest.fn(() => {
     return {
       trackingId: "CU6F63ADJ9RTWF5J10CU6",
