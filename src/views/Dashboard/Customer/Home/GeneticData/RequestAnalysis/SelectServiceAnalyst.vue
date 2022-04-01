@@ -42,8 +42,7 @@
                 height="35"
                 @click="goToDashboardPage"
                 ) Back to Dashboard
-            v-col(
-              cols="4"
+            v-col.customer-select-service-analyst__col(
               v-else
               v-for="(service, i) in serviceList"
               :key="i"
@@ -219,7 +218,7 @@ export default {
     &__main
       padding-bottom: 100px
       padding-left: 20px
-      padding-right: 32px
+      padding-right: 20px
       width: 100%
       display: flex
       flex-direction: column
@@ -233,12 +232,15 @@ export default {
       @include h6-opensans
 
     &__cards
-      margin-top: 40px
-      margin-left: 16px
+      margin: 40px 10px
+
+    &__col
+      display: flex
+      justify-content: center
+      margin-bottom: 10px
       
     &__card
-      margin-bottom: 20px
-
+      width: 320px
   .no-items
     display: flex
     flex-direction: column
