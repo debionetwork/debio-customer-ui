@@ -30,14 +30,14 @@
 
           template(v-slot:[`item.uploadDate`]="{ item }")
             .d-flex.flex-column.customer-request-analysis__table-item-upload
-              span {{ item.createdAt }}
+              span {{ item.uploadAt }}
 
 
 </template>
 
 <script>
 import { mapMutations, mapState } from "vuex"
-import { queryGeneticDataByOwnerId, queryGeneticDataById } from "@debionetwork/polkadot-provider"
+import { queryGeneticDataByOwnerId } from "@debionetwork/polkadot-provider"
 import EmptyDataCard from "./EmptyDataCard"
 
 export default {
@@ -98,26 +98,24 @@ export default {
 
       if (!dataList) return this.isEmpty = true
 
-      for (let i = 0; i < dataList.length; i++) {
-        const geneticData = await queryGeneticDataById(this.api, dataList[i])
-        let { id, owenerId, reportLink, title, description, createdAt, updatedAt } = geneticData
-        
+      for (const { id, owenerId, reportLink, title, description, createdAt, updatedAt } of dataList ) {
 
+        let uploadAt
         if (updatedAt !== "0") {
-          createdAt = this.formatDate(updatedAt)
+          uploadAt = this.formatDate(updatedAt)
         } else {
-          createdAt = this.formatDate(createdAt)
+          uploadAt = this.formatDate(createdAt)
         }
 
-        const item = { id, owenerId, reportLink, title, description, createdAt, updatedAt }
-        this.items.push(item)
+        const item = { id, owenerId, reportLink, title, description, uploadAt }
+        this.items.push(item)        
       }
 
       this.items.sort((a, b) => {
-        if(new Date(a.createdAt) < new Date(b.createdAt)) {
+        if(new Date(a.uploadAt) < new Date(b.uploadAt)) {
           return 1
         } 
-        if  (new Date(a.createdAt) > new Date(b.createdAt)) {
+        if  (new Date(a.uploadAt) > new Date(b.uploadAt)) {
           return -1
         } 
         return 0
