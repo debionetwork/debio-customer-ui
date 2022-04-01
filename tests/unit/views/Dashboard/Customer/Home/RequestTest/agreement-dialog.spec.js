@@ -8,6 +8,7 @@ config.stubs["ui-debio-input"] = { template: "<div></div>"}
 config.stubs["ui-debio-error-dialog"] = { template: "<div></div>"}
 
 Vue.use(Vuetify)
+Vue.use(Vuex)
 const localVue = createLocalVue()
 
 describe("Agreement dialog", () => {

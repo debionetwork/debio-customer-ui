@@ -99,10 +99,10 @@ import { mapState } from "vuex"
 import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
 import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
 import {
-  getCreateGeneticAnalysisOrderFee
-} from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
-import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
-import { queryGeneticAnalysisStorage } from "@/common/lib/polkadot-provider/query/genetic-analysis"
+  createGeneticAnalysisOrderFee
+} from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysiByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
 import { queryGeneticDataById } from "@debionetwork/polkadot-provider"
 import {
   cancelGeneticAnalysisOrder
@@ -205,7 +205,7 @@ export default {
     },
 
     async getGeneticAnalysisOrderDetail () {
-      this.geneticOrderDetail = await queryGeneticAnalysisOrders(this.api, this.orderId)
+      this.geneticOrderDetail = await queryGeneticAnalysisOrderById(this.api, this.orderId)
       this.createdDate = this.formatDate(this.geneticOrderDetail.createdAt)
       this.orderStatus = this.geneticOrderDetail.status
       this.orderPrice = this.formatBalance(this.geneticOrderDetail.prices[0].value)
@@ -237,7 +237,7 @@ export default {
     },
 
     async getTxWeight() {
-      const txWeight = await getCreateGeneticAnalysisOrderFee(this.api, this.wallet)
+      const txWeight = await createGeneticAnalysisOrderFee(this.api, this.wallet)
       this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
     },
 
@@ -247,7 +247,7 @@ export default {
     },
 
     async getAnalysisStatus() {
-      const details = await queryGeneticAnalysisStorage(this.api, this.trackingId)
+      const details = await queryGeneticAnalysiByGeneticAnalysisTrackingId(this.api, this.trackingId)
       if (details.status !== "Registered") {
         this.isRegistered = false
       }

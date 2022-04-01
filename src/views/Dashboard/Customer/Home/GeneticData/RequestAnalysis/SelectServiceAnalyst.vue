@@ -72,8 +72,8 @@ import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard"
 import AnalystDetail from "./AnalystDetail"
 import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
-import { queryGetAllGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
-import { queryGeneticAnalystQualifications } from "@/common/lib/polkadot-provider/query/genetic-analyst-qualifications"
+import { queryGetAllGeneticAnalystServices } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalystQualifications } from "@debionetwork/polkadot-provider"
 import ImportantDialog from "./Information.vue"
 
 export default {

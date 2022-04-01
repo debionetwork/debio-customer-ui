@@ -33,8 +33,8 @@ import { queryGeneticAnalysisById } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalysisByOwnerId } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysisStorage, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
-import { queryGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analysts"
+import { queryGeneticAnalysiByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalystServices } from "@debionetwork/polkadot-provider"
 import { downloadFile, decryptFile, downloadDocumentFile } from "@/common/lib/pinata-proxy"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
@@ -133,7 +133,7 @@ export default {
       const trackingId = await queryGeneticAnalysisByOwnerId(this.api, accountId)
 
       for (let i = 0; i < trackingId.length; i++) {
-        const geneticAnalysis = await queryGeneticAnalysisStorage(this.api, trackingId[i])
+        const geneticAnalysis = await queryGeneticAnalysiByGeneticAnalysisTrackingId(this.api, trackingId[i])
         const { sellerId } = await queryGeneticAnalysisOrderById(this.api, geneticAnalysis.geneticAnalysisOrderId)
         const { info: analystInfo } = await queryGeneticAnalystByAccountId(this.api, sellerId)
 
@@ -159,7 +159,7 @@ export default {
         const fullName = (geneticAnalystsData.info.firstName + " " + geneticAnalystsData.info.lastName)
 
         const orderId = geneticAnalysis.geneticAnalysisOrderId
-        const geneticAnalysisOrdersData = await queryGeneticAnalysisOrders(this.api, orderId)
+        const geneticAnalysisOrdersData = await queryGeneticAnalysisOrderById(this.api, orderId)
 
         const serviceId = geneticAnalysisOrdersData.serviceId
         const geneticAnalystServicesData = await queryGeneticAnalystServices(this.api, serviceId)

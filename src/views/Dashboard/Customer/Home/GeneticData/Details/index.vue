@@ -35,7 +35,7 @@ import StepperStatusCard from "./StepperStatusCard"
 import ReasonOfRejection from "./ReasonOfRejection"
 import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
 import { cancelGeneticAnalysisOrder } from "@debionetwork/polkadot-provider"
-import { getCancelGeneticAnalysisOrderFee } from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
+import { cancelGeneticAnalysisOrderFee } from "@debionetwork/polkadot-provider"
 
 export default {
   name: "GAOrderDetail",
@@ -96,7 +96,7 @@ export default {
     },
 
     async getCancelFee() {
-      const txWeight = await getCancelGeneticAnalysisOrderFee(this.api, this.wallet, this.orderId)
+      const txWeight = await cancelGeneticAnalysisOrderFee(this.api, this.wallet, this.orderId)
       this.txWeight = this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
     },
 

@@ -29,8 +29,8 @@
 <script>
 import { mapState } from "vuex"
 import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
-import { queryGetGeneticAnalystServiceById } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
-import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
+import { queryGeneticAnalystServicesByHashId } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
 
 
 export default {
@@ -63,8 +63,8 @@ export default {
 
   methods: {
     async getGAOrder() {
-      const gAOrder = await queryGeneticAnalysisOrders(this.api, this.orderId)
-      const serviceDetail = await queryGetGeneticAnalystServiceById(this.api, gAOrder.serviceId)
+      const gAOrder = await queryGeneticAnalysisOrderById(this.api, this.orderId)
+      const serviceDetail = await queryGeneticAnalystServicesByHashId(this.api, gAOrder.serviceId)
       const analystDetail = await queryGeneticAnalystByAccountId(this.api, gAOrder.sellerId)
 
       this.analystName = `${analystDetail.info.firstName} ${analystDetail.info.lastName}`

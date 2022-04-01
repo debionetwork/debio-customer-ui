@@ -149,7 +149,7 @@ import {
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 import ConfirmationDialog from "./ConfirmationDialog.vue"
 
-import { queryDnaSamples, queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
+import { queryDnaSamples, queryDnaTestResults } from "@debionetwork/polkadot-provider"
 import { unstakeRequest, unstakeRequestFee } from "@debionetwork/polkadot-provider"
 import { ordersByCustomer } from "@debionetwork/polkadot-provider"
 

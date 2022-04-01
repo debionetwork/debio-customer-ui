@@ -91,7 +91,7 @@
 import { alertIcon } from "@debionetwork/ui-icons"
 import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api";
 import { getRatingService } from "@/common/lib/api"
-import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"
+import { queryDnaSamples } from "@debionetwork/polkadot-provider"
 import { mapState } from "vuex"
 
 import {

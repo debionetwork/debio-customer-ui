@@ -228,10 +228,10 @@ import { queryGeneticAnalysisById } from "@debionetwork/polkadot-provider"
 import { geneticDataById } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
 import {
-  rejectOrderFee,
-  submitOrderReportFee
-} from "@/common/lib/polkadot-provider/command/genetic-analyst/orders"
-import { serviceDetails } from "@/common/lib/polkadot-provider/query/genetic-analyst/services"
+  rejectGeneticAnalysisFee,
+  submitGeneticAnalysisFee
+} from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalystServicesByHashId } from "@debionetwork/polkadot-provider"
 import { mapState } from "vuex"
 import { generalDebounce } from "@/common/lib/utils"
 import { uploadFile, getFileUrl, downloadFile, decryptFile, downloadDocumentFile, getIpfsMetaData } from "@/common/lib/pinata-proxy"
@@ -425,7 +425,7 @@ export default {
           return
         }
 
-        const serviceData = await serviceDetails(this.api, data.serviceId)
+        const serviceData = await queryGeneticAnalystServicesByHashId(this.api, data.serviceId)
         const analystData = await queryGeneticAnalystByAccountId(this.api, data.sellerId)
         const analysisData = await queryGeneticAnalysisById(this.api, data.geneticAnalysisTrackingId)
         const geneticData = await geneticDataById(this.api, data.geneticDataId)
@@ -466,7 +466,7 @@ export default {
 
         if (this.orderDataDetails?.analysis_info?.status === "Rejected") this.hilightDescription = this.orderDataDetails.analysis_info.rejectedDescription
         if (this.orderDataDetails?.analysis_info?.status === "InProgress") {
-          const txWeight = await submitOrderReportFee(
+          const txWeight = await submitGeneticAnalysisFee(
             this.api,
             this.wallet,
             this.orderDataDetails.geneticAnalysisTrackingId,
@@ -557,13 +557,13 @@ export default {
     },
 
     async calculateRejectFee() {
-      const txWeight = await rejectOrderFee(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, this.rejectionTitle, this.rejectionDesc)
+      const txWeight = await rejectGeneticAnalysisFee(this.api, this.wallet, this.orderDataDetails.geneticAnalysisTrackingId, this.rejectionTitle, this.rejectionDesc)
       this.txWeight = "Calculating..."
       this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
     },
 
     async calculateDocumentFee() {
-      const txWeight = await submitOrderReportFee(
+      const txWeight = await submitGeneticAnalysisFee(
         this.api,
         this.wallet,
         this.orderDataDetails.geneticAnalysisTrackingId,

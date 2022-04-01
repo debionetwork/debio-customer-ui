@@ -142,7 +142,7 @@ import {
   queryOrdersByCustomer,
   queryOrderDetailByOrderID
 } from "@debionetwork/polkadot-provider"
-import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"
+import { queryDnaSamples } from "@debionetwork/polkadot-provider"
 import { queryLabById } from "@debionetwork/polkadot-provider"
 import { queryServiceById } from "@debionetwork/polkadot-provider"
 import localStorage from "@/common/lib/local-storage"

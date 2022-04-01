@@ -41,8 +41,8 @@
 
 <script>
 import { mapState } from "vuex"
-import { queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis-orders"
-import { queryGetGeneticAnalystServiceById } from "@/common/lib/polkadot-provider/query/genetic-analyst-service"
+import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
+import { queryGeneticAnalystServicesByHashId } from "@debionetwork/polkadot-provider"
 import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
 
 
@@ -117,9 +117,9 @@ export default {
     },
 
     async getServiceDetail ()  {
-      this.geneticOrderDetail = await queryGeneticAnalysisOrders(this.api, this.orderId)
+      this.geneticOrderDetail = await queryGeneticAnalysisOrderById(this.api, this.orderId)
       
-      const serviceDetail = await queryGetGeneticAnalystServiceById(this.api, this.geneticOrderDetail.serviceId)
+      const serviceDetail = await queryGeneticAnalystServicesByHashId(this.api, this.geneticOrderDetail.serviceId)
 
       let {
         id: serviceId,
