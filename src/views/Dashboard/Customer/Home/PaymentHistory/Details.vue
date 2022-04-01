@@ -180,12 +180,15 @@ export default {
         const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
 
         if (Object.keys(dataPayment.order).length) {
-          isNotGAOrders = true
-          data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
-          rating = await getRatingService(dataPayment.service_id)
-          txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.id)
+          try {
+            isNotGAOrders = true
+            rating = await getRatingService(dataPayment.order.service_id)
+            txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.order.id)
+            data = await queryDnaSamples(this.api, dataPayment.order.dna_sample_tracking_id)
+          } catch (error) {
+            console.error(error);
+          }
 
-          // eslint-disable-next-line camelcase
           this.txHash = txDetails.transaction_hash
         }
 
