@@ -106,13 +106,21 @@ export default {
         provider: result._index === "orders"
           ? result._source.lab_info.name
           : `${result._source.genetic_analyst_info.first_name} ${result._source.genetic_analyst_info.last_name}`,
+        timestamp: parseInt(result._source.created_at.replaceAll(",", "")),
         created_at: new Date(parseInt(result._source.created_at.replaceAll(",", ""))).toLocaleDateString("en-GB", {
           day: "numeric",
           month: "short",
           year: "numeric"
-        }),
-        timestamp: parseInt(result._source.created_at)
+        })
       }))
+
+      // NOTE: Set unpaid status to always be in the top position
+      this.payments.sort(
+        (a, b) => {
+          if (b.status === "Unpaid") return
+          else return b.timestamp - a.timestamp
+        }
+      )
     }, 1000),
 
     setButtonBackground(status) {
