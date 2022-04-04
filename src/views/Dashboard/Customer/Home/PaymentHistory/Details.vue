@@ -90,6 +90,7 @@
               v-if="payment.section === 'order'"
               @click="handleViewEtherscan"
               :loading="isLoading"
+              :disabled="!txHash || payment.status === 'Cancelled'"
               outlined
               block
             ) VIEW ON ETHERSCAN
