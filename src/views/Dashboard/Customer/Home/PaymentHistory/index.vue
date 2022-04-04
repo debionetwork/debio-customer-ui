@@ -115,12 +115,10 @@ export default {
       }))
 
       // NOTE: Set unpaid status to always be in the top position
-      this.payments.sort(
-        (a, b) => {
-          if (b.status === "Unpaid") return
-          else return b.timestamp - a.timestamp
-        }
-      )
+      this.payments.sort((a, b) => {
+        if (b.status === "Unpaid") return
+        else return b.timestamp - a.timestamp
+      })
     }, 1000),
 
     setButtonBackground(status) {
