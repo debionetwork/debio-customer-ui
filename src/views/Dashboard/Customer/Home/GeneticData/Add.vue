@@ -188,7 +188,6 @@ export default {
   },
 
   async mounted () {
-
     if (this.$route.params.id) {
       this.isEdit = true
       this.dataId = this.$route.params.id
@@ -196,9 +195,6 @@ export default {
 
     await this.getDetails()
     await this.getTxWeight()
-
-
-
   },
 
   watch: {
@@ -402,9 +398,6 @@ export default {
             this.link
           )
         }
-
-        console.log("selesai update")
-
       } catch (e) {
         const error = await errorHandler(e.message)
 
