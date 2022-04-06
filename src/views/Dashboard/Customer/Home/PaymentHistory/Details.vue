@@ -10,96 +10,79 @@
 
     .payment-history-details__wrapper(v-if="hasPaymentDetails")
       ui-debio-card(block centered-content)
-        h2.payment-history-details__title {{ computeDetailsTitle }}
-        .payment-history-details__content
-          .payment-details__wrapper
-            .payment-details__product
-              ui-debio-avatar.product__image(
-                :src="payment.service_info.image || payment.genetic_analyst_info.profile_image"
-                size="150"
-                rounded
-              )
-              .product__details
-                .product__name {{ payment.service_info.name }}
-                ui-debio-rating.product__lab-rating(
-                  v-if="payment.section === 'order'"
-                  :rating="payment.rating.rating_service"
-                  :total-reviews="payment.rating.count_rating_service"
-                  size="15"
-                )
-                .product__provider(v-if="payment.section === 'order'") {{ payment.lab_info.name }}
-                .product__provider(v-else) {{ payment.genetic_analyst_info.name }}
-                .product__provider-address(v-if="payment.section === 'order'")
-                  span.address__title Address
-                  p.address__text.mb-0 {{ payment.lab_info.address }}, {{ payment.lab_info.city }}
-                .product__provider-specialist(v-else)
-                  span.address__title Specialization
-                  p.address__text.mb-0 {{ payment.genetic_analyst_info.specialization }}
+        .payment-details
+          .payment-details__title {{ computeDetailsTitle }}
+          .payment-details__order
+            .order-section
+              .order-detail
+                span.order-detail__label Order ID
+                p.order-detail__value(:title="payment.id") {{ payment.formated_id }}
+              .order-detail
+                span.order-detail__label Specimen Number
+                p.order-detail__value {{ computeTrackingId.slice(0, 10) }}
+              .order-detail
+                span.order-detail__label Order Date
+                p.order-detail__value {{ payment.created_at }}
+              .order-detail
+                span.order-detail__label Payment status
+                p.order-detail__value(
+                  :class="payment.status_class"
+                ) {{ payment.status }}
+              .order-detail
+                span.order-detail__label Test Status
+                p.order-detail__value {{ payment.test_status || "-" }}
 
-            .payment-details__status
-              .payment-details__field
-                .test__title Test status
-                .test__status {{ payment.test_status || "-" }}
-              .payment-details__field
-                .payment__title Payment Status
-                .payment__status {{ payment.status }}
-              .payment-details__field
-                .speciment__title Specimen number
-                .speciment__status {{ payment.dna_sample_tracking_id || payment.genetic_analysis_tracking_id }}
+            .product-section
+              div
+                p.product-detail__title Service Provider
+                .product-detail__provider(v-if="payment.section === 'order'") {{ payment.lab_info.name }}
+                .product-detail__provider(v-else) {{ payment.genetic_analyst_info.name }}
+              div
+                p.product-detail__title Service Name
+                .product-detail__provider {{ payment.service_info.name }}
 
-            .payment-details__instruction(v-if="payment.status === 'Paid' && payment.section === 'order'")
-              ui-debio-icon.payment-details__instruction-icon(:icon="alertIcon" size="15" color="#52C41B" stroke)
-              p.payment-details__instruction-text.mb-0
-                | Please proceed to send sample, see instruction 
-                span(class="payment-details__instruction-link" @click="handleSampleInstruction()") here!
 
-            .payment-details__service
-              .service__table
-                .service__field
-                  .service__field-title Service Price
-                  .service__field-colon :
-                  .service__field-value
+          .payment-details__price
+            .price
+              h5.price__title Total Payment
+              .price__detail
+                .price__block
+                  .price__label Paid Amount
+                  .price__value.success--text
                     | {{ computeTotalPrices }}
                     | {{ payment.currency }}
-                .service__field
-                  .service__field-title Quality Control Price
-                  .service__field-colon :
-                  .service__field-value
+                .price__block
+                  .price__label Service Price
+                  .price__value
+                    | {{ formatPrice(payment.prices[0].value) }}
+                    | {{ payment.currency }}
+                .price__block
+                  .price__label QC Price
+                  .price__value
                     | {{ payment.additional_prices.length ? formatPrice(payment.additional_prices[0].value) : "-" }}
                     | {{ payment.currency }}
-                .service__field(v-if="payment.status === 'Refunded'")
-                  .service__field-title Refund amount
-                  .service__refund -
-                .service__field(v-if="payment.section === 'order'")
-                  .service__field-title.d-flex.align-center
-                    | Reward
-                    .reward(@mouseleave="handleShowPopup('leave')")
-                      ui-debio-icon.reward__icon.ml-1(
-                        :icon="alertIcon"
-                        size="10"
-                        color="#6F6F6F"
-                        stroke
-                        @mouseenter="handleShowPopup('enter')"
-                      )
-                      .reward__popup(v-if="rewardPopup")
-                        .reward__popup-text You will get the reward after your request test from requested service is completed/fulfilled
-                  .service__field-colon :
-                  .service__field-value - DBIO
-            ui-debio-button.payment-details__etherscan-link(
-              color="secondary"
-              v-if="payment.section === 'order'"
-              @click="handleViewEtherscan"
-              :loading="isLoading"
-              :disabled="!txHash || payment.status === 'Cancelled'"
-              outlined
-              block
-            ) VIEW ON ETHERSCAN
 
+                hr.mb-4
+
+                .price__block
+                  .price__label Refund Amount
+                  .price__value.primary--text
+                    | 0 {{ payment.currency }}
+
+                ui-debio-button.payment-details__etherscan-link(
+                  color="secondary"
+                  v-if="payment.section === 'order'"
+                  @click="handleViewEtherscan"
+                  :loading="isLoading"
+                  :disabled="!txHash || payment.status === 'Cancelled'"
+                  outlined
+                  block
+                ) VIEW ON ETHERSCAN
 </template>
 
 <script>
 import { alertIcon } from "@debionetwork/ui-icons"
-import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api";
+import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api"
 import { getRatingService } from "@/common/lib/api"
 import { queryDnaSamples } from "@debionetwork/polkadot-provider"
 import { mapState } from "vuex"
@@ -147,9 +130,13 @@ export default {
       web3: (state) => state.metamask.web3
     }),
 
+    computeTrackingId() {
+      return this.payment?.dna_sample_tracking_id || this.payment?.genetic_analysis_tracking_id
+    },
+
     computeDetailsTitle() {
       return this.payment?.status === "Paid"
-        ? "Thank you for your order"
+        ? `[ ${this.payment?.status} Order ] - Thank you for your order`
         : `${this.payment?.status} Order`
     },
 
@@ -179,6 +166,13 @@ export default {
         let txDetails
         let isNotGAOrders = false
         const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
+        const classes = Object.freeze({
+          PAID: "success--text",
+          UNPAID: "warning--text",
+          REFUNDED: "secondary--text",
+          CANCELLED: "error--text",
+          FULFILLED: "info--text"
+        })
 
         if (Object.keys(dataPayment.order).length) {
           try {
@@ -187,7 +181,7 @@ export default {
             txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.order.id)
             data = await queryDnaSamples(this.api, dataPayment.order.dna_sample_tracking_id)
           } catch (error) {
-            console.error(error);
+            console.error(error)
           }
 
           this.txHash = txDetails.transaction_hash
@@ -197,16 +191,30 @@ export default {
           ? {
             ...dataPayment.order,
             section: "order",
+            formated_id: `${dataPayment.order.id.substr(0, 3)}...${dataPayment.order.id.substr(dataPayment.order.id.length - 4)}`,
             test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim(),
-            rating
+            rating,
+            status_class: classes[dataPayment.order.status.toUpperCase()],
+            created_at: new Date(parseInt(dataPayment.order.created_at.replaceAll(",", ""))).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric"
+            })
           }
           : {
             ...dataPayment.orderGA,
+            formated_id: `${dataPayment.orderGA.id.substr(0, 3)}...${dataPayment.orderGA.id.substr(dataPayment.orderGA.id.length - 4)}`,
+            status_class: classes[dataPayment.order.status.toUpperCase()],
             genetic_analyst_info: {
               ...dataPayment.orderGA.genetic_analyst_info,
               name: `${dataPayment.orderGA.genetic_analyst_info.first_name} ${dataPayment.orderGA.genetic_analyst_info.last_name}`
             },
-            section: "orderGA"
+            section: "orderGA",
+            created_at: new Date(parseInt(dataPayment.orderGA.created_at.replaceAll(",", ""))).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric"
+            })
           }
       } catch(e) {
         if (e.response.status === 404)
@@ -286,32 +294,90 @@ export default {
         padding-bottom: toRem(100px)
 
   .payment-details
-    &__product
-      display: flex
-      gap: toRem(25px)
+    width: toRem(815px)
+    display: grid
+    grid-template-columns: repeat(3, 1fr)
+    grid-template-rows: toRem(77px) minmax(308px, 1fr)
+    grid-column-gap: 0px
+    grid-row-gap: 0px
 
-    &__status
-      display: flex
-      gap: toRem(50px)
-      margin: toRem(40px) 0 toRem(25px)
-
-    &__instruction
-      background: #E7FFDC
+    &__title
+      grid-area: 1 / 1 / 2 / 4
       display: flex
       align-items: center
-      justify-content: center
-      margin-bottom: toRem(25px)
-      gap: toRem(15px)
-      padding: toRem(12px)
-      color: #52C41B
+      background: #F8FBFF
+      padding: toRem(30px)
+      @include body-text-medium-1
 
-    &__instruction-link
-      cursor: pointer
-      text-decoration: underline
-      color: #A568FF
+    &__order
+      grid-area: 2 / 1 / 3 / 3
+      border: solid toRem(1px) #E9E9E9
+      border-top: 0
+      border-right: 0
 
-    &__etherscan-link
-      margin-top: toRem(30px)
+    &__price
+      grid-area: 2 / 3 / 3 / 4
+
+  .order-section
+    width: 100%
+    display: grid
+    grid-template-columns: repeat(3, 1fr)
+    padding: toRem(26px) toRem(30px)
+    gap: toRem(20px) toRem(70px)
+
+  .product-section
+    display: grid
+    grid-template-columns: 1fr 1.95fr
+
+  .product-detail
+    &__title
+      background: #F8FBFF
+      padding: 12px 30px
+      @include body-text-medium-3
+
+    &__provider
+      padding: 12px 30px
+      color: #595959
+      @include button-2
+
+  .order-detail
+    height: max-content
+
+    &__label
+      color: #8C8C8C
+      @include body-text-3
+
+    &__value
+      @include button-1
+
+  .price
+    height: 100%
+    border: solid toRem(1px) #E9E9E9
+    border-top: 0
+
+    &__title
+      padding: toRem(16px)
+      border-bottom: solid toRem(1px) #E9E9E9
+      @include button-2
+
+    &__detail
+      padding: toRem(16px)
+      padding-bottom: toRem(24px)
+
+    &__block
+      display: flex
+      justify-content: space-between
+      margin-bottom: toRem(8px)
+
+      &:last-of-type
+        margin-bottom: toRem(50px)
+
+    &__label,
+    &__value
+      @include button-2
+
+    &__label
+      color: #595959
 
   .product
     &__details
@@ -329,90 +395,7 @@ export default {
       align-items: center
       justify-content: space-between
       gap: toRem(80px)
-      
+
     &__provider
       @include body-text-2
-
-  .address
-    &__title
-      @include body-text-medium-4
-
-    &__text
-      overflow: hidden
-      display: -webkit-box
-      -webkit-line-clamp: 2
-      -webkit-box-orient: vertical
-      color: #757274
-      @include body-text-2
-
-  .test__title,
-  .payment__title,
-  .speciment__title
-    color: #595959
-    @include body-text-4
-
-  .test__status,
-  .payment__status,
-  .speciment__status
-    @include body-text-medium-1
-
-  .service
-    &__table
-      display: flex
-      flex-direction: column
-
-    &__field
-      display: flex
-      justify-content: space-between
-      padding: toRem(10px) toRem(40px)
-      background: #FCFCFC
-      @include body-text-2
-
-      &:nth-child(odd)
-        background: #F6F7FB
-
-    &__field-title
-      flex: 1
-
-    &__field-value
-      flex: 1
-      text-align: right
-  .reward
-    position: relative
-    text-align: right
-
-    &__popup
-      width: toRem(290px)
-      padding: toRem(15px)
-      position: absolute
-      font-size: toRem(12px)
-      top: toRem(23px)
-      left: toRem(-100px)
-      background: #FFFFFF
-      border: toRem(1px) solid #E9E9E9
-
-      &::before
-        top: toRem(-22px)
-        content: ""
-        display: block
-        height: toRem(20px)
-        left: toRem(98px)
-        position: absolute
-        border-color: transparent transparent #E9E9E9 transparent
-        border-style: solid
-        border-width: toRem(11px)
-
-      &::after
-        border-left: solid transparent toRem(10px)
-        border-right: solid transparent toRem(10px)
-        border-bottom: solid #FFFFFF toRem(10px)
-        top: toRem(-10px)
-        content: " "
-        height: 0
-        left: toRem(99px)
-        position: absolute
-        width: 0
-
-    &__popup-text
-      text-align: left
 </style>
