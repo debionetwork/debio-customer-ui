@@ -16,14 +16,6 @@
               @input="onSearchInput(searchQuery)"
             )
               ui-debio-icon(slot="icon-append" size="20" @click="onSearchInput(searchQuery)" role="button" :icon="searchIcon" stroke)
-        template(v-slot:[`item.service_info.name`]="{ item }")
-          .payment-history__name-details
-            ui-debio-avatar(:src="item.service_info.image" size="41" rounded)
-            .payment-history__item-details
-              .payment-history__item-name {{ item.service_info.name }}
-              .payment-history__item-speciment(
-                :title="`Specimen Number / Tracking ID : ${item.dna_sample_tracking_id || item.genetic_analysis_tracking_id}`"
-              ) {{ item.dna_sample_tracking_id || item.genetic_analysis_tracking_id }}
 
         template(v-slot:[`item.service_info.prices_by_currency[0].total_price`]="{ item }")
           .payment-history__price-details
