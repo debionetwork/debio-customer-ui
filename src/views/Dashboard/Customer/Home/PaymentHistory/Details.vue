@@ -16,10 +16,20 @@
             .order-section
               .order-detail
                 span.order-detail__label Order ID
-                p.order-detail__value(:title="payment.id") {{ payment.formated_id }}
-              .order-detail
+                .d-flex.align-baseline
+                  p.order-detail__value#payment-id(:title="payment.id") {{ payment.formated_id }}
+                  ui-debio-icon.ml-2.mt-1(
+                    role="button"
+                    :icon="copyIcon"
+                    stroke
+                    size="16"
+                    color="#5640A5"
+                    title="Copy ID"
+                    @click="handleCopy"
+                  )
+              .order-detail(v-if="payment.section === 'order'")
                 span.order-detail__label Specimen Number
-                p.order-detail__value {{ computeTrackingId.slice(0, 10) }}
+                p.order-detail__value(:title="computeTrackingId") {{ computeTrackingId.slice(0, 10) }}
               .order-detail
                 span.order-detail__label Order Date
                 p.order-detail__value {{ payment.created_at }}
@@ -72,16 +82,16 @@
                 ui-debio-button.payment-details__etherscan-link(
                   color="secondary"
                   v-if="payment.section === 'order'"
-                  @click="handleViewEtherscan"
+                  @click="handleCTA"
                   :loading="isLoading"
-                  :disabled="!txHash || payment.status === 'Cancelled'"
+                  :disabled="payment.status === 'Cancelled'"
                   outlined
                   block
-                ) VIEW ON ETHERSCAN
+                ) {{ payment.status === "Unpaid" ? "Pay" : "VIEW ON ETHERSCAN" }}
 </template>
 
 <script>
-import { alertIcon } from "@debionetwork/ui-icons"
+import { copyIcon } from "@debionetwork/ui-icons"
 import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api"
 import { getRatingService } from "@/common/lib/api"
 import { queryDnaSamples } from "@debionetwork/polkadot-provider"
@@ -99,6 +109,7 @@ import {
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 // NOTE: Use anchor tag with "noreferrer noopener nofollow" for security
+let timeout
 const anchor = document.createElement("a")
 anchor.target = "_blank"
 anchor.rel = "noreferrer noopener nofollow"
@@ -116,7 +127,7 @@ export default {
     SALIVA_COLLECTION,
     BUCCAL_COLLECTION,
 
-    alertIcon,
+    copyIcon,
     messageError: null,
     txHash: null,
     rewardPopup: false,
@@ -253,16 +264,31 @@ export default {
       }
     },
 
-    handleShowPopup(val) {
-      if (val === "enter") this.rewardPopup = true
-      else this.rewardPopup = false
+
+    async handleCopy() {
+      await navigator.clipboard.writeText(this.payment?.id)
+      this.payment.formated_id = "Copied!"
+
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        this.payment.formated_id = `${this.payment.id.substr(0, 3)}...${this.payment.id.substr(this.payment.id.length - 4)}`
+      }, 1000)
     },
 
     formatPrice(price) {
       return parseInt(this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether"))
     },
 
-    async handleViewEtherscan() {
+    async handleCTA() {
+      if (this.payment?.status === "Unpaid") {
+        this.$router.push({
+          name: "customer-request-test-checkout",
+          params: { id: this.$route.params.id }
+        })
+
+        return
+      }
+
       anchor.href = `${process.env.VUE_APP_ETHERSCAN}${this.txHash}`
       anchor.click()
     }
