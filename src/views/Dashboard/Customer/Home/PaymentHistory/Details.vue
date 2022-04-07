@@ -17,7 +17,7 @@
               .order-detail
                 span.order-detail__label Order ID
                 .d-flex.align-baseline
-                  p.order-detail__value#payment-id(:title="payment.id") {{ payment.formated_id }}
+                  p.order-detail__value(:title="payment.id") {{ payment.formated_id }}
                   ui-debio-icon.ml-2.mt-1(
                     role="button"
                     :icon="copyIcon"
@@ -29,7 +29,7 @@
                   )
               .order-detail(v-if="payment.section === 'order'")
                 span.order-detail__label Specimen Number
-                p.order-detail__value(:title="computeTrackingId") {{ computeTrackingId.slice(0, 10) }}
+                p.order-detail__value(:title="payment.dna_sample_tracking_id") {{ payment.dna_sample_tracking_id.slice(0, 10) }}
               .order-detail
                 span.order-detail__label Order Date
                 p.order-detail__value {{ payment.created_at }}
@@ -40,7 +40,7 @@
                 ) {{ payment.status }}
               .order-detail
                 span.order-detail__label Test Status
-                p.order-detail__value {{ payment.test_status || "-" }}
+                p.order-detail__value(:class="payment.test_status_class") {{ payment.test_status || "-" }}
 
             .product-section
               div
@@ -69,7 +69,7 @@
                 .price__block
                   .price__label QC Price
                   .price__value
-                    | {{ payment.additional_prices.length ? formatPrice(payment.additional_prices[0].value) : "-" }}
+                    | {{ payment.additional_prices.length ? formatPrice(payment.additional_prices[0].value) : "0" }}
                     | {{ payment.currency }}
 
                 hr.mb-4
@@ -94,7 +94,10 @@
 import { copyIcon } from "@debionetwork/ui-icons"
 import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api"
 import { getRatingService } from "@/common/lib/api"
-import { queryDnaSamples } from "@debionetwork/polkadot-provider"
+import {
+  queryDnaSamples,
+  queryGeneticAnalysisByGeneticAnalysisTrackingId
+} from "@debionetwork/polkadot-provider"
 import { mapState } from "vuex"
 
 import {
@@ -141,10 +144,6 @@ export default {
       web3: (state) => state.metamask.web3
     }),
 
-    computeTrackingId() {
-      return this.payment?.dna_sample_tracking_id || this.payment?.genetic_analysis_tracking_id
-    },
-
     computeDetailsTitle() {
       return this.payment?.status === "Paid"
         ? `[ ${this.payment?.status} Order ] - Thank you for your order`
@@ -182,7 +181,13 @@ export default {
           UNPAID: "warning--text",
           REFUNDED: "secondary--text",
           CANCELLED: "error--text",
-          FULFILLED: "info--text"
+          FULFILLED: "info--text",
+          RESULTREADY: "success--text",
+          INPROGRESS: "info--text",
+          REGISTERED: "success--text",
+          WETWORK: "secondary--text",
+          REJECTED: "error--text",
+          QUALITYCONTROLLED: "info--text"
         })
 
         if (Object.keys(dataPayment.order).length) {
@@ -196,6 +201,17 @@ export default {
           }
 
           this.txHash = txDetails.transaction_hash
+        } else {
+          try {
+            console.log(dataPayment.orderGA.genetic_analysis_tracking_id);
+            data = await queryGeneticAnalysisByGeneticAnalysisTrackingId(
+              this.api,
+              dataPayment.orderGA.genetic_analysis_tracking_id
+            )
+            console.log("data", data)
+          } catch (error) {
+            console.error(error)
+          }
         }
 
         this.payment = isNotGAOrders
@@ -204,6 +220,7 @@ export default {
             section: "order",
             formated_id: `${dataPayment.order.id.substr(0, 3)}...${dataPayment.order.id.substr(dataPayment.order.id.length - 4)}`,
             test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim(),
+            test_status_class: classes[data?.status.toUpperCase()],
             rating,
             status_class: classes[dataPayment.order.status.toUpperCase()],
             created_at: new Date(parseInt(dataPayment.order.created_at.replaceAll(",", ""))).toLocaleDateString("en-GB", {
@@ -215,7 +232,9 @@ export default {
           : {
             ...dataPayment.orderGA,
             formated_id: `${dataPayment.orderGA.id.substr(0, 3)}...${dataPayment.orderGA.id.substr(dataPayment.orderGA.id.length - 4)}`,
-            status_class: classes[dataPayment.order.status.toUpperCase()],
+            status_class: classes[dataPayment.orderGA.status.toUpperCase()],
+            test_status: data?.status.replace(/([A-Z]+)/g, " $1").trim(),
+            test_status_class: classes[data?.status.toUpperCase()],
             genetic_analyst_info: {
               ...dataPayment.orderGA.genetic_analyst_info,
               name: `${dataPayment.orderGA.genetic_analyst_info.first_name} ${dataPayment.orderGA.genetic_analyst_info.last_name}`
