@@ -58,13 +58,7 @@
 <script>
 
 import { mapState } from "vuex"
-import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { getLocations } from "@/common/lib/api"
-import Kilt from "@kiltprotocol/sdk-js"
-import CryptoJS from "crypto-js"
-import { u8aToHex } from "@polkadot/util"
-
-
 
 
 export default {
@@ -116,21 +110,7 @@ export default {
     },
 
     async downloadFile () {
-
-      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
-
-      const publicKey = u8aToHex(cred.boxKeyPair.publicKey)
-      const privateKey = u8aToHex(cred.boxKeyPair.secretKey)
-      const arr = this.selectedService.resultSample.split("/")
-      const path = arr[arr.length-1]
-
-      await downloadDecryptedFromIPFS(
-        path,
-        privateKey,
-        publicKey,
-        `${this.selectedService.serviceId}.pdf`,
-        "application/pdf"
-      )
+      window.open(this.selectedService.resultSample)
     }
   }
 }
