@@ -57,6 +57,7 @@
 
 <script>
 import apiClientRequest from "@/common/lib/api"
+import { generateRequest } from "@/common/lib/kilt"
 import { mapActions, mapState, mapMutations } from "vuex"
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
 import errorMessage from "@/common/constants/error-messages"
@@ -106,6 +107,10 @@ export default {
 
     sitekey() {
       return process.env.VUE_APP_RECAPTCHA_SITE_KEY
+    },
+
+    kiltWss() {
+      return process.env.KILT_WSS
     }
   },
 
@@ -135,9 +140,24 @@ export default {
           mnemonic: this.$route.params.mnemonic,
           password: this.password
         })
+
+        // eslint-disable-next-line
+        const request = generateRequest(
+          this.kiltWss,
+          this.$route.params.mnemonic,
+          {
+            age: 28,
+            name: "Max Mustermann"
+          }
+        )
+
+        // TODO: Send request to attester backend.
+        // axios.post(request)
+
         if (!result.success) {
           throw("Mnemonic registration failed!")
         }
+
         this.$router.push({name: "registration-successful"})
       } 
       catch (err) {
