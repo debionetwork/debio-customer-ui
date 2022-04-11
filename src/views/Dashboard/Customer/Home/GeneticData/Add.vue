@@ -103,8 +103,8 @@ import { u8aToHex } from "@polkadot/util"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
-import { queryGeneticDataById } from "@debionetwork/polkadot-provider"
 import { 
+  queryGeneticDataById,
   addGeneticData, 
   updateGeneticData, 
   addGeneticDataFee, 

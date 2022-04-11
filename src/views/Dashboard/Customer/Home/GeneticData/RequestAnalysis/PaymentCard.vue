@@ -168,7 +168,6 @@ export default {
       await this.getGeneticAnalysisOrderDetail()
       await this.getGeneticData()
       await this.getAnalysisStatus()
-      await this.getCancelOrderFee()
     }
 
     if (Number(this.walletBalance) < Number(this.orderPrice)) {
