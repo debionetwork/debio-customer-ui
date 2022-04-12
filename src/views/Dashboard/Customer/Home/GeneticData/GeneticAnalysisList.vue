@@ -201,11 +201,8 @@ export default {
     },
 
     async toDownload(item){
-      if (item.status !== "ResultReady") return
-
       const pair = { publicKey: item.analystInfo.boxPublicKey, secretKey: this.secretKey }
       const type = "application/pdf"
-
       const { data } = await downloadFile(item.ipfsLink)
       const decryptedFile = decryptFile(data, pair, type)
       await downloadDocumentFile(decryptedFile, item.ipfsLink.split("/").pop(), type)
