@@ -10,9 +10,17 @@
         .d-flex.flex-column.genetic-analysis-list__service
           span {{ item.serviceName }}
 
-      template(v-slot:[`item.fullName`]="{ item }")
+      template(v-slot:[`item.analystName`]="{ item }")
         .d-flex.flex-column.genetic-analysis-list__name
-          span {{ item.fullName }}
+          span {{ item.analystName }}
+
+      template(v-slot:[`item.createdAt`]="{ item }")
+        .d-flex.flex-column.genetic-analysis-list__createdDate
+          span {{ item.createdAt }}
+
+      template(v-slot:[`item.updatedAt`]="{ item }")
+        .d-flex.flex-column.genetic-analysis-list__updatedDate
+          span {{ item.updatedAt }}
 
       template(v-slot:[`item.status`]="{ item }")
         .d-flex.flex-column.genetic-analysis-list__status
@@ -215,16 +223,22 @@ export default {
 
 
     &__service
-      width: 117px
+      width: 108px
 
-    &__fullName
-      width: 480px
+    &__name
+      width: 140px
+
+    &__createdDate
+      width: 70px
+
+    &__updatedDate
+      width: 70px
 
     &__status
       width: 80px
 
     &__actions
-      width: 45px
+      width: 80px
       display: flex
       align-items: center
       justify-content: center
