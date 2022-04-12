@@ -21,7 +21,7 @@
       template(v-slot:[`item.actions`]="{ item }")
         .genetic-analysis-list__actions
           ui-debio-icon( :icon="eyeIcon" size="16" role="button" stroke @click="toDetail(item)")
-          ui-debio-icon(v-show="item.status === 'ResultReady'" :icon="downloadIcon" size="16" role="button" stroke @click="toDownload(item)")
+          ui-debio-icon(v-show="item.status === 'Done'" :icon="downloadIcon" size="16" role="button" stroke @click="toDownload(item)")
 
 </template>
 
@@ -29,12 +29,12 @@
 
 import { mapState } from "vuex"
 import { eyeIcon, downloadIcon } from "@debionetwork/ui-icons"
-import { queryGeneticAnalysisById } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysisOrderById } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysisByOwnerId } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalysisByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
-import { queryGeneticAnalystServices } from "@debionetwork/polkadot-provider"
+import { 
+  queryGeneticAnalysisOrderByCustomerId,
+  queryGeneticAnalystByAccountId,
+  queryGeneticAnalystServicesByHashId,
+  queryGeneticAnalysisByGeneticAnalysisTrackingId
+} from "@debionetwork/polkadot-provider"
 import { downloadFile, decryptFile, downloadDocumentFile } from "@/common/lib/pinata-proxy"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
@@ -129,57 +129,37 @@ export default {
 
     async fetchGeneticAnalysisData() {
       this.items = []
-      const accountId = this.wallet.address
-      const trackingId = await queryGeneticAnalysisByOwnerId(this.api, accountId)
+      const orderList = await queryGeneticAnalysisOrderByCustomerId(this.api, this.wallet.address)
+      const paidOrder = []
 
-      for (let i = 0; i < trackingId.length; i++) {
-        const geneticAnalysis = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, trackingId[i])
-        const { sellerId } = await queryGeneticAnalysisOrderById(this.api, geneticAnalysis.geneticAnalysisOrderId)
-        const { info: analystInfo } = await queryGeneticAnalystByAccountId(this.api, sellerId)
-
-        const dateCreated = new Date(parseInt(geneticAnalysis.createdAt.replace(/,/g, "")))
-        const dateUpdated = new Date(parseInt(geneticAnalysis.updatedAt.replace(/,/g, "")))
-        const timestamp = geneticAnalysis.updatedAt
-
-        const updatedAt = dateUpdated.toLocaleString("en-GB", {
-          day: "numeric", // numeric, 2-digit
-          year: "numeric", // numeric, 2-digit
-          month: "short" // numeric, 2-digit, long, short, narrow
-        })
-
-        const createdAt = dateCreated.toLocaleString("en-GB", {
-          day: "numeric", // numeric, 2-digit
-          year: "numeric", // numeric, 2-digit
-          month: "short" // numeric, 2-digit, long, short, narrow
-        })
-
-        const geneticAnalysisTrackingId = geneticAnalysis.geneticAnalystId
-
-        const geneticAnalystsData = await queryGeneticAnalysisById(this.api, geneticAnalysisTrackingId)
-        const fullName = (geneticAnalystsData.info.firstName + " " + geneticAnalystsData.info.lastName)
-
-        const orderId = geneticAnalysis.geneticAnalysisOrderId
-        const geneticAnalysisOrdersData = await queryGeneticAnalysisOrderById(this.api, orderId)
-
-        const serviceId = geneticAnalysisOrdersData.serviceId
-        const geneticAnalystServicesData = await queryGeneticAnalystServices(this.api, serviceId)
-
-        if (geneticAnalysisOrdersData.status !== "Unpaid") {
-          const dataResult = {
-            trackingId: trackingId[i],
-            serviceName: geneticAnalystServicesData.info.name,
-            analystName: fullName,
-            analystInfo,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-            status: geneticAnalysis.status,
-            ipfsLink: geneticAnalysis.reportLink,
-            timestamp,
-            orderId
-          }
-          this.items.push(dataResult)
+      orderList.forEach( order => {
+        const status = order.status
+        if (status === "Paid") {
+          paidOrder.push(order)
         }
-      }
+      })
+
+      paidOrder.forEach( async order => {
+        const { geneticAnalysisdTrackingId, sellerId, serviceId, id, createdAt, updatedAt} = order
+        const geneticAnalysis = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, geneticAnalysisdTrackingId)
+        const analystInfo = await queryGeneticAnalystByAccountId(this.api, sellerId)
+        const geneticAnalysisService = await queryGeneticAnalystServicesByHashId(this.api, serviceId)
+        const timestamp = geneticAnalysis.createdAt
+
+        const data = {
+          trackingId: geneticAnalysisdTrackingId,
+          orderId: id,
+          serviceName: geneticAnalysisService.info.name,
+          analystName: `${analystInfo.info.firstName} ${analystInfo.info.lastName}`,
+          analystInfo,
+          createdAt: this.formatDate(createdAt),
+          updatedAt: this.formatDate(updatedAt),
+          status: this.getStatus(geneticAnalysis.status),
+          ipfsLink:  geneticAnalysis.reportLink,
+          timestamp
+        }
+        this.items.push(data)
+      })
     },
 
     toDetail(item) {
@@ -189,6 +169,27 @@ export default {
           id: item.orderId 
         }
       })
+    },
+
+    formatDate(date) {
+      const formattedDate = new Date(parseInt(date.replace(/,/g, ""))).toLocaleDateString("en-GB", {
+        day: "numeric", month: "short", year: "numeric"
+      })
+      return formattedDate
+    },
+
+    getStatus(status) {
+      if (status === "Registered") {
+        return "Open"
+      }
+
+      if (status === "InProgress") {
+        return "Inprogress"
+      }
+
+      if (status === "ResultReady") {
+        return "Done"
+      }
     },
 
     async toDownload(item){
