@@ -12,8 +12,8 @@
         .document-viewer__wrapper(
           :class="{ 'document-viewer__wrapper--animated': isLoading }"
         )
-          h3.customer-emr-details__viewer-loading.text-center(v-if="isLoading") {{ message }}
-          embed.customer-emr-details__viewer-content(
+          h3.document-viewer__loading.text-center(v-if="isLoading") {{ message }}
+          embed.document-viewer__content(
               v-if="!isLoading && result"
               :src="`${result}#view=fitH`"
               type="application/pdf"
@@ -124,10 +124,12 @@ export default {
 
 <style lang="sass">
   @import "@/common/styles/mixins.sass"
+  @import "@/common/styles/functions.sass"
+
   .genetic-data-result
-    padding: 15px
+    padding: toRem(15px)
     background: #ffffff
-    border-radius: 4px
+    border-radius: toRem(4px)
 
     &__wrapper
       display: flex
@@ -139,10 +141,10 @@ export default {
       display: flex
       align-items: center
       justify-content: center
-      padding: 22px
-      min-height: 500px
+      padding: toRem(22px)
+      min-height: toRem(500px)
       background: #F5F7F9
-      border-radius: 4px
+      border-radius: toRem(4px)
 
       &--animated
         position: relative
@@ -154,16 +156,16 @@ export default {
           position: absolute
           top: 0
           left: 0
-          width: 300px
+          width: toRem(300px)
           height: 100%
           background: rgba(255, 255, 255, .5)
           animation: shine infinite 1s
 
           @keyframes shine
             0%
-              transform: skew(25deg) translateX(-1000px)
+              transform: skew(25deg) translateX(toRem(-1000px))
             100%
-              transform: skew(25deg) translateX(1000px)
+              transform: skew(25deg) translateX(toRem(1000px))
 
     &__loading
       &::after
@@ -180,21 +182,21 @@ export default {
 
     &__content
       width: 100%
-      min-height: 700px
-      border-radius: 4px
+      min-height: toRem(700px)
+      border-radius: toRem(4px)
 
   .modal-password
     &__cta
-      gap: 20px
+      gap: toRem(20px)
 
   .file-details
     height: max-content
-    margin-right: 35px
-    min-width: 255px
-    max-width: 260px
-    padding: 25px
-    border: solid 1px #6F4CEC
-    border-radius: 4px
+    margin-right: toRem(35px)
+    min-width: toRem(255px)
+    max-width: toRem(260px)
+    padding: toRem(25px)
+    border: solid toRem(1px) #6F4CEC
+    border-radius: toRem(4px)
 
     &__title
       padding: 0 5px
