@@ -95,7 +95,7 @@
                       .navbar__balance-type {{ getActiveMenu.currency }} Balance
                       .navbar__balance-amount
                         ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? daiIcon : debioIcon" size="10")
-                        span {{ activeBalance }}
+                        span {{ getActiveMenu.type === 'polkadot' ? polkadotBalance : metamaskBalance }}
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
@@ -163,9 +163,9 @@ export default {
     debounce: null,
     arrowPosition: "",
     showMetamaskDialog: false,
-    balance: 0,
     walletAddress: "",
-    activeBalance: 0,
+    polkadotBalance: 0,
+    metamaskBalance: 0,
     ethAccount: null,
     loading: false,
     menus: [
@@ -278,18 +278,12 @@ export default {
     async handleHover(e, idx) {
       this.menus.forEach(menu => menu.active = false)
       const selectedMenu = this.menus[idx]
-      
-      if (selectedMenu.type === "polkadot") {
-        this.walletAddress = this.wallet.address
-        this.activeBalance = Number(this.walletBalance).toFixed(3)
-      }
+
+      if (selectedMenu.type === "polkadot") this.walletAddress = this.wallet.address
 
       if (selectedMenu.type === "metamask" && !this.loginStatus) return
 
-      if (selectedMenu.type === "metamask") {
-        this.walletAddress = this.metamaskWalletAddress
-        this.activeBalance = await getBalanceDAI(this.metamaskWalletAddress)
-      }
+      if (selectedMenu.type === "metamask") this.walletAddress = this.metamaskWalletAddress
 
       selectedMenu.active = true
 
@@ -319,6 +313,7 @@ export default {
           this.wallet.address
         )
         this.setWalletBalance(balanceNummber)
+        this.polkadotBalance = Number(this.walletBalance).toFixed(3)
       } catch (err) {
         console.error(err)
       }
@@ -333,6 +328,7 @@ export default {
 
         if (ethRegisterAddress !== null) {
           const balance = await getBalanceDAI(ethRegisterAddress)
+          this.metamaskBalance = balance
           this.setMetamaskAddress(ethRegisterAddress)
           this.setMetamaskBalance(balance)
           this.loginStatus = true
