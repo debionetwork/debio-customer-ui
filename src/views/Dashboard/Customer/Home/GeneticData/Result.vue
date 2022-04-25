@@ -91,10 +91,16 @@ export default {
     },
 
     async prepareData() {
-      const { serviceId, sellerId, geneticAnalysisdTrackingId } = await queryGeneticAnalysisOrderById(this.api, this.$route.params.id)
+      const { serviceId, sellerId, geneticAnalysisdTrackingId, status } = await queryGeneticAnalysisOrderById(this.api, this.$route.params.id)
+      const geneticData = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, geneticAnalysisdTrackingId)
+
+      if (geneticData.status !== "ResultReady" || status === "Refunded") this.$router.push({
+        name: "customer-genetic-analysis-detail",
+        params: { id: this.$route.params.id }
+      })
+
       const service = await queryGeneticAnalystServicesByHashId(this.api, serviceId)
       const analyst = await queryGeneticAnalystByAccountId(this.api, sellerId)
-      const geneticData = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, geneticAnalysisdTrackingId)
 
       const parseDate = (date) => {
         return new Date(parseInt(date.replaceAll(",", ""))).toLocaleDateString("en-GB", {
@@ -103,6 +109,7 @@ export default {
           year: "numeric"
         })
       }
+
 
       this.details = {
         service: service.info,
