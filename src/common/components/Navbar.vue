@@ -212,7 +212,6 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
-      metamaskWalletBalance: (state) => state.metamask.metamaskWalletBalance,
       lastEventData: (state) => state.substrate.lastEventData
     }),
 
@@ -308,12 +307,12 @@ export default {
 
     async fetchWalletBalance() {
       try {
-        const balanceNummber = await queryAccountBalance(
+        const balanceNumber = await queryAccountBalance(
           this.api,
           this.wallet.address
         )
-        this.setWalletBalance(balanceNummber)
-        this.polkadotBalance = Number(this.walletBalance).toFixed(3)
+        this.setWalletBalance(balanceNumber)
+        this.polkadotBalance = this.walletBalance
       } catch (err) {
         console.error(err)
       }

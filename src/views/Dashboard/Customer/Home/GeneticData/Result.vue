@@ -1,5 +1,14 @@
 <template lang="pug">
   .genetic-data-result
+    ui-debio-icon.genetic-data-result__back(
+      :icon="chevronLeftIcon"
+      size="20"
+      color="#5640A5"
+      role="button"
+      @click="handlePrevious"
+      stroke
+    )
+
     .genetic-data-result__wrapper
       fieldset.file-details
         legend.file-details__title Analysis Info
@@ -32,6 +41,7 @@ import {
   queryGeneticAnalystServicesByHashId
 } from "@debionetwork/polkadot-provider"
 import { downloadFile, decryptFile } from "@/common/lib/pinata-proxy"
+import { chevronLeftIcon } from "@debionetwork/ui-icons"
 
 
 
@@ -39,6 +49,8 @@ export default {
   name: "GeneticDataResult",
 
   data: () => ({
+    chevronLeftIcon,
+
     isLoading: false,
     publicKey: null,
     secretKey: null,
@@ -117,6 +129,10 @@ export default {
       } finally {
         this.isLoading = false
       }
+    },
+
+    handlePrevious() {
+      this.$router.go(-1)
     }
   }
 }
@@ -130,6 +146,13 @@ export default {
     padding: toRem(15px)
     background: #ffffff
     border-radius: toRem(4px)
+
+    &__back
+      width: max-content
+      border-radius: toRem(4px)
+      padding: toRem(5px)
+      margin-bottom: toRem(35px)
+      background: #F5F7F9
 
     &__wrapper
       display: flex

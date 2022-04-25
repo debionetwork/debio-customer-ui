@@ -468,10 +468,8 @@ export default {
 
   computed: {
     ...mapState({
-      walletBalance: (state) => state.substrate.walletBalance,
       api: (state) => state.substrate.api,
-      wallet: (state) => state.substrate.wallet,
-      lastEventData: (state) => state.substrate.lastEventData
+      wallet: (state) => state.substrate.wallet
     })
   }
 }
