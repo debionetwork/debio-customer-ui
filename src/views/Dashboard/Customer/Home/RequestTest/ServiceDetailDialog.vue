@@ -6,7 +6,7 @@
           v-icon mdi-close
 
       div.dialog-service__service-image
-        ui-debio-avatar( :src="selectedService.serviceImage" size="120" rounded)
+        ui-debio-avatar( :src="computeAvatar" size="120" rounded)
         
       div.dialog-service__service-name
         .dialog-service__title {{ selectedService.serviceName }}
@@ -77,7 +77,11 @@ export default {
   computed: {
     ...mapState({
       selectedService: (state) => state.testRequest.products
-    })
+    }),
+
+    computeAvatar() {
+      return this.selectedService.serviceImage ? this.selectedService.serviceImage : require("@/assets/debio-logo.png")
+    }
   },
 
   methods: {
