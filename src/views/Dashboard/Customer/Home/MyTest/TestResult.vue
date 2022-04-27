@@ -15,14 +15,14 @@
                   type="application/pdf"
                 )
           v-col(cols="12" md="3")
-            div.buttonSection(v-for="(file, index) in files" :key="file.name")
+            div.buttonSection(v-for="file in files" :key="file.name")
               ui-debio-card(
                 :title="file.fileTitle"
                 :sub-title="file.fileSubTitle"
                 tiny-card
                 with-icon
                 role="button"
-                @click="actionDownload(index)"
+                @click="actionDownload(file.fileLink)"
               )
                 ui-debio-icon(
                   slot="icon"
@@ -105,6 +105,7 @@ import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import { queryDnaTestResults } from "@debionetwork/polkadot-provider"
 import { queryLabById } from "@debionetwork/polkadot-provider"
+import { generalDebounce } from "@/common/lib/utils"
 import { downloadFile, decryptFile, downloadDocumentFile, getIpfsMetaData } from "@/common/lib/pinata-proxy"
 import { queryOrderDetailByOrderID, queryServiceById } from "@debionetwork/polkadot-provider"
 import { u8aToHex } from "@polkadot/util"
@@ -246,10 +247,11 @@ export default {
       }
     },
 
-    async actionDownload(index) {
+    actionDownload: generalDebounce(async function (link) {
       try {
-        const { rows } = await getIpfsMetaData(this.files[index].fileLink.split("/").pop())
-        const { type, data } = await downloadFile(this.files[index].fileLink, true)
+        const { rows } = await getIpfsMetaData(link.split("/").pop())
+        const { type, data } = await downloadFile(link, true)
+
         const pair = { secretKey: this.privateKey, publicKey: this.publicKey }
         const decryptedFile = decryptFile(data, pair, type)
 
@@ -257,7 +259,7 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    },
+    }, 500),
 
     actionRating() {
       this.showModalRating = true
