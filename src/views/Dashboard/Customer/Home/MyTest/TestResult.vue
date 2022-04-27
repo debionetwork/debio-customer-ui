@@ -313,8 +313,6 @@ export default {
         return "Decrypting report.."
       }
 
-      console.log(this.result);
-
       return this.result ? this.result : "No report available for this result"
     },
 
