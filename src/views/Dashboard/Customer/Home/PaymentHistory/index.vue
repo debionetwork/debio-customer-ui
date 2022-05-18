@@ -96,7 +96,7 @@ export default {
         ...result._source,
         id: result._id,
         provider: result._index === "orders"
-          ? result._source.lab_info.name
+          ? result._source?.lab_info?.name ?? "Unknown Provider"
           : `${result._source.genetic_analyst_info.first_name} ${result._source.genetic_analyst_info.last_name}`,
         timestamp: parseInt(result._source.created_at.replaceAll(",", "")),
         created_at: new Date(parseInt(result._source.created_at.replaceAll(",", ""))).toLocaleDateString("en-GB", {
