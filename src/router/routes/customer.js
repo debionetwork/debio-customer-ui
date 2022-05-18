@@ -66,7 +66,7 @@ export default [
         name: "order-history-detail",
         meta: {
           pageHeader: "Order History Detail",
-          parent: "customer-test"
+          parent: "my-test"
         },
         component: () => import( /* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest/OrderHistoryDetail")
       },
