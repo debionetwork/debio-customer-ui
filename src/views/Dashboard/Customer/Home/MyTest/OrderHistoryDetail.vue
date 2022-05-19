@@ -246,6 +246,11 @@ export default {
     await this.prepareData()
     if (!this.myTest.order.serviceInfo.image) this.iconSwitcher()
   },
+  mounted() {
+    this.myTest = this.$route.params
+    this.checkOrderDetail()
+    this.iconSwitcher()
+  },
 
   computed: {
     ...mapState({

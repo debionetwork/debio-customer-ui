@@ -149,7 +149,7 @@ import {
   QUALITY_CONTROLLED,
   WET_WORK,
   RESULT_READY
-} from "@/common/constants/specimen-status"
+} from "@/common/constants/status"
 
 export default {
   name: "CustomerHome",
@@ -374,7 +374,7 @@ export default {
       }
       let icon = "mdi-needle";
       if (detailService.info.image != null) {
-        icon = detailService.info.image;
+        icon = detailService.info.image
       }
 
       const dateSet = new Date(

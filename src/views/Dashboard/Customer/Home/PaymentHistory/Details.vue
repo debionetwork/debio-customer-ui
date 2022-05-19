@@ -91,7 +91,7 @@
 
 <script>
 import { copyIcon } from "@debionetwork/ui-icons"
-import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api"
+import { getOrderDetail, fetchTxHashOrder } from "@/common/lib/api"
 import { getRatingService } from "@/common/lib/api"
 import {
   queryDnaSamples,
@@ -193,7 +193,7 @@ export default {
         let rating
         let txDetails
         let isNotGAOrders = false
-        const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
+        const dataPayment = await this.metamaskDispatchAction(getOrderDetail, this.$route.params.id)
         const classes = Object.freeze({
           PAID: "success--text",
           UNPAID: "warning--text",

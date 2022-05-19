@@ -1,62 +1,70 @@
 <template lang="pug">
-  ui-debio-data-table(
-    :headers="headers"
-    :items="items"
-  )
-    template(v-slot:[`item.id`]="{ item }")
-      div {{ formatId(item.request.hash) }}
+  .customer-staking-tab
+    ui-debio-data-table(
+      :headers="headers"
+      :items="items"
+    )
+      template(v-slot:[`item.id`]="{ item }")
+        .customer-staking-tab__id
+          div {{ formatId(item.request.hash) }}
 
-    template(v-slot:[`item.country`]="{ item }")
-      div {{ item.request.country ? country(item.request.country) : "N/A"}}
+      template(v-slot:[`item.country`]="{ item }")
+        .customer-staking-tab__country
+          div {{ item.request.country ? country(item.request.country) : "N/A"}}
 
-    template(v-slot:[`item.city`]="{ item }")
-      div {{ item.request.city ? item.request.city : "N/A"}}
+      template(v-slot:[`item.city`]="{ item }")
+        .customer-staking-tab__city
+          div {{ item.request.city ? item.request.city : "N/A"}}
 
-    template(v-slot:[`item.category`]="{ item }")
-      div {{ item.request.service_category ? item.request.service_category : "N/A"}}
+      template(v-slot:[`item.category`]="{ item }")
+        .customer-staking-tab__category
+          div {{ item.request.service_category ? item.request.service_category : "N/A"}}
 
-    template(v-slot:[`item.stakingDate`]="{ item }")
-      span {{ formatDate(item.request.created_at) }}
+      template(v-slot:[`item.stakingDate`]="{ item }")
+        .customer-staking-tab__staking-date
+          span {{ formatDate(item.request.created_at) }}
 
-    template(v-slot:[`item.stakeStatus`]="{ item }")
-      span(:style="setButtonBackground(item.request.status)") {{ getStatusName(item.request.status) }} 
+      template(v-slot:[`item.stakeStatus`]="{ item }")
+        .customer-staking-tab__stake-status
+          span(:style="setButtonBackground(item.request.status)") {{ getStatusName(item.request.status) }} 
 
-    template(v-slot:[`item.amount`]="{ item }")
-      span(:style="setButtonBackground(item.request.status)") {{ setAmount(item.request.staking_amount) }}
+      template(v-slot:[`item.amount`]="{ item }")
+      
+        span(:style="setButtonBackground(item.request.status)") {{ setAmount(item.request.staking_amount) }}
 
-    template(v-slot:[`item.actions`]="{ item }")
-      .customer-staking-tab__actions(v-if="item.request.status !== 'WaitingForUnstaked'" )
-        ui-debio-button.pa-4(
-          height="25px"
-          width="100px"
-          style="font-size: 1em"
-          color="primary"
-          @click="getUnstakingDialog(item.request.hash)"
-          :disabled="item.request.status === 'Unstaked' || item.request.status === 'Processed'"
-        ) Unstake
+      template(v-slot:[`item.actions`]="{ item }")
+        .customer-staking-tab__actions(v-if="item.request.status !== 'WaitingForUnstaked'" )
+          ui-debio-button.pa-4(
+            height="25px"
+            width="100px"
+            style="font-size: 1em"
+            color="primary"
+            @click="getUnstakingDialog(item.request.hash)"
+            :disabled="item.request.status === 'Unstaked' || item.request.status === 'Processed'"
+          ) Unstake
 
-        ui-debio-button.pa-4(
-          v-if="item.request.status === 'Open' || item.request.status === 'Claimed'" 
-          height="25px"
-          style="font-size: 1em"
-          width="100px"
-          color="secondary"
-          @click="toRequestTest(item)"
-          :disabled="item.request.status === 'Open'"
-        ) Proceed
+          ui-debio-button.pa-4(
+            v-if="item.request.status === 'Open' || item.request.status === 'Claimed'" 
+            height="25px"
+            style="font-size: 1em"
+            width="100px"
+            color="secondary"
+            @click="toRequestTest(item)"
+            :disabled="item.request.status === 'Open'"
+          ) Proceed
 
-      .customer-staking-tab__actions(v-else)
-        ui-debio-button(disabled width="220px" color="white" )
-          vue-countdown-timer(
-            :start-time="new Date().getTime()"
-            :end-time="setRemainingStakingDate(item.request.unstaked_at)"
-            :interval="1000"
-            :end-text="'-'"
-            :day-txt="'D :'"
-            :hour-txt="'H :'"
-            :minutes-txt="'M :'"
-            :seconds-txt="'S'"
-          )
+        .customer-staking-tab__actions(v-else)
+          ui-debio-button(disabled width="220px" color="white" )
+            vue-countdown-timer(
+              :start-time="new Date().getTime()"
+              :end-time="setRemainingStakingDate(item.request.unstaked_at)"
+              :interval="1000"
+              :end-text="'-'"
+              :day-txt="'D :'"
+              :hour-txt="'H :'"
+              :minutes-txt="'M :'"
+              :seconds-txt="'S'"
+            )
 
 </template>
 
@@ -100,7 +108,7 @@ export default {
         sortable: true
       },
       {
-        text: "Stake Status",
+        text: "Status",
         value: "stakeStatus",
         sortable: true
       },
@@ -244,9 +252,8 @@ export default {
   @import "@/common/styles/mixins.sass"
 
   .customer-staking-tab
-    width: 100%
-    height: 100%
-    background: #FFFFFF
+    padding: 0 !important
+    margin: -50px -28px 0 -28px
 
     &__tabs
       padding: 2px
@@ -255,6 +262,18 @@ export default {
       width: 100%
       padding: 0px 30px
 
+    &__id
+      width: 74px
+
+    &__country
+      width: 60px
+
+    &__category
+      width: 112px
+
+    &__staking-date
+      width: 88px
+    
     &__actions
       padding: 0 10px
       align-content: center
