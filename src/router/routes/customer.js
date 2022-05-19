@@ -73,7 +73,7 @@ export default [
       {
         path: "test-result",
         name: "test-result",
-        meta: { pageHeader: "Test Result", parent: "customer-test" },
+        meta: { pageHeader: "Test Result", parent: "my-test" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest/TestResult")
       },
       {
