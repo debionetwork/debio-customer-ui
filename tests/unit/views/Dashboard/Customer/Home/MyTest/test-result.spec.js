@@ -59,7 +59,7 @@ describe("Test Result page", () => {
           substrate: {
             api: "API",
             wallet: "WALLET",
-            mnemonicData: "oil spend nation obey lecture behave lake diary reward forest gym apple"
+            mnemonicData: "oil spend nation obey lecture behave lake diary reward forest gym cake"
           },
           auth: {
             loadingData: "LOADING"
