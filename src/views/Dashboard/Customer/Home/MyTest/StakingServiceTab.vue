@@ -108,7 +108,7 @@ export default {
         sortable: true
       },
       {
-        text: "Status",
+        text: "Stake Status",
         value: "stakeStatus",
         sortable: true
       },

@@ -88,7 +88,11 @@
                       width="50%"
                       dark
                       color="primary"
+<<<<<<< HEAD
                       :to="{ name: 'order-history-detail', params: { id: item.orderId }}"
+=======
+                      @click="goToDetail(item.orderId)"
+>>>>>>> d22f560 (fix: order details and unit test)
                     ) Details
                     
                     ui-debio-button.pa-4(
@@ -329,15 +333,19 @@ export default {
     },
 
     setStatusColor(status) {
-      return ORDER_STATUS_DETAIL.filter(detail => detail.status === status.toUpperCase())[0].color
+      return ORDER_STATUS_DETAIL().filter(detail => detail.status === status.toUpperCase())[0].color
     },
 
     setTestStatus(status) {
-      return ORDER_STATUS_DETAIL.filter(detail => detail.status === status.toUpperCase())[0].display
+      return ORDER_STATUS_DETAIL().filter(detail => detail.status === status.toUpperCase())[0].display
     },
 
     setServiceImage(image) {
       return image ? image : require("@/assets/debio-logo.png")
+    },
+
+    goToDetail(id) {
+      this.$router.push({ name: "order-history-detail", params: {id}})
     },
 
     goToInstruction(item) {
