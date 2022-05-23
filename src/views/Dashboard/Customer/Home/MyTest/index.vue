@@ -81,6 +81,10 @@
                 template(v-slot:[`item.updatedAt`]="{ item }")
                   span {{ item.updatedAt }}
 
+                template(v-slot:[`item.orderStatus`]="{item}")
+                  .customer-my-test__status
+                    span(:style="{color: setStatusColor(item.orderStatus)}") {{ setTestStatus(item.orderStatus) }}
+
                 template(v-slot:[`item.actions`]="{ item }")
                   .customer-my-test__actions
                     ui-debio-button.pa-4(
@@ -115,9 +119,6 @@
                       @click="handleSelectedBounty(item)"
                     ) Add as Bounty
 
-                template(v-slot:[`item.orderStatus`]="{item}")
-                  .customer-my-test__status
-                  span(:style="{color: setStatusColor(item.orderStatus)}") {{ setTestStatus(item.orderStatus) }}
           v-tab-item
             .customer-my-test__table
             StakingServiceTab(
@@ -148,7 +149,7 @@ import localStorage from "@/common/lib/local-storage"
 import { u8aToHex } from "@polkadot/util"
 import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
-import ConfirmationDialog from "./ConfirmationDialog.vue"
+import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { createSyncEvent, getCategories, getOrderList } from "@/common/lib/api"
 import { queryDnaSamples, queryDnaTestResults, unstakeRequest, unstakeRequestFee } from "@debionetwork/polkadot-provider"
 import DNA_COLLECTION_PROCESS from "@/common/constants/instruction-step.js"
@@ -303,7 +304,7 @@ export default {
           dnaTestResults = await queryDnaTestResults(this.api, dnaSampleTrackingId)
         }
 
-        const result = {
+        const orderDetail = {
           orderId,
           dnaSampleTrackingId, 
           labName,
@@ -318,7 +319,7 @@ export default {
           timestamp: new Date (parseInt(dnaSample.updatedAt.replaceAll(",", ""))).getTime().toString()
         }
 
-        this.testList.push(result)
+        this.testList.push(orderDetail)
         this.testList.sort(
           (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
         )
