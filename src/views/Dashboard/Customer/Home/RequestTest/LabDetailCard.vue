@@ -2,7 +2,7 @@
   v-container.container-card
     v-card.menu-card
       v-row.menu-card__service
-        ui-debio-avatar.menu-card__service-avatar(:src="serviceDetail.serviceImage" size="90" rounded)
+        ui-debio-avatar.menu-card__service-avatar(:src="computeAvatar" size="90" rounded)
         
         b.menu-card__service-title {{ serviceDetail.serviceName }}
           ui-debio-rating.menu-card__rating(:rating="serviceDetail.serviceRate" :total-reviews="serviceDetail.countServiceRate" size="10")
@@ -42,6 +42,12 @@ export default {
   data: () => ({
     countries: []
   }),
+
+  computed: {
+    computeAvatar() {
+      return this.serviceDetail.serviceImage ? this.serviceDetail.serviceImage : require("@/assets/debio-logo.png")
+    }
+  },
 
   async mounted() {
     await this.getCountries()
