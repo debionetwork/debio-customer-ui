@@ -142,10 +142,6 @@ export default {
     errorTitle: "",
     errorMsg: "",
     txWeight: "",
-    servicePrice: "",
-    qcPrice: "",
-    totalPrice: "",
-    currency: "",
     customerBoxPublicKey: null
   }),
 
