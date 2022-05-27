@@ -349,10 +349,14 @@ export default {
 
     goToOrderDetail(item) {
 <<<<<<< HEAD
+<<<<<<< HEAD
       this.$router.push({ name: "order-history-detail", params: { id: item.orderId }})
 =======
       this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
 >>>>>>> 5ce84d8 (fix: refactor customer dashboard)
+=======
+      this.$router.push({ name: "order-history-detail", params: { id: item.orderId }}) //go to order history detail page
+>>>>>>> 8616f3a (fix: order detail params)
     },
 
     goToPaymentDetail(item) {
