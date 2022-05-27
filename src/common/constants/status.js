@@ -110,7 +110,7 @@ export const STAKE_STATUS_DETAIL = [
     color: "#4CBB65"
   },
   {
-    status: "WAITINGFORUNSTAKE",
+    status: "WAITINGFORUNSTAKED",
     display: "Waiting For Unstaked",
     color: "#FAAD15"
   },

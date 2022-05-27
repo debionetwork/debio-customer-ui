@@ -26,7 +26,7 @@
 
       template(v-slot:[`item.stakeStatus`]="{ item }")
         .customer-staking-tab__stake-status
-          span(:style="setButtonBackground(item.request.status)") {{ getStatusName(item.request.status) }} 
+          span(:style="{color: setButtonBackground(item.request.status)}") {{ getStatusName(item.request.status) }} 
 
       template(v-slot:[`item.amount`]="{ item }")
       
@@ -71,9 +71,9 @@
 <script>
 
 import { mapState, mapMutations } from "vuex"
-import stakingStatus from "@/common/constants/staking-status"
 import { getServiceRequestByCustomer } from "@/common/lib/api"
 import { getLocations } from "@/common/lib/api"
+import { STAKE_STATUS_DETAIL } from "@/common/constants/status"
 
 
 export default {
@@ -217,21 +217,11 @@ export default {
     },
 
     setButtonBackground(status) {
-      const colors = Object.freeze({
-        "OPEN": "#F60689",
-        "CLAIMED": "#5640A5",
-        "PROCESSED": "#4CBB65",
-        "WAITINGFORUNSTAKE": "#FAAD15",
-        "UNSTAKED": "#E32319"
-      })
-
-      return { color: colors[status.toUpperCase()] }
+      return STAKE_STATUS_DETAIL.filter(stake => stake.status === status.toUpperCase())[0].color
     },
 
     getStatusName(status) {
-      for (const key in stakingStatus) {
-        if (key === status.toUpperCase()) return stakingStatus[key]
-      }
+      return STAKE_STATUS_DETAIL.filter(stake => stake.status === status.toUpperCase())[0].display
     },
 
     formatDate(date) {
