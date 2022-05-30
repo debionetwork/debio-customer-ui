@@ -92,7 +92,7 @@ const handler = {
     const status = data["status"]
     const params = { orderId: id }
     const formatedHash = `${id?.substr(0, 4)}...${id?.substr(id?.length - 4)}`
-    const computeStatus = event.method === "GeneticAnalysisResultReady" ? 'are out' : `has been ${status.toLowerCase()}`
+    const computeStatus = event.method === "GeneticAnalysisResultReady" ? "are out" : `has been ${status.toLowerCase()}`
     const wording = `${valueMessage} <${formatedHash}> ${computeStatus}. Click here to see your order details.`
 
     return { data, id, params, wording }
