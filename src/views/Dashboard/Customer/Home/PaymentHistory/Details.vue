@@ -45,8 +45,7 @@
             .product-section
               div
                 p.product-detail__title Service Provider
-                .product-detail__provider(v-if="payment.section === 'order'") {{ payment.lab_info.name }}
-                .product-detail__provider(v-else) {{ payment.genetic_analyst_info.name }}
+                .product-detail__provider {{ computeProviderName }}
               div
                 p.product-detail__title Service Name
                 .product-detail__provider {{ payment.service_info.name }}
@@ -141,8 +140,15 @@ export default {
     ...mapState({
       api: (state) => state.substrate.api,
       rating: (state) => state.rating.rate,
+      lastEventData: (state) => state.substrate.lastEventData,
       web3: (state) => state.metamask.web3
     }),
+
+    computeProviderName() {
+      return this.payment.section === "order"
+        ? this.payment?.lab_info?.name ?? "Unknown Provider"
+        : this.payment?.genetic_analyst_info?.name ?? "Unknown Provider"
+    },
 
     computeDetailsTitle() {
       return this.payment?.status === "Paid"
@@ -172,6 +178,12 @@ export default {
 
   async mounted() {
     await this.fetchDetails()
+  },
+
+  watch: {
+    lastEventData: async function (e) {
+      if (e.section === "geneticTesting" || e.section === "orders") await this.fetchDetails()
+    }
   },
 
   methods: {
