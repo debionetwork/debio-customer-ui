@@ -149,6 +149,7 @@ import { u8aToHex } from "@polkadot/util"
 import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { createOrder } from "@debionetwork/polkadot-provider"
+import { fetchTxHashOrder } from "@/common/lib/api"
 import { processRequest } from "@debionetwork/polkadot-provider"
 import { queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
@@ -292,8 +293,15 @@ export default {
       setProductsToRequest: "testRequest/SET_PRODUCTS"
     }),
 
-    toEtherscan () {
-      window.open(`https://rinkeby.etherscan.io/tx/${this.$route.params.hash}`, "_blank")
+    async toEtherscan () {
+      const { transaction_hash } = await fetchTxHashOrder(this.orderId)
+
+      const anchor = document.createElement("a")
+      anchor.target = "_blank"
+      anchor.rel = "noreferrer noopener nofollow"
+      // eslint-disable-next-line camelcase
+      anchor.href = `${process.env.VUE_APP_ETHERSCAN}${transaction_hash}`
+      anchor.click()
     },
 
     toPaymentHistory () {
