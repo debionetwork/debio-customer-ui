@@ -143,17 +143,16 @@
 
 <script>
 import { mapState, mapMutations } from "vuex"
-import CryptoJS from "crypto-js"	
+import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { createOrder } from "@debionetwork/polkadot-provider"
-import { fetchTxHashOrder } from "@/common/lib/api"
 import { processRequest } from "@debionetwork/polkadot-provider"
 import { queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
-import { getDbioBalance, fetchPaymentDetails } from "@/common/lib/api"
+import { getDbioBalance, fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api"
 import {
   COVID_19,
   DRIED_BLOOD,
