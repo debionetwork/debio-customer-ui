@@ -148,6 +148,14 @@
           "route": "",
           "params": "geneticAnalysisOrderId",
           "identity": "ownerId"
+        },
+        "GeneticAnalysisResultReady": {
+          "message": "",
+          "value": "geneticAnalysisOrderId",
+          "value_message": "Congrats! Your DNA results for ",
+          "route": "",
+          "params": "geneticAnalysisOrderId",
+          "identity": "ownerId"
         }
       }
     },
