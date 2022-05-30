@@ -124,7 +124,7 @@ export const downloadWithProgress = async (ipfsLink, withMetaData = false) => {
       throw new Error("pinataJwtKey parameter is required if withMetaData is set to true");
     }
 
-    const { rows } = await getIpfsMetaData(cid, pinataJwtKey);
+    const { rows } = await pinataIpfsGetIpfsMetadata(cid, pinataJwtKey);
 
     metadata = {
       name: rows[0].metadata.name,
