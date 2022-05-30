@@ -166,7 +166,7 @@ export default {
 
     computeRefundedValue() {
       return this.payment?.status === "Refunded"
-        ? `${this.computeTotalPrices} ${this.payment?.currency}`
+        ? `${this.formatPrice(this.payment?.prices[0].value)} ${this.payment?.currency}`
         : "-"
     }
   },
