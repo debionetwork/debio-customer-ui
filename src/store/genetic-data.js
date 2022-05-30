@@ -39,8 +39,8 @@ export default {
         commit("SET_LOADING_PROGRESS", data.upload)
         return
       }
-      let download = data.download / 2
-      let upload = data.upload ? (data.upload/2) : 0
+      let download = Math.round(data.download/2)
+      let upload = data.upload ? Math.round(data.upload/2) : 0
       const total = download + upload
       commit("SET_LOADING_PROGRESS", total)
     },

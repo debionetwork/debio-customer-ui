@@ -105,14 +105,13 @@ export const downloadWithProgress = async (ipfsLink, withMetaData = false) => {
   const res = new Response(new ReadableStream({
     async start(controller) {
       const reader = response.body.getReader();
-      for (;;) {
-        const {done, value} = await reader.read();
-        if (done) break;
+      do {
+        const { value } = await reader.read();
         loaded += value.byteLength;
         let percentCompleted = Math.round( (loaded * 100) / total )
         store.dispatch("geneticData/getLoadingProgress", { download: percentCompleted } )
         controller.enqueue(value);
-      }
+      } while (loaded < total)
       controller.close();
     }
   }))
