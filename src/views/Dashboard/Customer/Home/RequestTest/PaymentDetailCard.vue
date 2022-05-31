@@ -1,7 +1,7 @@
 <template lang="pug">
   v-container.container-card
     v-skeleton-loader(
-      v-if="loading" 
+      v-if="loading"
       type="card"
       width="300"
     )
@@ -11,7 +11,7 @@
       hr.menu-card__line
       .menu-card__details
         .menu-card__sub-title Service Price
-        .menu-card__price 
+        .menu-card__price
           | {{ serviceDetail.servicePrice }}
           | {{ serviceDetail.currency}}
       .menu-card__details
@@ -33,7 +33,7 @@
         .menu-card__price
           | {{ stakingAmount }}
           | {{ currency }}
-    
+
       .menu-card__operation(v-if="stakingFlow") -
       hr.menu-card__line(v-if="stakingFlow")
 
@@ -55,8 +55,6 @@
           | {{ excessAmount }}
           | {{ currency }}
 
-      
-
       div(class="text-center" v-if="!isCancelled")
         div(v-if="!success && !orderCreated" class="mt-3 d-flex justify-center align-center")
           ui-debio-button(
@@ -69,16 +67,16 @@
 
         div(v-if="success" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
           ui-debio-button(
-            color="secondary" 
+            color="secondary"
             width="46%"
             height="35"
             @click="toInstruction(serviceDetail.dnaCollectionProcess)"
             style="font-size: 10px;"
-            outlined 
+            outlined
             ) View Instruction
 
           ui-debio-button(
-            color="secondary" 
+            color="secondary"
             width="46%"
             height="35"
             style="font-size: 10px;"
@@ -87,16 +85,16 @@
 
         div(v-if="orderCreated" class="d-flex justify-space-between align-center pa-4 mt-8 me-3")
           ui-debio-button(
-            color="secondary" 
+            color="secondary"
             width="46%"
             height="35"
             @click="showCancelConfirmation"
             style="font-size: 10px;"
-            outlined 
+            outlined
             ) Cancel
 
           ui-debio-button(
-            color="secondary" 
+            color="secondary"
             width="46%"
             height="35"
             style="font-size: 10px;"
@@ -118,14 +116,14 @@
         @cancel="setCancelled"
         @close="cancelDialog = false"
       )
-      
+
       PayRemainingDialog(
         :show="showPayRemainingDialog"
-        :amount="remainingDbio"     
-        :amountInDai="remainingDai"   
+        :amount="remainingDbio"
+        :amountInDai="remainingDai"
         @onContinue="onContinue"
         @close="showPayRemainingDialog = false"
-      ) 
+      )
 
       ui-debio-alert-dialog(
         :show="showAlert"
@@ -137,8 +135,6 @@
         @close="showAlert = false"
         @click="toPaymentHistory"
       )
-
-
 </template>
 
 <script>
@@ -247,7 +243,7 @@ export default {
     if (Number(this.stakingAmoung) > Number(this.totalPrice)) {
       this.isExcess = true
     }
-    
+
     if (Number(this.stakingAmount) === Number(this.totalPrice)) {
       this.isBalanced = true
     }
@@ -282,7 +278,7 @@ export default {
     }),
 
     async toEtherscan () {
-      const { transaction_hash } = await fetchTxHashOrder(this.orderId)
+      const { transaction_hash } = await fetchTxHashOrder(this.$route.params.hash)
 
       const anchor = document.createElement("a")
       anchor.target = "_blank"
@@ -307,7 +303,7 @@ export default {
       }
 
       if (this.isExcess && this.detailOrder !== "Unpaid") {
-        const customerBoxPublicKey = await this.getCustomerPublicKey()        
+        const customerBoxPublicKey = await this.getCustomerPublicKey()
         await createOrder(
           this.api,
           this.wallet,
@@ -324,11 +320,9 @@ export default {
         this.showPayRemainingDialog = true
         return
       }
-      this.showReceipt = true 
+      this.showReceipt = true
     },
 
-
-    
     async processRequestService() {
       const lastOrder = await queryLastOrderHashByCustomer(
         this.api,
@@ -349,7 +343,7 @@ export default {
         detailOrder.dnaSampleTrackingId
       )
 
-      this.$router.push({ 
+      this.$router.push({
         name: "my-test",
         params: {
           page: 1
@@ -368,7 +362,7 @@ export default {
     onContinue() {
       this.$emit("onContinue")
     },
-    
+
     showingReceiptDialog() {
       this.showReceipt = true
     },
@@ -415,7 +409,7 @@ export default {
 <style lang="sass" scoped>
   @import "@/common/styles/mixins.sass"
 
-  .container-card 
+  .container-card
     width: 360px
     height: 328px
     border-radius: 8px
@@ -435,11 +429,11 @@ export default {
     &__sub-title
       margin-left: 38px
       @include body-text-3-opensans
-    
+
     &__sub-title-medium
       margin-left: 38px
       @include body-text-3-opensans-medium
-  
+
     &__price
       margin-right: 38px
       @include body-text-3-opensans
@@ -461,6 +455,5 @@ export default {
       display: flex
       justify-content: flex-end
       @include body-text-3-opensans-medium
-
 </style>
 
