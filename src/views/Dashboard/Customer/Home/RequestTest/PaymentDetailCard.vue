@@ -360,7 +360,7 @@ export default {
     },
 
     toInstruction (dnaCollectionProcess) {
-      window.open(DNA_COLLECTION_PROCESS.filter(process => process.name === dnaCollectionProcess)[0].link, "_blank")
+      window.open(DNA_COLLECTION_PROCESS[dnaCollectionProcess], "_blank")
     },
 
     showCancelConfirmation () {

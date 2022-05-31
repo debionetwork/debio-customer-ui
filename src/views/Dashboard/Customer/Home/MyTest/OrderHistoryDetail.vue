@@ -64,9 +64,9 @@
                 div
                   div.imageBanner.box
                     ui-debio-icon(
-                      :icon="statusDetails[myTest.order.dnaInfo.status].banner"
-                      :size="statusDetails[myTest.order.dnaInfo.status].size"
-                      :view-box="statusDetails[myTest.order.dnaInfo.status].viewBox"
+                      :icon="banner"
+                      :size="status['size']"
+                      :view-box="status['viewBox']"
                     )
                 div.statusSection
                   span.status {{ status['name']}}
@@ -75,13 +75,13 @@
                 .progress
                   .step-indicator
                     .step
-                      div(:class="[`step-icon`, statusDetails[myTest.order.dnaInfo.status].step > 1 && `active`]")
-                        v-icon.icon(v-if="statusDetails[myTest.order.dnaInfo.status].step > 1") mdi-check
+                      div(:class="[`step-icon`, e1>1 && `active`]")
+                        v-icon(v-if="e1>1").icon mdi-check
                       small Registered
                     .indicator-line
                     .step
-                      div(:class="[`step-icon`, statusDetails[myTest.order.dnaInfo.status].step > 2 && `active`]")
-                        v-icon.icon(v-if="statusDetails[myTest.order.dnaInfo.status].step > 2") mdi-check
+                      div(:class="[`step-icon`, e1>2 && `active`]")
+                        v-icon(v-if="e1>2").icon mdi-check
                       small Received
                     .indicator-line
                     .step
@@ -91,8 +91,8 @@
                       small {{ dnaSample.status === "Rejected" ? "Rejected" : "Quality Controlled" }} 
                     div(:class="[`indicator-line`, isRejected()]")
                     .step
-                      div(:class="[`step-icon`, statusDetails[myTest.order.dnaInfo.status].step > 4 && `active`, isRejected(true)]")
-                        v-icon.icon(v-if="statusDetails[myTest.order.dnaInfo.status].step > 4") mdi-check
+                      div(:class="[`step-icon`, e1>4 && `active`, isRejected(true)]")
+                        v-icon(v-if="e1>4").icon mdi-check
                       small Analyzed
                     div(:class="[`indicator-line`, isRejected()]")
                     .step
@@ -135,32 +135,23 @@
                     .border-bottom.mt10.ph15
                       .flex
                         p Service Price
-                        p {{ prices.servicePrice }} {{ currency }}
+                        p {{ prices.servicePrice }} {{ prices.currency }}
                       .flex
                         p Quality Control Price
-                        p {{ prices.qcPrice }} {{ currency }}
+                        p {{ prices.qcPrice }} {{ prices.currency }}
 
                     .mt10.ph15.flex
                       p Amount to refund
-                      p {{ computeDifferenceAmount }} {{ currency }}
+                      p {{ computeDifferenceAmount }} {{ prices.currency }}
 
 </template>
 
 <script>
-import { mapState } from "vuex"
-import {
-  queryOrderDetailByOrderID,
-  queryServiceById,
-  queryLabById,
-  queryDnaSamples
-} from "@debionetwork/polkadot-provider"
 import {
   microscopeIcon,
   weightLifterIcon,
   hairIcon,
   dnaIcon,
-  foodAppleIcon,
-  pillIcon,
   virusIcon
 } from "@debionetwork/ui-icons"
 import { mapState } from "vuex"
@@ -265,23 +256,20 @@ export default {
     },
     
     checkOrderDetail() {
-      let refundAmount = 0
-      
+      const statusDetail = ORDER_STATUS_DETAIL[this.dnaSample.status.toUpperCase()]
       if (this.dnaSample.status === "Rejected") {
-        refundAmount = this.formatPrice(this.myTest.service_info.prices_by_currency[0].total_price) - this.formatPrice(this.myTest.service_info.prices_by_currency[0].additional_prices[0].value)
+        const refundAmount = this.formatPrice(this.myTest.service_info.prices_by_currency[0].total_price) - this.formatPrice(this.myTest.service_info.prices_by_currency[0].additional_prices[0].value)
+        const { banner, name, detail, bannerSize, viewBox, e1 } = statusDetail(refundAmount)
+        this.banner = banner
+        this.status = { name, detail, size: bannerSize, viewBox }
+        this.e1 = e1
+        return
       }
-      ORDER_STATUS_DETAIL(refundAmount).forEach(statusDetail => {
-        if (this.dnaSample.status.toUpperCase() === statusDetail.status) {
-          this.banner = statusDetail.banner
-          this.status = {
-            name: statusDetail.display,
-            detail: statusDetail.description,
-            size: statusDetail.bannerSize,
-            viewBox: statusDetail.viewBox
-          }
-          this.e1 = statusDetail.e1
-        }
-      })
+
+      const { banner, name, detail, bannerSize, viewBox, e1 } = statusDetail
+      this.banner = banner
+      this.status = { name, detail, size: bannerSize, viewBox }
+      this.e1 = e1
     }
   }
 };

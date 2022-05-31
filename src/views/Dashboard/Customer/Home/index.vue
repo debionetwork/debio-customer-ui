@@ -76,7 +76,7 @@
 
             template(class="status" v-slot:[`item.status`]="{item}") 
               .d-flex.flex-column.customer-home__order
-                span(:style="{color: setPaymentStatusColor(item.status)}") {{ setPaymentStatus(item.status) }}
+                span(:style="{color: setPaymentStatusColor(item.status)}") {{ item.status }}
 
             template(v-slot:[`item.actions`]="{item}")
               ui-debio-icon.iconTable(
@@ -136,13 +136,9 @@
               .d-flex.flex-column.customer-home__order
                 span {{ item.orderDate }}
 
-<<<<<<< HEAD
-            template(class="status" v-slot:[`item.status`]="{item}") {{ checkStatus(item.status) }}
-=======
             template(class="status" v-slot:[`item.status`]="{item}") 
               .d-flex.flex-column.customer-home__order
                 span(:style="{color: setStatusColor(item.status)}") {{ setTestStatus(item.status) }}
->>>>>>> 5ce84d8 (fix: refactor customer dashboard)
 
             template(v-slot:[`item.actions`]="{item}")
               ui-debio-icon.iconTable(
@@ -150,7 +146,6 @@
                 role="button"
                 slot="icon" size="20"
                 color="#C400A5"
-                role="button"
                 stroke
                 @click="goToOrderDetail(item)"
               )
@@ -213,19 +208,23 @@ export default {
     },
 
     setTestStatus(status) {
-      return ORDER_STATUS_DETAIL().filter(detail => detail.status === status.toUpperCase())[0].display
+      if (status === "Rejected") {
+        const detail = ORDER_STATUS_DETAIL[status.toUpperCase()]
+        return detail().name
+      }
+      return ORDER_STATUS_DETAIL[status.toUpperCase()].name
     },
 
     setStatusColor(status) {
-      return ORDER_STATUS_DETAIL().filter(detail => detail.status === status.toUpperCase())[0].color
-    },
-
-    setPaymentStatus(status) {
-      return PAYMENT_STATUS_DETAIL.filter(payment => payment.status === status.toUpperCase())[0].status
+      if (status === "Rejected") {
+        const detail = ORDER_STATUS_DETAIL[status.toUpperCase()]
+        return detail().color
+      }
+      return ORDER_STATUS_DETAIL[status.toUpperCase()].color
     },
 
     setPaymentStatusColor(status) {
-      return PAYMENT_STATUS_DETAIL.filter(payment => payment.status === status.toUpperCase())[0].color
+      return PAYMENT_STATUS_DETAIL[status.toUpperCase()]
     },
 
     async getOrderList() {
@@ -310,31 +309,10 @@ export default {
           (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
         )
       })
-<<<<<<< HEAD
-      const dnaSampleTrackingId = dnaSample.trackingId
-      const status = dnaSample.status
-      
-      const result = {
-        orderId,
-        icon,
-        dnaSampleTrackingId,
-        timestamp,
-        status,
-        orderDate,
-        serviceId,
-        serviceInfo,
-        labId,
-        labInfo,
-        createdAt,
-        updatedAt,
-        labName,
-        feedback
-=======
 
       if(!this.paymentHistory.length) {
         this.titlePaymentWording = "You haven't made any order yet"
         return
->>>>>>> 5ce84d8 (fix: refactor customer dashboard)
       }
       this.titlePaymentWording = "Your recent payments"
     },
@@ -348,48 +326,12 @@ export default {
     },
 
     goToOrderDetail(item) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-      this.$router.push({ name: "order-history-detail", params: { id: item.orderId }})
-=======
-      this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
->>>>>>> 5ce84d8 (fix: refactor customer dashboard)
-=======
       this.$router.push({ name: "order-history-detail", params: { id: item.orderId }}) //go to order history detail page
->>>>>>> 8616f3a (fix: order detail params)
     },
 
     goToPaymentDetail(item) {
       const id = item.orderId
       this.$router.push({ name: "customer-payment-details", params: { id } }) //go to payment detail
-<<<<<<< HEAD
-    },
-
-    async checkPaymentLength() {
-      if (!this.paymentHistory.length) {
-        this.titlePaymentWording = "You haven't made any order yet"
-        return
-      }
-      this.titlePaymentWording = "Your recent payments"
-    },
-
-    async checkTestLength() {
-      if (!this.testResult.length) {
-        this.titleTestWording = "You dont have any test result yet"
-        return
-      }
-      this.titleTestWording = "Your recent tests"
-    },
-
-    checkStatus(status) {
-      if (status == "Registered") return REGISTERED
-      if (status == "Arrived") return ARRIVED
-      if (status == "Rejected") return REJECTED
-      if (status == "QualityControlled") return QUALITY_CONTROLLED
-      if (status == "WetWork") return WET_WORK
-      if (status == "ResultReady") return RESULT_READY
-=======
->>>>>>> 5ce84d8 (fix: refactor customer dashboard)
     }
   },
 
