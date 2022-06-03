@@ -58,12 +58,18 @@
 
 import { mapState } from "vuex"
 import { getLocations } from "@/common/lib/api"
+import CryptoJS from "crypto-js"
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
+import { createOrder, queryLastOrderHashByCustomer } from "@debionetwork/polkadot-provider"
 
 export default {
   name: "ServiceDetailDialog",
   
   data: () => ({
-    countries: []
+    countries: [],
+    publicKey: "",
+    secretKey: ""
   }),
 
   async mounted () {
@@ -76,6 +82,10 @@ export default {
 
   computed: {
     ...mapState({
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      stakingData: (state) => state.lab.stakingData,
       selectedService: (state) => state.testRequest.products
     }),
 
@@ -85,20 +95,42 @@ export default {
   },
 
   methods: {
-
     async getCountries() {
       const { data : { data }} = await getLocations()
       this.countries = data
+    },
+
+    getCustomerPublicKey() {
+      const identity = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+      this.publicKey = u8aToHex(identity.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(identity.boxKeyPair.secretKey)
+      return u8aToHex(identity.boxKeyPair.publicKey)
     },
 
     closeDialog() {
       this.$emit("close")
     },
 
-    onSelect () {
-      this.$router.push({ name: "customer-request-test-checkout"})
+    async onSelect () {
+      const customerBoxPublicKey = await this.getCustomerPublicKey()        
+      
+      await createOrder(
+        this.api,
+        this.wallet,
+        this.selectedService.serviceId,
+        this.selectedService.indexPrice,
+        customerBoxPublicKey,
+        this.selectedService.serviceFlow
+      )
+      const lastOrder = await queryLastOrderHashByCustomer(
+        this.api,
+        this.wallet.address
+      )
+      
+      this.$router.push({ 
+        name: "customer-request-test-checkout", params: { id: lastOrder }
+      })
     },
-
 
     country (country) {
       if (country) {

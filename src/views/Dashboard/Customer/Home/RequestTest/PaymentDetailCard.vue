@@ -93,7 +93,7 @@
             @click="showCancelConfirmation"
             style="font-size: 10px;"
             outlined 
-            ) Cancel
+            ) Cancel Order
 
           ui-debio-button(
             color="secondary" 
@@ -148,7 +148,7 @@ import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
-import { createOrder, processRequest, queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
+import { createOrder, processRequest, queryLastOrderHashByCustomer, queryOrderDetailByOrderID, cancelOrder } from "@debionetwork/polkadot-provider"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
 import { getDbioBalance, fetchTxHashOrder } from "@/common/lib/api"
 import {
@@ -402,7 +402,14 @@ export default {
       return this.web3.utils.fromWei(String(price), "ether")
     },
 
-    setCancelled() {
+    async setCancelled() {
+      if (this.orderCreated) {
+        await cancelOrder(
+          this.api, 
+          this.wallet,
+          this.$route.params.id
+        )
+      }
       this.isCancelled = true
       this.$emit("cancel")
     }

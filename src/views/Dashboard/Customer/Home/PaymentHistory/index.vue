@@ -73,13 +73,23 @@ export default {
 
   computed: {
     ...mapState({
-      web3: (state) => state.metamask.web3
+      web3: (state) => state.metamask.web3,
+      lastEventData: (state) => state.substrate.lastEventData
     })
   },
 
   watch: {
     searchQuery(newVal, oldVal) {
       if (newVal === "" && oldVal) this.metamaskDispatchAction(this.onSearchInput)
+    },
+    
+    lastEventData(event) {
+      if (event !== null) {
+        const methodToRefetch = ["OrderCreated", "OrderCancelled"]
+        if (methodToRefetch.includes(event.method)) {
+          fetchPaymentHistories()
+        }
+      }
     }
   },
 
