@@ -38,6 +38,10 @@ export default {
     ]
   }),
 
+  created() {
+    this.pageView("Request Test")
+  },
+
   methods: {
     handleBack() {
       this.$router.push({ name: "customer-dashboard"})

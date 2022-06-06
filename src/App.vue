@@ -59,6 +59,7 @@ export default {
   },
 
   mounted() {
+    this.initFacebookPixel()
     document.title = "DeBio Network"
 
     this.formatTitle(this.$route)
@@ -81,6 +82,41 @@ export default {
       initWeb3: "metamask/initWeb3",
       initContracts: "metamask/contracts/initContracts"
     }),
+
+    initFacebookPixel() {
+      const scriptTag = document.createElement("script")
+      const noScriptTag = document.createElement("noscript")
+      scriptTag.type = "text/javascript"
+
+      const pixelNoScript = `
+        <img height="1" width="1" src="https://www.facebook.com/tr?id=${process.env.VUE_APP_FB_PIXEL_ID}&ev=PageView&noscript=1" />
+      `
+      const pixelScript = `
+        !function(f, b, e, v, n, t, s) {
+          if (f.fbq) return
+          n = f.fbq = function() {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+          }
+          if (!f._fbq) f._fbq = n
+          n.push = n
+          n.loaded = !0
+          n.version = "2.0"
+          n.queue = []
+          t = b.createElement(e)
+          t.async = !0
+          t.src = v
+          s = b.getElementsByTagName(e)[0]
+          s.parentNode.insertBefore(t, s)
+        }(window, document, "script", 'https://connect.facebook.net/en_US/fbevents.js')
+        fbq('init', "${process.env.VUE_APP_FB_PIXEL_ID}")
+      `
+
+      scriptTag.append(pixelScript)
+      noScriptTag.append(pixelNoScript)
+
+      document.head.appendChild(scriptTag)
+      document.head.appendChild(noScriptTag)
+    },
 
     formatTitle(val) {
       if (!val.meta.pageHeader) return
@@ -107,7 +143,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
 @import "@/common/styles/variables.scss";
 @import "@/common/styles/mixins.sass";
 

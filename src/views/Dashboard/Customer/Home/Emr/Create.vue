@@ -326,6 +326,7 @@ export default {
   },
 
   async created() {
+    this.pageView("Create EMR")
     this.fetchCategories()
     if (this.mnemonicData) this.initialDataKey()
   },

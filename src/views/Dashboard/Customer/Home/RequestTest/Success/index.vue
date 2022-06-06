@@ -28,6 +28,10 @@ export default {
     PaymentSuccess
   },
 
+  created() {
+    this.pageView("Request Test Success")
+  },
+
   data: () => ({
     stepperItems: [
       { number: 1, title: "Select Location and Service Category", active: false },

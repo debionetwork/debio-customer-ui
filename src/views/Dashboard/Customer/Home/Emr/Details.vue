@@ -87,6 +87,7 @@ export default {
   },
 
   async created() {
+    this.pageView("EMR Details")
     if (this.mnemonicData) this.initialData()
   },
 

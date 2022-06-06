@@ -290,6 +290,7 @@ export default {
   },
   
   async created() {
+    this.pageView("My Test")
     if (this.mnemonicData) await this.initialData()
   },
 

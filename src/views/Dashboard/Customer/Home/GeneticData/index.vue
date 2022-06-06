@@ -57,6 +57,10 @@ export default {
     GeneticAnalysisList
   },
 
+  created() {
+    this.pageView("Genetic Data")
+  },
+
   data:() => ({
     geneticIllustration,
     plusCircle,

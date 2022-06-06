@@ -44,6 +44,9 @@ export default {
     staking: false
   }),
 
+  created() {
+    this.pageView("Request Test Select Service")
+  },
 
   async mounted () {
     if (this.$route.params.flag === "staking") {

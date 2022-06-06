@@ -44,6 +44,10 @@ export default {
     })
   },
 
+  created() {
+    this.pageView("Request Test Checkout")
+  },
+
   async mounted () {
     if (!this.$route.params.id && !Object.values(this.dataService).length) {
       this.$router.push({ name: "customer-request-test"})

@@ -96,6 +96,7 @@ export default {
   },
 
   async created() {
+    this.pageView("Data Bounty")
     const data = await fetchBountyLists(this.wallet.address)
     this.bounties = data.map(d => ({ ...d, reward: "1 DBIO" }))
   },

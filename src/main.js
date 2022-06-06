@@ -10,6 +10,7 @@ import VueCountdownTimer from "vuejs-countdown-timer"
 import * as Sentry from "@sentry/vue"
 import { Integrations } from "@sentry/tracing"
 import VueMixpanel from "vue-mixpanel"
+import pageView from "./common/lib/utils/pageView"
 
 Vue.use(VueMixpanel, {
   token: process.env.VUE_APP_MIXPANEL_TOKEN
@@ -71,7 +72,7 @@ async function setupAppDependencies() {
   return
 }
 
-
+Vue.mixin(pageView)
 
 setupAppDependencies()
   .then(() => {

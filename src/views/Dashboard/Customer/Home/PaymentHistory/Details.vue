@@ -177,6 +177,7 @@ export default {
   },
 
   async created() {
+    this.pageView("Payment History Details")
     await this.fetchDetails()
   },
 

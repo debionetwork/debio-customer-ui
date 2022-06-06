@@ -84,6 +84,7 @@ export default {
   },
 
   async created() {
+    this.pageView("Payment History")
     await this.metamaskDispatchAction(this.onSearchInput)
   },
 

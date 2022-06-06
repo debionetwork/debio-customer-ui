@@ -207,6 +207,7 @@ export default {
   },
 
   async created() {
+    this.pageView("EMR")
     if (this.mnemonicData) this.initialDataKey()
     await this.metamaskDispatchAction(this.getEMRHistory)
   },

@@ -189,6 +189,7 @@ export default {
   },
 
   async created() {
+    this.pageView("Dashboard")
     await this.getTestResultsData()
     await this.getDataPaymentHistory()
     await this.checkPaymentLength()
