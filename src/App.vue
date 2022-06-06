@@ -108,6 +108,7 @@ export default {
           s = b.getElementsByTagName(e)[0]
           s.parentNode.insertBefore(t, s)
         }(window, document, "script", 'https://connect.facebook.net/en_US/fbevents.js')
+
         fbq('init', "${process.env.VUE_APP_FB_PIXEL_ID}")
       `
 
