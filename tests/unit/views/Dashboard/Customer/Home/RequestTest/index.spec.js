@@ -3,6 +3,7 @@ import Vue from "vue"
 import Vuetify from "vuetify"
 import VueRouter from "vue-router"
 import RequestTest from "@/views/Dashboard/Customer/Home/RequestTest"
+import pageView from "@/common/lib/utils/pageView"
 
 config.stubs["ui-debio-stepper"] = { template: "<div></div>" }
 Vue.use(Vuetify)
@@ -16,6 +17,7 @@ describe("Request test page", () => {
   let router
 
   beforeEach(() => {
+    global.fbq = jest.fn()
     vuetify = new Vuetify()
     router = new VueRouter()
   })
@@ -24,7 +26,8 @@ describe("Request test page", () => {
     container = shallowMount(RequestTest, {
       localVue,
       vuetify,
-      router
+      router,
+      mixins: [pageView]
     })
     
     expect(container.exists()).toBe(true)

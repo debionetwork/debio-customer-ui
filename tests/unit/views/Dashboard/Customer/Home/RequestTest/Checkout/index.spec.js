@@ -5,6 +5,7 @@ import Vuetify from "vuetify"
 import VueRouter from "vue-router"
 import Checkout from "@/views/Dashboard/Customer/Home/RequestTest/Checkout"
 import PaymentCheckout from "@/views/Dashboard/Customer/Home/RequestTest/Checkout/PaymentCheckout"
+import pageView from "@/common/lib/utils/pageView"
 
 config.stubs["ui-debio-stepper"] = { template: "<div></div>" }
 Vue.use(Vuetify)
@@ -20,6 +21,7 @@ describe("Checkout page", () => {
   let router
   
   beforeEach(() => {
+    global.fbq = jest.fn()
     vuetify = new Vuetify()
     router = new VueRouter()
     store = new Vuex.Store({
@@ -40,6 +42,7 @@ describe("Checkout page", () => {
       vuetify,
       router,
       store,
+      mixins: [pageView],
       data: ()  => ({
         prefillService: {},
         stepperItems: []
