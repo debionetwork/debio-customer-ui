@@ -3,17 +3,17 @@
     "customer": {
       "orders": {
         "OrderPaid": {
-          "message": "Congrats! You successfully submitted your requested test ",
+          "message": "",
           "value": "id",
-          "value_message": "id",
+          "value_message": "You've successfully submitted your requested test ",
           "route": "customer-payment-details",
           "params": "id",
           "identity": "customerId"
         },
         "OrderFulfilled": {
-          "message": "Congrats! You’ve got ",
+          "message": "",
           "value": "id",
-          "value_message": "id",
+          "value_message": "Congrats! Your test results ",
           "route": "customer-payment-details",
           "params": "id",
           "identity": "customerId"
@@ -120,6 +120,42 @@
           "route": "my-test",
           "params": "1",
           "identity": 0
+        }
+      },
+      "geneticAnalysisOrders": {
+        "GeneticAnalysisOrderCreated": {
+          "message": "",
+          "value": "id",
+          "value_message": "Congrats! You successfully submitted your requested test for ",
+          "route": "",
+          "params": "id",
+          "identity": "customerId"
+        },
+        "GeneticAnalysisOrderRefunded": {
+          "message": "",
+          "value": "id",
+          "value_message": "Your service analysis fee from ",
+          "route": "",
+          "params": "",
+          "identity": "customerId"
+        }
+      },
+      "geneticAnalysis": {
+        "GeneticAnalysisRejected": {
+          "message": "",
+          "value": "geneticAnalysisOrderId",
+          "value_message": "Your sample from ",
+          "route": "",
+          "params": "geneticAnalysisOrderId",
+          "identity": "ownerId"
+        },
+        "GeneticAnalysisResultReady": {
+          "message": "",
+          "value": "geneticAnalysisOrderId",
+          "value_message": "Congrats! Your DNA results for ",
+          "route": "",
+          "params": "geneticAnalysisOrderId",
+          "identity": "ownerId"
         }
       }
     },

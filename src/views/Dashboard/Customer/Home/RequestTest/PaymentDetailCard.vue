@@ -152,16 +152,8 @@ import { createOrder } from "@debionetwork/polkadot-provider"
 import { processRequest } from "@debionetwork/polkadot-provider"
 import { queryLastOrderHashByCustomer, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
-import { getDbioBalance, fetchPaymentDetails } from "@/common/lib/api"
-import {
-  COVID_19,
-  DRIED_BLOOD,
-  URINE_COLLECTION,
-  FECAL_COLLECTION,
-  SALIVA_COLLECTION,
-  BUCCAL_COLLECTION
-} from "@/common/constants/instruction-step.js"
-
+import { getDbioBalance, getOrderDetail } from "@/common/lib/api"
+import DNA_COLLECTION_PROCESS from "@/common/constants/instruction-step.js"
 
 export default {
   name: "PaymentDetailCard",
@@ -188,12 +180,6 @@ export default {
     remainingDai: 0,
     showPayRemainingDialog: false,
     orderId: "",
-    COVID_19,
-    DRIED_BLOOD,
-    URINE_COLLECTION,
-    FECAL_COLLECTION,
-    SALIVA_COLLECTION,
-    BUCCAL_COLLECTION,
     isDeficit: false,
     isExcess: false,
     isBalanced: false,
@@ -374,24 +360,7 @@ export default {
     },
 
     toInstruction (dnaCollectionProcess) {
-      if (dnaCollectionProcess === "Covid 19 Saliva Test") {
-        window.open(this.COVID_19, "_blank")
-      }
-      if (dnaCollectionProcess === "Blood Cells - Dried Blood Spot Collection Process") {
-        window.open(this.DRIED_BLOOD, "_blank")
-      }
-      if (dnaCollectionProcess === "Epithelial Cells - Buccal Swab Collection Process") {
-        window.open(this.BUCCAL_COLLECTION, "_blank")
-      }
-      if (dnaCollectionProcess === "Fecal Matters - Stool Collection Process") {
-        window.open(this.FECAL_COLLECTION, "_blank")
-      }
-      if (dnaCollectionProcess === "Saliva - Saliva Collection Process") {
-        window.open(this.SALIVA_COLLECTION, "_blank")
-      }
-      if (dnaCollectionProcess === "Urine - Clean Catch Urine Collection Process") {
-        window.open(this.URINE_COLLECTION, "_blank")
-      }
+      window.open(DNA_COLLECTION_PROCESS[dnaCollectionProcess], "_blank")
     },
 
     showCancelConfirmation () {
@@ -408,7 +377,7 @@ export default {
     },
 
     async getDataService() {
-      const data = await fetchPaymentDetails(this.$route.params.id)
+      const data = await getOrderDetail(this.$route.params.id)
 
       if (data.status !== "Unpaid") {
         this.$router.push({ name: "customer-payment-history" })
@@ -499,4 +468,3 @@ export default {
       @include body-text-3-opensans-medium
 
 </style>
-

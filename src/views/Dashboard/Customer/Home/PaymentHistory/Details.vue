@@ -91,23 +91,13 @@
 
 <script>
 import { copyIcon } from "@debionetwork/ui-icons"
-import { fetchPaymentDetails, fetchTxHashOrder } from "@/common/lib/api"
+import { getOrderDetail, fetchTxHashOrder } from "@/common/lib/api"
 import { getRatingService } from "@/common/lib/api"
 import {
   queryDnaSamples,
   queryGeneticAnalysisByGeneticAnalysisTrackingId
 } from "@debionetwork/polkadot-provider"
 import { mapState } from "vuex"
-
-import {
-  COVID_19,
-  DRIED_BLOOD,
-  URINE_COLLECTION,
-  FECAL_COLLECTION,
-  SALIVA_COLLECTION,
-  BUCCAL_COLLECTION
-} from "@/common/constants/instruction-step.js"
-
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 // NOTE: Use anchor tag with "noreferrer noopener nofollow" for security
@@ -122,13 +112,6 @@ export default {
   mixins: [metamaskServiceHandler],
 
   data: () => ({
-    COVID_19,
-    DRIED_BLOOD,
-    URINE_COLLECTION,
-    FECAL_COLLECTION,
-    SALIVA_COLLECTION,
-    BUCCAL_COLLECTION,
-
     copyIcon,
     messageError: null,
     txHash: null,
@@ -140,6 +123,7 @@ export default {
     ...mapState({
       api: (state) => state.substrate.api,
       rating: (state) => state.rating.rate,
+      lastEventData: (state) => state.substrate.lastEventData,
       web3: (state) => state.metamask.web3
     }),
 
@@ -166,7 +150,7 @@ export default {
 
     computeRefundedValue() {
       return this.payment?.status === "Refunded"
-        ? `${this.computeTotalPrices} ${this.payment?.currency}`
+        ? `${this.formatPrice(this.payment?.prices[0].value)} ${this.payment?.currency}`
         : "-"
     }
   },
@@ -175,8 +159,14 @@ export default {
     if (!this.$route.params.id) this.$router.push({ name: "customer-payment-history" })
   },
 
-  async mounted() {
+  async created() {
     await this.fetchDetails()
+  },
+
+  watch: {
+    lastEventData: async function (e) {
+      if (e.section === "geneticTesting" || e.section === "orders") await this.fetchDetails()
+    }
   },
 
   methods: {
@@ -186,7 +176,7 @@ export default {
         let rating
         let txDetails
         let isNotGAOrders = false
-        const dataPayment = await this.metamaskDispatchAction(fetchPaymentDetails, this.$route.params.id)
+        const dataPayment = await this.metamaskDispatchAction(getOrderDetail, this.$route.params.id)
         const classes = Object.freeze({
           PAID: "success--text",
           UNPAID: "warning--text",
@@ -263,36 +253,6 @@ export default {
       }
     },
 
-    handleSampleInstruction() {
-      const dnaCollectionProcess = this.payment.service_info.dna_collection_process
-
-      if (dnaCollectionProcess === "Covid 19 Saliva Test") {
-        anchor.href = this.COVID_19
-        anchor.click()
-      }
-      if (dnaCollectionProcess === "Blood Cells - Dried Blood Spot Collection Process") {
-        anchor.href = this.DRIED_BLOOD
-        anchor.click()
-      }
-      if (dnaCollectionProcess === "Epithelial Cells - Buccal Swab Collection Process") {
-        anchor.href = this.BUCCAL_COLLECTION
-        anchor.click()
-      }
-      if (dnaCollectionProcess === "Fecal Matters - Stool Collection Process") {
-        anchor.href = this.FECAL_COLLECTION
-        anchor.click()
-      }
-      if (dnaCollectionProcess === "Saliva - Saliva Collection Process") {
-        anchor.href = this.SALIVA_COLLECTION
-        anchor.click()
-      }
-      if (dnaCollectionProcess === "Urine - Clean Catch Urine Collection Process") {
-        anchor.href = this.URINE_COLLECTION
-        anchor.click()
-      }
-    },
-
-
     async handleCopy() {
       await navigator.clipboard.writeText(this.payment?.id)
       this.payment.formated_id = "Copied!"
@@ -304,7 +264,7 @@ export default {
     },
 
     formatPrice(price) {
-      return parseInt(this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether"))
+      return parseFloat(this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether"))
     },
 
     async handleCTA() {
