@@ -80,7 +80,7 @@
 <script>
 
 import { mapState } from "vuex"
-import ConfirmationDialog from "@/views/Dashboard/Customer/Home/MyTest/ConfirmationDialog"
+import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
 import { 
   queryGeneticAnalysisOrderById,
@@ -202,7 +202,7 @@ export default {
       this.orderPrice = this.formatBalance(this.geneticOrderDetail.prices[0].value)
       this.orderCurrency = this.geneticOrderDetail.currency
       this.orderPriceInUsd = this.formatPriceInUsd(this.geneticOrderDetail.prices[0].value)
-      this.trackingId = this.geneticOrderDetail.geneticAnalysisdTrackingId      
+      this.trackingId = this.geneticOrderDetail.geneticAnalysisTrackingId      
     },
 
     formatBalance(val) {
