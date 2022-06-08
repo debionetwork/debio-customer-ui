@@ -131,6 +131,8 @@ export default {
     async parseResult(idx, { recordLink }) {
       let fileBlob, dataFile, decryptedFile
 
+      if (this.selected === idx) return
+
       this.selected = idx
 
       try {
