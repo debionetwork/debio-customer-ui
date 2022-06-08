@@ -231,6 +231,7 @@ export default {
           this.isLoading = false
           this.show = false
           this.password = ""
+          this.showError = true
           this.error = "Please install MetaMask!"
           return
         }
@@ -240,6 +241,7 @@ export default {
           this.isLoading = false
           this.show = false
           this.password = ""
+          this.showError = true
           this.error = "Metamask has no address ETH."
           return
         }
@@ -249,16 +251,18 @@ export default {
           this.isLoading = false
           this.show = false
           this.password = ""
+          this.showError = true
           this.error = "You don't have enough ETH"
           return
         }
 
         // check DAI Balance 
         const daiBalance = await getBalanceDAI(this.metamaskWalletAddress)
-        if (Number(daiBalance) < Number(this.web3.utils.fromWei(String(this.selectedService.totalPrice)))) {
+        if (Number(daiBalance) < Number(this.selectedService.totalPrice)) {
           this.isLoading = false
           this.show = false
           this.password = ""
+          this.showError = true
           this.error = "You don't have enough DAI"
           return
         }
