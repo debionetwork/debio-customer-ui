@@ -276,15 +276,13 @@ export default {
         })
       }
 
-      const order = {
+      return {
         id: dataEMR.id,
         title: dataEMR.title,
         category: dataEMR.category,
         createdAt: dataEMR.createdAt,
         files: files?.slice(0, 3)
       }
-
-      return order
     },
 
     onEdit(emr) {
