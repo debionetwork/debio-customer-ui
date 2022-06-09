@@ -84,6 +84,18 @@ export async function sendPaymentOrder(api, orderId, ethAccount, sellerEth) {
   const payAmount = Number(testingPrice) + Number(qcPrice)
   const escrowAddress = process.env.VUE_APP_DEBIO_ESCROW_ETH_ADDRESS
 
+  console.log({
+    orderId,
+    serviceId,
+    customerSubstrateAddress,
+    sellerSubstrateAddress,
+    customerEthAddress,
+    sellerEthAddress,
+    dnaSampleTrackingId,
+    testingPrice,
+    qcPrice,
+    payAmount: String(payAmount)
+  })
 
   const txData = contracEscrowInterface.methods
     .payOrder(
