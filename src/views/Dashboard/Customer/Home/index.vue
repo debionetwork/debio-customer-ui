@@ -56,6 +56,7 @@
             :sort-by="[true]"
             :disableSort="true"
             :showFooter="false"
+            :loading="isLoadingPayments"
           )
             template(class="status" v-slot:[`item.serviceName`]="{item}")
               div(class="d-flex align-center")
@@ -113,6 +114,7 @@
             :items="testList"
             :disableSort="true"
             :showFooter="false"
+            :loading="isLoadingTest"
           )
 
             template(class="status" v-slot:[`item.serviceName`]="{item}")
@@ -179,7 +181,9 @@ export default {
       { text: "Date", value: "orderDate", sortable: true },
       { text: "Status", value: "status", sortable: true },
       { text: "Actions", value: "actions", sortable: false, align: "center", width: "5%" }
-    ]
+    ],
+    isLoadingPayments: false,
+    isLoadingTest: false
   }),
 
   mounted() {
@@ -232,6 +236,7 @@ export default {
     },
 
     async fetchRecentTest() {
+      this.isLoadingTest = true
       const recentTest = this.orderList.orders.data.filter(test => test._source.status !== "Unpaid" && test._source.status !== "Cancelled")
 
       recentTest.forEach(async (order) => {
@@ -272,10 +277,12 @@ export default {
           return
         }
         this.titleTestWording = "Your recent tests"
+        this.isLoadingTest = false
       })
     },
 
     async getDataPaymentHistory() {
+      this.isLoadingPayments = true
       this.orderList.orders.data.forEach(async(payment) => {
         const {
           id: orderId,
@@ -315,6 +322,7 @@ export default {
         return
       }
       this.titlePaymentWording = "Your recent payments"
+      this.isLoadingPayments = false
     },
 
     goToMyTest() {
