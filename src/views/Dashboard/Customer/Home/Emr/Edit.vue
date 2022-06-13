@@ -96,9 +96,7 @@
           .customer-create-emr__files-title Uploaded Files
           .customer-create-emr__files-items
             template(v-if="isLoading")
-              .customer-create-emr__file-item.customer-create-emr__file-item--skeleton
-              .customer-create-emr__file-item.customer-create-emr__file-item--skeleton
-              .customer-create-emr__file-item.customer-create-emr__file-item--skeleton
+              .customer-create-emr__file-item.customer-create-emr__file-item--skeleton(v-for="n in 3" :key="n")
             .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(
               :class="{ 'customer-create-emr__file-item--error': fileEmpty }"
               v-if="!computeFiles.length && !isLoading"

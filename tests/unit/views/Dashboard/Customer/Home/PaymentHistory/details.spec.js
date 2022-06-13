@@ -196,7 +196,7 @@ jest.mock("@debionetwork/polkadot-provider", () => ({
   })
 }))
 
-describe("Customer Payment History Dashboard", () => {
+describe("Customer Payment Details Dashboard", () => {
   let container
   let vuetify
   let store
@@ -215,17 +215,17 @@ describe("Customer Payment History Dashboard", () => {
           loadingData: "LOADING"
         },
         metamask: {
-          web3: "WEB3"
+          web3: { utils: { fromWei: jest.fn() } }
         }
       }
     })
     router = new VueRouter({
       routes: [
         {
-          path: "payment-histories",
-          name: "customer-payment-history",
-          meta: { pageHeader: "Payment History" },
-          component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory")
+          path: "payment-details/:id?",
+          name: "customer-payment-details",
+          meta: { pageHeader: "Details", parent: "customer-payment-history" },
+          component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory/Details")
         }
       ]
     })
@@ -233,20 +233,6 @@ describe("Customer Payment History Dashboard", () => {
 
   afterEach(() => {
     container = null
-  })
-
-  it("Should render", () => {
-    container = shallowMount(PaymentHistoryDetails, {
-      localVue,
-      vuetify,
-      store,
-      router,
-      global: {
-        stubs
-      }
-    })
-
-    expect(container.exists()).toBe(true)
   })
 
   it("Should render with default order details", async () => {
@@ -265,7 +251,9 @@ describe("Customer Payment History Dashboard", () => {
       global: {
         stubs
       },
-      data: () => ({ payment: { ...defaultOrder.order } })
+      data() {
+        return { payment: { ...defaultOrder.order } }
+      }
     })
 
     expect(container.html()).toContain("Specimen Number")
@@ -287,7 +275,9 @@ describe("Customer Payment History Dashboard", () => {
       global: {
         stubs
       },
-      data: () => ({ payment: { ...defaultOrder.orderGA } })
+      data() {
+        return { payment: { ...defaultOrder.orderGA } }
+      }
     })
 
     expect(container.html()).not.toContain("Specimen Number")
