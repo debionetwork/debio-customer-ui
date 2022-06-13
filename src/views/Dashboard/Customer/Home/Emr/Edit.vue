@@ -108,7 +108,8 @@
                     color="#D3C9D1"
                     fill
                   )
-                  .customer-create-emr__file-name No File uploaded, Please add file to upload
+                  .customer-create-emr__file-name
+                    | {{ isLoading ? "Loading please wait..." : "No File uploaded, Please add file to upload" }}
 
             template(v-else)
               .customer-create-emr__file-item(v-for="(item, idx) in computeFiles" :key="item.id")
@@ -344,46 +345,53 @@ export default {
     },
 
     async prepareData() {
-      const { id } = this.$route.params
-      const data = await queryElectronicMedicalRecordById(this.api, id)
-      let files = []
+      try {
+        this.isLoading = true
+        const { id } = this.$route.params
+        const data = await queryElectronicMedicalRecordById(this.api, id)
+        let files = []
 
-      if (!id || !data) {
-        this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
+        if (!id || !data) {
+          this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
 
-        return
+          return
+        }
+
+        this.emr.id = id
+        this.emr.title = data.title
+        this.emr.category = data.category
+
+        for (const file of data.files) {
+          const dataFile = await queryElectronicMedicalRecordFileById(this.api, file)
+          dataFile.id = file
+          files.push(dataFile)
+        }
+
+        let completeFiles = []
+
+        for (const file of files) {
+          const details = await getIpfsMetaData(file.recordLink.split("/").pop())
+          const pair = { publicKey: this.publicKey, secretKey: this.secretKey }
+          const { type, data } = await downloadFile(file.recordLink, true)
+
+          const decryptedFile = decryptFile(data, pair, type)
+
+          const blobData = new Blob([decryptedFile], { type })
+
+          completeFiles.push({
+            ...file,
+            file: new File([blobData], details.rows[0].metadata.name, {type: "application/pdf"}),
+            oldFile: new File([blobData], details.rows[0].metadata.name, {type: "application/pdf"}),
+            recordLink: file.recordLink
+          })
+        }
+
+        this.emr.files = completeFiles
+        this.isLoading = false
+      } catch (error) {
+        this.isLoading = false
+        console.error(error)
       }
-
-      this.emr.id = id
-      this.emr.title = data.title
-      this.emr.category = data.category
-
-      for (const file of data.files) {
-        const dataFile = await queryElectronicMedicalRecordFileById(this.api, file)
-        dataFile.id = file
-        files.push(dataFile)
-      }
-
-      let completeFiles = []
-
-      for (const file of files) {
-        const details = await getIpfsMetaData(file.recordLink.split("/").pop())
-        const pair = { publicKey: this.publicKey, secretKey: this.secretKey }
-        const { type, data } = await downloadFile(file.recordLink, true)
-
-        const decryptedFile = decryptFile(data, pair, type)
-
-        const blobData = new Blob([decryptedFile], { type })
-
-        completeFiles.push({
-          ...file,
-          file: new File([blobData], details.rows[0].metadata.name, {type: "application/pdf"}),
-          oldFile: new File([blobData], details.rows[0].metadata.name, {type: "application/pdf"}),
-          recordLink: file.recordLink
-        })
-      }
-
-      this.emr.files = completeFiles
     },
 
     async fetchCategories() {
@@ -402,7 +410,7 @@ export default {
       const { title: docTitle, description: docDescription, file: docFile } = this.isDirty?.document
       if (docTitle || docDescription || docFile) return
 
-      const { createdAt, title, description, file } = this.document
+      const { title, description, file, id } = this.document
 
       const context = this
       const fr = new FileReader()
@@ -422,13 +430,14 @@ export default {
             description,
             file,
             chunks,
+            id,
             fileName,
             fileType,
             createdAt: new Date().getTime()
           }
 
           if (context.isEdit) {
-            const index = context.emr.files.findIndex(file => file.createdAt === createdAt)
+            const index = context.emr.files.findIndex(file => file.id === id)
 
             context.emr.files[index] = dataFile
 
@@ -515,6 +524,7 @@ export default {
         if (this.emr.files.length === 0) return
 
         for await (let [index, value] of this.emr.files.entries()) {
+          if (value.file?.toString() === value.oldFile?.toString()) continue
           const dataFile = await this.setupFileReader({ value })
           await this.upload({
             encryptedFileChunks: dataFile.chunks,
