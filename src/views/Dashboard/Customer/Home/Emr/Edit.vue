@@ -438,7 +438,7 @@ export default {
           }
 
           if (context.isEdit) {
-            const index = context.emr.files.findIndex(file => file.id === id)
+            const index = context.emr.files.findIndex(emrFile => emrFile.id === id)
 
             context.emr.files[index] = dataFile
 
