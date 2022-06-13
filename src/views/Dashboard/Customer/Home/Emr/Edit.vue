@@ -95,9 +95,13 @@
         .customer-create-emr__files
           .customer-create-emr__files-title Uploaded Files
           .customer-create-emr__files-items
+            template(v-if="isLoading")
+              .customer-create-emr__file-item.customer-create-emr__file-item--skeleton
+              .customer-create-emr__file-item.customer-create-emr__file-item--skeleton
+              .customer-create-emr__file-item.customer-create-emr__file-item--skeleton
             .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(
               :class="{ 'customer-create-emr__file-item--error': fileEmpty }"
-              v-if="!computeFiles.length"
+              v-if="!computeFiles.length && !isLoading"
               @click="showModal = true"
             )
               .customer-create-emr__file-details.mt-0
@@ -108,8 +112,7 @@
                     color="#D3C9D1"
                     fill
                   )
-                  .customer-create-emr__file-name
-                    | {{ isLoading ? "Loading please wait..." : "No File uploaded, Please add file to upload" }}
+                  .customer-create-emr__file-name No File uploaded, Please add file to upload
 
             template(v-else)
               .customer-create-emr__file-item(v-for="(item, idx) in computeFiles" :key="item.id")
@@ -674,6 +677,7 @@ export default {
       padding-right: .35rem
       max-height: calc(116px * 3)
       overflow-y: auto
+      overflow-x: hidden
 
       &::-webkit-scrollbar-track
         background-color: #f2f2ff
@@ -693,10 +697,28 @@ export default {
     &__file-item
       padding: 12px 20px
       border-radius: 4px
-      border-style: dashed 
+      border-style: dashed
       border-color: #8AC1FF
       background: #F9F9FF
       transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
+
+      &--skeleton
+        background: #F5F7F9
+        border: unset
+        width: 100%
+        height: 120px
+        position: relative
+
+        &::before
+          content: ""
+          display: block
+          position: absolute
+          top: 0
+          left: 0
+          width: 300px
+          height: 100%
+          background: rgba(255, 255, 255, .5)
+          animation: shine infinite 1s
 
       &:hover
         background: #f2f2ff
@@ -878,4 +900,10 @@ export default {
         height: 100%
         background: #6FE4AF
         border-radius: inherit
+
+  @keyframes shine
+    0%
+      transform: skew(25deg) translateX(-1000px)
+    100%
+      transform: skew(25deg) translateX(1000px)
 </style>
