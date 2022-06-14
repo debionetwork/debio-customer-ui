@@ -2,7 +2,7 @@
   v-dialog.dialog-service(:value="show" width="440" persistent rounded )
     v-card.dialog-service__card
       div.dialog-service__close
-        v-btn.fixed-button(icon @click="closeDialog")
+        v-btn.fixed-button(icon @click="closeDialog" :disabled="loading")
           v-icon mdi-close
 
       div.dialog-service__service-image
@@ -42,6 +42,7 @@
           height="38" 
           outlined 
           @click="downloadFile"
+          :disabled="loading"
         ) Download Sample Report
 
         ui-debio-button.dialog-service__button-text(
@@ -49,6 +50,7 @@
           width="48%"
           height="38" 
           @click="onSelect"
+          :loading="loading"
         ) Select This Service
 
 </template>
@@ -69,7 +71,8 @@ export default {
   data: () => ({
     countries: [],
     publicKey: "",
-    secretKey: ""
+    secretKey: "",
+    loading: false
   }),
 
   async mounted () {
@@ -86,7 +89,8 @@ export default {
       wallet: (state) => state.substrate.wallet,
       mnemonicData: (state) => state.substrate.mnemonicData,
       stakingData: (state) => state.lab.stakingData,
-      selectedService: (state) => state.testRequest.products
+      selectedService: (state) => state.testRequest.products,
+      lastEventData: (state) => state.substrate.lastEventData
     }),
 
     computeAvatar() {
@@ -94,10 +98,30 @@ export default {
     }
   },
 
+  watch: {
+    lastEventData(event) {
+      if (!event) return
+      
+      if (event.method === "OrderCreated") this.toCheckout()
+    }
+  },
+
   methods: {
     async getCountries() {
       const { data : { data }} = await getLocations()
       this.countries = data
+    },
+
+    async toCheckout() {
+      const lastOrder = await queryLastOrderHashByCustomer(
+        this.api,
+        this.wallet.address
+      )
+      
+      this.$router.push({ 
+        name: "customer-request-test-checkout", params: { id: lastOrder }
+      })
+      this.loading = false
     },
 
     getCustomerPublicKey() {
@@ -112,6 +136,7 @@ export default {
     },
 
     async onSelect () {
+      this.loading = true
       const customerBoxPublicKey = await this.getCustomerPublicKey()        
       
       await createOrder(
@@ -122,14 +147,18 @@ export default {
         customerBoxPublicKey,
         this.selectedService.serviceFlow
       )
-      const lastOrder = await queryLastOrderHashByCustomer(
-        this.api,
-        this.wallet.address
-      )
+
+      // const lastOrder = await queryLastOrderHashByCustomer(
+      //   this.api,
+      //   this.wallet.address
+      // )
       
-      this.$router.push({ 
-        name: "customer-request-test-checkout", params: { id: lastOrder }
-      })
+      // this.$router.push({ 
+      //   name: "customer-request-test-checkout", params: { id: lastOrder }
+      // })
+      // this.loading = false
+      // setTimeout(async () => {
+      // }, 5000)
     },
 
     country (country) {

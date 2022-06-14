@@ -195,7 +195,7 @@ export default {
   async mounted () {
     this.stakingFlow = false
 
-    if(this.$route.params.hash) {
+    if(this.$route.params.id) {
       this.success = true
     }
 

@@ -86,7 +86,7 @@ export default {
     lastEventData(event) {
       if (!event) return
       const methodToRefetch = ["OrderCreated", "OrderCancelled"]
-      if (methodToRefetch.includes(event.method)) fetchPaymentHistories()
+      if (methodToRefetch.includes(event.method)) getOrderList()
     }
   },
 
