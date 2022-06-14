@@ -2,13 +2,15 @@ import { shallowMount, createLocalVue } from "@vue/test-utils"
 import PaymentHistoryDetails from "@/views/Dashboard/Customer/Home/PaymentHistory/Details"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
+import Vue from "vue"
 import VueRouter from "vue-router"
 import "@/common/plugins/debionetwork-ui-components"
+
+Vue.use(Vuetify)
 
 const localVue = createLocalVue()
 
 localVue.use(Vuex)
-localVue.use(Vuetify)
 localVue.use(VueRouter)
 
 const stubs = {
@@ -221,6 +223,12 @@ describe("Customer Payment Details Dashboard", () => {
     })
     router = new VueRouter({
       routes: [
+        {
+          path: "payment-history",
+          name: "customer-payment-history",
+          meta: { pageHeader: "Payment History" },
+          component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory")
+        },
         {
           path: "payment-details/:id?",
           name: "customer-payment-details",
