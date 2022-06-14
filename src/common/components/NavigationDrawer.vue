@@ -209,7 +209,7 @@ export default {
     },
 
     goToDashboard() {
-      this.$router.push({ path: "/customer" });
+      this.$router.push({ name: "customer-dashboard" });
     }
   }
 }
