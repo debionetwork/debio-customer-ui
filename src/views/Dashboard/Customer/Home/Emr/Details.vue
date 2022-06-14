@@ -182,7 +182,7 @@ export default {
 
     &__emr-title
       @include body-text-medium-2
-    
+
     &__emr-documents
       display: flex
       flex-direction: column
@@ -218,14 +218,14 @@ export default {
 
       &:hover
         background: #F9F9F9
-        border-radius: 1px 
-        border-style: solid 
+        border-radius: 1px
+        border-style: solid
         border-color: #6F4CEC
 
       &--active
         background: #F9F9F9
-        border-radius: 1px 
-        border-style: solid 
+        border-radius: 1px
+        border-style: solid
         border-color: #6F4CEC
 
     &__document-title
@@ -240,7 +240,7 @@ export default {
       user-select: none
 
       @include body-text-2
-    
+
     &__viewer
       width: 100%
 
