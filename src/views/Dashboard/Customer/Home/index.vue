@@ -237,92 +237,102 @@ export default {
 
     async fetchRecentTest() {
       this.isLoadingTest = true
-      const recentTest = this.orderList.orders.data.filter(test => test._source.status !== "Unpaid" && test._source.status !== "Cancelled")
-
-      recentTest.forEach(async (order) => {
-        const {
-          id: orderId,
-          lab_info: {
-            name: labName
-          },
-          service_info: {
-            name: serviceName,
-            image: serviceImage,
-            dna_collection_process: dnaCollectionProcess
-          },
-          dna_sample_tracking_id: dnaSampleTrackingId,
-          created_at: createdAt
-        } = order._source
-
-        const dnaSample = await queryDnaSamples(this.api, dnaSampleTrackingId)
-        const orderDetail = {
-          orderId,
-          dnaSampleTrackingId, 
-          labName,
-          serviceName,
-          serviceImage,
-          dnaCollectionProcess,
-          status: dnaSample.status,
-          orderDate: this.formatDate(createdAt),
-          timestamp: new Date (parseInt(createdAt.replaceAll(",", ""))).getTime().toString()
-        }
-
-        this.testList.push(orderDetail)
-        this.testList.sort(
-          (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
-        )
-
-        if (!this.testList.length) {
-          this.titleTestWording = "You dont have any test result yet"
-          return
-        }
-        this.titleTestWording = "Your recent tests"
+      try {
+        const recentTest = this.orderList.orders.data.filter(test => test._source.status !== "Unpaid" && test._source.status !== "Cancelled")
+        
+        recentTest.forEach(async (order) => {
+          const {
+            id: orderId,
+            lab_info: {
+              name: labName
+            },
+            service_info: {
+              name: serviceName,
+              image: serviceImage,
+              dna_collection_process: dnaCollectionProcess
+            },
+            dna_sample_tracking_id: dnaSampleTrackingId,
+            created_at: createdAt
+          } = order._source
+  
+          const dnaSample = await queryDnaSamples(this.api, dnaSampleTrackingId)
+          const orderDetail = {
+            orderId,
+            dnaSampleTrackingId, 
+            labName,
+            serviceName,
+            serviceImage,
+            dnaCollectionProcess,
+            status: dnaSample.status,
+            orderDate: this.formatDate(createdAt),
+            timestamp: new Date (parseInt(createdAt.replaceAll(",", ""))).getTime().toString()
+          }
+  
+          this.testList.push(orderDetail)
+          this.testList.sort(
+            (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
+          )
+  
+          if (!this.testList.length) {
+            this.titleTestWording = "You dont have any test result yet"
+            return
+          }
+          this.titleTestWording = "Your recent tests"
+        })
         this.isLoadingTest = false
-      })
+      } catch (error) {
+        console.error(error)
+        this.isLoadingTest = false
+      }
     },
 
     async getDataPaymentHistory() {
       this.isLoadingPayments = true
-      this.orderList.orders.data.forEach(async(payment) => {
-        const {
-          id: orderId,
-          lab_info: {
-            name: labName
-          },
-          service_info: {
-            name: serviceName,
-            image: serviceImage,
-            dna_collection_process: dnaCollectionProcess
-          },
-          dna_sample_tracking_id: dnaSampleTrackingId,
-          created_at: createdAt,
-          status
-        } = payment._source
-
-        const paymentDetail = {
-          orderId,
-          dnaSampleTrackingId, 
-          labName,
-          serviceName,
-          serviceImage,
-          status,
-          dnaCollectionProcess,
-          orderDate: this.formatDate(createdAt),
-          timestamp: new Date (parseInt(createdAt.replaceAll(",", ""))).getTime().toString()
+      try {
+        this.orderList.orders.data.forEach(async(payment) => {
+          const {
+            id: orderId,
+            lab_info: {
+              name: labName
+            },
+            service_info: {
+              name: serviceName,
+              image: serviceImage,
+              dna_collection_process: dnaCollectionProcess
+            },
+            dna_sample_tracking_id: dnaSampleTrackingId,
+            created_at: createdAt,
+            status
+          } = payment._source
+  
+          const paymentDetail = {
+            orderId,
+            dnaSampleTrackingId, 
+            labName,
+            serviceName,
+            serviceImage,
+            status,
+            dnaCollectionProcess,
+            orderDate: this.formatDate(createdAt),
+            timestamp: new Date (parseInt(createdAt.replaceAll(",", ""))).getTime().toString()
+          }
+  
+          this.paymentHistory.push(paymentDetail)
+          this.paymentHistory.sort(
+            (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
+          )
+        })
+  
+        if(!this.paymentHistory.length) {
+          this.titlePaymentWording = "You haven't made any order yet"
+          return
         }
-
-        this.paymentHistory.push(paymentDetail)
-        this.paymentHistory.sort(
-          (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
-        )
-      })
-
-      if(!this.paymentHistory.length) {
-        this.titlePaymentWording = "You haven't made any order yet"
-        return
+        this.titlePaymentWording = "Your recent payments"
+        this.isLoadingPayments = false
+      } catch (error) {
+        console.error(error)
+        this.isLoadingPayments = false
       }
-      this.titlePaymentWording = "Your recent payments"
-      this.isLoadingPayments = false
     },
 
     goToMyTest() {
