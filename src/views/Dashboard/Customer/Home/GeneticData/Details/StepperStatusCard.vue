@@ -7,14 +7,14 @@
         view-box="-10 -16 180 180"
       )
 
-    .status-card__status {{ status }}
-    .status-card__message {{ message }}
+    .status-card__status {{ orderDetail[analysis.status].status }}
+    .status-card__message {{ orderDetail[analysis.status].message }}
 
     .status-card__stepper
       .step-indicator
         .status-card__step
           div(:class="setClass(1)")
-            v-icon.icon(v-if="orderStatus === 'Rejected'") mdi-close 
+            v-icon.icon(v-if="analysis.status === 'Rejected'") mdi-close 
             v-icon.icon(v-else) mdi-check
           small Order Confirmation
         .status-card__indicator-line
@@ -29,7 +29,7 @@
           small Result Ready
     .status-card__button
       ui-debio-button(
-        v-if="orderStatus === 'Registered'"
+        v-if="analysis.status === 'Registered'"
         width="100%" 
         color="red"
         outlined 
@@ -38,15 +38,15 @@
       ) Cancel Request
 
       ui-debio-button(
-        v-if="orderStatus === 'Rejected'"
+        v-if="analysis.status === 'Rejected'"
         width="100%" 
         color="primary"
         @click="viewResult"
       ) View Reason
 
       ui-debio-button(
-        v-if="orderStatus === 'InProgress' || orderStatus === 'ResultReady'"
-        :disabled="orderStatus === 'InProgress'"
+        v-if="analysis.status === 'InProgress' || analysis.status === 'ResultReady'"
+        :disabled="analysis.status === 'InProgress'"
         width="100%" 
         color="primary"
         @click="viewResult"
@@ -59,7 +59,6 @@
 
 import { mapState } from "vuex"
 import { registeredBanner } from "@debionetwork/ui-icons"
-import { queryGeneticAnalysisOrderById, queryGeneticAnalysisByGeneticAnalysisTrackingId, queryGeneticAnalystByAccountId } from "@debionetwork/polkadot-provider"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import CryptoJS from "crypto-js"
@@ -107,17 +106,16 @@ export default {
     analysisDetail: null
   }),
 
+  props: {
+    analysis: Object    
+  },
+  
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       mnemonicData: (state) => state.substrate.mnemonicData
     })
-  },
-
-  async mounted() {
-    this.orderId = this.$route.params.id
-    await this.getStatus()
   },
 
   watch: {
@@ -127,22 +125,9 @@ export default {
   },
 
   methods: {
-    async getStatus() {
-      const detail = await queryGeneticAnalysisOrderById(this.api, this.orderId)
-      this.trackingId = detail.geneticAnalysisTrackingId
-      const analysisDetail = await queryGeneticAnalysisByGeneticAnalysisTrackingId(this.api, this.trackingId)
-      this.analystInfo = await queryGeneticAnalystByAccountId(this.api, detail.sellerId)
-
-      this.orderStatus = analysisDetail.status
-      this.status = this.orderDetail[this.orderStatus].status
-      this.message = this.orderDetail[this.orderStatus].message
-      this.activeStep = this.orderDetail[this.orderStatus].active
-      this.reportLink = analysisDetail.reportLink
-    },
-
     setClass(step) {
-      if (this.activeStep >= step) {
-        if (this.orderStatus === "Rejected") {
+      if (this.orderDetail[this.analysis.status].active >= step) {
+        if (this.analysis.status === "Rejected") {
           return ["step-icon", "border-error", "error"]
         }
 
@@ -157,8 +142,8 @@ export default {
     },
 
     async viewResult() {
-      if (this.orderStatus === "Rejected") {
-        this.$emit("reject", this.trackingId)
+      if (this.analysis.status === "Rejected") {
+        this.$emit("reject")
         return
       }
 
