@@ -7,14 +7,14 @@
         view-box="-10 -16 180 180"
       )
 
-    .status-card__status {{ orderDetail[analysis.status].status }}
-    .status-card__message {{ orderDetail[analysis.status].message }}
+    .status-card__status {{ orderDetail[computeStatus].status }}
+    .status-card__message {{ orderDetail[computeStatus].message }}
 
     .status-card__stepper
       .step-indicator
         .status-card__step
           div(:class="setClass(1)")
-            v-icon.icon(v-if="analysis.status === 'Rejected'") mdi-close 
+            v-icon.icon(v-if="computeStatus === 'Rejected'") mdi-close 
             v-icon.icon(v-else) mdi-check
           small Order Confirmation
         .status-card__indicator-line
@@ -29,7 +29,7 @@
           small Result Ready
     .status-card__button
       ui-debio-button(
-        v-if="analysis.status === 'Registered'"
+        v-if="computeStatus === 'Registered'"
         width="100%" 
         color="red"
         outlined 
@@ -38,15 +38,15 @@
       ) Cancel Request
 
       ui-debio-button(
-        v-if="analysis.status === 'Rejected'"
+        v-if="computeStatus === 'Rejected'"
         width="100%" 
         color="primary"
         @click="viewResult"
       ) View Reason
 
       ui-debio-button(
-        v-if="analysis.status === 'InProgress' || analysis.status === 'ResultReady'"
-        :disabled="analysis.status === 'InProgress'"
+        v-if="computeStatus === 'InProgress' || computeStatus === 'ResultReady'"
+        :disabled="computeStatus === 'InProgress'"
         width="100%" 
         color="primary"
         @click="viewResult"
@@ -101,33 +101,31 @@ export default {
     stepper: ["Order Confirmation", "Analyzed", "Result Ready"],
     trackingId: "",
     publicKey: null,
-    secretKey: null,
-    analystInfo: null,
-    analysisDetail: null
+    secretKey: null
   }),
 
   props: {
     analysis: Object    
   },
-  
+
+    
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       mnemonicData: (state) => state.substrate.mnemonicData
-    })
-  },
+    }),
 
-  watch: {
-    mnemonicData(val) {
-      if (val) this.initialData()
+    computeStatus() {
+      return this.analysis?.status ? this.analysis?.status : "Registered"
     }
   },
 
+  
   methods: {
     setClass(step) {
-      if (this.orderDetail[this.analysis.status].active >= step) {
-        if (this.analysis.status === "Rejected") {
+      if (this.orderDetail[this.analysis?.status].active >= step) {
+        if (this.analysis?.status === "Rejected") {
           return ["step-icon", "border-error", "error"]
         }
 
@@ -142,7 +140,7 @@ export default {
     },
 
     async viewResult() {
-      if (this.analysis.status === "Rejected") {
+      if (this.analysis?.status === "Rejected") {
         this.$emit("reject")
         return
       }
@@ -152,7 +150,7 @@ export default {
         params: { id: this.$route.params.id }
       })
 
-      const pair = { publicKey: this.analystInfo.info.boxPublicKey, secretKey: this.secretKey }
+      const pair = { publicKey: this.analysis.info.boxPublicKey, secretKey: this.secretKey }
       const type = "application/pdf"
       const { data } = await downloadFile(this.reportLink)
       const decryptedFile = decryptFile(data, pair, type)
