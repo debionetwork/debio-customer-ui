@@ -147,18 +147,6 @@ export default {
         customerBoxPublicKey,
         this.selectedService.serviceFlow
       )
-
-      // const lastOrder = await queryLastOrderHashByCustomer(
-      //   this.api,
-      //   this.wallet.address
-      // )
-      
-      // this.$router.push({ 
-      //   name: "customer-request-test-checkout", params: { id: lastOrder }
-      // })
-      // this.loading = false
-      // setTimeout(async () => {
-      // }, 5000)
     },
 
     country (country) {
