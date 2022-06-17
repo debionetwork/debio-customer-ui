@@ -292,9 +292,6 @@ export default {
       this.metamask = await startApp()
       this.role = process.env.VUE_APP_ROLE
 
-      console.log(this.metamask.network)
-      console.log(this.role)
-
       if (this.role === "development") {
         this.networkName = "Rinkeby Test Network"
         if (this.metamask?.network === this.network[this.networkName]) return
