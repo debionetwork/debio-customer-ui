@@ -42,6 +42,7 @@ import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { getOrderDetail } from "@/common/lib/api"
 import { queryGeneticAnalysisByGeneticAnalysisTrackingId } from "@debionetwork/polkadot-provider"
 import { cancelGeneticAnalysisOrder, cancelGeneticAnalysisOrderFee } from "@debionetwork/polkadot-provider"
+import { formatPrice } from "@/common/lib/price-format.js"
 
 export default {
   name: "GAOrderDetail",
@@ -104,9 +105,6 @@ export default {
   },
 
   methods: {
-    formatPrice(price) {
-      return this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether")
-    },
 
     async getOrderDetail() {
       const detail = await getOrderDetail(this.orderId)
@@ -117,7 +115,7 @@ export default {
         serviceName: detail.service_info.name,
         serviceDescription: detail.service_info.description,
         serviceDuration: `${detail.service_info.expected_duration.duration} ${detail.service_info.expected_duration.duration_type}`,
-        servicePrice: `${this.formatPrice(detail.service_info.prices_by_currency[0].total_price)} ${detail.service_info.prices_by_currency[0].currency}`
+        servicePrice: `${formatPrice(detail.service_info.prices_by_currency[0].total_price)} ${detail.service_info.prices_by_currency[0].currency}`
       }
 
       const trackingId = detail.genetic_analysis_tracking_id
