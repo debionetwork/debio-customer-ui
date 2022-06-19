@@ -197,6 +197,7 @@ export default {
         commit("CLEAR_WALLET")
 
         localStorage.setAddress(address)
+        commit("SET_WALLET", account) // FIXME: simpen untuk dev
         commit("SET_WALLET_PUBLIC_KEY", u8aToHex(address))
         commit("SET_LOADING_WALLET", false)
 
@@ -224,6 +225,7 @@ export default {
         for(const account in await web3Accounts()) {
           if (account.address === address) {
             commit("SET_EXT_ACCOUNT_DATA", account)
+            commit("SET_WALLET", account) // FIXME: simpen untuk dev
             alert(address)
             break
           }
