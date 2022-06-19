@@ -31,10 +31,15 @@
         div.pop-up-title The Privacy-First Platform for Personal Genetic and Biomedical Testing
         v-btn.white--text(elevation='0' color='primary' @click='signIn') Sign In
         v-btn(elevation='0' outlined color='primary' @click='generateAccount') Generate Account
+        v-btn.white--text(elevation='0' color='primary' @click='enablePolkadotWallet') Use Polkadot Wallet
 </template>
 
 <script>
 import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue"
+import {
+  // web3Accounts,
+  web3Enable
+} from "@polkadot/extension-dapp"
 
 export default {
   name: "MainPage",
@@ -46,6 +51,14 @@ export default {
   methods: {
     signIn() {
       this.$router.push({name: "sign-in"})
+    },
+
+    async enablePolkadotWallet() {
+      const ext = await web3Enable("DeBio Network")
+
+      if(ext.length > 0) {
+        this.extension = ext;
+      }
     },
 
     generateAccount() {
