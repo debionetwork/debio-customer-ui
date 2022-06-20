@@ -221,15 +221,14 @@ export default {
         commit("SET_LOADING_WALLET", false)
 
         localStorage.setLocalStorageByName("ext_account_data", address)
-        await web3Enable("DeBio Network");
-        for(const account in await web3Accounts()) {
+        await web3Enable("DeBio Network")
+        const accounts = await web3Accounts()
+        accounts.forEach(account => {
           if (account.address === address) {
             commit("SET_EXT_ACCOUNT_DATA", account)
             commit("SET_WALLET", account) // FIXME: simpen untuk dev
-            alert(address)
-            break
           }
-        }
+        })
         return { success: true }
       } catch (err) {
         console.error(err)
