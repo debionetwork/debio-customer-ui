@@ -149,7 +149,7 @@ export default {
 
   async created() {
     this.resultLoading = true
-    this.idOrder = this.$route.params.idOrder
+    this.idOrder = this.$route.params.id
     const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
     this.privateKey = u8aToHex(cred.boxKeyPair.secretKey)
     this.ownerAddress = this.wallet.address

@@ -216,7 +216,7 @@ export default {
     },
 
     toViewResult() {
-      this.$router.push({ name: "test-result", params: {idOrder: this.myTest.orderId}})
+      this.$router.push({ name: "test-result", params: { id: this.$route.params.id }})
     },
 
     isRejected(border) {
