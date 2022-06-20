@@ -226,12 +226,17 @@ export default {
   methods: {
     async getOrderDetail() {
       this.isLoading = true
-      this.myTest = await getOrderDetail(this.$route.params.id)
-      this.dnaSample = await queryDnaSamples(this.api, this.myTest.dna_sample_tracking_id)
-      this.prices.servicePrice = formatPrice(this.myTest.service_info.prices_by_currency[0].total_price)
-      this.prices.qcPrice = formatPrice(this.myTest.service_info.prices_by_currency[0].additional_prices[0].value)
-      this.prices.currency = this.myTest.service_info.prices_by_currency[0].currency.toUpperCase()
-      this.isLoading = false
+      try {
+        this.myTest = await getOrderDetail(this.$route.params.id)
+        this.dnaSample = await queryDnaSamples(this.api, this.myTest.dna_sample_tracking_id)
+        this.prices.servicePrice = this.formatPrice(this.myTest.service_info.prices_by_currency[0].total_price)
+        this.prices.qcPrice = this.formatPrice(this.myTest.service_info.prices_by_currency[0].additional_prices[0].value)
+        this.prices.currency = this.myTest.service_info.prices_by_currency[0].currency.toUpperCase()
+        this.isLoading = false
+      } catch (error) {
+        console.error(error)
+        this.isLoading = false
+      }
     },
 
     toViewResult() {
