@@ -3,6 +3,7 @@
     ui-debio-data-table(
       :headers="headers"
       :items="items"
+      :loading="isLoadingData"
     )
       template(v-slot:[`item.id`]="{ item }")
         .customer-staking-tab__id
@@ -130,7 +131,9 @@ export default {
     tabs: null,
     showDialog: false,
     requestId: "",
-    countries: []
+    countries: [],
+    isLoadingData: false
+
   }),
 
   computed: {
@@ -172,6 +175,7 @@ export default {
         return 0
         
       })
+      this.isLoadingData = false
     },
 
     setAmount(amount) {
@@ -180,6 +184,7 @@ export default {
     },
 
     async getCountries() {
+      this.isLoadingData = true
       const { data : { data }} = await getLocations()
       this.countries = data
     },
