@@ -8,7 +8,7 @@
         @close="error = null"
       )
 
-      .genetic-data-add__title {{ isEdit ? "Edit Genetic Data" : "Add Genetic Data"}} {{ loadingData}}
+      .genetic-data-add__title {{ isEdit ? "Edit Genetic Data" : "Add Genetic Data"}}
       .genetic-data-add__forms(v-if="loadingData" )
         v-skeleton-loader(
           v-bind="attrs"
