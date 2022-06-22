@@ -23,9 +23,9 @@ const handler = {
     let wording = `${valueMessage} (${computeId})`
 
     if (event.method === "OrderFulfilled") {
-      if (data.orderFlow === "StakingRequestService") wording = `${valueMessage} DBIO as a reward for completing the request test for ${computeId} from the service requested`
-      
       wording = `${valueMessage} (${computeId}) are out.  Click here to see your order details.`
+    } else if (event.method === "OrderFulfilled" && data.orderFlow === "StakingRequestService") {
+      wording = `${valueMessage} DBIO as a reward for completing the request test for ${computeId} from the service requested`
     }
 
     return { data, id, params, wording }
@@ -71,7 +71,7 @@ const handler = {
       wording = `${valueMessage} (${formatedHash}).`
     }
 
-    return { data, id, params, wording}
+    return { data, id, params, wording }
   },
   geneticAnalysisOrders: async (dataEvent, value, valueMessage, event) => {
     const data = dataEvent[0]
