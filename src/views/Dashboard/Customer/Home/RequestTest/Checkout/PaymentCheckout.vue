@@ -50,12 +50,10 @@ export default {
     service: {}
   }),
 
-  async mounted() {
+  async created() {
     if (!this.$route.params.id) {
       this.service = this.dataService
-    }
-
-    if (this.$route.params.id) {
+    } else {
       this.detailOrder = await queryOrderDetailByOrderID(
         this.api,
         this.$route.params.id

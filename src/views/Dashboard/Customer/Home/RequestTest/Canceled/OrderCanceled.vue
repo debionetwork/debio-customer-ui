@@ -29,10 +29,8 @@ export default {
     PaymentDetailCard
   },
 
-  mounted() {
-    if (!this.selectedService) {
-      this.$router.push({ name: "customer-payment-history" })
-    }
+  created() {
+    if (!this.selectedService) this.$router.push({ name: "customer-payment-history" })
   },
 
   computed: {
