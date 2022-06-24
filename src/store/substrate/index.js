@@ -7,6 +7,7 @@ import localStorage from "@/common/lib/local-storage"
 import masterConfigEvent from "./event-types.json"
 import { ApiPromise, WsProvider } from "@polkadot/api"
 import { processEvent } from "@/common/lib/polkadot-provider/events"
+import { customerHandler } from "@/common/lib/polkadot-provider/events/handlers/customer"
 
 const {
   cryptoWaitReady
@@ -284,7 +285,7 @@ export default {
 
         // If event section defined then process event
         if (state.configEvent["role"][role][event.section] && state.configEvent["role"][role][event.section][event.method]) {
-          const { statusAdd, message, data, params } = await processEvent(state, address, event, role)
+          const { statusAdd, message, data, params } = await processEvent(state, address, event, role, { customer: customerHandler })
           const route = state.configEvent["role"][role][event.section][event.method].route
           const dateSet = new Date()
           const timestamp = dateSet.getTime().toString()

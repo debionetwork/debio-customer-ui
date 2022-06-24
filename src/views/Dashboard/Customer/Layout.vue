@@ -182,7 +182,6 @@ import Navbar from "@/common/components/Navbar.vue"
 import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 import localStorage from "@/common/lib/local-storage"
-import VueRouter from "@/router"
 import { startApp, handleSwitchChain } from "@/common/lib/metamask"
 
 export default {
@@ -254,13 +253,11 @@ export default {
   },
 
   watch: {
-    $route() {
-      const query = VueRouter?.history?.current?.query
-      
+    $route(val) {
       this.pageError = null
-      if (query?.error) this.showModalError = true
+
+      if (val?.query?.error) this.showModalError = true
     },
-    
 
     lastEventData(event) {
       if (event !== null) {

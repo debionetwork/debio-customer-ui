@@ -1,12 +1,6 @@
-import { customerHandler } from "@/common/lib/polkadot-provider/events/handlers/customer"
-import { labHandler } from "@/common/lib/polkadot-provider/events/handlers/lab"
+import store from "@/store"
 
-const handlers = {
-  customer: customerHandler,
-  lab: labHandler
-}
-
-export async function processEvent(state, address, event, role) {
+export async function processEvent(state, address, event, role, handlers) {
   let statusAdd = false
   let message = ""
   let data = null
@@ -25,7 +19,13 @@ export async function processEvent(state, address, event, role) {
     const valueMessage = state.configEvent["role"][role][event.section][event.method].value_message
     const identity = state.configEvent["role"][role][event.section][event.method].identity
 
-    const res = await handler(dataEvent, value, valueMessage, { section: event.section, method: event.method })
+    const res = await handler({
+      dataEvent,
+      value,
+      valueMessage,
+      event: { section: event.section, method: event.method },
+      store
+    })
 
     if (res.data[identity] === address || res.data[1][identity] === address) {
       statusAdd = true

@@ -1,9 +1,8 @@
 import { toFormatDebioCoin } from "@/common/lib/polkadot-provider/index"
-import store from "@/store"
 
 const defaultHandler = {
   get: function (target, name) {
-    return Object.prototype.hasOwnProperty.call(target, name) ? target[name] : (dataEvent, value, valueMessage) => {
+    return Object.prototype.hasOwnProperty.call(target, name) ? target[name] : ({ dataEvent, value, valueMessage }) => {
       const data = dataEvent[0]
       const id = data[value]
       const params = { number: id }
@@ -14,7 +13,7 @@ const defaultHandler = {
 }
 
 const handler = {
-  orders: async (dataEvent, value, valueMessage) => {
+  orders: async ({ dataEvent, value, valueMessage }) => {
     const data = dataEvent[0]
     const id = data[value]
     const params = { id: id }
@@ -29,7 +28,7 @@ const handler = {
     const wording = finalWording
     return { data, id, params, wording }
   },
-  geneticTesting: async (dataEvent, value, valueMessage) => {
+  geneticTesting: async ({ dataEvent, value, valueMessage }) => {
     const data = dataEvent[0]
     const id = data[value]
     const params = { orderId: id }
@@ -41,7 +40,7 @@ const handler = {
 
     return { data, id, params, wording }
   },
-  balances: async (dataEvent, value, valueMessage) => {
+  balances: async ({ dataEvent, value, valueMessage }) => {
     const data = dataEvent
     const id = data[value]
     const params = { number: id }
@@ -49,7 +48,7 @@ const handler = {
     const wording = finalText + " DBIO!"
     return { data, id, params, wording }
   },
-  rewards: async (dataEvent, value, valueMessage) => {
+  rewards: async ({ dataEvent, value, valueMessage, store }) => {
     const web3 = store.getters["metamask/getWeb3"]
     const data = dataEvent;
     const id = data[value];
@@ -59,7 +58,7 @@ const handler = {
     const wording = `${coin} DBIO for registering in Debio Appchain`;
     return { data, id, params, wording }
   },
-  serviceRequest: async (dataEvent, value, valueMessage, event) => {
+  serviceRequest: async ({ dataEvent, value, valueMessage, event }) => {
     const data = dataEvent
     const id = isNaN(value) ? data[0][value] : data[value]
     const params = { page: 1 }
@@ -72,7 +71,7 @@ const handler = {
 
     return { data, id, params, wording}
   },
-  geneticAnalysisOrders: async (dataEvent, value, valueMessage, event) => {
+  geneticAnalysisOrders: async ({ dataEvent, value, valueMessage, event }) => {
     const data = dataEvent[0]
     const id = data[value]
     const status = data["status"]
@@ -86,7 +85,7 @@ const handler = {
 
     return { data, id, params, wording }
   },
-  geneticAnalysis: async (dataEvent, value, valueMessage, event) => {
+  geneticAnalysis: async ({ dataEvent, value, valueMessage, event }) => {
     const data = dataEvent[0]
     const id = data[value]
     const status = data["status"]
