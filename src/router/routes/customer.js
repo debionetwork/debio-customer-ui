@@ -20,7 +20,7 @@ export default [
         meta: { pageHeader: "Maintenance" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/maintenancePageLayout"),
         beforeEnter: (to, from, next) => {
-          if (from.path === "/") next({ name: "customer-dashboard" })
+          if (from.path === "") next({ name: "customer-dashboard" })
           else next()
         }
       },
@@ -92,6 +92,12 @@ export default [
         name: "customer-request-test-success",
         meta: { pageHeader: "Success", parent: "customer-request-test" },
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Success")
+      },
+      {
+        path: "request-test/canceled/:hash?",
+        name: "customer-request-test-canceled",
+        meta: { pageHeader: "Canceled", parent: "customer-request-test" },
+        component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Canceled")
       },
 
       // Data Bounty

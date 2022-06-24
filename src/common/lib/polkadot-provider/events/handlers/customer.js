@@ -13,30 +13,30 @@ const defaultHandler = {
 }
 
 const handler = {
-  orders: async ({ dataEvent, value, valueMessage }) => {
+  orders: async ({ dataEvent, value, valueMessage, event }) => {
     const data = dataEvent[0]
     const id = data[value]
     const params = { id: id }
 
     const computeId = `${id.substr(0, 4)}...${id.substr(id.length - 4)}`
-    const computeWording = `${valueMessage} DBIO as a reward for completing the request test for ${computeId} from the service requested`
+    let wording = `${valueMessage} (${computeId})`
 
-    const finalWording = data.status === "Fulfilled" && data.orderFlow === "StakingRequestService"
-      ? computeWording
-      : `${valueMessage} for (${computeId}) is ${data.status}`
+    if (event.method === "OrderFulfilled") {
+      wording = `${valueMessage} (${computeId}) are out.  Click here to see your order details.`
+    } else if (event.method === "OrderRefunded") {
+      wording = `${valueMessage} (${computeId}) has been refunded, kindly check your account balance..`
+    }
 
-    const wording = finalWording
     return { data, id, params, wording }
   },
   geneticTesting: async ({ dataEvent, value, valueMessage }) => {
     const data = dataEvent[0]
+    const status = data["status"]
     const id = data[value]
-    const params = { orderId: id }
-
+    const params = { id: id }
+    
     const formatedHash = `${data?.trackingId.substr(0, 4)}...${data?.trackingId?.substr(data?.trackingId?.length - 4)}`
-    const computeWording = `${valueMessage} (${formatedHash}) are out. Click here to see your order details.`
-
-    const wording = computeWording
+    const wording = `${valueMessage} (${formatedHash}) ${status.toLowerCase() === "fulfilled" ? "are out" : status.toLowerCase()}. Click here to see your order details.`
 
     return { data, id, params, wording }
   },
@@ -69,7 +69,7 @@ const handler = {
       wording = `${valueMessage} (${formatedHash}).`
     }
 
-    return { data, id, params, wording}
+    return { data, id, params, wording }
   },
   geneticAnalysisOrders: async ({ dataEvent, value, valueMessage, event }) => {
     const data = dataEvent[0]

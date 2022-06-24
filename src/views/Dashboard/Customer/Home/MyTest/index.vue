@@ -149,7 +149,7 @@ import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskService
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { createSyncEvent, getCategories, getOrderList } from "@/common/lib/api"
 import { queryDnaSamples, queryDnaTestResults, unstakeRequest, unstakeRequestFee } from "@debionetwork/polkadot-provider"
-import DNA_COLLECTION_PROCESS from "@/common/constants/instruction-step.js"
+import { getDNACollectionProcess } from "@/common/lib/api"
 import { ORDER_STATUS_DETAIL } from "@/common/constants/status"
 
 export default {
@@ -277,53 +277,64 @@ export default {
 
     async fetchOrderList() {
       this.isLoadingData = true
-      const result = await getOrderList()
-      const orderList = result.orders.data
-      const newList = orderList.filter(order => order._source.status !== "Unpaid" && order._source.status !== "Cancelled")
-      newList.forEach(async (order) => {
-        const { 
-          id: orderId,
-          lab_info: {
-            name: labName
-          },
-          service_info: {
-            name: serviceName,
-            image: serviceImage,
-            dna_collection_process: dnaCollectionProcess
-          },
-          dna_sample_tracking_id: dnaSampleTrackingId,
-          created_at: createdAt,
-          status: paymentStatus
-        } = order._source
+      try {
+        const result = await getOrderList()
+        const orderList = result.orders.data
 
-        const dnaSample = await queryDnaSamples(this.api, dnaSampleTrackingId)
-        let dnaTestResults
-
-        if (paymentStatus === "Fulfilled") {
-          dnaTestResults = await queryDnaTestResults(this.api, dnaSampleTrackingId)
+        if (!orderList.length) {
+          this.isLoadingData = false
+          return
         }
 
-        const orderDetail = {
-          orderId,
-          dnaSampleTrackingId, 
-          labName,
-          serviceName,
-          serviceImage,
-          orderDate: this.formatDate(createdAt),
-          updatedAt: this.formatDate(dnaSample.updatedAt),
-          orderStatus: dnaSample.status,
-          paymentStatus,
-          dnaCollectionProcess,
-          dnaTestResults,
-          timestamp: new Date (parseInt(dnaSample.updatedAt.replaceAll(",", ""))).getTime().toString()
-        }
+        const newList = orderList.filter(order => order._source.status !== "Unpaid" && order._source.status !== "Cancelled")
+        newList.forEach(async (order) => {
+          const { 
+            id: orderId,
+            lab_info: {
+              name: labName
+            },
+            service_info: {
+              name: serviceName,
+              image: serviceImage,
+              dna_collection_process: dnaCollectionProcess
+            },
+            dna_sample_tracking_id: dnaSampleTrackingId,
+            created_at: createdAt,
+            status: paymentStatus
+          } = order._source
 
-        this.testList.push(orderDetail)
-        this.testList.sort(
-          (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
-        )
+          const dnaSample = await queryDnaSamples(this.api, dnaSampleTrackingId)
+          let dnaTestResults
+
+          if (paymentStatus === "Fulfilled") {
+            dnaTestResults = await queryDnaTestResults(this.api, dnaSampleTrackingId)
+          }
+
+          const orderDetail = {
+            orderId,
+            dnaSampleTrackingId, 
+            labName,
+            serviceName,
+            serviceImage,
+            orderDate: this.formatDate(createdAt),
+            updatedAt: this.formatDate(dnaSample.updatedAt),
+            orderStatus: dnaSample.status,
+            paymentStatus,
+            dnaCollectionProcess,
+            dnaTestResults,
+            timestamp: new Date (parseInt(dnaSample.updatedAt.replaceAll(",", ""))).getTime().toString()
+          }
+
+          this.testList.push(orderDetail)
+          this.testList.sort(
+            (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
+          )
+          this.isLoadingData = false
+        })
+      } catch (error) {
+        console.error(error)
         this.isLoadingData = false
-      })
+      }
     },
 
     async initialData() {
@@ -357,8 +368,10 @@ export default {
       this.$router.push({ name: "order-history-detail", params: {id}})
     },
 
-    goToInstruction(item) {
-      window.open(DNA_COLLECTION_PROCESS[item], "_blank")
+    async goToInstruction(item) {
+      const dnaCollectionProcess = await getDNACollectionProcess()
+      const link = dnaCollectionProcess.filter(e => e.collectionProcess === item)[0].link
+      window.open(link, "_blank")
     },
 
     async handleSelectedBounty(val) {
