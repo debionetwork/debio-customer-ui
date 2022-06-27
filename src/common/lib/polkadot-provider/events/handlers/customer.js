@@ -38,7 +38,7 @@ const handler = {
     
     const formatedHash = `${data?.trackingId.substr(0, 4)}...${data?.trackingId?.substr(data?.trackingId?.length - 4)}`
     const wording = `${valueMessage} (${formatedHash}) ${status.toLowerCase() === "fulfilled" ? "are out" : `has been ${status.toLowerCase()}`}. Click here to see your order details.`
-    
+
     return { data, id, params, wording }
   },
   balances: async (dataEvent, value, valueMessage) => {
