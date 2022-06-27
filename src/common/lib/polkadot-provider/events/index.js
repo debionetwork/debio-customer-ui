@@ -6,7 +6,7 @@ export async function processEvent(state, address, event, role, handlers) {
   let data = null
   let params = null
 
-  const dataEvent = JSON.parse(event.data.toString())
+  const dataEvent = JSON.parse(JSON.stringify(event.data))
   if (dataEvent.length > 0) {
     let handler = handlers[role][event.section]
     if (!handler) {
