@@ -25,14 +25,6 @@
           "route": "order-history-detail",
           "params": "id",
           "identity": "customerId"
-        },
-        "OrderRefunded": {
-          "message": "",
-          "value": "id",
-          "value_message": "Your service fee from ",
-          "route": "order-history-detail",
-          "params": "id",
-          "identity": "customerId"
         }
       },
       "geneticTesting": {
