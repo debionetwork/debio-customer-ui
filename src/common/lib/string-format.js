@@ -5,3 +5,13 @@ export function fmtSpecimenNumber(specimenNumber) {
   
   return `${first}-${second}-${third}`
 }
+
+export function trimString(str, max) {
+  if (str.length > max) {
+    const newVal = `${str.slice(0, max)} ...`
+    
+    return newVal
+  }
+
+  return str
+}
