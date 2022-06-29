@@ -72,7 +72,6 @@ const handler = {
     return { data, id, params, wording }
   },
   geneticAnalysisOrders: async (dataEvent, value, valueMessage, event) => {
-    console.log("Analysis Order ==>", event)
     const data = dataEvent[0]
     const id = data[value]
     const status = data["status"]
@@ -87,7 +86,6 @@ const handler = {
     return { data, id, params, wording }
   },
   geneticAnalysis: async (dataEvent, value, valueMessage, event) => {
-    console.log("Analysis ==>", event)
     const data = dataEvent[0]
     const id = data[value]
     const status = data["status"]
