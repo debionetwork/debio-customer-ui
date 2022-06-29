@@ -131,7 +131,7 @@
         }
       },
       "geneticAnalysisOrders": {
-        "GeneticAnalysisOrderCreated": {
+        "GeneticAnalysisOrderPaid": {
           "message": "",
           "value": "id",
           "value_message": "Congrats! You successfully submitted your requested test for ",
