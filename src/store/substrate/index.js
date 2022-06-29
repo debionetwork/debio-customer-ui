@@ -144,7 +144,7 @@ export default {
         api.query.system.events((events) => {
           events.forEach((record) => {
             const { event } = record
-            
+            if (state?.lastEventData === event) return
             if (allowedSections.includes(event.section)) {
               const dataEvent = JSON.parse(event.data.toString())
               if (event.method === "OrderPaid") localStorage.removeLocalStorageByName("lastOrderStatus")
