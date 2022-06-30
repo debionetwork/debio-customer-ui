@@ -33,10 +33,11 @@ const handler = {
   geneticTesting: async (dataEvent, value, valueMessage) => {
     const data = dataEvent[0]
     const id = data[value]
+    const status = data["status"]
     const params = { id: id }
     
     const formatedHash = `${data?.trackingId.substr(0, 4)}...${data?.trackingId?.substr(data?.trackingId?.length - 4)}`
-    const wording = `${valueMessage} (${formatedHash}) are out. Click here to see your order details.`
+    const wording = `${valueMessage} (${formatedHash}) ${status.toLowerCase() === "fulfilled" ? "are out" : `has been ${status.toLowerCase()}`}. Click here to see your order details.`
 
     return { data, id, params, wording }
   },
