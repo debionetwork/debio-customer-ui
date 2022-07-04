@@ -4,9 +4,8 @@ import { u8aToHex } from "@polkadot/util" // u8aToString, stringToU8a
 import keyring from "@polkadot/ui-keyring"
 import { Keyring } from "@polkadot/keyring"
 import localStorage from "@/common/lib/local-storage"
-import masterConfigEvent from "./event-types.json"
 import { ApiPromise, WsProvider } from "@polkadot/api"
-import { processEvent } from "@/common/lib/polkadot-provider/events"
+import { processEvent, eventTypes } from "@debionetwork/polkadot-provider"
 
 const {
   cryptoWaitReady
@@ -194,8 +193,8 @@ export default {
           localStorage.setAddress(pair.address)
           commit("SET_WALLET_PUBLIC_KEY", u8aToHex(pair.publicKey))
           commit("SET_WALLET", pair)
-          
-          localStorage.setLocalStorageByName("mnemonic_data", CryptoJS.AES.encrypt(file[1].mnemonic, password));	
+
+          localStorage.setLocalStorageByName("mnemonic_data", CryptoJS.AES.encrypt(file[1].mnemonic, password))
           commit("SET_MNEMONIC_DATA", file[1])
           commit("SET_LOADING_WALLET", false)
 
@@ -259,7 +258,7 @@ export default {
     async getListNotification({ commit }, { address, role }) {
       try {
         //localStorage.removeLocalStorageByName("LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role, null);
-        commit("SET_CONFIG_EVENT", masterConfigEvent)
+        commit("SET_CONFIG_EVENT", eventTypes)
         const listNotificationJson = localStorage.getLocalStorageByName("LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role)
         let listNotification = []
         if (listNotificationJson != null && listNotificationJson != "") {
@@ -271,7 +270,7 @@ export default {
         console.error(err)
       }
     },
-    async addListNotification({ commit, state }, { address, event, role }) {
+    async addListNotification({ commit }, { address, event, role }) {
       try {
         const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role
         const listNotificationJson = localStorage.getLocalStorageByName(storageName)
@@ -282,9 +281,9 @@ export default {
         }
 
         // If event section defined then process event
-        if (state.configEvent["role"][role][event.section] && state.configEvent["role"][role][event.section][event.method]) {
-          const { statusAdd, message, data, params } = await processEvent(state, address, event, role)
-          const route = state.configEvent["role"][role][event.section][event.method].route
+        if (eventTypes["role"][role][event.section] && eventTypes["role"][role][event.section][event.method]) {
+          const { statusAdd, message, data, params } = await processEvent(address, event, role, store)
+          const route = eventTypes["role"][role][event.section][event.method].route
           const dateSet = new Date()
           const timestamp = dateSet.getTime().toString()
           const notifDate = dateSet.toLocaleString("en-US", {
