@@ -70,19 +70,9 @@ export default {
       { text: "Service Name", value: "service_info.name", sortable: true },
       { text: "Service Provider", value: "provider", sortable: true },
       { text: "Order Date", value: "created_at", sortable: true },
-      {
-        text: "Price",
-        value: "service_info.prices_by_currency[0].total_price",
-        sortable: true
-      },
+      { text: "Price", value: "service_info.prices_by_currency[0].total_price", sortable: true },
       { text: "Status", value: "status", align: "right", sortable: true },
-      {
-        text: "Actions",
-        value: "actions",
-        sortable: false,
-        align: "center",
-        width: "5%"
-      }
+      { text: "Actions", value: "actions", sortable: false, align: "center", width: "5%" }
     ],
     payments: []
   }),
@@ -96,8 +86,7 @@ export default {
 
   watch: {
     searchQuery(newVal, oldVal) {
-      if (newVal === "" && oldVal)
-        this.metamaskDispatchAction(this.onSearchInput)
+      if (newVal === "" && oldVal) this.metamaskDispatchAction(this.onSearchInput)
     },
 
     lastEventData(event) {
@@ -131,14 +120,11 @@ export default {
           return {
             ...result._source,
             id: result._id,
-            provider:
-              result._index === "orders"
-                ? result._source?.lab_info?.name ?? "Unknown Lab Provider"
-                : computeAnalystName,
+            provider: result._index === "orders"
+              ? result._source?.lab_info?.name ?? "Unknown Lab Provider"
+              : computeAnalystName,
             timestamp: parseInt(result._source.created_at.replaceAll(",", "")),
-            created_at: new Date(
-              parseInt(result._source.created_at.replaceAll(",", ""))
-            ).toLocaleDateString("en-GB", {
+            created_at: new Date(parseInt(result._source.created_at.replaceAll(",", ""))).toLocaleDateString("en-GB", {
               day: "numeric",
               month: "short",
               year: "numeric"
@@ -180,26 +166,22 @@ export default {
       else id = item.orderId
 
       if (item["genetic_data_id"]) {
-        if (item.status === "Unpaid")
-          this.$router.push({
-            name: "customer-request-analysis-payment",
-            params: { id }
-          })
-        else
-          this.$router.push({
-            name: "customer-payment-details",
-            params: { id }
-          })
+        if (item.status === "Unpaid") this.$router.push({
+          name: "customer-request-analysis-payment",
+          params: { id }
+        })
+        else this.$router.push({
+          name: "customer-payment-details",
+          params: { id }
+        })
         return
       }
 
-      if (item.status === "Unpaid")
-        this.$router.push({
-          name: "customer-request-test-checkout",
-          params: { id }
-        })
-      else
-        this.$router.push({ name: "customer-payment-details", params: { id } })
+      if (item.status === "Unpaid") this.$router.push({
+        name: "customer-request-test-checkout",
+        params: { id }
+      })
+      else this.$router.push({ name: "customer-payment-details", params: { id } })
     }
   }
 }
