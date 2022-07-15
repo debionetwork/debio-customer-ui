@@ -168,6 +168,7 @@
           a(
             href="https://docs.debio.network/"
             target="_blank"
+            rel="noreferrer noopener nofollow"
             style="text-decoration: none"
           )
             div
@@ -180,8 +181,9 @@
               )
               span Customer Care
           a.mt-3.d-block(
-            href="https://docs.debio.network/"
+            href="https://docs.debio.network/legal/terms-and-condition"
             target="_blank"
+            rel="noreferrer noopener nofollow"
             style="text-decoration: none"
           )
             div
