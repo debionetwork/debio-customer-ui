@@ -43,7 +43,7 @@
       .menu-card__details(v-if="isDeficit && stakingFlow" style="color: red")
         .menu-card__sub-title-medium Remaining Amount
         .menu-card__price-medium
-          | {{ remainingDai }}
+          | {{ remainingAmount }}
           | {{ dataService.currency}}
 
       .menu-card__details(v-if="isBalanced && stakingFlow")
@@ -144,7 +144,7 @@
       PayRemainingDialog(
         :show="showPayRemainingDialog"
         :amount="remainingDbio"
-        :amountInDai="remainingDai"
+        :amountInDai="remainingAmount"
         @onContinue="onContinue"
         @close="showPayRemainingDialog = false"
       )
@@ -198,7 +198,7 @@ export default {
     stakingAmount: 0,
     remainingStaking: 0,
     remainingDbio: 0,
-    remainingDai: 0,
+    remainingAmount: 0,
     showPayRemainingDialog: false,
     orderId: "",
     isDeficit: false,
@@ -242,7 +242,7 @@ export default {
       const debioBalance = await getDbioBalance()
       const stakingAmount = Number(formatPrice(this.stakingData.staking_amount))
       this.stakingAmount = (stakingAmount * debioBalance.dbioToDai).toFixed(3)
-      this.remainingDai = this.dataService.totalPrice - this.stakingAmount
+      this.remainingAmount = this.dataService.totalPrice - this.stakingAmount
       this.excessAmount = this.stakingAmount - this.dataService.totalPrice
 
       if (this.excessAmount > 0) {
