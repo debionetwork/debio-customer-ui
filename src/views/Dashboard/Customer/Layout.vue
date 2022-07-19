@@ -293,6 +293,10 @@ export default {
       this.metamask = await startApp()
       this.role = process.env.VUE_APP_ROLE
 
+      if (this.metamask.currentAccount === "no_install") {
+        return
+      }
+
       if (this.role === "development") {
         this.networkName = "Rinkeby Test Network"
         if (this.metamask?.network === this.network[this.networkName]) return
