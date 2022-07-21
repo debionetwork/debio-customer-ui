@@ -231,9 +231,8 @@ export default {
 
     async checkMetamask(){
       this.metamask = await startApp()
-      this.role = process.env.VUE_APP_ROLE
 
-      if (this.role === "development") {
+      if (process.env.VUE_APP_ROLE === "development") {
         this.networkName = "Rinkeby Test Network"
         if (this.metamask?.network === this.network[this.networkName]) return
         this.switchNetwork = true
