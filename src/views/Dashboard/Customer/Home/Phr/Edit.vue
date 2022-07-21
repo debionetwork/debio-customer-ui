@@ -46,6 +46,7 @@
         variant="small"
         accept=".pdf"
         label="File input"
+        label-rules="(.pdf - Maximum file size is 2 MB)"
         :clearFile="!isEdit && clearFile"
         @isError="handleError"
         validate-on-blur

@@ -45,6 +45,7 @@
         :rules="$options.rules.document.file"
         variant="small"
         accept=".pdf"
+        label-rules="(.pdf - Maximum file size is 2 MB)"
         label="File input"
         :clearFile="!isEdit && clearFile"
         @isError="handleError"
