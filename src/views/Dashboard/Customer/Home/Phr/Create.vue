@@ -94,7 +94,9 @@
         ) Add file
 
         .customer-create-phr__files
-          .customer-create-phr__files-title Uploaded Files
+          .customer-create-phr__files-title
+            p {{ computeFiles.length ? "Uploaded Files" : "File Information" }}
+            p.mb-0(v-if="!computeFiles.length") Before uploading the document make sure to censored the KYC related in uploaded file
           .customer-create-phr__files-items
             .customer-create-phr__file-item.customer-create-phr__file-item--no-file.d-flex.align-center(
               :class="{ 'customer-create-phr__file-item--error': fileEmpty }"
@@ -628,7 +630,13 @@ export default {
       margin: 10px 0 20px
 
     &__files-title
-      margin-bottom: 20px
+      margin-bottom: 24px
+
+      p:first-of-type
+        @include button-2
+
+      p
+        @include body-text-3-opensans
 
     &__files-items
       display: flex
