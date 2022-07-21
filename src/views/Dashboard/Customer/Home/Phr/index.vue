@@ -226,7 +226,7 @@ export default {
       try {
         const dataPHR = await queryElectronicMedicalRecordByOwnerId(this.api, this.wallet.address)
 
-        if (dataPHR !== null || !dataPHR.length) {
+        if (dataPHR !== null || !dataPHR?.length) {
           const listPHR = dataPHR.reduce((filtered, current) => {
             if (filtered.every(v => v.id !== current.id)) filtered.push(current)
 
@@ -262,7 +262,7 @@ export default {
           day: "2-digit",
           month: "short",
           year: "numeric"
-        }),
+        })
 
         files.push({
           ...file,

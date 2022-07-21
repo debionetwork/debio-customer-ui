@@ -392,11 +392,11 @@ export default {
           }
 
           if (context.isEdit) {
-            const index = context.phr.files.findIndex(file => file.createdAt === createdAt)
+            const index = context.phr.files.findIndex(phrFile => phrFile.createdAt === createdAt)
 
             context.phr.files[index] = dataFile
 
-            context.phr.files = context.phr.files.map(file => file)
+            context.phr.files = context.phr.files.map(phrFile => phrFile)
             context.isEdit = false
           } else {
             context.phr.files.push(dataFile)
@@ -525,7 +525,7 @@ export default {
         publicKey: this.publicKey
       }
 
-      return await new Promise((resolve, reject) => {
+      const data = await new Promise((resolve, reject) => {
         try {
           cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }) // Access this object in e.data in worker
           cryptWorker.workerEncryptFile.onmessage = async (event) => {
@@ -552,6 +552,8 @@ export default {
           reject(new Error(err.message))
         }
       })
+
+      return data
     },
 
     async upload({ encryptedFileChunks, index, fileType, fileName, fileSize }) {

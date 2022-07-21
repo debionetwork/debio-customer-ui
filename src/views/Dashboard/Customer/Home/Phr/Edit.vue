@@ -353,20 +353,20 @@ export default {
       try {
         this.isDocumentLoading = true
         const { id } = this.$route.params
-        const data = await queryElectronicMedicalRecordById(this.api, id)
+        const emerData = await queryElectronicMedicalRecordById(this.api, id)
         let files = []
 
-        if (!id || !data) {
+        if (!id || !emerData) {
           this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
 
           return
         }
 
         this.phr.id = id
-        this.phr.title = data.title
-        this.phr.category = data.category
+        this.phr.title = emerData.title
+        this.phr.category = emerData.category
 
-        for (const file of data.files) {
+        for (const file of emerData.files) {
           const dataFile = await queryElectronicMedicalRecordFileById(this.api, file)
           dataFile.id = file
           files.push(dataFile)
@@ -456,7 +456,7 @@ export default {
 
             context.phr.files[index] = dataFile
 
-            context.phr.files = context.phr.files.map(file => file)
+            context.phr.files = context.phr.files.map(phrFile => phrFile)
             context.isEdit = false
           } else {
             context.phr.files.push(dataFile)
@@ -594,7 +594,7 @@ export default {
         publicKey: this.publicKey
       }
 
-      return await new Promise((resolve, reject) => {
+      const data = await new Promise((resolve, reject) => {
         try {
           cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }) // Access this object in e.data in worker
           cryptWorker.workerEncryptFile.onmessage = async (event) => {
@@ -621,6 +621,8 @@ export default {
           reject(new Error(err.message))
         }
       })
+
+      return data
     },
 
     async upload({ encryptedFileChunks, fileName, index, fileType, fileSize }) {
