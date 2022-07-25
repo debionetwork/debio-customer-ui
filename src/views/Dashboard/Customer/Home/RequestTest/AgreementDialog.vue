@@ -30,7 +30,7 @@
         v-checkbox(v-model="agree")
           template(v-slot:label) 
             div(style="font-size: 12px;") I have read and agree to the 
-              a.link(target="_blank" href="https://docs.debio.network/legal/terms-and-condition") terms and conditions
+              a.link(href="https://docs.debio.network/legal/terms-and-condition" target="_blank" rel="noreferrer noopener nofollow") terms and conditions
 
         .staking-dialog__trans-weight 
           .staking-dialog__trans-weight-text Estimated transaction weight
