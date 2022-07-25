@@ -41,11 +41,11 @@ export default {
 
   methods: {
     onClick() {
-      if (this.button === "Connect") {
-        this.$emit("onClick")
+      if (this.button === "Install") {
+        window.open("https://metamask.io/download/", "_blank")
         return
       }
-      window.open("https://metamask.io/download/", "_blank")
+      this.$emit("onClick")
     },
 
     closeDialog() {
