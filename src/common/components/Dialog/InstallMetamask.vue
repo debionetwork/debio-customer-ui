@@ -42,7 +42,7 @@ export default {
   methods: {
     onClick() {
       if (this.button === "Install") {
-        window.open("https://metamask.io/download/", "_blank")
+        window.open("https://metamask.io/download/", "_blank", "noopener")
         return
       }
       this.$emit("onClick")

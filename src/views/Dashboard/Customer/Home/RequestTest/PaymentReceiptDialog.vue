@@ -277,7 +277,6 @@ export default {
       this.isLoading = true
       this.error = ""
 
-
       try {
         if (this.switchNetwork) return
 
