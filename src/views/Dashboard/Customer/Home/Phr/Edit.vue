@@ -356,20 +356,20 @@ export default {
       try {
         this.isDocumentLoading = true
         const { id } = this.$route.params
-        const emerData = await queryElectronicMedicalRecordById(this.api, id)
+        const phrData = await queryElectronicMedicalRecordById(this.api, id)
         let files = []
 
-        if (!id || !emerData) {
+        if (!id || !phrData) {
           this.messageError = "Oh no! We can't find your selected order. Please select another one or try again"
 
           return
         }
 
         this.phr.id = id
-        this.phr.title = emerData.title
-        this.phr.category = emerData.category
+        this.phr.title = phrData.title
+        this.phr.category = phrData.category
 
-        for (const file of emerData.files) {
+        for (const file of phrData.files) {
           const dataFile = await queryElectronicMedicalRecordFileById(this.api, file)
           dataFile.id = file
           files.push(dataFile)
