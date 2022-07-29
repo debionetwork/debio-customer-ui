@@ -323,6 +323,7 @@ export default {
           )
         })
   
+        this.isLoadingPayments = false
         if(!this.paymentHistory.length) {
           this.titlePaymentWording = "You haven't made any order yet"
         } else {
