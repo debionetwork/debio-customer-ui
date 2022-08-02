@@ -116,7 +116,7 @@
                 :bind="attrs"
                 :on="on"
               ) Upload PHR
-            span Upload Upload Personal Health Records
+            span Upload Personal Health Records
 
           v-tooltip(bottom)
             template(v-slot:activator="{ on, attrs }")
@@ -194,7 +194,7 @@ export default {
       { text: "My Test", disabled: false, active: false, route: "my-test", icon: boxIcon },
       { text: "My PHR", disabled: false, active: false, route: "customer-phr", icon: fileTextIcon },
       { text: "My Genetic Data", disabled: false, active: false, route: "customer-genetic-data", icon: geneticDnaIcon},
-      { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", icon: databaseIcon },
+      { text: "Data Bounty", disabled: false, active: false, route: "maintenance", icon: databaseIcon }, // TO ADJUST ONCE THE FEATURE IS READY
       { text: "Payment History", disabled: false, active: false, route: "customer-payment-history", icon: creditCardIcon }
     ]
   }),
