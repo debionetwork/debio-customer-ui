@@ -20,7 +20,7 @@
   
 <script>
 import { cableErrorIcon } from "@debionetwork/ui-icons"
-import { mapState } from "vuex"
+import { mapState, mapActions } from "vuex"
 import { generalDebounce } from "@/common/lib/utils"
 import NoAccessMobile from "@/views/NoAccessMobile"
 import LoadingScreen from "@/views/LoadingScreen"
@@ -76,6 +76,10 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      initWeb3: "metamask/initWeb3"
+    }),
+
     formatTitle(val) {
       if (!val.meta.pageHeader) return
 
