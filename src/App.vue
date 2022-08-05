@@ -20,7 +20,7 @@
   
 <script>
 import { cableErrorIcon } from "@debionetwork/ui-icons"
-import { mapState, mapActions } from "vuex"
+import { mapState } from "vuex"
 import { generalDebounce } from "@/common/lib/utils"
 import NoAccessMobile from "@/views/NoAccessMobile"
 import LoadingScreen from "@/views/LoadingScreen"
@@ -42,8 +42,7 @@ export default {
     ...mapState({
       substrateApi: (state) => state.substrate.api,
       substrateIsConnected: (state) => state.substrate.isConnected,
-      isLoadingSubstrateApi: (state) => state.substrate.isLoadingApi,
-      web3: (state) => state.metamask.web3
+      isLoadingSubstrateApi: (state) => state.substrate.isLoadingApi
     })
   },
 
@@ -77,11 +76,6 @@ export default {
   },
 
   methods: {
-    ...mapActions({
-      initWeb3: "metamask/initWeb3",
-      initContracts: "metamask/contracts/initContracts"
-    }),
-
     formatTitle(val) {
       if (!val.meta.pageHeader) return
 

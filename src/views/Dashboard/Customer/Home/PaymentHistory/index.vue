@@ -55,12 +55,8 @@ import { searchIcon } from "@debionetwork/ui-icons"
 import { generalDebounce } from "@/common/lib/utils"
 import { getOrderList } from "@/common/lib/api"
 
-import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
-
 export default {
   name: "CustomerPaymentHistory",
-
-  mixins: [metamaskServiceHandler],
 
   data: () => ({
     searchIcon,

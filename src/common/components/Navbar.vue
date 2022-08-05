@@ -19,28 +19,6 @@
             stroke
           )
 
-          ui-debio-avatar.navbar__connect(
-            size="24"
-            v-else
-            :key="menu.id"
-            :option="!loginStatus"
-            option-text="Connect"
-            rounded
-            :active="menu.active"
-            rounded-type="circle"
-            border-size="2"
-            border-color="#5640A5"
-            :class="{ 'navbar__connect--logged': loginStatus }"
-            @optionClicked="connectToMetamask"
-          )
-            ui-debio-icon.navbar__connect-icon(
-              slot="icon"
-              :icon="metamaskFoxIcon"
-              view-box="0 0 100 100"
-              size="16"
-              @click.prevent="handleHover($event, idx)"
-              @mouseenter.prevent="handleHover($event, idx)"
-            )
         transition(name="fade" mode="out-in")
           .navbar__dropdown(v-if="!!getActiveMenu")
             .navbar__triangle
@@ -78,7 +56,7 @@
                         .settings-item__title(aria-label="Signout") Sign Out
                         ui-debio-icon.settings-item__icon(:icon="logoutIcon" size="24" stroke color="#C400A5")
 
-                section.navbar__dropdown-content(v-if="getActiveMenu.type === 'polkadot' || getActiveMenu.type === 'metamask'")
+                section.navbar__dropdown-content(v-if="getActiveMenu.type === 'polkadot' ")
                   ui-debio-input(label="Your Address" :data-wallet="walletAddress" ref="polkadot" disabled :value="walletAddress" block)
                     ui-debio-icon(
                       slot="icon-append"
@@ -94,8 +72,8 @@
                     .navbar__balance-wrapper
                       .navbar__balance-type {{ getActiveMenu.currency }} Balance
                       .navbar__balance-amount
-                        ui-debio-icon(:icon="getActiveMenu.type === 'metamask' ? daiIcon : debioIcon" size="10")
-                        span {{ getActiveMenu.type === 'polkadot' ? polkadotBalance : metamaskBalance }}
+                        ui-debio-icon(:icon="debioIcon" size="10")
+                        span {{ polkadotBalance }}
 
               template(slot="footer" v-if="getActiveMenu.action")
                 v-btn.navbar__footer-button(block color="primary" outlined @click="handleDropdownAction(getActiveMenu.type)") {{ getActiveMenu.action }}
@@ -121,17 +99,12 @@ import {
   usersIcon,
   logoutIcon,
   polkadotIcon,
-  metamaskFoxIcon,
   copyIcon
 } from "@debionetwork/ui-icons"
 
 import localStorage from "@/common/lib/local-storage"
 import { generalDebounce } from "@/common/lib/utils"
-import { queryAccountBalance, queryEthAdressByAccountId } from "@debionetwork/polkadot-provider"
-import { getBalanceDAI } from "@/common/lib/metamask/wallet"
-import { startApp } from "@/common/lib/metamask"
-import { handleSetWallet } from "@/common/lib/wallet"
-import { walletBinding } from "@/common/lib/api"
+import { queryAccountBalance } from "@debionetwork/polkadot-provider"
 
 export default {
   name: "Navbar",
@@ -152,7 +125,6 @@ export default {
     usersIcon,
     logoutIcon,
     polkadotIcon,
-    metamaskFoxIcon,
     searchIcon,
     copyIcon,
     searchQuery: "",
@@ -163,10 +135,7 @@ export default {
     showMetamaskDialog: false,
     walletAddress: "",
     polkadotBalance: 0,
-    metamaskBalance: 0,
     activeMetamaskAddress: null,
-    ethRegisterAddress: null,
-    ethAccount: null,
     loading: false,
     menus: [
       {
@@ -189,15 +158,6 @@ export default {
         title: "Polkadot Wallet",
         currency: "DBIO",
         active: false
-      },
-      {
-        id: 4,
-        type: "metamask",
-        title: "Metamask Wallet",
-        currency: "DAI",
-        isAvatar: true,
-        action: "Disconnect Wallet",
-        active: false
       }
     ]
   }),
@@ -211,7 +171,6 @@ export default {
       walletBalance: (state) => state.substrate.walletBalance,
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
-      metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
       lastEventData: (state) => state.substrate.lastEventData
     }),
 
@@ -236,29 +195,13 @@ export default {
       if(this.lastEventData) {
         this.fetchWalletBalance()
       }
-    },
-
-    metamaskWalletAddress() {
-      if (this.metamaskWalletAddress.currentAccount === this.metamaskWalletAddress.accountList[0]) {
-        this.loginStatus = true
-        this.menus.find(menu => menu.active)
-        return
-      }
-      this.loginStatus = false
     }
   },
 
   methods: {
     ...mapMutations({
-      setWalletBalance: "substrate/SET_WALLET_BALANCE",
-      setMetamaskBalance: "metamask/SET_WALLET_BALANCE",
-      clearWallet: "metamask/CLEAR_WALLET"
+      setWalletBalance: "substrate/SET_WALLET_BALANCE"
     }),
-
-    async getDaiBalance (address) {
-      const balance = await getBalanceDAI(address)
-      return balance
-    },
 
     handleNotificationRead(notif) {
       notif.read = true
@@ -291,10 +234,6 @@ export default {
       const selectedMenu = this.menus[idx]
 
       if (selectedMenu.type === "polkadot") this.walletAddress = this.wallet.address
-
-      if (selectedMenu.type === "metamask" && !this.loginStatus) return
-
-      if (selectedMenu.type === "metamask") this.walletAddress = this.activeMetamaskAddress
 
       selectedMenu.active = true
 
@@ -330,69 +269,12 @@ export default {
       }
     },
 
-    async checkMetamask() {
-      this.loginStatus = false
-      this.ethRegisterAddress = await queryEthAdressByAccountId(this.api, this.wallet.address)
-
-      if (this?.ethRegisterAddress) {
-        const accountDetail = await startApp()
-        if (accountDetail.currentAccount === this.ethRegisterAddress) {
-          this.activeMetamaskAddress = this.ethRegisterAddress
-          const balance = await getBalanceDAI(this.ethRegisterAddress)
-          this.metamaskBalance = balance
-          this.setMetamaskBalance(balance)
-          this.loginStatus = true
-          this.menus.find(menu => menu.active)
-        }
-      }
-    },
-
-    async connectToMetamask() {
-      this.loading = true
-      this.ethAccount = await startApp()
-
-      if (this.ethAccount.currentAccount === "no_install") {
-        window.open("https://metamask.io/download/", "_blank")
-        this.ethAccount = null
-        this.loading = false
-        return
-      }
-
-      let account = await handleSetWallet("metamask", this.ethAccount.currentAccount)
-      
-      if (!this.ethRegisterAddress) {
-        account = await handleSetWallet("metamask", this.ethAccount.currentAccount)
-        const accountId = this.wallet.address
-        const ethAddress = account[0].address
-        await walletBinding({accountId, ethAddress})
-        this.activeMetamaskAddress = account[0].address
-        this.metamaskBalance = account[0].daiBalance
-        this.setMetamaskBalance(this.metamaskBalance)
-      }
-      this.metamaskWalletAddress = account[0].address
-      this.menus.find(menu => menu.type === "metamask").active = true
-
-      this.loading = false
-      this.loginStatus = true
-    },
-
-    disconnectWallet() {
-      this.loginStatus = false
-      this.menus.find(menu => menu.type === "metamask").active = false
-    },
-
-    handleDropdownAction(type) {
-      if (type === "metamask") this.disconnectWallet()
-    },
-
     signOut () {
       localStorage.clear()
       this.$router.push({ name: "sign-in"})
       this.clearAuth()
       this.clearWallet()
-      this.ethAccount = null
       this.loginStatus = false
-      this.menus.find(menu => menu.type === "metamask").active = false
     }
   }
 }

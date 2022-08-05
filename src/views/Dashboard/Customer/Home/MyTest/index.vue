@@ -145,7 +145,6 @@ import CryptoJS from "crypto-js"
 import localStorage from "@/common/lib/local-storage"
 import { u8aToHex } from "@polkadot/util"
 import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
-import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { createSyncEvent, getCategories, getOrderList } from "@/common/lib/api"
 import { queryDnaSamples, queryDnaTestResults, unstakeRequest, unstakeRequestFee } from "@debionetwork/polkadot-provider"
@@ -154,8 +153,6 @@ import { ORDER_STATUS_DETAIL } from "@/common/constants/status"
 
 export default {
   name: "MyTest",
-
-  mixins: [metamaskServiceHandler],
 
   components: {
     StakingServiceTab,

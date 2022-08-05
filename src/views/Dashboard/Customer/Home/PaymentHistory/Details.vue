@@ -91,14 +91,13 @@
 
 <script>
 import { copyIcon } from "@debionetwork/ui-icons"
-import { getOrderDetail, fetchTxHashOrder } from "@/common/lib/api"
+import { getOrderDetail } from "@/common/lib/api"
 import { getRatingService } from "@/common/lib/api"
 import {
   queryDnaSamples,
   queryGeneticAnalysisByGeneticAnalysisTrackingId
 } from "@debionetwork/polkadot-provider"
 import { mapState } from "vuex"
-import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 // NOTE: Use anchor tag with "noreferrer noopener nofollow" for security
 let timeout
@@ -108,8 +107,6 @@ anchor.rel = "noreferrer noopener nofollow"
 
 export default {
   name: "CustomerPaymentDetails",
-
-  mixins: [metamaskServiceHandler],
 
   data: () => ({
     copyIcon,
@@ -204,7 +201,7 @@ export default {
             try {
               isNotGAOrders = true
               rating = await getRatingService(dataPayment.service_id)
-              txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.id)
+              txDetails = await this.metamaskDispatchAction(dataPayment.id)
               data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
             } catch (error) {
               console.error(error)
