@@ -391,9 +391,6 @@ export default {
     },
 
     signOut () {
-      console.log("sign out")
-
-
       const accounts = Object.keys(window.localStorage).filter((v) =>
         /account:/.test(v)
       )
