@@ -136,7 +136,14 @@ export default {
         if (!result.success) {
           throw("Mnemonic registration failed!")
         }
+        
+        const accounts = Object.keys(window.localStorage).filter((v) =>
+          /account:/.test(v)
+        )
+        if (accounts.length > 1) window.localStorage.removeItem(accounts[0])
+
         this.$router.push({name: "registration-successful", params: { flag: "changed"}})
+
       } 
       catch (err) {
         console.error(err)

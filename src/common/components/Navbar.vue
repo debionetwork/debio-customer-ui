@@ -391,6 +391,14 @@ export default {
     },
 
     signOut () {
+      console.log("sign out")
+
+
+      const accounts = Object.keys(window.localStorage).filter((v) =>
+        /account:/.test(v)
+      )
+      window.localStorage.removeItem(accounts[0])
+
       localStorage.clear()
       this.$router.push({ name: "sign-in"})
       this.clearAuth()

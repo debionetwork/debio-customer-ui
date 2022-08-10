@@ -313,6 +313,11 @@ export default {
 
     signOut() {
       this.$router.push({name: "landing-page"})
+      const accounts = Object.keys(window.localStorage).filter((v) =>
+        /account:/.test(v)
+      )
+      window.localStorage.removeItem(accounts[0])
+
       localStorage.clear()
       this.clearAuth()
       this.clearWallet()
