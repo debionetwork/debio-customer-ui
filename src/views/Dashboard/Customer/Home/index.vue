@@ -127,7 +127,7 @@ export default {
     tabs: 0,
     headers: [
       { text: "Service Name", value: "service_info.name", sortable: true },
-      { text: "Provider", value: "provider", sortable: true },
+      { text: "Service Provider", value: "provider", sortable: true },
       { text: "Date", value: "created_at", sortable: true },
       { text: "Status", value: "status", sortable: true },
       { text: "Actions", value: "actions", sortable: false, align: "center", width: "5%" }
