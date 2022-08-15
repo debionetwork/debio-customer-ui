@@ -145,7 +145,7 @@ export default {
     },
 
     async submitServiceRequestStaking() {
-      const sufficientBalance = Number(this.amount) + Number(this.txWeight) <= Number(this.walletBalance)
+      const sufficientBalance = (Number(this.amount) + Number(this.txWeight)) <= Number(this.walletBalance)
       
       if (!sufficientBalance) {
         const error = await errorHandler("Insufficient Balance")
