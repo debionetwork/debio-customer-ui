@@ -344,7 +344,7 @@ export default {
         return
       }
 
-      if (this?.remainingAmount > 0) {
+      if (this.remainingAmount && this.remainingAmount > 0) {
         this.showPayRemainingDialog = true
         return
       }
