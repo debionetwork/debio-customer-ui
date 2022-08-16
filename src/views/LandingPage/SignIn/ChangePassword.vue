@@ -144,7 +144,7 @@ export default {
 
         accounts.forEach((a) => {
           const detail = JSON.parse(window.localStorage.getItem(a))
-          if (detail.address !== this.wallet.address) {
+          if (detail?.address !== this.wallet?.address) {
             window.localStorage.removeItem(a)
           }
         })
