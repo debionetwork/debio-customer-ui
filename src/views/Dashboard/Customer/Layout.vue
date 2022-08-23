@@ -187,7 +187,8 @@ export default {
       wallet: (state) => state.substrate.wallet,
       localListNotification: (state) => state.substrate.localListNotification,
       mnemonicData: (state) => state.substrate.mnemonicData,
-      api: (state) => state.api
+      api: (state) => state.api,
+      lastBlockData: (state) => state.substrate.lastBlockData
     }),
 
     ...mapActions({
@@ -218,6 +219,7 @@ export default {
         this.$store.dispatch("substrate/addListNotification", {
           address: this.wallet.address,
           event: event,
+          block: this.lastBlockData,
           role: "customer"
         })
       }

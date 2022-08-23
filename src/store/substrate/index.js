@@ -32,7 +32,8 @@ const defaultState = {
   lastEventData: null,
   localListNotification: [],
   configEvent: null,
-  mnemonicData: null
+  mnemonicData: null,
+  lastBlockData: null
 }
 
 export default {
@@ -98,6 +99,9 @@ export default {
     },
     SET_MNEMONIC_DATA(state, event) {
       state.mnemonicData = event
+    },
+    SET_LAST_BLOCK(state, event) {
+      state.lastBlockData = event
     }
   },
   actions: {
@@ -139,6 +143,9 @@ export default {
           "userProfile"
         ]
 
+        const block =  await api.rpc.chain.getBlock()
+        const lastBlockData = block.toHuman()
+          
         // Example of how to subscribe to events via storage
         api.query.system.events((events) => {
           events.forEach((record) => {
@@ -147,6 +154,7 @@ export default {
             if (allowedSections.includes(event.section)) {
               if (event.method === "OrderPaid") localStorage.removeLocalStorageByName("lastOrderStatus")
               commit("SET_LAST_EVENT", event)
+              commit("SET_LAST_BLOCK", lastBlockData)
             }
           })
         })
@@ -272,7 +280,7 @@ export default {
         console.error(err)
       }
     },
-    async addListNotification({ commit }, { address, event, role }) {
+    async addListNotification({ commit }, { address, event, block, role }) {
       try {
         const storageName = "LOCAL_NOTIFICATION_BY_ADDRESS_" + address + "_" + role
         const listNotificationJson = localStorage.getLocalStorageByName(storageName)
@@ -296,6 +304,7 @@ export default {
             hour: "numeric", // numeric, 2-digit
             minute: "numeric"
           })
+          
           if (statusAdd) {
             listNotification.push({
               message: message,
@@ -303,6 +312,7 @@ export default {
               data: data,
               route: route,
               params: params,
+              block: block.block.header.number,
               read: false,
               notifDate: notifDate
             })
