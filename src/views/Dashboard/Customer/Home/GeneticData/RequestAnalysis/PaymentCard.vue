@@ -88,7 +88,7 @@
 
 import { mapState } from "vuex"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
-import { getDbioBalance, setGeneticAnalysisPaid } from "@/common/lib/api"
+import { getConversion, setGeneticAnalysisPaid } from "@/common/lib/api"
 import { errorHandler } from "@/common/lib/error-handler"
 import PaymentDialog from "@/common/components/Dialog/PaymentDialog"
 import { 
@@ -232,8 +232,8 @@ export default {
       return formattedDate
     },
 
-    async getUsdRate() {
-      this.rate = await getDbioBalance()
+    async getCRate() {
+      this.rate = await getConversion()
     },
 
     async cancelOrder() {
