@@ -146,6 +146,7 @@ import Navbar from "@/common/components/Navbar.vue"
 import maintenancePageLayout from "@/views/Dashboard/maintenancePageLayout"
 import errorMessage from "@/common/constants/error-messages"
 import localStorage from "@/common/lib/local-storage"
+// import {getNotification} from "@/common/lib/api/customer/notification"
 
 export default {
   name: "MainPage",
@@ -228,7 +229,10 @@ export default {
 
   async created() {
     if (!this.mnemonicData) this.showModalPassword = true
-    await this.getListNotification()
+    // const { data } = await getNotification(toId, lastBlock, newBlock, role, from)
+    // await this.getNotificationList()
+    // console.log("datanotif", data)
+    // await this.getListNotification()
   },
 
   rules: {
@@ -240,16 +244,31 @@ export default {
       clearWallet: "metamask/CLEAR_WALLET"
     }),
 
+    // async getNotificationList() {
+    //   // const newBlock = parseInt((this.lastBlockData?.block?.header?.number).replaceAll(",", ""))
+    //   // // const newBlock = this.lastBlockData
+    //   // // console.log("newBlock", newBlock)
+    //   // const toId = "5CM1nv5bGah3WKe52S8A84k3dg8NYRGmUMsZVmGZ9TBKwe7z"
+    //   // const {data} = await getNotification(toId, 0, newBlock, "Customer", "Debio Network")
+    //   // console.log("datanotif", data)
+    //   await this.$store.dispatch("substrate/getListNotification", {
+    //     startBlock: 0,
+    //     role: "Customer",
+    //     from: "Debio Network"
+    //   // console.log("state", state.wallet)
+    //   })
+    // },
+
     handlePageError(error) {
       this.pageError = error
     },
 
-    async getListNotification() {
-      await this.$store.dispatch("substrate/getListNotification", {
-        address: this.wallet.address,
-        role: "customer"
-      })
-    },
+    // async getListNotification() {
+    //   await this.$store.dispatch("substrate/getListNotification", {
+    //     address: this.wallet.address,
+    //     role: "customer"
+    //   })
+    // },
 
     goToRequestTestPage() {
       this.$router.push({name: "customer-request-test"})

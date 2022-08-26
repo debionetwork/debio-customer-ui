@@ -6,6 +6,7 @@ import { Keyring } from "@polkadot/keyring"
 import localStorage from "@/common/lib/local-storage"
 import { ApiPromise, WsProvider } from "@polkadot/api"
 import { processEvent, eventTypes } from "@debionetwork/polkadot-provider"
+import { getUnlistedNotification } from "@/common/lib/notification"
 
 const {
   cryptoWaitReady
@@ -145,7 +146,25 @@ export default {
 
         const block =  await api.rpc.chain.getBlock()
         const lastBlockData = block.toHuman()
-          
+        const notifications = JSON.parse(localStorage.getLocalStorageByName(
+          `LOCAL_NOTIFICATION_BY_ADDRESS_${localStorage.getAddress()}_${"customer"}`
+        ))
+
+        const newBlock = parseInt((lastBlockData.block.header.number).replaceAll(",", ""))
+        let lastBlock
+
+        if(notifications) {
+          lastBlock = parseInt((notifications[notifications.length-1].block).replaceAll(",", ""))
+        } else {
+          lastBlock = 0
+        }
+        console.log(newBlock, lastBlock)
+        if (newBlock > lastBlock) {
+          // await getUnlistedNotification(role, newBlock, lastBlock)
+          getUnlistedNotification("Customer", newBlock, lastBlock)
+        }
+        
+        commit("SET_LAST_BLOCK", lastBlockData)
         // Example of how to subscribe to events via storage
         api.query.system.events((events) => {
           events.forEach((record) => {
@@ -154,7 +173,6 @@ export default {
             if (allowedSections.includes(event.section)) {
               if (event.method === "OrderPaid") localStorage.removeLocalStorageByName("lastOrderStatus")
               commit("SET_LAST_EVENT", event)
-              commit("SET_LAST_BLOCK", lastBlockData)
             }
           })
         })
