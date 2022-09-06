@@ -117,7 +117,11 @@ export default {
 
     disable() {
       const {country} = this
+<<<<<<< HEAD
       return !(country)
+=======
+      return !country
+>>>>>>> 5aa2933 (button disabled only when country not filled)
     }
   },
   
