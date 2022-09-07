@@ -34,7 +34,7 @@ export default {
       { number: 1, title: "Select Location and Test Category", active: false },
       { number: 2, title: "Select Service", active: false },
       { number: 3, title: "Checkout & Payment", active: true },
-      { number: 4, title: "Summary/Instructio", active: false }
+      { number: 4, title: "Summary/Instruction", active: false }
     ]  
   }),
 
