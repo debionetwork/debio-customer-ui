@@ -102,7 +102,7 @@ export default {
         sortable: true
       },
       {
-        text: "Service Category",
+        text: "Test Category",
         value: "category",
         sortable: true
       },
@@ -253,7 +253,7 @@ export default {
         service.id,
         indexPrice,
         customerBoxPublicKey,
-        service.serviceFlow
+        service.service_flow
       )
     },
 
