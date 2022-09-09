@@ -144,33 +144,38 @@ export default {
         ]
 
         const block =  await api.rpc.chain.getBlock()
+        const lastBlockData = block.toHuman()
 
-        const getNotificationList = async () => {
-          const newBlock = parseInt(block?.header?.number?.replaceAll(",", ""))
-          let lastBlock = 0
 
-          const notifications = JSON.parse(localStorage.getLocalStorageByName(
-            `LOCAL_NOTIFICATION_BY_ADDRESS_${localStorage.getAddress()}_analyst`
-          ))
+        const role = "customer"
+        const notifications = JSON.parse(localStorage.getLocalStorageByName(
+          `LOCAL_NOTIFICATION_BY_ADDRESS_${localStorage.getAddress()}_${role}`
+        ))
 
-          if (notifications?.length) lastBlock = parseInt((notifications[notifications.length-1].block).replaceAll(",", ""))
 
-          if (newBlock > lastBlock) await getUnlistedNotification(newBlock)
+
+        let newBlock = parseInt((lastBlockData.block.header.number).replaceAll(",", ""))
+        let lastBlock
+
+  
+        if(notifications) {
+          lastBlock = parseInt((notifications[notifications.length-1].block).replaceAll(",", ""))
+        } else {
+          lastBlock = 0
         }
 
-        await getNotificationList()
-
+        if (newBlock > lastBlock) {
+          getUnlistedNotification(newBlock, lastBlock)
+        }
+        
         // Example of how to subscribe to events via storage
         api.query.system.events(async (events) => {
           for (const record of events) {
             const { event } = record
 
             if (allowedSections.includes(event.section)) {
-              const { block } =  await api.rpc.chain.getBlock()
-              await getNotificationList()
-
               commit("SET_LAST_EVENT", event)
-              commit("SET_LAST_BLOCK", block?.header?.number ?? null)
+              commit("SET_LAST_BLOCK", lastBlockData)
             }
           }
         })
@@ -325,7 +330,7 @@ export default {
               message: message,
               timestamp: timestamp,
               data: data,
-              block: block.header.number,
+              block: block,
               route: route,
               params: params,
               read: false,

@@ -7,11 +7,12 @@ const routes = {
   "New Order": "customer-order-details"
 }
 
-export async function getUnlistedNotification (end_block) {
+export async function getUnlistedNotification (end_block, start_block) {
+
   const from = "Debio Network"
   const toId = localStorage.getAddress()
 
-  const { data } = await getNotifications({ toId, end_block, from })
+  const { data } = await getNotifications({ toId, start_block, end_block, from })
 
   const storageName = `LOCAL_NOTIFICATION_BY_ADDRESS_${toId}_customer`
 

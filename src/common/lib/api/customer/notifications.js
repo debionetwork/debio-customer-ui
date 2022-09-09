@@ -1,8 +1,8 @@
 import apiClientRequest from "@/common/lib/api"
 
-export const getNotifications = async ({ toId, end_block, from }) => {
+export const getNotifications = async ({ toId, start_block, end_block, from }) => {
   const { data } = await apiClientRequest.get(`/notification/${toId}`, {
-    params: { start_block: 0, end_block, role: "Customer", from }
+    params: { start_block, end_block, role: "Customer", from }
   })
 
   return data
