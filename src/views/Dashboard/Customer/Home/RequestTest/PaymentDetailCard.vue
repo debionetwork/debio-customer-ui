@@ -1,6 +1,12 @@
 <template lang="pug">
   v-container.container-card
-    v-card.menu-card
+    v-skeleton-loader(
+      v-if="fetching"
+      type="card"
+      width="300"
+    )
+
+    v-card.menu-card(v-if=!fetching)
       .menu-card__title Order Summary
 
       .menu-card__sub-title-medium Details
@@ -213,6 +219,10 @@ export default {
     rate: null,
     usdRate: null
   }),
+
+  props: {
+    fetching: { type: Boolean, default: false }
+  },
 
   async mounted () {
     this.stakingFlow = false
