@@ -396,7 +396,8 @@ export default {
     },
 
     async toInstruction (val) {
-      const description = this.dataServices.split("||")
+
+      const description = this.dataService.longDescription.split("||")
 
       if (description.length > 1) {
         window.open(description[1], "_blank")
