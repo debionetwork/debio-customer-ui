@@ -5,7 +5,11 @@ import store from "@/store"
 import { fmtReferenceFromHex } from "./string-format"
 
 const routes = {
-  "New Order": "customer-order-details"
+  "Order Created": "customer-payment-details",
+  "Order Fulfilled": "my-test",
+  "Requested Service Available": "my-test",
+  "Order Refunded": "",
+  "Requested Service Created": "my-test"
 }
 
 export async function getUnlistedNotification (end_block, start_block) {
@@ -54,7 +58,8 @@ export async function getUnlistedNotification (end_block, start_block) {
       params: reference_id,
       block: block_number,
       read,
-      notifDate
+      notifDate,
+      data: event
     })
   }
 
