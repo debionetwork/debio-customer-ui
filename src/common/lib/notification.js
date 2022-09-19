@@ -13,6 +13,8 @@ export async function getUnlistedNotification (end_block, start_block) {
   const from = "Debio Network"
   const toId = localStorage.getAddress()
 
+  if (!toId) return  
+  
   const { data } = await getNotifications({ toId, start_block, end_block, from })
 
   const storageName = `LOCAL_NOTIFICATION_BY_ADDRESS_${toId}_customer`

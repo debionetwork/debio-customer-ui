@@ -221,7 +221,7 @@ export default {
         this.$store.dispatch("substrate/addListNotification", {
           address: this.wallet.address,
           event: event,
-          block: this.lastBlockData?.block.header.number,
+          block: this.lastBlockData,
           role: "customer"
         })
       }
@@ -247,9 +247,12 @@ export default {
     },
 
     async getListNotification() {
+    
+      console.log(" get list of notification ")
       await this.$store.dispatch("substrate/getListNotification", {
         address: this.wallet.address,
-        role: "customer"
+        role: "customer",
+        block: this.lastBlockData
       })
     },
 
