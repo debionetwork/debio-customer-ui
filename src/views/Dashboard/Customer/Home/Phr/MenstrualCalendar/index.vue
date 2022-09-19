@@ -5,7 +5,7 @@
         template
           .menstrual-calendar__banner
             .menstrual-calendar__content
-              .menstrual-calendar__title Menstrual Calendar  Payment
+              .menstrual-calendar__title Menstrual Calendar
               .menstrual-calendar__sub-title Smart way to track menstrual cycles.
 
             v-img(
