@@ -32,7 +32,7 @@
               .select-menstrual-calendar__head-text
                 span.select-menstrual-calendar__head-text-primary Calculating Calendar...
                 span.select-menstrual-calendar__head-text-secondary Kindly wait during calculating calendar
-          hr.select-menstrual-calendar__line-divider
+          .select-menstrual-calendar__line-divider
           .select-menstrual-calendar__options
             ui-debio-dropdown(
               :items="monthList"
@@ -99,7 +99,7 @@
             .select-menstrual-calendar__small-head-text
               span.select-menstrual-calendar__small-head-text-primary Menstrual Calendar Settings
               span.select-menstrual-calendar__small-head-text-secondary Update menstruation day and subscription
-          hr.select-menstrual-calendar__line-divider
+          .select-menstrual-calendar__line-divider
           span.select-menstrual-calendar__small-content-text Help us get to know you more deeply, complete these steps now!
           .select-menstrual-calendar__step-wrapper
             .select-menstrual-calendar__step-box(:class="{'select-menstrual-calendar__step-box-selected': true}")
@@ -267,9 +267,11 @@ export default {
     &__step
       height: 210px
 
-    &__line-divider
-      border-top: 1px solid #E9E9E9
-      margin: 24px 0 24px 0
+    &__line-divider::after
+      content: ""
+      display: block
+      border: 1px solid #E9E9E9
+      margin: 24px auto
 
     &__small-head
       display: flex
