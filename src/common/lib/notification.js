@@ -42,8 +42,6 @@ export async function getUnlistedNotification (end_block, start_block) {
       minute: "numeric"
     })
 
-
-
     const referenceFormater = event?.reference_id?.includes("0x")
       ? `${fmtReferenceFromHex(event?.reference_id)}`
       : reference_id
@@ -58,8 +56,7 @@ export async function getUnlistedNotification (end_block, start_block) {
       params: reference_id,
       block: block_number,
       read,
-      notifDate,
-      data: event
+      notifDate
     })
   }
 

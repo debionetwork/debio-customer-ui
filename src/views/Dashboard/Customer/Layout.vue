@@ -246,9 +246,7 @@ export default {
       this.pageError = error
     },
 
-    async getListNotification() {
-    
-      console.log(" get list of notification ")
+    async getListNotification() {    
       await this.$store.dispatch("substrate/getListNotification", {
         address: this.wallet.address,
         role: "customer",
