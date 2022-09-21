@@ -14,30 +14,20 @@
       div(
         v-if="dates[day - 1] !== undefined && dates[day - 1].thisMonth"
       )
-        svg.today(
-          v-if='dates[day - 1] !== undefined && dates[day - 1].today' width='23' height='23' viewBox='0 0 23 23' fill='none' xmlns='http://www.w3.org/2000/svg'
+        v-img.today(
+          v-if='dates[day - 1] !== undefined && dates[day - 1].today'
+          alt="today"
+          src="@/assets/today.svg"
+          max-width="23px"
+          max-height="23px"
         )
-          path(
-            d='M23 23L0 4.01591e-05H19.5C21.6046 4.01591e-05 23 2.52593 23 3.65281V23Z' 
-            fill='#FF60BF'
-          )
-        svg.checked(
-          v-if='(dates[day - 1] !== undefined && dates[day - 1].isSelected)' width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'
+        v-img.checked(
+          v-if='(dates[day - 1] !== undefined && dates[day - 1].isSelected)'
+          alt="checked"
+          src="@/assets/tick-circle.svg"
+          max-width="16px"
+          max-height="16px"
         )
-          path(
-            d='M8.27702 14.6673C11.9437 14.6673 14.9437 11.6673 14.9437 8.00065C14.9437 4.33398 11.9437 1.33398 8.27702 1.33398C4.61035 1.33398 1.61035 4.33398 1.61035 8.00065C1.61035 11.6673 4.61035 14.6673 8.27702 14.6673Z' 
-            stroke='white' 
-            stroke-width='1.5' 
-            stroke-linecap='round' 
-            stroke-linejoin='round'
-          )
-          path(
-            d='M5.44434 7.99995L7.331 9.88661L11.111 6.11328' 
-            stroke='white' 
-            stroke-width='1.5' 
-            stroke-linecap='round' 
-            stroke-linejoin='round'
-          )
         span(
           :class="{ past: (dates[day - 1] !== undefined && dates[day - 1].isPast && !dates[day - 1].isSelected) }"
         ) {{ dates[day - 1].text.toString().trim() }}
