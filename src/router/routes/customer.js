@@ -164,7 +164,6 @@ export default [
         meta: { parent: "customer-genetic-analysis-detail", pageHeader: "Result"},
         component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/Result")
       },
-
       // Request Analysis
       {
         path: "request-analysis",
