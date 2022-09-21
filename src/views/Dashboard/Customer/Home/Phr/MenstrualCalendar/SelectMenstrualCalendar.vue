@@ -24,8 +24,12 @@
             .select-avarage-menstrual__line-divider
             .select-avarage-menstrual__text-avarage Average Cycle
             .select-avarage-menstrual__triangle-down
-              svg(width='21' height='18' viewBox='0 0 21 18' fill='none' xmlns='http://www.w3.org/2000/svg')
-                path(d='M10.5 18L0.107698 -1.9576e-06L20.8923 -1.40549e-07L10.5 18Z' fill='#F5ABFB')
+              v-img.checked(
+                alt="menstruation"
+                src="@/assets/triangle-down.svg"
+                max-width="16px"
+                max-height="16px"
+              )
             .select-avarage-menstrual__selection-wrapper
               DaySelectAverage(v-model="selected")
             .select-avarage-menstrual__submit
