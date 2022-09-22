@@ -222,7 +222,7 @@ export default {
           address: this.wallet.address,
           event: event,
           block: this.lastBlockData,
-          role: "customer"
+          role: "customer" //TODO: move to global enum variable
         })
       }
     }
