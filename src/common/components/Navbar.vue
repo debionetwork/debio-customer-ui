@@ -204,7 +204,7 @@ export default {
         active: false
       },
       {
-        id: 3,
+        id: 2,
         icon: polkadotIcon,
         type: "polkadot",
         title: "Wallet",
@@ -213,7 +213,7 @@ export default {
         active: false
       },
       {
-        id: 4,
+        id: 3,
         type: "metamask",
         title: "Metamask Wallet",
         currency: "DAI",
