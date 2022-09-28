@@ -178,6 +178,7 @@
               color="#F3F3F3" 
               height="48"
               width="100%"
+              @click="toSubscriptionSetting()"
             ) 
               .menstrual-calendar-detail__button-text Subscription Settings
               v-icon mdi-chevron-right
@@ -342,6 +343,11 @@ export default {
       }
 
       console.log(this.menstrualCalendarData.cycleLog, this.menstrualCalendarData.cycleLog.length)
+    },
+
+    toSubscriptionSetting() {
+      console.log("to subscription setting")
+      this.$router.push({ name: "menstrual-calendar-subscription-setting" })
     }
   },
   async created() {
