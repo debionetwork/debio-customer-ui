@@ -2,7 +2,6 @@
   .select-menstrual-calendar
     .select-menstrual-calendar__wrapper
       MenstrualCalendarBanner
-    .select-menstrual-calendar__wrapper
       .select-menstrual-calendar__selection
         template(v-if="selectAverage")
           ui-debio-card.select-avarage-menstrual__avarage-selection(width="740")
@@ -190,6 +189,7 @@ export default {
   },
 
   async created() {
+    document.querySelector("html").style.overflowY = null
     const today = new Date()
     this.selectedMonthText = this.monthList[today.getMonth()].text
     this.currentYear = today.getFullYear().toString()
@@ -198,7 +198,9 @@ export default {
   methods: {
     onSubmit() {
       this.submitPreview = true
-      this.$router.push({ name: "menstrual-calendar-detail" })
+      setTimeout(() => {
+        this.$router.push({ name: "menstrual-calendar-detail" })
+      }, 30000)
     },
 
     backButton() {
@@ -218,7 +220,6 @@ export default {
   .select-menstrual-calendar
     &__wrapper
       height: 100%
-      display: flex
 
     &__selection
       margin-top: 16px

@@ -1,5 +1,5 @@
 <template lang="pug">
-  .menstual-calendar-detail
+  .menstrual-calendar-detail
     .menstrual-calendar-detail__wrapper
       MenstrualCalendarBanner
       ui-debio-modal(

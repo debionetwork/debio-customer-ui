@@ -230,6 +230,8 @@ export default {
     },
     
     toMenstrualCalendar() {
+      this.showAlert = false
+      this.isSuccess = false
       this.$router.push({ name: "menstrual-calendar-selection" })
     }
   }
