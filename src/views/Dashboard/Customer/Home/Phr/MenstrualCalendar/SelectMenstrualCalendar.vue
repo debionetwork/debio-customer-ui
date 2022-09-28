@@ -67,6 +67,7 @@
                 :month="selectedMonth"
                 :isLoading="submitPreview"
                 v-model="selectedDates"
+                :menstrualData="null"
               )
             .select-menstrual-calendar__icon-description
               .select-menstrual-calendar__icon-description-item
@@ -200,7 +201,7 @@ export default {
       this.submitPreview = true
       setTimeout(() => {
         this.$router.push({ name: "menstrual-calendar-detail" })
-      }, 30000)
+      }, 10000)
     },
 
     backButton() {
