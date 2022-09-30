@@ -121,7 +121,8 @@ import {
   queryLastOrderHashByCustomer,
   queryOrderDetailByOrderID,
   createOrder,
-  createOrderFee
+  createOrderFee,
+  processRequest
 } from "@debionetwork/polkadot-provider"
 import { startApp, getTransactionReceiptMined, handleSwitchChain } from "@/common/lib/metamask"
 import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
@@ -189,16 +190,21 @@ export default {
       mnemonicData: (state) => state.substrate.mnemonicData,
       selectedService: (state) => state.testRequest.products,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress,
+      stakingData: (state) => state.lab.stakingData,
       web3: (state) => state.metamask.web3
     })
   },
 
   watch: {
-    lastEventData(event) {
+    async lastEventData(event) {
       if (event) {
         const dataEvent = JSON.parse(event.data.toString())
 
         if (event.method === "OrderPaid") {
+          if (this.selectedService.serviceFlow === "StakingRequestService") {
+            await this.processRequestService()
+          }
+
           this.isLoading = false
           this.$router.push({ 
             name: "customer-request-test-success",
@@ -212,7 +218,7 @@ export default {
           this.isLoadingButton = false
           this.showMetamask = false
         }
-      }      
+      }
     }
   },
 
@@ -230,10 +236,30 @@ export default {
     async connectWallet() {
       this.isLoadingButton = true
       const accountDetail = await startApp()
-      console.log(accountDetail)
       const accountId = this.wallet.address
       const ethAddress = accountDetail.currentAccount
       await walletBinding({accountId, ethAddress})
+    },
+
+    async processRequestService() {
+      const lastOrder = await queryLastOrderHashByCustomer(
+        this.api,
+        this.wallet.address
+      )
+
+      const detailOrder = await queryOrderDetailByOrderID(
+        this.api,
+        lastOrder
+      )
+
+      await processRequest(
+        this.api,
+        this.wallet,
+        this.stakingData.lab_address,
+        this.stakingData.hash,
+        detailOrder.id,
+        detailOrder.dnaSampleTrackingId
+      )
     },
 
     async getCustomerPublicKey() {
