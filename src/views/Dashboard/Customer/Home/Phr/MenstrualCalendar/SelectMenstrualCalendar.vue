@@ -2,6 +2,64 @@
   .select-menstrual-calendar
     .select-menstrual-calendar__wrapper
       MenstrualCalendarBanner
+      ui-debio-modal.select-menstrual-calendar__modal(
+        :show="showAlert"
+        :show-title="false"
+        :show-cta="false"
+        disable-dismiss
+      )
+        .select-menstrual-calendar__modal-title Update Menstrual Calendar
+
+        ui-debio-icon(
+          :icon="alertTriangleIcon"
+          size="90"
+          color="#c400a5"
+          stroke
+        )
+        .select-menstrual-calendar__modal-desc Are you sure you want update your menstrual calendar?
+
+        .select-menstrual-calendar__modal-buttons(class=" justify-space-between align-center pa-10")
+          ui-debio-button(
+            color="secondary" 
+            width="100px"
+            height="35"
+            style="font-size: 10px;"
+            outlined 
+            @click="showAlert = false"
+          ) No
+
+          ui-debio-button(
+            color="secondary" 
+            width="100px"
+            height="35"
+            style="font-size: 10px;"
+            @click="toUpdateMenstrual()"
+          ) Yes
+
+      ui-debio-modal.select-menstrual-calendar__modal-success(
+        :show="isSuccess"
+        :show-title="false"
+        :show-cta="false"
+        disable-dismiss
+      )
+        .select-menstrual-calendar__modal-title Menstrual Calendar Updated!
+        ui-debio-icon(
+          :icon="checkCircleIcon"
+          size="90"
+          color="#c400a5"
+          stroke
+        )
+
+        .select-menstrual-calendar__modal-desc Congratulations! you have updated your menstrual calendar succesfully!
+
+        ui-debio-button(
+          color="secondary" 
+          width="100%"
+          height="35"
+          style="font-size: 10px;"
+          @click="updateMenstrualSuccess()"
+        ) Continue to Menstrual Calendar
+
       .select-menstrual-calendar__selection
         template(v-if="selectAverage")
           ui-debio-card.select-avarage-menstrual__avarage-selection(width="740")
@@ -165,6 +223,7 @@
 </template>
 
 <script>
+import { alertTriangleIcon, checkCircleIcon } from "@debionetwork/ui-icons"
 import Calendar from "@/common/components/Calendar"
 import DaySelectAverage from "@/common/components/DaySelectAverage"
 import MenstrualCalendarBanner from "./Banner"
@@ -183,6 +242,7 @@ export default {
   },
 
   data: () => ({
+    alertTriangleIcon, checkCircleIcon,
     monthList: [
       {value: 0, text: "January"},
       {value: 1, text: "February"},
@@ -203,7 +263,9 @@ export default {
     selectedDates: null,
     submitEnabled: false,
     submitPreview: false,
-    selectAverage: true
+    selectAverage: true,
+    showAlert: false,
+    isSuccess: false
   }),
 
   watch: {
@@ -224,10 +286,14 @@ export default {
 
   methods: {
     onSubmit() {
-      this.submitPreview = true
-      setTimeout(() => {
-        this.$router.push({ name: "menstrual-calendar-detail" })
-      }, 10000)
+      if (this.isUpdate) {
+        this.showAlert = true
+      } else {
+        this.submitPreview = true
+        setTimeout(() => {
+          this.$router.push({ name: "menstrual-calendar-detail" })
+        }, 10000)
+      }
     },
 
     backButton() {
@@ -240,6 +306,19 @@ export default {
 
     goToDetailMenstrual() {
       this.$router.push({ name: "menstrual-calendar-detail" })
+    },
+
+    toUpdateMenstrual() {
+      this.showAlert = false
+      this.isSuccess = true
+    },
+
+    updateMenstrualSuccess() {
+      this.isSuccess = false
+      this.submitPreview = true
+      setTimeout(() => {
+        this.$router.push({ name: "menstrual-calendar-detail" })
+      }, 10000)
     }
   }
 }
@@ -400,6 +479,25 @@ export default {
     
     &__step-box-selected
       background: #FFC4F9
+
+    &__modal
+      display: flex
+      align-items: center
+      justify-content: center
+
+    &__modal-desc
+      text-align: center
+      max-width: 264px
+
+    &__modal-title
+      text-align: center
+      max-width: 264px
+      @include h3-opensans
+    
+    &__modal-buttons
+      display: flex
+      justify-content: space-between
+      gap: 20px
 
   .select-avarage-menstrual
     &__wrapper
