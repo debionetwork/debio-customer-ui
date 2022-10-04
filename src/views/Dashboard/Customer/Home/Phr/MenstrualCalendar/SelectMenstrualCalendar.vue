@@ -20,6 +20,17 @@
             .select-avarage-menstrual__selection-wrapper
               DaySelectAverage(v-model="selected")
             .select-avarage-menstrual__submit
+              ui-debio-button(
+                v-if="isUpdate"
+                outlined
+                height="44"
+                width="180"
+                style="font-size: 13px"
+                @click="goToDetailMenstrual()"
+                color="error"
+                :bind="attrs"
+                :on="on"
+              ) Cancel
               v-btn(
                 color="secondary"
                 elevation='0'
@@ -115,6 +126,17 @@
               span your previous menstrual cycle does not guarantee your future menstrual cycle medically or diagnostically
             template(v-if="!submitPreview")
               .select-menstrual-calendar__submit
+                ui-debio-button(
+                  v-if="isUpdate"
+                  outlined
+                  height="44"
+                  width="180"
+                  style="font-size: 13px"
+                  @click="goToDetailMenstrual()"
+                  color="error"
+                  :bind="attrs"
+                  :on="on"
+                ) Cancel
                 v-btn(
                   color="secondary"
                   elevation='0'
@@ -154,6 +176,10 @@ export default {
     Calendar,
     DaySelectAverage,
     MenstrualCalendarBanner
+  },
+
+  props: {
+    isUpdate: {type: Boolean, default: false}
   },
 
   data: () => ({
@@ -210,6 +236,10 @@ export default {
 
     onSubmitAverage() {
       this.selectAverage = false
+    },
+
+    goToDetailMenstrual() {
+      this.$router.push({ name: "menstrual-calendar-detail" })
     }
   }
 }
@@ -303,6 +333,7 @@ export default {
       display: flex
       margin: 18px 0 0 0
       justify-content: flex-end
+      gap: 16px
 
     &__step
       height: 210px
@@ -457,6 +488,7 @@ export default {
       display: flex
       margin: 137px 0 0 0
       justify-content: flex-end
+      gap: 16px
 
     &__step
       height: 210px
