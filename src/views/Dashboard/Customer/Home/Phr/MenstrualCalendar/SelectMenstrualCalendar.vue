@@ -67,7 +67,7 @@
             width="100px"
             height="35"
             style="font-size: 10px;"
-            @click="toUpdateMenstrual()"
+            @click="goToDetailMenstrual()"
           ) Yes
 
       ui-debio-modal.select-menstrual-calendar__modal(
