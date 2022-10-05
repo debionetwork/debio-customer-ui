@@ -337,17 +337,17 @@ export default {
     showAlert: false,
     isSuccess: false,
     stepText: "",
-    routeStateSave: null
+    routeStateSave: null,
+    nextStatus: false
   }),
 
   beforeRouteLeave(to, _, next) {
     if (this.isUpdate && !this.routeStateSave) {
       this.showAlertUnsaved = true
       this.routeStateSave = to
-      next(false)
-    } else {
-      next()
     }
+
+    next(this.nextStatus)
   },
 
   watch: {
@@ -373,6 +373,7 @@ export default {
         this.showAlert = true
       } else {
         this.submitPreview = true
+        this.nextStatus = true
         setTimeout(() => {
           this.$router.push({ name: "menstrual-calendar-detail" })
         }, 10000)
@@ -389,6 +390,7 @@ export default {
     },
 
     goToDetailMenstrual() {
+      this.nextStatus = true
       this.$router.push({ name: "menstrual-calendar-detail" })
     },
 
@@ -400,6 +402,7 @@ export default {
     updateMenstrualSuccess() {
       this.isSuccess = false
       this.submitPreview = true
+      this.nextStatus = true
       setTimeout(() => {
         this.$router.push({ name: "menstrual-calendar-detail" })
       }, 10000)
