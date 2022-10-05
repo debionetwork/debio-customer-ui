@@ -265,7 +265,8 @@ export default {
     submitPreview: false,
     selectAverage: true,
     showAlert: false,
-    isSuccess: false
+    isSuccess: false,
+    stepText: "By choosing your average cycle day, you’ll get your menstrual calendar information"
   }),
 
   watch: {
@@ -302,6 +303,7 @@ export default {
 
     onSubmitAverage() {
       this.selectAverage = false
+      this.stepText = "By choosing your menstrual day, you’ll get your menstrual calendar information"
     },
 
     goToDetailMenstrual() {
