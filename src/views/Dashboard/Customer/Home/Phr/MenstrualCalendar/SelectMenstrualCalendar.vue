@@ -411,6 +411,7 @@ export default {
     goToNextRoute() {
       this.showAlertUnsaved = false
       if (this.isUpdate) {
+        this.nextStatus = true
         this.routeStateSave && this.$router.push({ name: this.routeStateSave.name })
       }
     },
