@@ -3,6 +3,74 @@
     .select-menstrual-calendar__wrapper
       MenstrualCalendarBanner
       ui-debio-modal.select-menstrual-calendar__modal(
+        :show="showAlertUnsaved"
+        :show-title="false"
+        :show-cta="false"
+        disable-dismiss
+      )
+        .select-menstrual-calendar__modal-title Unsaved Progress
+
+        ui-debio-icon(
+          :icon="alertTriangleIcon"
+          size="90"
+          color="#c400a5"
+          stroke
+        )
+        .select-menstrual-calendar__modal-desc Are you sure you want to quit unsaved? you can continue this progress later
+
+        .select-menstrual-calendar__modal-buttons(class=" justify-space-between align-center pa-10")
+          ui-debio-button(
+            color="secondary" 
+            width="100px"
+            height="35"
+            style="font-size: 10px;"
+            outlined 
+            @click="cancelUnsaved()"
+          ) No
+
+          ui-debio-button(
+            color="secondary" 
+            width="100px"
+            height="35"
+            style="font-size: 10px;"
+            @click="goToNextRoute()"
+          ) Yes
+
+      ui-debio-modal.select-menstrual-calendar__modal(
+        :show="showAlertCancel"
+        :show-title="false"
+        :show-cta="false"
+        disable-dismiss
+      )
+        .select-menstrual-calendar__modal-title Cancel Update
+
+        ui-debio-icon(
+          :icon="alertTriangleIcon"
+          size="90"
+          color="#c400a5"
+          stroke
+        )
+        .select-menstrual-calendar__modal-desc Are you sure you want to cancel updating your menstrual calendar?
+
+        .select-menstrual-calendar__modal-buttons(class=" justify-space-between align-center pa-10")
+          ui-debio-button(
+            color="secondary" 
+            width="100px"
+            height="35"
+            style="font-size: 10px;"
+            outlined 
+            @click="showAlertCancel = false"
+          ) No
+
+          ui-debio-button(
+            color="secondary" 
+            width="100px"
+            height="35"
+            style="font-size: 10px;"
+            @click="toUpdateMenstrual()"
+          ) Yes
+
+      ui-debio-modal.select-menstrual-calendar__modal(
         :show="showAlert"
         :show-title="false"
         :show-cta="false"
@@ -84,7 +152,7 @@
                 height="44"
                 width="180"
                 style="font-size: 13px"
-                @click="goToDetailMenstrual()"
+                @click="showAlertCancel = true"
                 color="error"
                 :bind="attrs"
                 :on="on"
@@ -190,7 +258,7 @@
                   height="44"
                   width="180"
                   style="font-size: 13px"
-                  @click="goToDetailMenstrual()"
+                  @click="showAlertCancel = true"
                   color="error"
                   :bind="attrs"
                   :on="on"
@@ -216,7 +284,7 @@
               span.select-menstrual-calendar__small-head-text-primary Menstrual Calendar Settings
               span.select-menstrual-calendar__small-head-text-secondary Update menstruation day and subscription
           .select-menstrual-calendar__line-divider
-          span.select-menstrual-calendar__small-content-text Help us get to know you more deeply, complete these steps now!
+          span.select-menstrual-calendar__small-content-text {{ stepText }}
           .select-menstrual-calendar__step-wrapper
             .select-menstrual-calendar__step-box(:class="{'select-menstrual-calendar__step-box-selected': !selectAverage}")
             .select-menstrual-calendar__step-box(:class="{'select-menstrual-calendar__step-box-selected': submitPreview}")
@@ -264,10 +332,23 @@ export default {
     submitEnabled: false,
     submitPreview: false,
     selectAverage: true,
+    showAlertUnsaved: false,
+    showAlertCancel: false,
     showAlert: false,
     isSuccess: false,
-    stepText: "By choosing your average cycle day, you’ll get your menstrual calendar information"
+    stepText: "",
+    routeStateSave: null
   }),
+
+  beforeRouteLeave(to, _, next) {
+    if (this.isUpdate && !this.routeStateSave) {
+      this.showAlertUnsaved = true
+      this.routeStateSave = to
+      next(false)
+    } else {
+      next()
+    }
+  },
 
   watch: {
     selectedMonthText(newMonth) {
@@ -279,6 +360,7 @@ export default {
   },
 
   async created() {
+    this.stepText = this.isUpdate ? "By choosing your average cycle day, you’ll get your menstrual calendar information" : "Help us get to know you more deeply, complete these steps now!"
     document.querySelector("html").style.overflowY = null
     const today = new Date()
     this.selectedMonthText = this.monthList[today.getMonth()].text
@@ -321,6 +403,18 @@ export default {
       setTimeout(() => {
         this.$router.push({ name: "menstrual-calendar-detail" })
       }, 10000)
+    },
+
+    goToNextRoute() {
+      this.showAlertUnsaved = false
+      if (this.isUpdate) {
+        this.routeStateSave && this.$router.push({ name: this.routeStateSave.name })
+      }
+    },
+
+    cancelUnsaved() {
+      this.routeStateSave = null
+      this.showAlertUnsaved = false
     }
   }
 }
@@ -488,8 +582,14 @@ export default {
       justify-content: center
 
     &__modal-desc
-      text-align: center
       max-width: 264px
+      font-weight: 600
+      font-size: 14px
+      line-height: 20px
+      color: #000000
+      align-items: center
+      text-align: center
+      letter-spacing: -0.0075em
 
     &__modal-title
       text-align: center
