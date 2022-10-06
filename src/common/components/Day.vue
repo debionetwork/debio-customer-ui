@@ -9,7 +9,7 @@
       template(v-if="isMenstrualData")
         div.day-card(
           v-for="day in countDay"
-          :class="{'selected-day': (dates[day - 1] !== undefined && dates[day - 1].isSelected), day: (dates[day - 1] !== undefined && dates[day - 1].thisMonth), none: !(dates[day - 1] !== undefined && dates[day - 1].thisMonth), menstruation: (dates[day - 1] !== undefined && dates[day - 1].data.isMenstruation && dates[day - 1].thisMonth),prediction: (dates[day - 1] !== undefined && dates[day - 1].data.isPrediction && dates[day - 1].thisMonth),fertility: (dates[day - 1] !== undefined && dates[day - 1].data.isFertility && dates[day - 1].thisMonth)}"
+          :class="setClass(day)"
           @click="selectDayClick(dates[day - 1] !== undefined && dates[day - 1].thisMonth && dates[day - 1].isPast, dates[day - 1].date, dates[day - 1].index)"
         )
           div(
@@ -29,10 +29,24 @@
               max-width="23px"
               max-height="23px"
             )
-            //- .emoticon
-            //-   .emoticon-item(
-            //-     v-for="sympom in dates[day - 1].data.symptoms"
-            //-   )
+            .emoticon
+              .emoticon-item-more-than-one(
+                v-if="dates[day - 1].data.symptoms.length > 1"
+              )
+                v-img.emoticon-item(
+                  alt="emoji-depressed-active"
+                  :src="require(`../../assets/${dates[day - 1].data.symptoms[0].name}-active.svg`)"
+                  max-width="16px"
+                  max-height="16px"
+                )
+                .emoticon-item-count +{{dates[day - 1].data.symptoms.length - 1}}
+              v-img.emoticon-item(
+                v-else-if="dates[day - 1].data.symptoms.length > 0"
+                alt="emoji-depressed-active"
+                :src="require(`../../assets/${dates[day - 1].data.symptoms[0].name}-active.svg`)"
+                max-width="16px"
+                max-height="16px"
+              )
             span(
               :class="{ highlight: (dates[day - 1].data.isFertility || dates[day - 1].data.isPrediction || dates[day - 1].data.isMenstruation), past: (dates[day - 1] !== undefined && dates[day - 1].isPast)}"
             ) {{ dates[day - 1].text.toString().trim() }}
@@ -78,7 +92,6 @@ export default {
   data: () => ({
     selectedIndex: -1,
     countDay: 7
-
   }),
 
   methods: {
@@ -104,6 +117,17 @@ export default {
         active && this.$emit("on-day-select", date)
         this.selectedIndex = index
       }
+    },
+    
+    setClass(day) {
+      const date = this.dates[day - 1]
+      return {
+        "selected-day": (date !== undefined && date.isSelected), 
+        day: (date !== undefined && date.thisMonth), 
+        none: !(date !== undefined && date.thisMonth), 
+        menstruation: (date !== undefined && date.data.isMenstruation && date.thisMonth),
+        prediction: (date !== undefined && date.data.isPrediction && date.thisMonth),
+        fertility: (date !== undefined && date.data.isFertility && date.thisMonth)}
     }
   }
 }
@@ -174,7 +198,17 @@ export default {
   }
 
   .selected-day {
-    border: 2px solid #FF60BF;
+    outline: 2px solid #FF60BF;
+  }
+  
+  .prediction {
+    background-color: #E5AEFF;
+    color: #F7F7F7;
+  }
+
+  .fertility {
+    background-color: #D3D5FF;
+    color: #F7F7F7;
   }
 
   .none {
@@ -196,17 +230,45 @@ export default {
     position: absolute;
     background: #FFFFFF;
     border-radius: 8px;
-    height: 16px;
     bottom: 0;
     right: 0;
     margin: 0 4px 4px 0;
+  }
+
+  .emoticon-item {
+    height: 16px;
+    width: 16px;
+  }
+
+  .emoticon-item-more-than-one {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    gap: 1px;
+    height: 16px;
+    background: #FFFFFF;
+    border-radius: 8px;
+  }
+
+  .emoticon-item-count {
+    height: 16px;
+    font-weight: 600;
+    margin: 0 3px 0 0;
+    font-size: 8px;
+    line-height: 16px;
+    color: #FF60BF;
   }
 
   .today {
     position: absolute;
     width: 23px;
     height: 23px;
-    top: 0px;
+    top: 0;
+    right: 0;
+  }
+
+  .today .select{
+    top: 0;
     right: 0;
   }
 
@@ -225,17 +287,16 @@ export default {
     height: 16px;
     top: 0;
     left: 0;
+    margin: 4px 0 0 4px;
+  }
+
+  .drop {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 0;
+    left: 0;
     margin: 4px 0 0 4.67px;
-  }
-
-  .fertility {
-    background-color: #D3D5FF;
-    color: #F7F7F7;
-  }
-
-  .prediction {
-    background-color: #E5AEFF;
-    color: #F7F7F7;
   }
 
   .menstruation {
