@@ -25,7 +25,8 @@ export default {
     gap: { type: Number, default: 12 },
     size: { type: Number, default: 100 },
     centerSize: { type: Number, default: 120 },
-    limitDay: { type: Number, default: 18 }
+    limitDay: { type: Number, default: 18 },
+    startIndex: { type: Number, default: 1 }
   },
 
   data: () => ({
@@ -48,7 +49,19 @@ export default {
         this.index += 1
         this.$emit("input", this.index)
       }
+    },
+
+    goToIndex(index) {
+      if (index > 1 && index < this.limitDay) {
+        this.scrollX = this.scrollX + (this.size * (index - 1)) + (this.gap * (index - 1))
+        this.index = index
+        this.$emit("input", this.index)
+      }
     }
+  },
+
+  created() {
+    this.goToIndex(this.startIndex)
   }
 }
 </script>
