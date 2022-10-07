@@ -34,7 +34,7 @@
           | {{ dataService.totalPrice }} 
           | {{ dataService.currency}}
 
-      .menu-card__rate ( {{ (this.usdRate * dataService.totalPrice).toFixed(3) }} USD )
+      .menu-card__rate ( {{ this.usdRate }} USD )
       
       div(class="text-center" v-if="status === 'Cancelled'")
         div(class="d-flex justify-space-between align-center pa-4 ms-3 me-3")
@@ -233,8 +233,8 @@ export default {
     }),
 
     async getUsdRate() {
-      this.rate = await getConversion()
-      if (this.rate) this.usdRate = this.rate.daiToUsd
+      this.rate = await getConversion(this.dataService.currency, "USD")
+      this.usdRate = (this.rate * this.dataService.totalPrice.replaceAll(",", "")).toLocaleString("en-US")
     },
 
     async toEtherscan () {

@@ -67,6 +67,16 @@
               :seconds-txt="'S'"
             )
 
+    ui-debio-alert-dialog(
+      :show="showAlert"
+      :width="289"
+      title="Unpaid Order"
+      message="Complete your unpaid order first before requesting a new one. "
+      imgPath="alert-circle-primary.png"
+      btn-message="Go to My Payment"
+      @click="toPaymentHistory"
+      )
+
 </template>
 
 <script>
@@ -75,11 +85,14 @@ import { mapState, mapMutations } from "vuex"
 import { getServiceRequestByCustomer } from "@/common/lib/api"
 import { getLocations } from "@/common/lib/api"
 import { STAKE_STATUS_DETAIL } from "@/common/constants/status"
-import { createOrder, queryLastOrderHashByCustomer } from "@debionetwork/polkadot-provider"
+import { queryLastOrderHashByCustomer, queryServiceById, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import { fmtReferenceFromHex } from "@/common/lib/string-format"
+import { queryGetServiceOfferById } from "@/common/lib/polkadot-provider/query/service-request"
+import { createOrder } from "@/common/lib/polkadot-provider/command/order.js"
+
 
 export default {
   name: "StakingServiceTab",
@@ -137,7 +150,8 @@ export default {
     requestId: "",
     countries: [],
     isLoadingData: false,
-    loading: false
+    loading: false,
+    showAlert: false
 
   }),
 
@@ -219,25 +233,30 @@ export default {
       return dueDate
     },
 
-    async toRequestTest(service) {
+    async toRequestTest(req) {
       this.loading = true
-      const request = service.request
-      const country = request.country
-      const region = request.region
-      const city = request.city
-      const category = request.service_category
-      const status = "StakingRequestService"
-      this.setStakingService(request)
-      this.setCategory(category)
-      await this.$store.dispatch("lab/setCountryRegionCity", {country, region, city})
-      const servicesAvailable = await this.$store.dispatch("lab/getServicesByCategory", {category, status})
-      if (!servicesAvailable) {
-        this.$emit("error")
-        return
+
+      const lastOrder = await this.getLastOrderId()
+
+      if (lastOrder) {
+        const detailOrder = await queryOrderDetailByOrderID(this.api, lastOrder)
+        const status = detailOrder.status
+        if (status === "Unpaid") {  
+          this.showAlert = true
+          return
+        }
       }
+
+      const request = req.request
+      const serviceOffer = await queryGetServiceOfferById(this.api, request.hash)
+      const service = await queryServiceById(this.api, serviceOffer.serviceId)
+      await this.createOrder(service)
       this.$emit("loading")
-      const proceedService = servicesAvailable.find(s => s.lab_id === service.request.lab_address)
-      await this.createOrder(proceedService)
+
+    },
+    
+    toPaymentHistory() {
+      this.$router.push({ name: "customer-payment-history" })
     },
 
     getCustomerPublicKey() {
@@ -246,15 +265,18 @@ export default {
     },
 
     async createOrder(service) {
+      const assetId = service.currency === "USDT" ? 2 : 1      
       const customerBoxPublicKey = await this.getCustomerPublicKey() 
       const indexPrice = 0
+
       await createOrder(
         this.api,
         this.pair,
         service.id,
         indexPrice,
         customerBoxPublicKey,
-        service.service_flow
+        service.serviceFlow,
+        assetId
       )
     },
 
@@ -283,11 +305,16 @@ export default {
       return fmtReferenceFromHex(id)
     },
 
-    async toCheckout() {
-      const lastOrder = await queryLastOrderHashByCustomer(
+    async getLastOrderId () {
+      const lastOrderId = await queryLastOrderHashByCustomer(
         this.api,
         this.pair.address
       )
+      return lastOrderId
+    },
+
+    async toCheckout() {
+      const lastOrder = await this.getLastOrderId()
       
       this.$router.push({ 
         name: "customer-request-test-checkout", params: { id: lastOrder }
