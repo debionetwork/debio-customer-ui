@@ -85,13 +85,14 @@ import { mapState, mapMutations } from "vuex"
 import { getServiceRequestByCustomer } from "@/common/lib/api"
 import { getLocations } from "@/common/lib/api"
 import { STAKE_STATUS_DETAIL } from "@/common/constants/status"
-import { queryLastOrderHashByCustomer, queryServiceById, queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
+import { queryLastOrderHashByCustomer, queryServiceById, queryOrderDetailByOrderID, processRequest } from "@debionetwork/polkadot-provider"
 import CryptoJS from "crypto-js"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import { fmtReferenceFromHex } from "@/common/lib/string-format"
 import { queryGetServiceOfferById } from "@/common/lib/polkadot-provider/query/service-request"
 import { createOrder } from "@/common/lib/polkadot-provider/command/order.js"
+import { setOrderPaid } from "@/common/lib/polkadot-provider/command/order"
 
 
 export default {
@@ -151,15 +152,26 @@ export default {
     countries: [],
     isLoadingData: false,
     loading: false,
-    showAlert: false
+    showAlert: false,
+    stakingData: null
 
   }),
 
   watch: {
-    lastEventData(event) {
+    async lastEventData(event) {
       if (!event) return
+      const dataEvent = JSON.parse(event.data.toString())
+      const orderId = dataEvent[0].id
 
-      if (event.method === "OrderCreated") this.toCheckout()
+      if (event.method === "OrderCreated") {
+        await this.setPaid(orderId)
+      }
+
+      if (event.method === "OrderPaid") {
+        await this.processRequestService(dataEvent[0])
+      }
+
+      if(event.method === "ServiceRequestProcessed") this.toCheckout()
     }
   },
 
@@ -209,7 +221,22 @@ export default {
         console.log(error)
         this.isLoadingData = false
       }
-      
+    },
+
+    async setPaid(id) {
+      await setOrderPaid(this.api, this.pair, id)
+    },
+
+    async processRequestService(event) {
+      const detailOrder = await queryOrderDetailByOrderID(this.api, event.id)
+      await processRequest(
+        this.api,
+        this.pair,
+        event.sellerId,
+        this.stakingData.hash,
+        event.id,
+        detailOrder.dnaSampleTrackingId
+      )
     },
 
     setAmount(amount) {
@@ -235,8 +262,10 @@ export default {
 
     async toRequestTest(req) {
       this.loading = true
-
+      this.stakingData = req.request
+      console.log(this.stakingData)
       const lastOrder = await this.getLastOrderId()
+
 
       if (lastOrder) {
         const detailOrder = await queryOrderDetailByOrderID(this.api, lastOrder)
@@ -310,14 +339,15 @@ export default {
         this.api,
         this.pair.address
       )
+      this.lastOrderId = lastOrderId
       return lastOrderId
     },
 
     async toCheckout() {
-      const lastOrder = await this.getLastOrderId()
+      await this.getLastOrderId()
       
       this.$router.push({ 
-        name: "customer-request-test-checkout", params: { id: lastOrder }
+        name: "customer-request-test-checkout", params: { id: this.lastOrderId }
       })
       this.$emit("closeLoading")
     }
