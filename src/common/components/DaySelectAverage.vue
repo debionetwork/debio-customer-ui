@@ -26,7 +26,7 @@ export default {
     size: { type: Number, default: 100 },
     centerSize: { type: Number, default: 120 },
     limitDay: { type: Number, default: 18 },
-    startIndex: { type: Number, default: 1 }
+    startSelected: { type: Number, default: 21 }
   },
 
   data: () => ({
@@ -34,12 +34,28 @@ export default {
     index: 1
   }),
 
+  async created() {
+    const index = this.startSelected - 20
+    this.index = index
+    this.scrollX = - (this.size * (index - 1)) - (this.gap * (index - 1))
+  },
+
+  watch: {
+    startSelected(newSelectedIndex, oldSelectedIndex) {
+      if (newSelectedIndex !== oldSelectedIndex) {
+        const index = newSelectedIndex - 20
+        this.index = index
+        this.scrollX = - (this.size * (index - 1)) - (this.gap * (index - 1))
+      }
+    }
+  },
+
   methods: {
     prevSelection() {
       if (this.index > 1) {
         this.scrollX = this.scrollX + this.size + this.gap
         this.index -= 1
-        this.$emit("input", this.index)
+        this.$emit("input", this.index + 20)
       }
     },
 
@@ -47,21 +63,17 @@ export default {
       if (this.index < this.limitDay) {
         this.scrollX = this.scrollX - this.size - this.gap
         this.index += 1
-        this.$emit("input", this.index)
+        this.$emit("input", this.index + 20)
       }
     },
 
     goToIndex(index) {
       if (index > 1 && index < this.limitDay) {
-        this.scrollX = this.scrollX + (this.size * (index - 1)) + (this.gap * (index - 1))
+        this.scrollX = this.scrollX - (this.size * (index - 1)) - (this.gap * (index - 1))
         this.index = index
-        this.$emit("input", this.index)
+        this.$emit("input", this.index + 20)
       }
     }
-  },
-
-  created() {
-    this.goToIndex(this.startIndex)
   }
 }
 </script>
