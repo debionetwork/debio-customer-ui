@@ -384,7 +384,7 @@ export default {
     this.currentYear = today.getFullYear().toString()
   },
 
-  async beforeMounted() {
+  async beforeMount() {
     if (this.isUpdate) {
       const lastMC = (await getLastMenstrualCalendarByOwner(this.api, this.pair.address)).at(-1)
       const lastMCC = (await getLastMenstrualCalendarCycleLogByOwner(this.api, lastMC)).at(-1)
