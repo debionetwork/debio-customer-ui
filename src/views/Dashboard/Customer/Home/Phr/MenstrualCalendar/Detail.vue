@@ -335,69 +335,6 @@ export default {
       }
     },
 
-    // createTestData(year, month) {
-    //   const today = new Date()
-    //   const firstDateCurrentMonth = new Date(year, month, 1)
-    //   const firstDateNextMonth = new Date(year, month + 1, 0)
-
-    //   const dayFirstDateCurrentMonth = firstDateCurrentMonth.getDay() === 0 ? 6 : firstDateCurrentMonth.getDay() - 1
-    //   const dayFirstDateNextMonth = firstDateNextMonth.getDay() === 0 ? 6 : firstDateNextMonth.getDay() - 1
-    //   const startDate = new Date(year, month, -(dayFirstDateCurrentMonth - 1))
-    //   const endDate = new Date(year, month + 1, (6 - dayFirstDateNextMonth))
-
-    //   let date = startDate
-    //   let indexDate = 0
-    //   const menstrualCalendarData = {...this.menstrualCalendarData}
-    //   menstrualCalendarData.cycleLog = []
-
-    //   while (date.getTime() < endDate.getTime()) {
-    //     date = new Date(year, month, (-(dayFirstDateCurrentMonth - 1) + indexDate))
-    //     const symptoms = this.emojiDays[date.getTime()] ?? []
-
-    //     if (date.getDate() <= 5 && date.getMonth() === today.getMonth()) {
-    //       menstrualCalendarData.cycleLog.push({
-    //         date: date.getTime(),
-    //         menstruation: 1,
-    //         prediction: 0,
-    //         fertility: 0,
-    //         ovulation: 0,
-    //         symptoms: symptoms
-    //       })
-    //     } else if (date.getDate() >= 10 && date.getDate() < 20 && date.getMonth() === today.getMonth()) {
-    //       menstrualCalendarData.cycleLog.push({
-    //         date: date.getTime(),
-    //         menstruation: 0,
-    //         prediction: 0,
-    //         fertility: 1,
-    //         ovulation: indexDate === 14 ? 1 : 0,
-    //         symptoms: symptoms
-    //       })
-    //     } else if (date.getDate() >= 28 && date.getDate() <= 30 && date.getMonth() === today.getMonth()) {
-    //       menstrualCalendarData.cycleLog.push({
-    //         date: date.getTime(),
-    //         menstruation: 0,
-    //         prediction: 1,
-    //         fertility: 0,
-    //         ovulation: 0,
-    //         symptoms: symptoms
-    //       })
-    //     } else {
-    //       menstrualCalendarData.cycleLog.push({
-    //         date: date.getTime(),
-    //         menstruation: 0,
-    //         prediction: 1,
-    //         fertility: 0,
-    //         ovulation: 0,
-    //         symptoms: symptoms
-    //       })
-    //     }
-
-    //     indexDate++
-    //   }
-
-    //   this.menstrualCalendarData = menstrualCalendarData
-    // },
-
     toSubscriptionSetting() {
       this.$router.push({ name: "menstrual-calendar-subscription-setting" })
     },
