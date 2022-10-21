@@ -336,7 +336,7 @@ export default {
           if (!data) return
           wallet.balance = this.web3.utils.fromWei(data.data.balance.replaceAll(",", ""), wallet.unit)
           wallet.id = data.id
-          if (wallet.name === "usn") this.setUSNBalance(wallet.balance)
+          if (wallet.name === "usdn") this.setUSNBalance(wallet.balance)
           if (wallet.name === "usdt") this.setUSDTBalance(wallet.balance)
         }
       })
