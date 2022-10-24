@@ -148,7 +148,8 @@ export default {
           "geneticData",
           "geneticAnalysisOrders",
           "geneticAnalysis",
-          "userProfile"
+          "userProfile",
+          "menstrualSubscription"
         ]
 
         const block =  await api.rpc.chain.getBlock()
