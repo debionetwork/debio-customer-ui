@@ -63,12 +63,12 @@
                 .price__block
                   .price__label Service Price
                   .price__value
-                    | {{ formatPrice(payment.prices[0].value) }}
+                    | {{ formatPrice(payment.prices[0].value, payment.currency) }}
                     | {{ payment.currency }}
                 .price__block(v-if="payment.section === 'order'")
                   .price__label QC Price
                   .price__value
-                    | {{ payment.additional_prices.length ? formatPrice(payment.additional_prices[0].value) : "0" }}
+                    | {{ payment.additional_prices.length ? formatPrice(payment.additional_prices[0].value, payment.currency) : "0" }}
                     | {{ payment.currency }}
 
                 hr.mb-4
@@ -91,14 +91,13 @@
 
 <script>
 import { copyIcon } from "@debionetwork/ui-icons"
-import { getOrderDetail, fetchTxHashOrder } from "@/common/lib/api"
+import { getOrderDetail } from "@/common/lib/api"
 import { getRatingService } from "@/common/lib/api"
 import {
   queryDnaSamples,
   queryGeneticAnalysisByGeneticAnalysisTrackingId
 } from "@debionetwork/polkadot-provider"
 import { mapState } from "vuex"
-import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 import getEnv from "@/common/lib/utils/env"
 
 // NOTE: Use anchor tag with "noreferrer noopener nofollow" for security
@@ -110,12 +109,9 @@ anchor.rel = "noreferrer noopener nofollow"
 export default {
   name: "CustomerPaymentDetails",
 
-  mixins: [metamaskServiceHandler],
-
   data: () => ({
     copyIcon,
     messageError: null,
-    txHash: null,
     rewardPopup: false,
     payment: {}
   }),
@@ -145,13 +141,13 @@ export default {
     },
 
     computeTotalPrices() {
-      if (!this.payment?.additional_prices?.length) return this.formatPrice(this.payment?.prices[0].value)
-      return this.formatPrice(this.payment?.prices[0].value) + this.formatPrice(this.payment?.additional_prices[0].value)
+      if (!this.payment?.additional_prices?.length) return this.formatPrice(this.payment?.prices[0].value, this.payment?.currency)
+      return this.formatPrice(this.payment?.prices[0].value, this.payment?.currency) + this.formatPrice(this.payment?.additional_prices[0].value, this.payment?.currency)
     },
 
     computeRefundedValue() {
       return this.payment?.status === "Refunded"
-        ? `${this.formatPrice(this.payment?.prices[0].value)} ${this.payment?.currency}`
+        ? `${this.formatPrice(this.payment?.prices[0].value, this.payment?.currency)} ${this.payment?.currency}`
         : "-"
     }
   },
@@ -182,9 +178,8 @@ export default {
       try {
         let data
         let rating
-        let txDetails
         let isNotGAOrders = false
-        const dataPayment = await this.metamaskDispatchAction(getOrderDetail, this.$route.params.id)
+        const dataPayment = await getOrderDetail(this.$route.params.id)
         const classes = Object.freeze({
           PAID: "success--text",
           UNPAID: "warning--text",
@@ -212,13 +207,11 @@ export default {
             try {
               isNotGAOrders = true
               rating = await getRatingService(dataPayment.service_id)
-              txDetails = await this.metamaskDispatchAction(fetchTxHashOrder, dataPayment.id)
               data = await queryDnaSamples(this.api, dataPayment.dna_sample_tracking_id)
             } catch (error) {
               console.error(error)
             }
 
-            this.txHash = txDetails.transaction_hash
           } else {
             try {
               data = await queryGeneticAnalysisByGeneticAnalysisTrackingId(
@@ -273,8 +266,11 @@ export default {
       }, 1000)
     },
 
-    formatPrice(price) {
-      return parseFloat(this.web3.utils.fromWei(String(price.replaceAll(",", "")), "ether"))
+    formatPrice(price, currency) {
+      let unit
+      currency === "USDT" ? unit = "mwei" : unit = "ether"
+      const formatedPrice = this.web3.utils.fromWei(String(price.replaceAll(",", "")), unit)
+      return parseFloat(formatedPrice)
     },
 
     async handleCTA() {
