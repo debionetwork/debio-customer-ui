@@ -36,7 +36,7 @@
 
       .menu-card__rate ( {{ this.usdRate }} USD )
       
-      div(class="text-center" v-if="success || status === 'Cancelled'")
+      div(class="text-center" v-if="status === 'Cancelled'")
         div(class="d-flex justify-space-between align-center pa-4 ms-3 me-3")
           ui-debio-button(
             color="secondary"
@@ -45,7 +45,7 @@
             @click="$router.push({name: 'customer-dashboard'})"
             style="font-size: 10px;"
             outlined 
-            ) Go to Dashboard
+            ) Go to Dashboard {{ status }}
 
           ui-debio-button(
             color="secondary"
@@ -64,7 +64,7 @@
             @click="onSubmit"
             ) Submit Order
 
-        div(v-if="success && status === 'Paid'" class="d-flex justify-space-between align-center pa-4 ms-3 me-3")
+        div(v-if="status === 'Paid'" class="d-flex justify-space-between align-center pa-4 ms-3 me-3")
           ui-debio-button(
             color="secondary"
             width="50%"
@@ -242,8 +242,9 @@ export default {
     }),
 
     async getUsdRate() {
+      const totalPrice = Number(this.dataService.totalPrice.split(",").join(""));
       this.rate = await getConversion(this.dataService.currency, "USD")
-      this.usdRate = (this.rate * this.dataService.totalPrice.replaceAll(",", "")).toLocaleString("en-US")
+      this.usdRate = Number(this.rate.conversion * totalPrice).toFixed(4)
     },
 
     async toEtherscan () {
