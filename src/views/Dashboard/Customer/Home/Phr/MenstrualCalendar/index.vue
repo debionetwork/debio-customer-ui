@@ -113,7 +113,9 @@
                         )
                         v-alert.menstrual-calendar__plan-card-alert(v-if="plan.promo" color="#E7FFE6" )
                           .menstrual-calendar__plan-card-alert-text {{ plan.promo }}
-                        .menstrual-calendar__plan-card-price {{ plan.price }} {{ plan.currency}}
+                        .menstrual-calendar__plan-card-price Burn {{ plan.price }} {{ plan.currency}}
+                          .menstrual-calendar__plan-card-price-convert ({{ plan.usd }} USD)
+
                       .menstrual-calendar__plan-card-desc.pt-1.ml-8 {{ plan.description }}
 
                 ui-debio-button(
@@ -170,6 +172,7 @@ import { getLastMenstrualCalendarByOwner } from "@/common/lib/polkadot-provider/
 import { addMenstrualSubscriptionFee, addMenstrualSubscription, setMenstrualSubscriptionPaid } from "@/common/lib/polkadot-provider/command/menstrual-subscription"
 import { formatPrice } from "@/common/lib/price-format"
 import { generalDebounce } from "@/common/lib/utils"
+import { getConversion } from "@/common/lib/api"
 
 export default {
   name: "MenstrualCalendar",
@@ -177,9 +180,9 @@ export default {
   data: () => ({
     alertTriangleIcon, checkCircleIcon,
     plans: [
-      {duration: "Monthly", description: "For users on a budget who want to try out menstrual date", price: 0, currency: "DBIO", promo: "", periode: "Month"},
-      {duration: "Quarterly", description: "For users on a budget who want to track menstrual cycle quarterly", price: 0, currency: "DBIO", promo: "Save 10%", periode: "3 Months"},
-      {duration: "Yearly", description: "For users on a budget who want to keep tracking menstrual cycle annualy", price: 0, currency: "DBIO", promo: "Save 50%", periode: "Year"}
+      {duration: "Monthly", description: "For users on a budget who want to try out menstrual date", price: 0, currency: "DBIO", usd: 0, promo: "", periode: "Month"},
+      {duration: "Quarterly", description: "For users on a budget who want to track menstrual cycle quarterly", price: 0, currency: "DBIO", usd: 0, promo: "Save 10%", periode: "3 Months"},
+      {duration: "Yearly", description: "For users on a budget who want to keep tracking menstrual cycle annualy", price: 0, currency: "DBIO", usd: 0, promo: "Save 50%", periode: "Year"}
     ],
     subscription: "",
     paymentPreview: false,
@@ -256,6 +259,12 @@ export default {
   },
 
   methods: {
+
+    async getRate() {
+      const rate = await getConversion()
+      return rate.dbioToUsd      
+    },
+
     async toSusbsribe() {
       this.loading = true
 
@@ -293,7 +302,9 @@ export default {
     async getSubscriptionPrices() {
       this.plans.forEach(async plan => {
         const data = await getMenstrualSubscriptionPrices(this.api, plan.duration, plan.currency) 
+        const rate = await this.getRate()
         plan.price = formatPrice(data.amount, plan.currency)
+        plan.usd = (Number(plan.price.split(",").join("")) * rate).toFixed(4)
       })
     },
 
@@ -367,10 +378,14 @@ export default {
 
     &__plan-card-price
       @include button-2
+
+    &__plan-card-price-convert
+      color: #FF56E0
+      @include body-text-5
     
     &__plan-card-alert
       height: 24px
-      margin-left: -98px
+      margin-left: -40px
 
     &__plan-card-alert-text
       margin-top: -12px
