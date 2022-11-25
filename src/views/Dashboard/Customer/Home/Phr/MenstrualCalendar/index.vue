@@ -126,17 +126,13 @@
             
             template(v-if="paymentPreview")
               v-card.menstrual-calendar__plan-payment-card
-                .menstrual-calendar__plan-payment-card-title Purchase Detail
-                .menstrual-calendar__plan-payment-card-detail
-                  .menstrual-calendar__plan-payment-card-desc Menstrual Date {{ subscription.duration }}
-                  .menstrual-calendar__plan-card-price {{ subscription.price }} {{ subscription.currency }}/ {{ subscription.periode}}
+                .menstrual-calendar__plan-payment-card-title Purchase Details
                 v-divider.ma-4
-                .menstrual-calendar__plan-payment-card-total
-                  .menstrual-calendar__plan-payment-card-total-text Total Today
-                  .menstrual-calendar__plan-payment-card-total-price {{ subscription.price }} {{ subscription.currency }}
-                  
-
-                .menstrual-calendar__plan-payment-card-notes Any eligible subscription credit will be applied until it runs out. Your subscription will renew for {{ subscription.price }} / {{ subscription.periode }} on Sept 23, 2023. Have any questions? 
+                .menstrual-calendar__plan-payment-card-detail
+                  .menstrual-calendar__plan-payment-card-total-text {{ subscription.duration }}
+                  .menstrual-calendar__plan-card-price Burn {{ subscription.price }} {{ subscription.currency }}/ {{ subscription.periode}}                  
+                    .menstrual-calendar__plan-card-price-convert ({{ subscription.usd }} USD)
+                .menstrual-calendar__plan-payment-card-notes Any eligible subscription credit will be applied until it runs out. Your subscription will renew for {{ subscription.price }} {{ subscription.currency }} / {{ subscription.periode }} on {{getExpiredDate( subscription.periode )}}. Have any questions? 
                   a Contact our support team
 
 
@@ -263,6 +259,28 @@ export default {
     async getRate() {
       const rate = await getConversion()
       return rate.dbioToUsd      
+    },
+
+    getExpiredDate(period) {
+      const today = new Date()
+      let newDate
+
+      if(period === "Month") {
+        newDate = new Date(today.setMonth(today.getMonth()+1))
+      }
+
+      if(period === "3 Months") {
+        newDate = new Date(today.setMonth(today.getMonth()+3))
+      }
+
+      if(period === "Year") {
+        newDate = new Date(today.setMonth(today.getMonth() + 12))
+      }
+
+      let day =  newDate.getDate() - 1
+      let month = newDate.toLocaleString("default", { month: "short" })
+      let year = newDate.getFullYear()
+      return `${day} ${month} ${year}`
     },
 
     async toSusbsribe() {
@@ -400,7 +418,7 @@ export default {
 
     &__plan-payment-card-title
       padding: 16px
-      margin: 4px 0
+      margin-bottom: -16px
       @include button-1
 
     &__plan-payment-card-detail
@@ -423,7 +441,7 @@ export default {
 
     &__plan-payment-card-notes
       padding: 24px 16px
-      @include tiny-reg
+      @include body-text-3-opensans
 
     &__plan-payment-card-chips
       margin-top: -10px
