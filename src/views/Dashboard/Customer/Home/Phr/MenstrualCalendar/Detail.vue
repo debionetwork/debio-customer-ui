@@ -296,6 +296,8 @@ export default {
     },
 
     async getMenstruationCalendarData() {
+      console.log("get mens calendar data")
+
       try {
         const menstrualCalendar = await getLastMenstrualCalendarByOwner(this.api, this.wallet.address)
         const data = await getMenstrualCalendarById(this.api, menstrualCalendar[0])
@@ -328,12 +330,31 @@ export default {
 
         cycle.sort((a, b) => parseInt(a.date.replaceAll(",", "")) - parseInt(b.date.replaceAll(",", "")))
         const lastMens = cycle.find(c => (new Date(Number(c.date.replaceAll(",", "")))).getMonth() === this.selectedMonth - 1)
-        let firstDayOfLastPeriod =  new Date(Number(lastMens.date.replaceAll(",", "")))
+        
+        console.log("last mens", lastMens)
+
+        let firstDayOfLastPeriod
         let lastMonthPrediction = []
+        let lastMonthFertility = []
+        let lastMonthOvulation = []
+
         if(lastMens) {
-          for (let i = 0; i < 16; i++) {
-            if (i < 5) lastMonthPrediction.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + Number(data.averageCycle) + i))
-            firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
+          firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
+          for (let i = 0; i < 17; i++) {
+            if (i < 5) {
+              lastMonthPrediction.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + Number(data.averageCycle) + i))
+              firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
+            }
+
+            if (i > 8) {
+              lastMonthFertility.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + i))
+              firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
+            }
+
+            if (i > 12 && i < 16) {
+              lastMonthOvulation.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + i))
+              firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
+            }
           }          
         }
 
@@ -348,13 +369,13 @@ export default {
 
           let currentData
 
-          if(lastMens) {
+          if(lastMonthPrediction.length) {
             currentData = {
               date: date.getTime(),
               menstruation: menstruation ? 1: 0,
               prediction: lastMonthPrediction.find(pred => pred === date.getTime()) || (indexDate >= this.menstruationPeriodeIndex[0] + Number(data.averageCycle) &&  indexDate < this.menstruationPeriodeIndex[0] + Number(data.averageCycle) + 5) ? 1 : 0,
-              fertility:  indexDate >= this.menstruationPeriodeIndex[0] + 8 && indexDate <= this.menstruationPeriodeIndex[0] + 16 ? 1 : 0,
-              ovulation: indexDate >= this.menstruationPeriodeIndex[0] + 13 && indexDate <= this.menstruationPeriodeIndex[0] + 15 ? 1 : 0,
+              fertility:  lastMonthFertility.find(pred => pred === date.getTime()) || indexDate >= this.menstruationPeriodeIndex[0] + 8 && indexDate <= this.menstruationPeriodeIndex[0] + 16 ? 1 : 0,
+              ovulation: lastMonthOvulation.find(pred => pred === date.getTime()) || indexDate >= this.menstruationPeriodeIndex[0] + 13 && indexDate <= this.menstruationPeriodeIndex[0] + 15 ? 1 : 0,
               symptoms: symptoms
             }
           } else {
