@@ -342,19 +342,19 @@ export default {
           
           for (let pointer = 0; pointer < 17; pointer++) { // loop up to 16 as the longest date for fertility
 
-            // calculate prediction days
+            // calculate prediction days (5 days)
             if (pointer < 5) {
               lastMonthPrediction.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + Number(data.averageCycle) + pointer))
               firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
             }
 
-            // calculate fertility days
+            // calculate fertility days (9 dayas)
             if (pointer > 8) {
               lastMonthFertility.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + pointer))
               firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
             }
 
-            // calculate ovulation days
+            // calculate ovulation days (3 days)
             if (pointer > 12 && pointer < 16) {
               lastMonthOvulation.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + pointer))
               firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
