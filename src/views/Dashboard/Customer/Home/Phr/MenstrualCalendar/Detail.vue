@@ -296,8 +296,6 @@ export default {
     },
 
     async getMenstruationCalendarData() {
-      console.log("get mens calendar data")
-
       try {
         const menstrualCalendar = await getLastMenstrualCalendarByOwner(this.api, this.wallet.address)
         const data = await getMenstrualCalendarById(this.api, menstrualCalendar[0])
@@ -330,8 +328,6 @@ export default {
 
         cycle.sort((a, b) => parseInt(a.date.replaceAll(",", "")) - parseInt(b.date.replaceAll(",", "")))
         const lastMens = cycle.find(c => (new Date(Number(c.date.replaceAll(",", "")))).getMonth() === this.selectedMonth - 1)
-        
-        console.log("last mens", lastMens)
 
         let firstDayOfLastPeriod
         let lastMonthPrediction = []
