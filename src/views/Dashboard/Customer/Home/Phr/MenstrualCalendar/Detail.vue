@@ -334,27 +334,37 @@ export default {
         let lastMonthFertility = []
         let lastMonthOvulation = []
 
+        // define cycle when first day of menstruation is in the middle - end of month
+
         if(lastMens) {
           firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
-          for (let i = 0; i < 17; i++) {
-            if (i < 5) {
-              lastMonthPrediction.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + Number(data.averageCycle) + i))
+
+          
+          for (let pointer = 0; pointer < 17; pointer++) { // loop up to 16 as the longest date for fertility
+
+            // calculate prediction days
+            if (pointer < 5) {
+              lastMonthPrediction.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + Number(data.averageCycle) + pointer))
               firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
             }
 
-            if (i > 8) {
-              lastMonthFertility.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + i))
+            // calculate fertility days
+            if (pointer > 8) {
+              lastMonthFertility.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + pointer))
               firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
             }
 
-            if (i > 12 && i < 16) {
-              lastMonthOvulation.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + i))
+            // calculate ovulation days
+            if (pointer > 12 && pointer < 16) {
+              lastMonthOvulation.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + pointer))
               firstDayOfLastPeriod = new Date(Number(lastMens.date.replaceAll(",", "")))
             }
           }          
         }
 
         
+        // define cycle when first day of menstruation is in the beginning of month
+
         while(date.getTime() < endDate.getTime()) {
           date = new Date(this.selectedYear, this.selectedMonth, (-(dayFirstDateCurrentMonth - 1) + indexDate))
           const log = cycle.filter(log => Number(log.date.replaceAll(",", "")) === date.getTime())
