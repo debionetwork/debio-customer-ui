@@ -354,9 +354,10 @@ export default {
         while(date.getTime() < endDate.getTime()) {
           date = new Date(this.selectedYear, this.selectedMonth, (-(dayFirstDateCurrentMonth - 1) + indexDate))
           const log = cycle.filter(log => Number(log.date.replaceAll(",", "")) === date.getTime())
+
           const menstruation = log[0]
 
-          const symptoms = menstruation?.menstruation ? menstruation.symptoms : []
+          const symptoms = menstruation ? menstruation.symptoms : []
 
           if (menstruation) this.menstruationPeriodeIndex.push(indexDate)
 
