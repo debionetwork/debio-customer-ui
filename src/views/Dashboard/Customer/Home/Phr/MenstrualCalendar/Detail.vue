@@ -325,7 +325,6 @@ export default {
             // calculate prediction days (5 days)
             if (pointer < 5) {
               lastMonthPrediction.push(firstDayOfLastPeriod.setDate(firstDayOfLastPeriod.getDate() + Number(data.averageCycle) + pointer))
-              lastMonthPrediction.map(l => console.log(new Date(l)))
 
               // calculate 2nd prediction
               if (pointer === 0) {
