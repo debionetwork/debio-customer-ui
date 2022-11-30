@@ -247,7 +247,7 @@ export default {
             documents.push(documentDetail)
           }
         }
-        console.log(documents)
+        
         this.phrDocuments = documents
         this.isLoading = false
       } catch (error) {
