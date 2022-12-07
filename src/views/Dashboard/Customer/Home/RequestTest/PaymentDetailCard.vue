@@ -223,7 +223,6 @@ export default {
       stakingData: (state) => state.lab.stakingData,
       web3: (state) => state.metamask.web3,
       lastEventData: (state) => state.substrate.lastEventData,
-      usnBalance: (state) => state.substrate.usnBalance,
       usdtBalance: (state) => state.substrate.usdtBalance,
       polkadotWallet: (state) => state.substrate.polkadotWallet
     })
@@ -328,7 +327,7 @@ export default {
       this.loadingPayment = true
 
       try {
-        const balance =  this.dataService.currency === "USN" ? this.usnBalance : this.usdtBalance       
+        const balance = this.usdtBalance     
         if (Number(balance) - 1 <= Number(this.dataService.totalPrice.replaceAll(",", ""))) {
           this.loadingPayment = false
           this.showError = true

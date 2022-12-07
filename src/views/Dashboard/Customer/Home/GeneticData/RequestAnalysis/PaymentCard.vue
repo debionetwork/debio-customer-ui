@@ -134,7 +134,6 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       walletBalance: (state) => state.substrate.walletBalance,
-      usnBalance: (state) => state.substrate.usnBalance,
       usdtBalance: (state) => state.substrate.usdtBalance,
       lastEventData: (state) => state.substrate.lastEventData,
       web3: (state) => state.metamask.web3
@@ -200,8 +199,7 @@ export default {
   methods: {
     async getBalance() {
       if(this.orderCurrency === "DBIO") this.balance = this.walletBalance
-      if(this.orderCurrency === "USN") this.balance = this.usnBalance
-      if(this.orderCurrency === "USDT") this.balance = this.usdtBalance
+      if(this.orderCurrency === "USDT" || this.orderCurrency === "USDT.e") this.balance = this.usdtBalance
     },
 
     async getGeneticData() {
@@ -226,7 +224,7 @@ export default {
 
     formatBalance(val, currency) {
       let unit
-      currency === "USDT" ? unit = "mwei" : unit = "ether"
+      currency === "USDT" || currency === "USDT.e" ?unit = "mwei" : unit = "ether"
 
       const formatedBalance = this.web3.utils.fromWei(String(val.replaceAll(",", "")), unit)
       return Number(formatedBalance).toLocaleString("en-US")

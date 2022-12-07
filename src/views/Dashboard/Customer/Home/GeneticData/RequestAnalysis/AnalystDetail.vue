@@ -403,7 +403,7 @@ export default {
 
     formatBalance(balance, currency) {
       let unit
-      currency === "USDT" ? unit = "mwei" : unit = "ether"
+      currency === "USDT"|| currency === "USDT.e" ? unit = "mwei" : unit = "ether"
       const formatedBalance = this.web3.utils.fromWei(String(balance.replaceAll(",", "")), unit)
       return Number(formatedBalance).toLocaleString("en-US")
     },
