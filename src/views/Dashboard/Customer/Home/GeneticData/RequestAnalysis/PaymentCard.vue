@@ -16,10 +16,10 @@
       div(v-if="orderStatus === 'Unpaid'")
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Account Balance
-          .customer-analysis-payment-card__data-text {{ balance }} {{ orderCurrency }}
+          .customer-analysis-payment-card__data-text {{ balance }} {{ formatUSDTE(orderCurrency) }}
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Service Price
-          .customer-analysis-payment-card__data-text(:style="setStyleColor") {{ orderPrice }} {{ orderCurrency }}
+          .customer-analysis-payment-card__data-text(:style="setStyleColor") {{ orderPrice }} {{ formatUSDTE(orderCurrency) }}
         .customer-analysis-payment-card__rate ({{ orderPriceInUsd }} USD )
 
         .customer-analysis-payment-card__text-notes In adherence to the law and regulations of the country where your transaction will take place, service provider payouts may be processed in fiat currency. See our 
@@ -54,7 +54,7 @@
 
         .customer-analysis-payment-card__amount
           .customer-analysis-payment-card__data-text Service Price
-          b.customer-analysis-payment-card__data-text.mt-3 {{ orderPrice }} {{ orderCurrency }}
+          b.customer-analysis-payment-card__data-text.mt-3 {{ orderPrice }} {{ formatUSDTE(orderCurrency) }}
         .customer-analysis-payment-card__rate ( {{ orderPriceInUsd }} USD )
 
         .customer-analysis-payment-card__button
@@ -98,6 +98,8 @@ import {
   cancelGeneticAnalysisOrder,
   cancelGeneticAnalysisOrderFee } from "@debionetwork/polkadot-provider"
 import { setGeneticAnalysisPaid } from "@/common/lib/polkadot-provider/command/genetic-analysis-orders"
+import { formatUSDTE } from "@/common/lib/price-format.js"
+
 
 export default {
   name: "PaymentCard",
@@ -126,7 +128,8 @@ export default {
     geneticData: {},
     customerBoxPublicKey: null,
     error: null,
-    balance: 0
+    balance: 0,
+    formatUSDTE
   }),
 
   computed: {
@@ -199,7 +202,7 @@ export default {
   methods: {
     async getBalance() {
       if(this.orderCurrency === "DBIO") this.balance = this.walletBalance
-      if(this.orderCurrency === "USDT" || this.orderCurrency === "USDT.e") this.balance = this.usdtBalance
+      if(this.orderCurrency === "USDT" || this.orderCurrency === "USDTE") this.balance = this.usdtBalance
     },
 
     async getGeneticData() {
@@ -215,7 +218,7 @@ export default {
       this.geneticOrderDetail = await queryGeneticAnalysisOrderById(this.api, this.orderId)
       this.createdDate = this.formatDate(this.geneticOrderDetail.createdAt)
       this.orderStatus = this.geneticOrderDetail.status
-      this.orderPrice = this.formatBalance(this.geneticOrderDetail.prices[0].value, this.geneticOrderDetail.currency)
+      this.orderPrice = this.formatBalance(this.geneticOrderDetail.prices[0].value, formatUSDTE(this.geneticOrderDetail.currency))
       this.orderCurrency = this.geneticOrderDetail.currency
       await this.getRate()
       this.orderPriceInUsd = this.formatPriceInUsd(this.geneticOrderDetail.prices[0].value)
