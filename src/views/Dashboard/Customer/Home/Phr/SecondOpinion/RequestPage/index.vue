@@ -33,7 +33,8 @@ export default {
 
   data: () => ({
     isDescribing: true,
-    isGrantingAccess: false
+    isGrantingAccess: false,
+    dataRequest: null
   }),
 
 
@@ -42,7 +43,7 @@ export default {
 
   methods: {
     onSubmit(val) {
-      console.log(val)
+      this.dataRequest = val
       this.isDescribing = false
       this.isGrantingAccess = true
     },
