@@ -22,12 +22,17 @@
 
 <script>
 import { mapState } from "vuex"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import { myriadCheckUser, checkMyriadUsername, myriadRegistration, getNonce } from "@/common/lib/api"
+import { generateUsername } from "@/common/lib/username-generator.js"
 
 export default {
   name: "ConnectingPage",
 
   data: () => ({
-    isConnected: false
+    isConnected: false,
+    addressHex: ""
   }),
 
   computed: {
@@ -39,18 +44,68 @@ export default {
 
   watch: {
     mnemonicData(val) {
-      if(val) this.initialData()
+      if(val) this.getInitialData()
     }
   },
 
   async created() {
-    if(this.mnemonicData) this.initialData()
+    if(this.mnemonicData) {
+      await this.getInitialData()
+    } else {
+      this.$router.push({ name: "customer-dashboard"})
+    }
   },
 
   mounted() {
     setTimeout(() => {
       this.isConnected = true
     }, 2000)
+  },
+
+  methods: {
+    async getInitialData() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+      this.addressHex =  cred.signPublicKeyAsHex
+      await this.checkMyriadUser(this.addressHex)
+    },
+
+    async checkMyriadUser(address) {
+      try {
+        const data = await myriadCheckUser(address)
+        return data
+      } catch (err) {
+        if(err.response.status === 401) await this.generateUsername()
+      }
+    },
+
+    async generateUsername() {
+      const name = await generateUsername()
+      const username = name.split(" ").join("").toLowerCase()
+      const isUsernameExisted = (await checkMyriadUsername(username)).status
+      if (!isUsernameExisted) {
+        try {
+          await myriadRegistration({
+            username,
+            name,
+            address: this.addressHex,
+            role: "customer"
+          })
+          
+        } catch (err) {
+          console.error(err)
+          console.log(err.response)
+        }
+      }
+
+      await this.myriadAuthentication()
+    },
+
+    async myriadAuthentication() {
+      const nonce = await getNonce(this.addressHex)
+      const formatedNonce = "0x" + nonce
+      const signature = await this.api.sign(formatedNonce)
+      return signature
+    }
   }
 }
 </script>
