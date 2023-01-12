@@ -24,8 +24,16 @@
 import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
-import { myriadCheckUser, checkMyriadUsername, myriadRegistration, getNonce } from "@/common/lib/api"
+import { 
+  myriadCheckUser, 
+  checkMyriadUsername, 
+  myriadRegistration, 
+  getNonce, 
+  myriadAuth,
+  registerVisibilityTimeline } from "@/common/lib/api"
 import { generateUsername } from "@/common/lib/username-generator.js"
+import { u8aToHex } from "@polkadot/util"
+import getEnv from "@/common/lib/utils/env"
 
 export default {
   name: "ConnectingPage",
@@ -38,7 +46,9 @@ export default {
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
-      mnemonicData: (state) => state.substrate.mnemonicData
+      wallet: (state) => state.substrate.wallet,
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      category: (state) => state.secondOpinion.category
     })
   },
 
@@ -51,7 +61,9 @@ export default {
   async created() {
     if(this.mnemonicData) {
       await this.getInitialData()
-    } else {
+    } 
+    
+    if (!this.category || !this.mnemonicData) {
       this.$router.push({ name: "customer-dashboard"})
     }
   },
@@ -72,9 +84,12 @@ export default {
     async checkMyriadUser(address) {
       try {
         const data = await myriadCheckUser(address)
+        const timelineId = this.category === "Physical Health" ? getEnv("VUE_APP_PHYSICAL_HEALTH_TIMELINE_ID") : getEnv("VUE_APP_MENTAL_HEALTH_TIMELINE_ID")
+        await registerVisibilityTimeline(data.jwt, timelineId, data.user_id)
         return data
       } catch (err) {
-        if(err.response.status === 401) await this.generateUsername()
+        if(err.response.status === 404) await this.generateUsername()
+        if(err.response.status === 401) await this.myriadAuthentication()
       }
     },
 
@@ -102,9 +117,20 @@ export default {
 
     async myriadAuthentication() {
       const nonce = await getNonce(this.addressHex)
-      const formatedNonce = "0x" + nonce
-      const signature = await this.api.sign(formatedNonce)
-      return signature
+      if(!nonce) return
+      const formatedNonce = "0x" + nonce.toString(16)
+      const signature = this.wallet.sign(formatedNonce)
+      const jwt = await myriadAuth({
+        nonce,
+        publicAddress: this.addressHex,
+        signature: u8aToHex(signature),
+        walletType: "polkadot{.js}",
+        networkType: "debio",
+        role: "customer"
+
+      })
+      await this.checkMyriadUser()
+      return jwt
     }
   }
 }
