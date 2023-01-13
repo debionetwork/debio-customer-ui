@@ -244,14 +244,6 @@ export default {
       return JSON.parse(localStorage.getKeystore()) ["Address"]
     },
 
-    toolTip(){
-      return this.item.orderStatus !== "Registered" ? "This is disabled" : "This is Tooltip";
-    },
-
-    isDisabled() {
-      return this.item.orderStatus !== "Registered" || this.item.orderStatus === "ResultReady"
-    },
-
     computeModalTitle() {
       const title = this.isSuccessBounty
         ? "Great! Your data has been placed on marketplace successfully!"
