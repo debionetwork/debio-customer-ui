@@ -36,13 +36,13 @@ export async function myriadAuth(info) {
   return data
 }
 
-export async function registerVisibilityTimeline(timelineId, userId) {
+export async function registerVisibilityTimeline(jwt, timelineId, userId) {
   const request = axios.create({
     baseURL: getEnv("VUE_APP_BACKEND_API"),
     headers: {
       "Content-Type": "application/json",
       "debio-api-key": getEnv("VUE_APP_DEBIO_API_KEY"),
-      "JWT": getEnv("VUE_APP_DEBIO_ADMIN_JWT")
+      "JWT": jwt
     },
     auth: {
       username: getEnv("VUE_APP_USERNAME"),

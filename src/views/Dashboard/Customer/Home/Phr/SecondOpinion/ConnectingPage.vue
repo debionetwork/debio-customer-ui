@@ -91,7 +91,7 @@ export default {
       try {
         const data = await myriadCheckUser(address)
         const timelineId = this.category === "Physical Health" ? getEnv("VUE_APP_PHYSICAL_HEALTH_TIMELINE_ID") : getEnv("VUE_APP_MENTAL_HEALTH_TIMELINE_ID")
-        await registerVisibilityTimeline(timelineId, data.user_id)
+        await registerVisibilityTimeline(data.jwt, timelineId, data.user_id)
         const userIds = await getMyriadListByRole(this.category)
         const userIdList = userIds.data.map((user) => user.user_id)
         
