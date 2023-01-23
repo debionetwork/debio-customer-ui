@@ -26,6 +26,7 @@
         b.menu-card__lab-title {{ serviceDetail.labName }}
           ui-debio-rating.menu-card__rating(:rating="serviceDetail.labRate" :total-reviews="serviceDetail.countRateLab" size="10")
           .menu-card__address {{ serviceDetail.labAddress }}, {{ serviceDetail.city }}, {{ computeCountry(serviceDetail.country) }}
+          a.menu-card__link-website(v-if="serviceDetail.labWebsite" :href="serviceDetail.labWebsite" target="_blank") {{ serviceDetail.labWebsite }}
 </template>
 
 <script>
@@ -132,8 +133,18 @@ export default {
 
     &__line
       margin: 35px 20px
+
+    &__link-website
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
     
     &__address
+      width: 201px
+      color: #757274
+      @include body-text-3-opensans
+
+    &__website
       width: 201px
       color: #757274
       @include body-text-3-opensans
