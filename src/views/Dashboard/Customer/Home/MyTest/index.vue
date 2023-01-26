@@ -127,12 +127,11 @@
                   v-tooltip(top)
                     template(v-slot:activator="{ on, attrs }")
                       ui-debio-button.pa-4(
-                        v-if="item.orderStatus !== 'Registered'"
-                    v-show="item.orderStatus === 'ResultReady'"
                       height="25px"
                       width="50%"
                       dark
-                      color="#F3F3F3"
+                      class='white--text' 
+                      color="#cacaca"
                       :bind="attrs"
                       :on="on"
                       ) Add As Bounty
