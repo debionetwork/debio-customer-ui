@@ -72,7 +72,6 @@ import { mapState } from "vuex"
 import SecondOpinionBanner from "./Banner"
 import { alertTriangleIcon } from "@debionetwork/ui-icons"
 import { isWeb3Injected } from "@polkadot/extension-dapp"
-import dummyData from "./dummyRequestedOpinionList"
 
 import { queryOpinionRequestorByOwner, queryOpinionRequestor } from "@/common/lib/polkadot-provider/query/opinion-requestor"
 
@@ -140,23 +139,11 @@ export default {
     },
 
     async fetchSecondOpinionData() {
-
-      console.log("fetching...")
-      console.log(this.api, this.wallet);
-      // this.items = dummyData.data
-
       const data = await queryOpinionRequestorByOwner(this.api, this.wallet.address)
-      console.log("data ---->", data)
-
       for (let i = 0; i < data.length; i++) {
         const item = await queryOpinionRequestor(this.api, data[i])
         this.items.push(item)
-        
       }
-
-      console.log(">>> items >>>", this.items)
-      console.log(">>> dummmy >>>", dummyData.data)
-
     }
   }
 }
