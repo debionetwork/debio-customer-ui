@@ -115,15 +115,7 @@
   .main: router-view
 </template>
 <script>
-import LandingPagePopUp from "@/views/LandingPage/LandingPagePopUp.vue";
-
 export default {
-  name: "MainPage",
-
-  components: {
-    LandingPagePopUp
-  },
-
   methods: {
     redirectHome() {
       window.open("https://www.debio.network/quickstart", "__blank");
