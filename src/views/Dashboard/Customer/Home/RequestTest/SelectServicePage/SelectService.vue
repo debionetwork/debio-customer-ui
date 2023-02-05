@@ -126,7 +126,8 @@ export default {
             city,
             region,
             country,
-            profile_image: labImage
+            profile_image: labImage,
+            website: labWebsite
           },
           info: {
             name: serviceName,
@@ -195,7 +196,8 @@ export default {
           resultSample,
           serviceFlow,
           countryName,
-          regionName
+          regionName,
+          labWebsite
         }
         if (service.verificationStatus === "Verified") {
           if (service.stakeStatus === "Staked") {
@@ -219,7 +221,6 @@ export default {
     },
     
     async getDetailService(service) {
-
       this.lastOrder = await queryLastOrderHashByCustomer(
         this.api,
         this.wallet.address
@@ -232,6 +233,7 @@ export default {
           return
         }
       }
+      console.log("service", service)
       this.setProductsToRequest(service)
       this.showServiceDetailDialog = true
     },
