@@ -58,18 +58,18 @@ jobs:
         uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18
       - name: Set Up Docker Buildx
         id: set-up-buildx
-        uses: docker/setup-buildx-action@8c0edbc76e98fa90f69d9a2c020dcb50019dc325
+        uses: docker/setup-buildx-action@15c905b16b06416d2086efa066dd8e3a35cc7f98
         with:
           install: true
       - name: Cache Docker Layers
-        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build Docker
-        uses: docker/build-push-action@37abcedcc1da61a57767b7588cb9d03eb57e28b3
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           builder: ${{ steps.set-up-buildx.outputs.name }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -174,7 +174,7 @@ jobs:
           workload_identity_provider: ${{ secrets[format('{0}_{1}', matrix.environment, 'GCP_WORKLOAD_IDENTITY_PROVIDER')] }}
           service_account: ${{ secrets[format('{0}_{1}', matrix.environment, 'GCP_WORKLOAD_IDENTITY_SERVICE_ACCOUNT')] }}
       - name: Set Up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@d51b5346f85640ec2aa2fa057354d2b82c2fcbce
+        uses: google-github-actions/setup-gcloud@62d4898025f6041e16b1068643bfc5a696863587
       - name: Get GKE Credentials
         uses: google-github-actions/get-gke-credentials@894c221960ab1bc16a69902f29f090638cca753f
         with:

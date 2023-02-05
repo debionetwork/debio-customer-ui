@@ -1,4 +1,4 @@
-.<template lang="pug">
+<template lang="pug">
   .second-opinion
     .second-opinion__wrapper
       SecondOpinionBanner
@@ -17,8 +17,8 @@
 
         template(slot="prepend")
           .second-opinion__table-title Requested Opinion
-          .second-opinion__table-description List of Requested Opinions
-      
+          .second-opinion__table-description List of My Personal Health Record
+
         template(v-slot:[`item.category`]="{ item }")
           .d-flex.flex-column.second-opinion__table-headers-category
             span {{ item.info.category }}
@@ -29,13 +29,13 @@
 
         template(v-slot:[`item.grantedPHR`]="{ item }")
           .second-opinion__table-headers-PHR
-            .second-opinion__table-headers-PHR-content(v-for="(grantedPHR, idx) in item.info.geneticDataId")
+            .second-opinion__table-headers-PHR-content(v-for="(grantedPHR, idx) in item.info.geneticDataIds")
               v-alert.second-opinion__table-alert(color="#F9F5FF" )
                 span.second-opinion__table-alert-text {{ grantedPHR }}
-            
+
         template(v-slot:[`item.opinionAvailable`]="{ item }")
           .d-flex.flex-column.second-opinion__table-headers-opinion
-          span {{ item.info.givenOpinion.length }}
+          span {{ item.info.opinionIds.length }}
 
         template(v-slot:[`item.action`]="{ item }")
           ui-debio-button.second-opinion__table-button(
@@ -45,6 +45,7 @@
             width="120px"
             height="35"
             style="font-size: 6px;"
+            @click="toMyriad(item.info.myriadPostId)"
           ) Visit My Request
 
 
@@ -68,10 +69,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex"
 import SecondOpinionBanner from "./Banner"
 import { alertTriangleIcon } from "@debionetwork/ui-icons"
 import { isWeb3Injected } from "@polkadot/extension-dapp"
-import dummyData from "./dummyRequestedOpinionList"
+import { queryOpinionRequestorByOwner, queryOpinionRequestor } from "@/common/lib/polkadot-provider/query/opinion-requestor"
+import getEnv from "@/common/lib/utils/env"
 
 export default {
   name: "SecondOpinion",
@@ -91,7 +94,7 @@ export default {
         sortable: true
       },
       {
-        text: "Granted PHR",
+        text: "Granted Health Record",
         value: "grantedPHR",
         sortable: true
       },
@@ -112,6 +115,13 @@ export default {
     isLoading: false
   }),
 
+  computed: {
+    ...mapState({
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet
+    })
+  },
+
   async mounted() {
     await this.fetchSecondOpinionData()
   },
@@ -121,8 +131,12 @@ export default {
       this.isNotInstalled = !isWeb3Injected
 
       if (!this.isNotInstalled) {
-        this.$router.push({name: "second-opinion-request"})
+        this.$router.push({ name: "second-opinion-request" })
       }
+    },
+
+    async toMyriad(id) {
+      window.open(`${getEnv("VUE_APP_MYRIAD_URL")}/login?redirect=${getEnv("VUE_APP_MYRIAD_URL")}%2Fpost%2F${id}`)
     },
 
     async toInstall() {
@@ -130,7 +144,13 @@ export default {
     },
 
     async fetchSecondOpinionData() {
-      this.items = dummyData.data
+      const data = await queryOpinionRequestorByOwner(this.api, this.wallet.address)
+      for (let i = 0; i < data.length; i++) {
+        const item = await queryOpinionRequestor(this.api, data[i])
+        this.items.push(item)
+      }
+
+      console.log(this.items)
     }
   }
 }
