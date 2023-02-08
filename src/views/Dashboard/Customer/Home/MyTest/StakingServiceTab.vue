@@ -257,11 +257,6 @@ export default {
       const serviceRequest = await queryGetServiceOfferById(this.api, request.hash)
       const service = await queryServiceById(this.api, serviceRequest.serviceId)
       const labDetail = await queryLabById(this.api, service.ownerId)
-      console.log(serviceRequest)
-      console.log(service)
-      console.log(labDetail)
-      // const detailOrder = await queryOrderDetailByOrderID(this.api, lastOrder)
-      // const status = detailOrder.status
 
       this.setProductsToRequest({
         serviceName: service.info.name,
