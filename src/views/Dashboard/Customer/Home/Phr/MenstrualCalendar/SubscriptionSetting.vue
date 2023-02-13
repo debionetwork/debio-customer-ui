@@ -303,7 +303,7 @@ export default {
           statusNumber: subsId.status === "Active" ? 1 : subsId.status === "InQueue" ? 2 : null,
           status: subsId.status,
           name: `Menstrual Date ${subsId.duration}`,
-          textStatus: subsId.status === "Active" ? `Active until ${activeDate.day} ${activeDate.month} ${activeDate.year}` : `Start on ${inQueueDate.createdDate} until ${inQueueDate.day} ${inQueueDate.month} ${inQueueDate.year}`,
+          textStatus: subsId.status === "Active" ? `Active until ${activeDate.day} ${activeDate.month} ${activeDate.year}` : `Start on ${activeDate.day + 1} ${activeDate.month} ${activeDate.year} until ${inQueueDate.day} ${inQueueDate.month} ${inQueueDate.year}`,
           price: price,
           usd: (parseFloat(price.split(",").join("")) * rate).toFixed(8)
         }
