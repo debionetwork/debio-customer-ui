@@ -221,13 +221,11 @@ export default {
 
     if (this.$route.name === "customer-request-test-success") {
       this.success = true;
-      console.log(this.dataService.status, "ini statusnya")
     }
 
     if (this.$route.params.id) {
       this.isCreated = true;
       const orderId = this.$route.params.id;
-      console.log("yessss")
       this.lastOrder = await queryLastOrderHashByCustomer(
         this.api,
         this.wallet.address
