@@ -118,7 +118,8 @@ import {
   addGeneticData,
   updateGeneticData,
   addGeneticDataFee,
-  updateGeneticDataFee
+  updateGeneticDataFee,
+  createGeneticAnalysisOrder
 } from "@debionetwork/polkadot-provider"
 import rulesHandler from "@/common/constants/rules"
 import { validateForms } from "@/common/lib/validate"
@@ -367,23 +368,31 @@ export default {
       })
     },
 
-    async upload({ encryptedFileChunks, fileType, fileName, fileSize }) {
-      for (let i = 0; i < encryptedFileChunks.length; i++) {
-        const blob = new Blob([encryptedFileChunks[i]], { type: fileType });
+    async upload({ encryptedFileChunks, fileName, fileType, fileSize }) {
+      try {
 
-        // UPLOAD TO PINATA API
-        const result = await uploadFile({
-          title: fileName,
-          type: fileType,
-          size: fileSize,
-          file: blob
-        })
-        const link = await getFileUrl(result.IpfsHash)
-        this.links.push(link)
+        for (let i = 0; i < encryptedFileChunks.length; i++) {
+          const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large
+          const blob = new Blob([data], { type: fileType })
+
+          // UPLOAD TO PINATA API
+          const result = await uploadFile({
+            title: fileName,
+            type: fileType,
+            size: fileSize,
+            file: blob
+          })
+          const link = await getFileUrl(result.IpfsHash)
+          this.links.push(link)
+        }
+
+        this.geneticLink = JSON.stringify(this.links)
+        if (this.geneticLink) {
+          await this.createOrder()
+        }
+      } catch (e) {
+        console.error("error on upload", e)
       }
-      this.link = JSON.stringify(this.links)
-
-
     },
 
     async onSubmit() {
@@ -423,7 +432,7 @@ export default {
             this.dataId,
             this.document.title,
             this.document.description,
-            this.link
+            this.geneticLink
           )
 
         } else {
@@ -432,7 +441,7 @@ export default {
             this.wallet,
             this.document.title,
             this.document.description,
-            this.link
+            this.geneticLink
           )
         }
       } catch (e) {
@@ -446,6 +455,23 @@ export default {
     formatTxWeight(num) {
       const res = this.web3.utils.fromWei(String(num), "ether")
       return `${(Number(res) + 0.0081).toFixed(4)} DBIO`
+    },
+
+    async createOrder() {
+      const priceIndex = 0
+      const currency = this.service.priceDetail[0].currency
+      const assetId = await this.getAssetId(currency === "USDTE" ? "USDT.e" : currency)
+
+      await createGeneticAnalysisOrder(
+        this.api,
+        this.wallet,
+        this.selectedGeneticData.id,
+        this.service.serviceId,
+        priceIndex,
+        this.publicKey,
+        this.geneticLink,
+        assetId
+      )
     },
 
     async getTxWeight() {

@@ -145,9 +145,9 @@ export default {
 
   async created() {
     if (this.mnemonicData) {
-      await this.getCustomerPublicKey() 
+      await this.getCustomerPublicKey()
       await this.getTxWeight()
-    } 
+    }
   },
 
   computed: {
@@ -167,7 +167,7 @@ export default {
       const profile = this.service.analystsInfo.info.profileImage
       return profile ? profile : require("@/assets/defaultAvatar.svg")
     },
-    
+
     computePrice() {
       return `${this.formatBalance(this.service.priceDetail[0].totalPrice, formatUSDTE(this.service.priceDetail[0].currency))} ${formatUSDTE(this.service.priceDetail[0].currency)}`
     }
@@ -188,8 +188,8 @@ export default {
   },
 
   methods: {
-    async getLastOrderStatus () {
-      let lastOrder 
+    async getLastOrderStatus() {
+      let lastOrder
       try {
         lastOrder = await queryLastGeneticAnalysisOrderByCustomerId(this.api, this.wallet.address)
 
@@ -200,7 +200,7 @@ export default {
       }
     },
 
-    async getTxWeight(){
+    async getTxWeight() {
       const txWeight = await createGeneticAnalysisOrderFee(
         this.api,
         this.wallet,
@@ -219,7 +219,7 @@ export default {
       this.privateKey = u8aToHex(identity.boxKeyPair.secretKey)
     },
 
-    async getAnalystPublicKey () {
+    async getAnalystPublicKey() {
       const id = this.service.analystId
       const analystDetail = await queryGeneticAnalystByAccountId(this.api, id)
       const analystPublicKey = analystDetail.info.boxPublicKey
@@ -237,13 +237,13 @@ export default {
     async onSelect() {
       const status = await this.getLastOrderStatus()
       if (status === "Unpaid") {
-        this.showAlert = true 
+        this.showAlert = true
         return
       }
 
       const txWeight = Number(this.txWeight.split(" ")[0])
       if (this.walletBalance < txWeight) {
-        this.errorAlert = true 
+        this.errorAlert = true
         this.closeDialog()
         return
       }
@@ -252,7 +252,6 @@ export default {
       this.geneticLink = ""
       this.links = []
       const links = JSON.parse(this.selectedGeneticData.reportLink)
-
       let download = []
       let fileType
       let fileName
@@ -361,7 +360,7 @@ export default {
             arrChunks.push(event.data)
             context.encryptProgress = (arrChunks.length / chunksAmount) * 100
 
-            if (arrChunks.length === chunksAmount ) {
+            if (arrChunks.length === chunksAmount) {
               res({
                 fileName,
                 fileType,
@@ -402,7 +401,7 @@ export default {
 
     formatBalance(balance, currency) {
       let unit
-      currency === "USDT"|| currency === "USDT.e" ? unit = "mwei" : unit = "ether"
+      currency === "USDT" || currency === "USDT.e" ? unit = "mwei" : unit = "ether"
       const formatedBalance = this.web3.utils.fromWei(String(balance.replaceAll(",", "")), unit)
       return Number(formatedBalance).toLocaleString("en-US")
     },
@@ -434,7 +433,7 @@ export default {
 
     async toCheckoutPage() {
       const lastOrder = await queryLastGeneticAnalysisOrderByCustomer(this.api, this.wallet.address)
-      this.$router.push({name: "customer-request-analysis-payment", params: { id: lastOrder}})
+      this.$router.push({ name: "customer-request-analysis-payment", params: { id: lastOrder } })
     },
 
     toPaymentHistory() {
