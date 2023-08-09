@@ -235,66 +235,65 @@ export default {
     },
 
     async onSelect() {
-      const status = await this.getLastOrderStatus()
+      const status = await this.getLastOrderStatus();
       if (status === "Unpaid") {
-        this.showAlert = true
-        return
+        this.showAlert = true;
+        return;
       }
 
-      const txWeight = Number(this.txWeight.split(" ")[0])
+      const txWeight = Number(this.txWeight.split(" ")[0]);
       if (this.walletBalance < txWeight) {
-        this.errorAlert = true
-        this.closeDialog()
-        return
+        this.errorAlert = true;
+        this.closeDialog();
+        return;
       }
 
-      this.isLoading = true
-      this.geneticLink = ""
-      this.links = []
-      const links = JSON.parse(this.selectedGeneticData.reportLink)
-      let download = []
-      let fileType
-      let fileName
+      this.isLoading = true;
+      this.geneticLink = "";
+      this.links = [];
+      const links = JSON.parse(this.selectedGeneticData.reportLink);
+      let download = [];
+      let fileType;
+      let fileName;
       for (let i = 0; i < links.length; i++) {
-        const { name, type, data } = await downloadFile(links[i], true)
-        fileType = type
-        fileName = name
-        download.push(data)
+        const { name, type, data } = await downloadFile(links[i], true);
+        fileType = type;
+        fileName = name;
+        download.push(data);
       }
 
-      let arr = []
       for (let i = 0; i < download.length; i++) {
-        let { box, nonce } = download[i].data
-        box = Object.values(box) // Convert from object to Array
-        nonce = Object.values(nonce) // Convert from object to Array
+        let { box, nonce } = download[i].data;
+        box = Object.values(box); // Convert from object to Array
+        nonce = Object.values(nonce); // Convert from object to Array
 
         const toDecrypt = {
           box: Uint8Array.from(box),
           nonce: Uint8Array.from(nonce)
-        }
+        };
 
-        console.log("Decrypting...")
+        console.log("Decrypting...");
         const decryptedObject = await Kilt.Utils.Crypto.decryptAsymmetric(
           toDecrypt,
           this.publicKey,
           this.privateKey
-        )
-        arr = [...arr, ...decryptedObject]
+        );
+        const arr = decryptedObject;
+        console.log("Decrypted!");
+
+        const unit8Arr = new Uint8Array(arr);
+        const blob = new Blob([unit8Arr], { type: fileType });
+        this.file = new File([blob], fileName);
+
+        const dataFile = await this.setupFileReader(this.file);
+
+        await this.upload({
+          encryptedFileChunks: dataFile.chunks,
+          fileName: dataFile.fileName,
+          fileType: fileType,
+          fileSize: dataFile.fileSize
+        });
       }
-      console.log("Decrypted!")
-
-      const unit8Arr = new Uint8Array(arr)
-      const blob = new Blob([unit8Arr], { type: fileType })
-      this.file = new File([blob], fileName)
-
-      const dataFile = await this.setupFileReader(this.file)
-
-      await this.upload({
-        encryptedFileChunks: dataFile.chunks,
-        fileSize: dataFile.fileSize,
-        fileName: dataFile.fileName,
-        fileType: fileType
-      })
     },
 
     setupFileReader(file) {
@@ -379,8 +378,8 @@ export default {
 
     async upload({ encryptedFileChunks, fileName, fileType, fileSize }) {
       for (let i = 0; i < encryptedFileChunks.length; i++) {
-        const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large
-        const blob = new Blob([data], { type: fileType })
+        const data = JSON.stringify(encryptedFileChunks[i]); // not working if the size is large
+        const blob = new Blob([data], { type: fileType });
 
         // UPLOAD TO PINATA API
         const result = await uploadFile({
@@ -388,14 +387,14 @@ export default {
           type: fileType,
           size: fileSize,
           file: blob
-        })
-        const link = await getFileUrl(result.IpfsHash)
-        this.links.push(link)
+        });
+        const link = await getFileUrl(result.IpfsHash);
+        this.links.push(link);
       }
 
-      this.geneticLink = JSON.stringify(this.links)
+      this.geneticLink = JSON.stringify(this.links);
       if (this.geneticLink) {
-        await this.createOrder()
+        await this.createOrder();
       }
     },
 

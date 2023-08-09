@@ -1,36 +1,31 @@
 <template lang="pug">
   .dialog-uploading
-    v-dialog(:value="show" height="500" width="400" persistent )
-      v-card 
-        v-app-bar( flat dense color="white" ) 
-
+    v-dialog(:value="show" height="500" width="400" persistent)
+      v-card
+        v-app-bar(flat dense color="white")
         v-card-text
-          .dialog-uploading__title {{ type }} in Progress {{ progress }}
-
+          .dialog-uploading__title {{ totalChunks === 0 ? "Encrypting" : type }} in Progress {{ progress }}
+          template(v-if="type === 'Uploading'")
+            .dialog-uploading__title {{ currentChunkIndex + 1 }} of {{ totalChunks }}
           .dialog-uploading__card-loading
-            SpinnerLoader(
-              :color="'#C400A5'"
-              :size="140"
-            )
+            SpinnerLoader(:color="'#C400A5'" :size="140")
 
-          template(v-if="type !== 'Processing'" )
+          template(v-if="type !== 'Processing'")
             .dialog-uploading__message
-              b Your file is still {{ type }}. 
+              b Your file is still {{ type }}.
               b Please wait, do not close this tab.
             .dialog-uploading__border
               .dialog-uploading__border-text We support file sizes up to 200 MB, there may be longer upload/download time associated with larger files on slower Internet connections.
               .dialog-uploading__border-text The larger the file size, the longer it will take to upload/download 
                 a.link(
-                  target="_blank"
-                  :href="renderUrlDownload"
-                  @click.stop
-                ) here’s why
+                  target="_blank" 
+                  :href="renderUrlDownload" 
+              @click.stop) here’s why
 
           template(v-if="type === 'Processing'" )
             .dialog-uploading__message
               b We are processing your order.
               b Please wait, do not close this tab. 
-            
             .dialog-uploading__border
               .dialog-uploading__border-text The process may be longer associated with larger data on slower Internet connections.
               .dialog-uploading__border-text The larger the data size, the longer it will take to process 
@@ -38,16 +33,30 @@
                   target="_blank"
                   :href="renderUrlDownload"
                   @click.stop
-                ) here’s why          
+                ) here’s why
 
-</template>
+          template(v-if="type === 'Uploading' && isFailed")
+            .dialog-uploading__message
+              b Upload failed for file: {{ file.name }}.
+              b Please click the Retry button to try again.
+            .dialog-uploading__border
+              .dialog-uploading__border-text You can retry the upload for the failed chunk by clicking the Retry button.
+        .dialog-uploading__actions
 
+          template(v-if="type === 'Uploading' && isFailed")
+            v-btn(color="primary" text @click="retryUpload")
+              Retry
+            v-btn(color="primary" text @click="onClose")
+              Cancel
+          template(v-else)
+            v-btn(color="primary" text @click="onClose")
+              Close
+  </template>
+  
 <script>
-import checkCircle from "@/assets/check-circle-primary.png"
-import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
-import { mapState } from "vuex"
-
-
+import checkCircle from "@/assets/check-circle-primary.png";
+import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader";
+import { mapState } from "vuex";
 
 export default {
   name: "UploadingDialog",
@@ -66,15 +75,18 @@ export default {
   props: {
     show: Boolean,
     type: String,
-    url: String
+    url: String,
+    file: Object, // The current file being uploaded
+    isFailed: Boolean, // Indicates if the current chunk upload has failed
+    totalChunks: Number, // Total number of chunks
+    currentChunkIndex: Number // Index of the current chunk being uploaded (0-based)
   },
 
   watch: {
     loadingProgress() {
-      this.progress = `${this.loadingProgress || 0}%`
+      this.progress = `${this.loadingProgress || 0}%`;
     }
   },
-
 
   computed: {
     ...mapState({
@@ -82,10 +94,21 @@ export default {
     }),
 
     renderUrlDownload() {
-      return this.type === "download" ? this.urlDownload : this.urlUpload
+      return this.type === "download" ? this.urlDownload : this.urlUpload;
+    }
+  },
+
+  methods: {
+    onClose() {
+      // Implement close functionality as needed
+    },
+
+    retryUpload() {
+      // Emit an event to the parent component to handle the retry for the failed chunk
+      this.$emit("retry-upload");
     }
   }
-}
+};
 </script>
 
 

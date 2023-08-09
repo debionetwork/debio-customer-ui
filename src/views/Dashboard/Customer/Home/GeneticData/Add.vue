@@ -78,7 +78,13 @@
       UploadingDialog(
         :show="isLoading"
         type="Uploading"
+        :file="document.file"
+        :isFailed="isFailed"
+        :totalChunks="totalChunks"
+        :currentChunkIndex="currentChunkIndex"
+        @retry-upload="retryUpload" 
       )
+
 
       SuccessDialog(
         :show="isSuccess"
@@ -158,7 +164,10 @@ export default {
     error: null,
     orderId: null,
     isUpdated: false,
-    loadingData: false
+    loadingData: false,
+    totalChunks: 0,          // Initialize totalChunks
+    currentChunkIndex: 0,    // Initialize currentChunkIndex
+    isFailed: false
   }),
 
   computed: {
@@ -170,7 +179,6 @@ export default {
       lastEventData: (state) => state.substrate.lastEventData,
       web3: (state) => state.metamask.web3
     }),
-
     disable() {
       const { title, description, file } = this.document
       return !title, description, file
@@ -200,6 +208,7 @@ export default {
   async created() {
     if (this.mnemonicData) this.initialDataKey()
   },
+
 
   async mounted() {
     if (this.$route.params.id) {
@@ -247,6 +256,15 @@ export default {
   },
 
   methods: {
+    retryUpload() {
+      // Reset the progress state and retry the upload process
+      this.totalChunks = 0;
+      this.currentChunkIndex = 0;
+      this.isFailed = false;
+
+      // Retry the upload process (you should have your original upload code here)
+      this.onSubmit();
+    },
 
     async getDetails() {
       this.loadingData = true
@@ -370,30 +388,45 @@ export default {
 
     async upload({ encryptedFileChunks, fileName, fileType, fileSize }) {
       try {
+        this.totalChunks = encryptedFileChunks.length;
+        this.currentChunkIndex = 0;
+        this.isFailed = false; // Reset isFailed before starting the upload
 
-        for (let i = 0; i < encryptedFileChunks.length; i++) {
-          const data = JSON.stringify(encryptedFileChunks[i]) // not working if the size is large
-          const blob = new Blob([data], { type: fileType })
+        for (let i = 0; i < this.totalChunks; i++) {
+          const data = JSON.stringify(encryptedFileChunks[i]);
+          const blob = new Blob([data], { type: fileType });
 
           // UPLOAD TO PINATA API
-          const result = await uploadFile({
-            title: fileName,
-            type: fileType,
-            size: fileSize,
-            file: blob
-          })
-          const link = await getFileUrl(result.IpfsHash)
-          this.links.push(link)
+          try {
+            const result = await uploadFile({
+              title: fileName,
+              type: fileType,
+              size: fileSize,
+              file: blob
+            });
+
+            const link = await getFileUrl(result.IpfsHash);
+            this.links.push(link);
+          } catch (error) {
+            console.error("Error on chunk upload", error);
+            this.isFailed = true; // Set isFailed to true if the upload fails for any chunk
+            this.currentChunkIndex = i; // Set the currentChunkIndex to the index of the failed chunk
+            return;
+          }
+
+          this.currentChunkIndex++; // Increment the currentChunkIndex after successful upload
         }
 
-        this.geneticLink = JSON.stringify(this.links)
+        this.geneticLink = JSON.stringify(this.links);
         if (this.geneticLink) {
-          await this.createOrder()
+          await this.createOrder();
         }
       } catch (e) {
-        console.error("error on upload", e)
+        console.error("Error on upload", e);
       }
     },
+
+
 
     async onSubmit() {
       this._touchForms("document")
