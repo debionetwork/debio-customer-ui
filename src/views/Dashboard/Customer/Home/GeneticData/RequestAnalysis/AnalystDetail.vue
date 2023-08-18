@@ -85,7 +85,10 @@
 
       UploadingDialog(
         :show="isLoading"
-        type="Processing"
+        type="Uploading"
+        :isFailed="isFailed"
+        :totalChunks="totalChunks"
+        :currentChunkIndex="currentChunkIndex"
       )
 
     ui-debio-alert-dialog(
@@ -131,7 +134,10 @@ export default {
     isLoading: false,
     txWeight: "Calculating...",
     showAlert: false,
-    errorAlert: false
+    errorAlert: false,
+    totalChunks: 0,
+    currentChunkIndex: 0,
+    isFailed: false
   }),
 
   components: {
@@ -251,19 +257,17 @@ export default {
       this.isLoading = true;
       this.geneticLink = "";
       this.links = [];
-      const links = JSON.parse(this.selectedGeneticData.reportLink);
-      let download = [];
-      let fileType;
-      let fileName;
-      for (let i = 0; i < links.length; i++) {
-        const { name, type, data } = await downloadFile(links[i], true);
-        fileType = type;
-        fileName = name;
-        download.push(data);
-      }
 
-      for (let i = 0; i < download.length; i++) {
-        let { box, nonce } = download[i].data;
+      const links = JSON.parse(this.selectedGeneticData.reportLink);  
+      let uploadedLinks = 0;
+      for (let i = 0; i < links.length; i++) {
+        this.totalChunks = links.length;
+        this.currentChunkIndex = i + 1;
+        const { name, type, data } = await downloadFile(links[i], true);
+        const fileType = type;
+        const fileName = name;
+
+        let { box, nonce } = data.data;
         box = Object.values(box); // Convert from object to Array
         nonce = Object.values(nonce); // Convert from object to Array
 
@@ -272,27 +276,41 @@ export default {
           nonce: Uint8Array.from(nonce)
         };
 
-        console.log("Decrypting...");
         const decryptedObject = await Kilt.Utils.Crypto.decryptAsymmetric(
           toDecrypt,
           this.publicKey,
           this.privateKey
         );
-        const arr = decryptedObject;
-        console.log("Decrypted!");
 
-        const unit8Arr = new Uint8Array(arr);
+        const unit8Arr = new Uint8Array(decryptedObject);
         const blob = new Blob([unit8Arr], { type: fileType });
-        this.file = new File([blob], fileName);
+        const file = new File([blob], fileName);
 
-        const dataFile = await this.setupFileReader(this.file);
-
-        await this.upload({
-          encryptedFileChunks: dataFile.chunks,
-          fileName: dataFile.fileName,
+        const encryptedFile = await this.encrypt({
+          text: file,
           fileType: fileType,
-          fileSize: dataFile.fileSize
+          fileSize: file.size,
+          fileName: file.name
         });
+        try {
+          await this.upload({
+            encryptedFileChunks: encryptedFile.chunks,
+            fileName: encryptedFile.fileName,
+            fileType: fileType,
+            fileSize: encryptedFile.fileSize
+          });
+          uploadedLinks++; // Increment the uploaded counter
+        } catch (error) {
+          this.uploadFailed = true;
+          this.currentFile = file;
+          this.uploadingType = "Uploading"; // Show the dialog with retry button
+        }
+      }
+      if (uploadedLinks === links.length) {
+        this.geneticLink = JSON.stringify(this.links);
+        if (this.geneticLink) {
+          await this.createOrder();
+        }
       }
     },
 
@@ -392,10 +410,6 @@ export default {
         this.links.push(link);
       }
 
-      this.geneticLink = JSON.stringify(this.links);
-      if (this.geneticLink) {
-        await this.createOrder();
-      }
     },
 
     formatBalance(balance, currency) {
