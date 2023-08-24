@@ -196,7 +196,7 @@ export default {
             route: "menstrual-calendar",
             active: false
           },
-          { text: "Second Opinion Marketplace", route: "second-opinion", active: false }
+          { text: "Second Opinion", route: "second-opinion", active: false }
         ]
       },
       {
