@@ -15,29 +15,32 @@
               b Your file is still {{ type }}.
               b Please wait, do not close this tab.
             .dialog-uploading__border
-              .dialog-uploading__border-text We support file sizes up to 200 MB, there may be longer upload/download time associated with larger files on slower Internet connections.
-              .dialog-uploading__border-text The larger the file size, the longer it will take to upload/download 
+              .dialog-uploading__border-text The process may take a while.
+              .dialog-uploading__border-text Larger data sets and/or slower Internet connections may result in longer wait times.
+              .dialog-uploading__border-text Larger data sets will take longer to process. 
+              .dialog-uploading__border-text  
                 a.link(
                   target="_blank" 
                   :href="renderUrlDownload" 
-              @click.stop) here’s why
+                @click.stop) here’s why
 
           template(v-if="type === 'Processing'" )
             .dialog-uploading__message
               b We are processing your order.
               b Please wait, do not close this tab. 
             .dialog-uploading__border
-              .dialog-uploading__border-text The process may be longer associated with larger data on slower Internet connections.
-              .dialog-uploading__border-text The larger the data size, the longer it will take to process 
+              .dialog-uploading__border-text The process may take a while.
+              .dialog-uploading__border-text Larger data sets and/or slower Internet connections may result in longer wait times.
+              .dialog-uploading__border-text Larger data sets will take longer to process. 
+              .dialog-uploading__border-text  
                 a.link(
-                  target="_blank"
-                  :href="renderUrlDownload"
-                  @click.stop
-                ) here’s why
+                  target="_blank" 
+                  :href="renderUrlDownload" 
+                @click.stop) here’s why
 
           template(v-if="type === 'Uploading' && isFailed")
             .dialog-uploading__message
-              b Upload failed for file: {{ file.name }}.
+              b Upload failed for file: {{ file }}.
               b Please click the Retry button to try again.
             .dialog-uploading__border
               .dialog-uploading__border-text You can retry the upload for the failed chunk by clicking the Retry button.
@@ -47,7 +50,7 @@
             v-btn(color="primary" text @click="retryUpload")
               Retry
             v-btn(color="primary" text @click="onClose")
-              Cancel
+              Close
           template(v-else)
             v-btn(color="primary" text @click="onClose")
               Close
@@ -76,7 +79,7 @@ export default {
     show: Boolean,
     type: String,
     url: String,
-    file: Object, // The current file being uploaded
+    file: String, // The current file being uploaded
     isFailed: Boolean, // Indicates if the current chunk upload has failed
     totalChunks: Number, // Total number of chunks
     currentChunkIndex: Number // Index of the current chunk being uploaded (0-based)

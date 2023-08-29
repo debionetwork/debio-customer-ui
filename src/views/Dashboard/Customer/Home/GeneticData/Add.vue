@@ -40,7 +40,7 @@
 
         .genetic-data-add__files-title.mt-5(v-if="!document.file")
           p File Information
-          p.mb-0 Before uploading the document make sure to censored the KYC related in uploaded file
+          p.mb-0 Before uploading the document, please ensure that all personal data is removed or redacted.
 
         ui-debio-file(
           withTooltip
@@ -396,7 +396,6 @@ export default {
           const data = JSON.stringify(encryptedFileChunks[i]);
           const blob = new Blob([data], { type: fileType });
 
-          // UPLOAD TO PINATA API
           try {
             const result = await uploadFile({
               title: fileName,
@@ -410,21 +409,22 @@ export default {
           } catch (error) {
             console.error("Error on chunk upload", error);
             this.isFailed = true; // Set isFailed to true if the upload fails for any chunk
-            this.currentChunkIndex = i; // Set the currentChunkIndex to the index of the failed chunk
-            return;
           }
 
-          this.currentChunkIndex++; // Increment the currentChunkIndex after successful upload
+          this.currentChunkIndex++; // Increment the currentChunkIndex regardless of success or failure
         }
 
-        this.geneticLink = JSON.stringify(this.links);
-        if (this.geneticLink) {
-          await this.createOrder();
+        // If any chunk upload failed, handle the situation here
+        if (this.isFailed) {
+          // Handle the error or retry the upload if needed
+        } else {
+          this.geneticLink = JSON.stringify(this.links);
         }
       } catch (e) {
         console.error("Error on upload", e);
       }
     },
+
 
 
 
@@ -479,7 +479,7 @@ export default {
         }
       } catch (e) {
         const error = await errorHandler(e.message)
-
+        console.log(e)
         this.error = error
         this.isLoading = false
       }

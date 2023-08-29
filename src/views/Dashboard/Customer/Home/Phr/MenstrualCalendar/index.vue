@@ -73,7 +73,7 @@
       .menstrual-calendar__subscription
         ui-debio-card.menstrual-calendar__subscription-text(width="654")
           .menstrual-calendar__subscription-text-span Get a Subcription plan!
-          .menstrual-calendar__subscription-text-header Benefit of Subscription
+          .menstrual-calendar__subscription-text-header The Benefits of A Subscription
           v-img.mt-10(
             block
             alt="no-list-data"
@@ -82,13 +82,13 @@
             )
 
           .menstrual-calendar__list
-            .menstrual-calendar__content-list Unlock Anonymous Menstrual Calendar Tracking & Estimation in Decentralized Manner
+            .menstrual-calendar__content-list A Decentralized and Anonymous Menstrual Cycle Tracking Tool
             .menstrual-calendar__content-list 
-              div Unlock Menstrual Calendar Cycle Report & Statistics
+              div Menstrual Calendar Cycle Report & Statistics
               v-alert.menstrual-calendar__alert(color="#FFE6E6" )
                 .menstrual-calendar__alert-text Coming Soon
             .menstrual-calendar__content-list 
-              div Unlock Menstrual Calendar Journaling & Mood Tracking
+              div Menstrual Calendar Journaling & Mood Tracking
               v-alert.menstrual-calendar__alert(color="#FFE6E6" )
                 .menstrual-calendar__alert-text Coming Soon
 
@@ -120,7 +120,7 @@
                       )
                       v-alert.menstrual-calendar__plan-card-alert(v-if="plan.promo" color="#E7FFE6" )
                         .menstrual-calendar__plan-card-alert-text {{ plan.promo }}
-                      .menstrual-calendar__plan-card-price Burn {{ plan.price }} {{ plan.currency}}
+                      .menstrual-calendar__plan-card-price {{ plan.price }} {{ plan.currency}}
                         .menstrual-calendar__plan-card-price-scratch(v-if="plan.promo") Burn {{ plan.promoPrice }} {{ plan.currency }}
                         .menstrual-calendar__plan-card-price-convert ({{ plan.usd }} USD)
 
@@ -208,7 +208,7 @@ export default {
       {
         label: "Quarterly",
         duration: "Quarterly",
-        description: "Get full benefits on a discounted price",
+        description: "Get full benefits at a discounted price",
         price: 0,
         currency: "DBIO",
         usd: 0,
@@ -219,7 +219,7 @@ export default {
       {
         label: "Annualy",
         duration: "Yearly",
-        description: "Get full benefits on a discounted price",
+        description: "Get full benefits at a discounted price",
         price: 0,
         currency: "DBIO",
         usd: 0,
