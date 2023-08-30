@@ -413,13 +413,7 @@ export default {
 
           this.currentChunkIndex++; // Increment the currentChunkIndex regardless of success or failure
         }
-
-        // If any chunk upload failed, handle the situation here
-        if (this.isFailed) {
-          // Handle the error or retry the upload if needed
-        } else {
-          this.geneticLink = JSON.stringify(this.links);
-        }
+        this.geneticLink = JSON.stringify(this.links);
       } catch (e) {
         console.error("Error on upload", e);
       }
@@ -440,7 +434,7 @@ export default {
       if (this.walletBalance < txWeight) {
         this.error = {
           title: "Insufficient Balance",
-          message: "Your transaction cannot succeed due to insufficient balance, check your account balance"
+          message: "Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance."
         }
         return
       }

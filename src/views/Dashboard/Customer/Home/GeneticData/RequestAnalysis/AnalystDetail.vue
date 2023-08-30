@@ -3,7 +3,7 @@
     ui-debio-error-dialog(
       :show="errorAlert"
       title="Insufficient Balance"
-      message="Your transaction cannot succeed due to insufficient balance, check your account balance"
+      message="Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance."
       @close="errorAlert = false"
     )
     v-card.analyst-detail__card

@@ -465,7 +465,7 @@ export default {
         this.error = {
           title: "Insufficient Balance",
           message:
-            "Your transaction cannot succeed due to insufficient balance, check your account balance"
+            "Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance."
         };
         return;
       }
@@ -565,7 +565,7 @@ export default {
         this.error = {
           title: "Insufficient Balance",
           message:
-            "Your transaction cannot succeed due to insufficient balance, check your account balance"
+            "Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance."
         };
         return;
       }
