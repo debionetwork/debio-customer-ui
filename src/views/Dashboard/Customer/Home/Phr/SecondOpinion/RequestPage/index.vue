@@ -48,7 +48,7 @@ export default {
 
   computed: {
     stepperText() {
-      return this.stepper[this.step].replace("\n", "<br>");
+      return this.stepper[this.step].replace(/\n/g, "<br>");
     }
   },
 
