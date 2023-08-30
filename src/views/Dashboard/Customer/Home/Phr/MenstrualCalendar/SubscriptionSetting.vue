@@ -95,7 +95,7 @@
                 .subscription-setting__subscription-item-card-text-status
                   .subscription-setting__subscription-item-card-text-status-primary {{ subscription.name }}
                   .subscription-setting__subscription-item-card-text-status-secondary {{ subscription.textStatus }}
-                .subscription-setting__plan-card-price Burn {{ subscription.price }} DBIO
+                .subscription-setting__plan-card-price {{ subscription.price }} DBIO
                   .subscription-setting__plan-card-price-convert ({{ subscription.usd }} USD)
 
       ui-debio-card.subscription-setting__subscription-plan(width="480")
@@ -131,8 +131,8 @@
                       )
                       v-alert.subscription-setting__plan-card-alert(v-if="plan.promo" color="#E7FFE6")
                         .subscription-setting__plan-card-alert-text {{ plan.promo }}
-                      .subscription-setting__plan-card-price Burn {{ plan.price }} {{ plan.currency }}
-                        .subscription-setting__plan-card-price-scratch(v-if="plan.promo") Burn {{ plan.promoPrice }} {{ plan.currency }}
+                      .subscription-setting__plan-card-price {{ plan.price }} {{ plan.currency }}
+                        .subscription-setting__plan-card-price-scratch(v-if="plan.promo") {{ plan.promoPrice }} {{ plan.currency }}
                         .subscription-setting__plan-card-price-convert ({{ plan.usd }} USD)
 
                     .subscription-setting__plan-card-desc.pt-1.ml-8 {{ plan.description }}
@@ -149,7 +149,7 @@
             v-divider.ma-4
             .subscription-setting__plan-payment-card-detail
               .subscription-setting__plan-payment-card-total-text Menstrual Date {{ subscription.duration }}
-              .subscription-setting__plan-card-price Burn {{ subscription.price }} {{subscription.currency}}/ {{ subscription.periode }}
+              .subscription-setting__plan-card-price {{ subscription.price }} {{subscription.currency}}/ {{ subscription.periode }}
                 .subscription-setting__plan-card-price-convert ({{ subscription.usd }} USD)
             .subscription-setting__plan-payment-card-notes Any eligible subscription credit will be applied until it runs out. Your subscription will renew for {{ subscription.price }} / {{ subscription.periode }} on {{getExpiredDate( subscription.periode )}}. Have any questions?
               a Contact our support team
@@ -227,8 +227,8 @@ export default {
     ],
     plans: [
       { label: "Monthly", duration: "Monthly", description: "For users on a budget who want to try out menstrual calendar", price: 0, currency: "DBIO", usd: 0, promo: "", periode: "Month", promoPrice: 0 },
-      { label: "Quarterly", duration: "Quarterly", description: "Get full benefits on a discounted price", price: 0, currency: "DBIO", usd: 0, promo: "Save 10%", periode: "3 Months", promoPrice: 0 },
-      { label: "Annualy", duration: "Yearly", description: "Get full benefits on a discounted price", price: 0, currency: "DBIO", usd: 0, promo: "Save 50%", periode: "Year", promoPrice: 0 }
+      { label: "Quarterly", duration: "Quarterly", description: "Get full benefits on a discounted price", price: 0, currency: "DBIO", usd: 0, promo: "", periode: "3 Months", promoPrice: 0 },
+      { label: "Annually", duration: "Yearly", description: "Get full benefits on a discounted price", price: 0, currency: "DBIO", usd: 0, promo: "", periode: "Year", promoPrice: 0 }
     ],
     loading: false,
     error: null

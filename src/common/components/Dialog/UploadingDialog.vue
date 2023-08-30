@@ -20,19 +20,18 @@
               .dialog-uploading__border-text Larger data sets will take longer to process. 
               .dialog-uploading__border-text  
                 a.link(
-                  target="_blank" 
-                  :href="renderUrlDownload" 
-                @click.stop) here’s why
+                  target="_blank"
+                  :href="renderUrlDownload"
+                  @click.stop
+                ) Here’s why
 
           template(v-if="type === 'Processing'" )
             .dialog-uploading__message
               b We are processing your order.
               b Please wait, do not close this tab. 
             .dialog-uploading__border
-              .dialog-uploading__border-text The process may take a while.
-              .dialog-uploading__border-text Larger data sets and/or slower Internet connections may result in longer wait times.
+              .dialog-uploading__border-text The process may take a while. Larger data sets and/or slower Internet connections may result in longer wait times.
               .dialog-uploading__border-text Larger data sets will take longer to process. 
-              .dialog-uploading__border-text  
                 a.link(
                   target="_blank" 
                   :href="renderUrlDownload" 

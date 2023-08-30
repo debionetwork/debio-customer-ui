@@ -209,7 +209,6 @@ export default {
     if (this.mnemonicData) this.initialDataKey()
   },
 
-
   async mounted() {
     if (this.$route.params.id) {
       this.isEdit = true

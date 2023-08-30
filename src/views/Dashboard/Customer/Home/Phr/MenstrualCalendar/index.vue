@@ -88,7 +88,7 @@
               v-alert.menstrual-calendar__alert(color="#FFE6E6" )
                 .menstrual-calendar__alert-text Coming Soon
             .menstrual-calendar__content-list 
-              div Menstrual Calendar Journaling & Mood Tracking
+              div Menstrual Calendar Journal & Mood Tracker
               v-alert.menstrual-calendar__alert(color="#FFE6E6" )
                 .menstrual-calendar__alert-text Coming Soon
 
@@ -212,18 +212,18 @@ export default {
         price: 0,
         currency: "DBIO",
         usd: 0,
-        promo: "Save 10%",
+        promo: "",
         periode: "3 Months",
         promoPrice: 0
       },
       {
-        label: "Annualy",
+        label: "Annually",
         duration: "Yearly",
         description: "Get full benefits at a discounted price",
         price: 0,
         currency: "DBIO",
         usd: 0,
-        promo: "Save 50%",
+        promo: "",
         periode: "Year",
         promoPrice: 0
       }
