@@ -122,15 +122,27 @@ export default {
     },
 
     async parseResult(recordLink) {
+      let fileChunks = []
+      let fileType
       try {
-        this.isLoading = true
-
         const pair = { publicKey: this.publicKey, secretKey: this.secretKey }
-        const { type, data } = await downloadFile(recordLink, true)
-
-        const decryptedFile = decryptFile(data, pair, type)
-        const fileBlob = window.URL.createObjectURL(new Blob([decryptedFile], { type }))
-
+        this.isLoading = true
+        if (/^\[/.test(recordLink)) {
+          links = json.parse(recordLink)
+          for (let i = 0; i < links.length; i++) {
+            const { type, data } = await downloadFile(links[i], true)
+            const decryptedFile = decryptFile(data, pair, type)
+            fileType = type
+            fileChunks.push(decryptedFile)
+          }
+        }
+        else {
+          const { type, data } = await downloadFile(recordLink, true)
+          const decryptedFile = decryptFile(data, pair, type)
+          fileType = type
+          fileChunks.push(decryptedFile)
+        }
+        const fileBlob = window.URL.createObjectURL(new Blob(fileChunks, { fileType }))
         this.result = fileBlob
       } catch {
         this.message = "Oh no! Something went wrong. Please try again later"
