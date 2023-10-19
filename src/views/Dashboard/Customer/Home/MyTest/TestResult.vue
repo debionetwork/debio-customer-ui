@@ -297,8 +297,8 @@ export default {
           const { type, data } = await downloadFile(path, true)
           const decryptedFile = decryptFile([data], pair, type)
           fileChunks = [...fileChunks, ...(decryptedFile ? decryptedFile : [])]
-          const fileBlob = window.URL.createObjectURL(new Blob(fileChunks, { type }))
-          this.result = fileBlob
+          const unit8arrays = new Uint8Array(fileChunks)
+          await downloadDocumentFile(unit8arrays, name[0].metadata.name, fileType)
         }
         
         this.resultLoading = false
