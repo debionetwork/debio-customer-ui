@@ -273,11 +273,25 @@ export default {
       try {
         const path = this.files[0].fileLink
         const pair = { secretKey: this.privateKey, publicKey: this.publicKey }
+        let fileChunks = [];
 
-        const { type, data } = await downloadFile(path, true)
+        if (/^\[/.test(path)) {
+          links = JSON.parse(path);
+          for (let i = 0; i < links.length; i++) {
+            const { type, data } = await downloadFile(links[i], true)
+            const decryptedFile = decryptFile([data], pair, type)
+            fileType = type
+            fileChunks = [...fileChunks, ...(decryptedFile ? decryptedFile : [])]
+          }
 
-        const decryptedFile = decryptFile(data, pair, type)
-        const fileBlob = window.URL.createObjectURL(new Blob([decryptedFile], { type }))
+        }
+        else {
+          const { type, data } = await downloadFile(path, true)
+          const decryptedFile = decryptFile([data], pair, type)
+          fileType = type
+          fileChunks = [...fileChunks, ...(decryptedFile ? decryptedFile : [])]
+        }
+        const fileBlob = window.URL.createObjectURL(new Blob(fileChunks, { type }))
 
         this.result = fileBlob
         this.resultLoading = false
