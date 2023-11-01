@@ -26,6 +26,30 @@
         @click="toContinue"
       ) CONTINUE & EXPORT KEYSTORE
 
+    ui-debio-modal.hp-dashboard__modal-connect(
+      :show="isConnectToMyriad"
+      :show-title="false"
+      :show-cta="false"
+      @onClose="isConnectToMyriad = false"
+    )
+      p.hp-dashboard__subtitle Connecting your request into Myriad
+
+      v-img(
+      alt="debio-logo-loading"
+      :src="require(`../../../../assets/${logo}.svg`)"
+      max-width="360px"
+      max-height="72px"
+      )
+      ui-debio-button(
+        width="304px"
+        block
+        color="secondary"
+        @click="redirectMyriad"
+      ) CONTINUE TO MYRIAD
+
+        .hp-dashboard__subtitle
+        p Or click <a :href="url">here</a> to go
+
     ui-debio-modal(
       :show="showModal"
       title="Add PHR File"
@@ -298,6 +322,8 @@ export default {
     disabledButton: false,
     showConnect: false,
     showModalConfirm: null,
+    isConnectToMyriad: false,
+    url: "",
     publicKey: null,
     secretKey: null,
     txWeight: null,
@@ -451,6 +477,12 @@ export default {
       this.categories = await getEMRCategories()
     },
 
+    async redirectMyriad() {
+      const url = `${getEnv("VUE_APP_MYRIAD_URL")}/`
+      this.url = url
+      window.open(url, "_blank")
+    },
+
     getBack() {
       this.$emit("back")
     },
@@ -490,7 +522,8 @@ export default {
       const injector = await web3FromAddress(sender)
       if (injector) {
         this.showConnect = false
-        this.$router.push({ name: "connecting-page" })
+        this.isConnectToMyriad = true
+        // this.$router.push({ name: "connecting-page" })
       }
     },
 
