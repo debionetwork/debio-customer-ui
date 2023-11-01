@@ -36,7 +36,7 @@
 
       v-img(
       alt="debio-logo-loading"
-      :src="require(`../../../../assets/${logo}.svg`)"
+      :src="require(`../../../../../../../assets/debio-logo-loading.svg`)"
       max-width="360px"
       max-height="72px"
       )
@@ -47,8 +47,8 @@
         @click="redirectMyriad"
       ) CONTINUE TO MYRIAD
 
-        .hp-dashboard__subtitle
-        p Or click <a :href="url">here</a> to go
+      .hp-dashboard__subtitle
+      p Or click <a :href="url">here</a> to go
 
     ui-debio-modal(
       :show="showModal"
@@ -303,6 +303,7 @@ import { uploadFile, getFileUrl } from "@/common/lib/pinata-proxy"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@debionetwork/ui-icons"
 import { web3Enable, web3Accounts, web3FromAddress } from "@polkadot/extension-dapp"
 import localStorage from "@/common/lib/local-storage"
+import getEnv from "@/common/lib/utils/env"
 
 
 const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
