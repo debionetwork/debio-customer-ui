@@ -137,7 +137,7 @@ export default {
     },
 
     async toMyriad(id) {
-      window.open(`${getEnv("VUE_APP_MYRIAD_URL")}/login?redirect=${getEnv("VUE_APP_MYRIAD_URL")}%2Fpost%2F${id}`, "_blank")
+      window.open(`${getEnv("VUE_APP_MYRIAD_URL")}/login?redirect=${getEnv("VUE_APP_MYRIAD_URL")}%2Fpost%2F${id}`)
     },
 
     async toInstall() {

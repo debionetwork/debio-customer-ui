@@ -96,9 +96,6 @@ v-container
     cta-title="OK"
     @onClose="showModal = false"
   )
-  DownloadingDialog(
-    :show="resultLoading"
-  )
 
 </template>
 
@@ -115,13 +112,10 @@ import { u8aToHex } from "@polkadot/util"
 import { submitRatingOrder, getRatingByOrderId } from "@/common/lib/api"
 import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@debionetwork/ui-icons"
 import errorMessage from "@/common/constants/error-messages"
-import DownloadingDialog from "@/common/components/Dialog/DownloadingDialog.vue"
 
 export default {
   name: "TestResult",
-  components: {
-    DownloadingDialog
-  },
+
   data: () => ({
     downloadIcon,
     debioIcon,
@@ -129,6 +123,7 @@ export default {
     starIcon,
     checkCircleIcon,
     errorMessage,
+
     privateKey: "",
     publicKey: "",
     idOrder: "",
@@ -314,8 +309,6 @@ export default {
     },
 
     actionDownload: generalDebounce(async function (link) {
-      
-      this.resultLoading = true
       try {
         const pair = { secretKey: this.privateKey, publicKey: this.publicKey }
         let fileChunks = []
@@ -335,7 +328,6 @@ export default {
             
           }
           const unit8arrays = new Uint8Array(fileChunks)
-          this.resultLoading = false
           await downloadDocumentFile(unit8arrays, name[0].metadata.name, fileType)
 
         }
@@ -345,14 +337,10 @@ export default {
           const decryptedFile = decryptFile([data], pair, type)
           fileChunks = [...fileChunks, ...(decryptedFile ? decryptedFile : [])]
           const unit8arrays = new Uint8Array(fileChunks)
-          this.resultLoading = false
           await downloadDocumentFile(unit8arrays, rows[0].metadata.name, type)
         }
       } catch (error) {
         console.error(error)
-      }
-      finally {
-        this.resultLoading = false
       }
     }, 500),
 
