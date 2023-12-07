@@ -26,6 +26,30 @@
         @click="toContinue"
       ) CONTINUE & EXPORT KEYSTORE
 
+    ui-debio-modal.hp-dashboard__modal-connect(
+      :show="isConnectToMyriad"
+      :show-title="false"
+      :show-cta="false"
+      @onClose="isConnectToMyriad = false"
+    )
+      p.hp-dashboard__subtitle Connecting your request into Myriad
+
+      v-img(
+      alt="debio-logo-loading"
+      :src="require(`../../../../../../../assets/debio-logo-loading.svg`)"
+      max-width="360px"
+      max-height="72px"
+      )
+      ui-debio-button(
+        width="304px"
+        block
+        color="secondary"
+        @click="redirectMyriad"
+      ) CONTINUE TO MYRIAD
+
+      .hp-dashboard__subtitle
+      p Or click <a :href="url">here</a> to go
+
     ui-debio-modal(
       :show="showModal"
       title="Add PHR File"
@@ -262,43 +286,27 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
-import { u8aToHex } from "@polkadot/util";
-import Kilt from "@kiltprotocol/sdk-js";
-import CryptoJS from "crypto-js";
-import cryptWorker from "@/common/lib/ipfs/crypt-worker";
-import { getEMRCategories } from "@/common/lib/api";
-import {
-  registerElectronicMedicalRecord,
-  registerElectronicMedicalRecordFee,
-} from "@debionetwork/polkadot-provider";
-import {
-  queryElectronicMedicalRecordByOwnerId,
-  queryElectronicMedicalRecordFileById,
-} from "@debionetwork/polkadot-provider";
-import { generalDebounce } from "@/common/lib/utils";
-import errorMessage from "@/common/constants/error-messages";
-import { validateForms } from "@/common/lib/validate";
-import { errorHandler } from "@/common/lib/error-handler";
-import { uploadFile, getFileUrl } from "@/common/lib/pinata-proxy";
-import {
-  fileTextIcon,
-  alertIcon,
-  pencilIcon,
-  trashIcon,
-  eyeOffIcon,
-  eyeIcon,
-} from "@debionetwork/ui-icons";
-import {
-  web3Enable,
-  web3Accounts,
-  web3FromAddress,
-} from "@polkadot/extension-dapp";
-import localStorage from "@/common/lib/local-storage";
 
-const englishAlphabet = (val) =>
-  (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) ||
-  errorMessage.INPUT_CHARACTER("English alphabet");
+import { mapState, mapMutations } from "vuex"
+import { u8aToHex } from "@polkadot/util"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import cryptWorker from "@/common/lib/ipfs/crypt-worker"
+import { getEMRCategories } from "@/common/lib/api"
+import { registerElectronicMedicalRecord, registerElectronicMedicalRecordFee } from "@debionetwork/polkadot-provider"
+import { queryElectronicMedicalRecordByOwnerId, queryElectronicMedicalRecordFileById } from "@debionetwork/polkadot-provider"
+import { generalDebounce } from "@/common/lib/utils"
+import errorMessage from "@/common/constants/error-messages"
+import { validateForms } from "@/common/lib/validate"
+import { errorHandler } from "@/common/lib/error-handler"
+import { uploadFile, getFileUrl } from "@/common/lib/pinata-proxy"
+import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@debionetwork/ui-icons"
+import { web3Enable, web3Accounts, web3FromAddress } from "@polkadot/extension-dapp"
+import localStorage from "@/common/lib/local-storage"
+import getEnv from "@/common/lib/utils/env"
+
+
+const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
 
 export default {
   name: "GrantAccessPHR",
@@ -315,6 +323,8 @@ export default {
     disabledButton: false,
     showConnect: false,
     showModalConfirm: null,
+    isConnectToMyriad: false,
+    url: "",
     publicKey: null,
     secretKey: null,
     txWeight: null,
@@ -325,33 +335,33 @@ export default {
       {
         text: "Health Record Title",
         value: "title",
-        sortable: true,
+        sortable: true
       },
       {
         text: "Category",
         value: "category",
-        sortable: true,
+        sortable: true
       },
       {
         text: "Document Title",
         value: "documentTitle",
-        sortable: true,
+        sortable: true
       },
       {
         text: "Description",
         value: "documentDescription",
-        sortable: true,
-      },
+        sortable: true
+      }
     ],
     phr: {
       title: "",
       category: "",
-      files: [],
+      files: []
     },
     document: {
       title: "",
       description: "",
-      file: null,
+      file: null
     },
     categories: [],
     fileTextIcon,
@@ -359,7 +369,7 @@ export default {
     trashIcon,
     eyeOffIcon,
     alertIcon,
-    eyeIcon,
+    eyeIcon
   }),
 
   computed: {
@@ -369,244 +379,226 @@ export default {
       lastEventData: (state) => state.substrate.lastEventData,
       mnemonicData: (state) => state.substrate.mnemonicData,
       web3: (state) => state.metamask.web3,
-      walletBalance: (state) => state.substrate.walletBalance,
+      walletBalance: (state) => state.substrate.walletBalance
     }),
 
     computeFiles() {
-      return this.phr.files.map((file) => ({ ...file, percent: 0 })).reverse();
+      return this.phr.files.map(file => ({ ...file, percent: 0 })).reverse()
     },
 
     disabledDocumentForm() {
-      return (
-        this.document.title === "" ||
-        this.document.description === "" ||
-        this.document.file === null
-      );
+      return this.document.title === "" || this.document.description === "" || this.document.file === null
     },
 
     disabledFinish() {
-      return this.computeFiles?.some((file) => file.percent !== 100);
-    },
+      return this.computeFiles?.some(file => file.percent !== 100)
+    }
   },
 
   async created() {
-    this.fetchCategories();
-    await this.getPHRHistory();
-    if (this.mnemonicData) this.initialDataKey();
+    this.fetchCategories()
+    await this.getPHRHistory()
+    if (this.mnemonicData) this.initialDataKey()
   },
 
   watch: {
     async lastEventData(event) {
       if (event !== null) {
-        const dataEvent = JSON.parse(event.data.toString());
+        const dataEvent = JSON.parse(event.data.toString())
         if (event.method === "ElectronicMedicalRecordAdded") {
           if (dataEvent[1] === this.wallet.address) {
-            this.resetState();
-            this.isLoading = false;
-            this.isAddNewPHR = false;
-            this.grantedAccess = [];
-            await this.getPHRHistory();
+            this.resetState()
+            this.isLoading = false
+            this.isAddNewPHR = false
+            this.grantedAccess = []
+            await this.getPHRHistory()
           }
         }
       }
     },
 
     mnemonicData(val) {
-      if (val) this.initialDataKey();
+      if (val) this.initialDataKey()
     },
 
     phr: {
       deep: true,
       immediate: true,
-      handler: generalDebounce(async function(val) {
-        this.txWeight = "Calculating...";
+      handler: generalDebounce(async function (val) {
+        this.txWeight = "Calculating..."
 
-        const txWeight = await registerElectronicMedicalRecordFee(
-          this.api,
-          this.wallet,
-          val
-        );
-        this.txWeight = `${Number(
-          this.web3.utils.fromWei(String(txWeight.partialFee), "ether")
-        ).toFixed(4)} DBIO`;
-      }, 500),
-    },
+        const txWeight = await registerElectronicMedicalRecordFee(this.api, this.wallet, val)
+        this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
+      }, 500)
+    }
   },
 
   rules: {
-    password: [(val) => !!val || errorMessage.PASSWORD(8)],
+    password: [val => !!val || errorMessage.PASSWORD(8)],
     phr: {
       title: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.length < 50) || errorMessage.MAX_CHARACTER(50),
-        englishAlphabet,
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
+        englishAlphabet
       ],
-      category: [(val) => !!val || errorMessage.REQUIRED],
+      category: [val => !!val || errorMessage.REQUIRED]
     },
     document: {
       title: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.length < 50) || errorMessage.MAX_CHARACTER(50),
-        englishAlphabet,
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
+        englishAlphabet
       ],
       description: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.length < 255) || errorMessage.MAX_CHARACTER(255),
-        englishAlphabet,
+        val => !!val || errorMessage.REQUIRED,
+        val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255),
+        englishAlphabet
       ],
       file: [
-        (val) => !!val || errorMessage.REQUIRED,
-        (val) => (val && val.size < 2000000) || errorMessage.FILE_SIZE(2),
-        (val) =>
-          (val && val.type === "application/pdf") ||
-          errorMessage.FILE_FORMAT("PDF"),
-      ],
-    },
+        val => !!val || errorMessage.REQUIRED,
+        val => (val && val.size < 2000000) || errorMessage.FILE_SIZE(2),
+        val => (val && val.type === "application/pdf") || errorMessage.FILE_FORMAT("PDF")
+      ]
+    }
   },
 
   methods: {
     ...mapMutations({
-      setPHRIds: "secondOpinion/SET_PHR_IDS",
+      setPHRIds: "secondOpinion/SET_PHR_IDS"
     }),
 
     initialDataKey() {
-      const cred = Kilt.Identity.buildFromMnemonic(
-        this.mnemonicData.toString(CryptoJS.enc.Utf8)
-      );
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
 
-      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey);
-      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey);
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
     },
 
     async fetchCategories() {
-      this.categories = await getEMRCategories();
+      this.categories = await getEMRCategories()
+    },
+
+    async redirectMyriad() {
+      const url = `${getEnv("VUE_APP_MYRIAD_URL")}/`
+      this.url = url
+      window.open(url, "_blank")
     },
 
     getBack() {
-      this.$emit("back");
+      this.$emit("back")
     },
 
     handleBack() {
-      this.isAddNewPHR = false;
+      this.isAddNewPHR = false
     },
 
     handleAddFile() {
-      this.showModal = true;
-      this.clearFile = false;
+      this.showModal = true
+      this.clearFile = false
     },
 
     onDelete(id) {
-      this.showModalConfirm = null;
-      this.phr.files = this.phr.files.filter((file) => file.createdAt !== id);
+      this.showModalConfirm = null
+      this.phr.files = this.phr.files.filter(file => file.createdAt !== id)
     },
 
     toSecondOpinion() {
-      const ids = this.grantedAccess.map((data) => data.id);
-      this.setPHRIds(ids);
-      this.showConnect = true;
+      const ids = this.grantedAccess.map(data => data.id)
+      this.setPHRIds(ids)
+      this.showConnect = true
     },
 
     async toContinue() {
-      const sender = this.wallet.address;
-      const allInjected = await web3Enable("Debio Network");
+      const sender = this.wallet.address
+      const allInjected = await web3Enable("Debio Network")
 
-      if (!allInjected) return (this.isNotInstalled = false);
+      if (!allInjected) return this.isNotInstalled = false
 
-      const allAccounts = await web3Accounts();
-      if (!allAccounts.length) await this.exportKeystoreAction();
+      const allAccounts = await web3Accounts()
+      if (!allAccounts.length) await this.exportKeystoreAction()
 
-      const account = allAccounts.find((account) => account.address === sender);
-      if (!account) await this.exportKeystoreAction();
+      const account = allAccounts.find(account => account.address === sender)
+      if (!account) await this.exportKeystoreAction()
 
-      const injector = await web3FromAddress(sender);
+      const injector = await web3FromAddress(sender)
       if (injector) {
-        this.showConnect = false;
-        this.$router.push({ name: "connecting-page" });
+        this.showConnect = false
+        // this.isConnectToMyriad = true
+        this.$router.push({ name: "connecting-page" })
       }
     },
 
     exportKeystoreAction() {
       try {
-        const keystore = localStorage.getKeystore();
-        const address = localStorage.getAddress();
-        const file = new Blob([keystore], { type: "text/json;charset=utf-8" });
-        const downloadUrl = window.URL.createObjectURL(file);
-        const downloadLink = document.createElement("a");
-        downloadLink.href = downloadUrl;
-        downloadLink.target = "_blank";
-        downloadLink.download = `${address}.json`;
+        const keystore = localStorage.getKeystore()
+        const address = localStorage.getAddress()
+        const file = new Blob([keystore], { type: "text/json;charset=utf-8" })
+        const downloadUrl = window.URL.createObjectURL(file)
+        const downloadLink = document.createElement("a")
+        downloadLink.href = downloadUrl
+        downloadLink.target = "_blank"
+        downloadLink.download = `${address}.json`
 
-        downloadLink.click();
+        downloadLink.click()
 
-        window.URL.revokeObjectURL(downloadUrl);
+        window.URL.revokeObjectURL(downloadUrl)
       } catch (err) {
-        console.error(err);
+        console.error(err)
       }
     },
 
     async getPHRHistory() {
-      this.showModal = false;
-      this.isLoading = true;
-      const documents = [];
+      this.showModal = false
+      this.isLoading = true
+      const documents = []
 
       try {
-        const dataPHR = await queryElectronicMedicalRecordByOwnerId(
-          this.api,
-          this.wallet.address
-        );
+        const dataPHR = await queryElectronicMedicalRecordByOwnerId(this.api, this.wallet.address)
 
         if (dataPHR !== null || !dataPHR?.length) {
           const listPHR = dataPHR.reduce((filtered, current) => {
-            if (filtered.every((v) => v.id !== current.id))
-              filtered.push(current);
+            if (filtered.every(v => v.id !== current.id)) filtered.push(current)
 
-            return filtered;
-          }, []);
+            return filtered
+          }, [])
 
-          listPHR.reverse();
+          listPHR.reverse()
 
           for (const phrDetail of listPHR) {
-            const documentDetail = await this.preparePHRData(phrDetail);
-            documents.push(documentDetail);
+            const documentDetail = await this.preparePHRData(phrDetail)
+            documents.push(documentDetail)
           }
         }
 
-        this.phrList = documents;
-        this.isLoading = false;
+        this.phrList = documents
+        this.isLoading = false
       } catch (error) {
-        this.isLoading = false;
+        this.isLoading = false
         console.error(error);
       }
     },
 
     async preparePHRData(dataPHR) {
-      let files = [];
+      let files = []
 
       for (let i = 0; i < dataPHR.files?.length; i++) {
-        const file = await queryElectronicMedicalRecordFileById(
-          this.api,
-          dataPHR.files[i]
-        );
+        const file = await queryElectronicMedicalRecordFileById(this.api, dataPHR.files[i])
 
-        dataPHR.createdAt = new Date(
-          +file.uploadedAt.replaceAll(",", "")
-        ).toLocaleDateString("id", {
+        dataPHR.createdAt = new Date(+file.uploadedAt.replaceAll(",", "")).toLocaleDateString("id", {
           day: "2-digit",
           month: "short",
-          year: "numeric",
-        });
+          year: "numeric"
+        })
 
         files.push({
           ...file,
-          createdAt: new Date(
-            +file.uploadedAt.replaceAll(",", "")
-          ).toLocaleDateString("id", {
+          createdAt: new Date(+file.uploadedAt.replaceAll(",", "")).toLocaleDateString("id", {
             day: "2-digit",
             month: "short",
-            year: "numeric",
+            year: "numeric"
           }),
-          recordLink: file.recordLink,
-        });
+          recordLink: file.recordLink
+        })
       }
 
       return {
@@ -614,59 +606,58 @@ export default {
         title: dataPHR.title,
         category: dataPHR.category,
         createdAt: dataPHR.createdAt,
-        files: files?.slice(0, 3),
-      };
+        files: files?.slice(0, 3)
+      }
     },
 
     async finalSubmit() {
-      this.isLoading = true;
-      this.disabledButton = true;
+      this.isLoading = true
+      this.disabledButton = true
       try {
-        if (this.phr.files.length === 0) return;
+        if (this.phr.files.length === 0) return
 
         for await (let [index, value] of this.phr.files.entries()) {
-          const dataFile = await this.setupFileReader({ value });
+          const dataFile = await this.setupFileReader({ value })
           await this.upload({
             encryptedFileChunks: dataFile.chunks,
             fileName: dataFile.fileName,
             fileSize: dataFile.fileSize,
             index: index,
-            fileType: dataFile.fileType,
-          });
+            fileType: dataFile.fileType
+          })
         }
 
-        await registerElectronicMedicalRecord(this.api, this.wallet, this.phr);
+        await registerElectronicMedicalRecord(this.api, this.wallet, this.phr)
       } catch (e) {
-        const error = await errorHandler(e.message);
-        this.error = error;
-        this.isLoading = false;
-        this.disabledButton = false;
+        const error = await errorHandler(e.message)
+        this.error = error
+        this.isLoading = false
+        this.disabledButton = false
       }
     },
 
     setupFileReader({ value }) {
       return new Promise((resolve, reject) => {
-        const file = value.file;
-        const fr = new FileReader();
+        const file = value.file
+        const fr = new FileReader()
 
-        fr.onload = async function() {
-          resolve(value);
-        };
+        fr.onload = async function () {
+          resolve(value)
+        }
 
-        fr.onerror = reject;
+        fr.onerror = reject
 
-        fr.readAsArrayBuffer(file);
-      });
+        fr.readAsArrayBuffer(file)
+      })
     },
 
     handleNewFile() {
       if (Number(this.walletBalance) < Number(this.txWeight.split(" ")[0])) {
         this.error = {
           title: "Insufficient Balance",
-          message:
-            "Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance.",
-        };
-        return;
+          message: "Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance."
+        }
+        return
       }
 
       this._touchForms("document");
@@ -677,20 +668,20 @@ export default {
       } = this.isDirty?.document;
       if (docTitle || docDescription || docFile) return;
 
-      const context = this;
-      const fr = new FileReader();
-      const { title, description, file } = this.document;
+      const context = this
+      const fr = new FileReader()
+      const { title, description, file } = this.document
 
-      fr.onload = async function() {
+      fr.onload = async function () {
         try {
           const encrypted = await context.encrypt({
             text: fr.result,
             fileType: file.type,
             fileSize: file.size,
-            fileName: file.name,
-          });
+            fileName: file.name
+          })
 
-          const { chunks, fileName, fileType, fileSize } = encrypted;
+          const { chunks, fileName, fileType, fileSize } = encrypted
 
           const dataFile = {
             title,
@@ -700,369 +691,369 @@ export default {
             fileName,
             fileSize,
             fileType,
-            createdAt: new Date().getTime(),
-          };
+            createdAt: new Date().getTime()
+          }
 
-          context.phr.files.push(dataFile);
+          context.phr.files.push(dataFile)
+
         } catch (e) {
-          this.error = e.message;
+          this.error = e.message
         }
-      };
+      }
 
-      fr.readAsArrayBuffer(file);
+      fr.readAsArrayBuffer(file)
 
-      this.onCloseModalDocument();
+      this.onCloseModalDocument()
     },
 
     async encrypt({ text, fileType, fileName, fileSize }) {
-      const context = this;
-      const arrChunks = [];
-      let chunksAmount;
+      const context = this
+      const arrChunks = []
+      let chunksAmount
       const pair = {
         secretKey: this.secretKey,
-        publicKey: this.publicKey,
-      };
+        publicKey: this.publicKey
+      }
 
       const data = await new Promise((resolve, reject) => {
         try {
-          cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }); // Access this object in e.data in worker
+          cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }) // Access this object in e.data in worker
           cryptWorker.workerEncryptFile.onmessage = async (event) => {
             if (event.data.chunksAmount) {
-              chunksAmount = event.data.chunksAmount;
-              return;
+              chunksAmount = event.data.chunksAmount
+              return
             }
 
-            arrChunks.push(event.data);
-            context.encryptProgress = (arrChunks.length / chunksAmount) * 100;
+            arrChunks.push(event.data)
+            context.encryptProgress = (arrChunks.length / chunksAmount) * 100
 
             if (arrChunks.length === chunksAmount) {
               resolve({
                 fileName,
                 fileSize,
                 fileType,
-                chunks: arrChunks,
-              });
+                chunks: arrChunks
+              })
             }
-          };
+          }
 
-          this.fileEmpty = false;
+          this.fileEmpty = false
         } catch (err) {
-          reject(new Error(err.message));
+          reject(new Error(err.message))
         }
-      });
+      })
 
-      return data;
+      return data
     },
 
     async upload({ encryptedFileChunks, index, fileType, fileName, fileSize }) {
-      const data = JSON.stringify(encryptedFileChunks);
-      const blob = new Blob([data], { type: fileType });
+      const data = JSON.stringify(encryptedFileChunks)
+      const blob = new Blob([data], { type: fileType })
 
       const result = await uploadFile({
         title: fileName,
         type: fileType,
         size: fileSize,
-        file: blob,
-      });
+        file: blob
+      })
 
-      const link = getFileUrl(result.IpfsHash);
+      const link = getFileUrl(result.IpfsHash)
 
-      this.phr.files[index].recordLink = link;
+      this.phr.files[index].recordLink = link
     },
 
     onCloseModalDocument() {
-      this.showModal = false;
-      Object.assign(this.document, { title: "", description: "", file: null });
-      this.clearFile = true;
-      this._resetForms("document");
+      this.showModal = false
+      Object.assign(this.document, { title: "", description: "", file: null })
+      this.clearFile = true
+      this._resetForms("document")
     },
 
     async handleSubmit() {
       if (Number(this.walletBalance) < Number(this.txWeight.split(" ")[0])) {
         this.error = {
           title: "Insufficient Balance",
-          message:
-            "Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance.",
-        };
-        return;
+          message: "Your transaction cannot go through because your account balance is too low or doesn't meet the minimum deposit needed. Please check your balance."
+        }
+        return
       }
 
-      this._touchForms("phr");
-      const isPHRValid = Object.values(this.isDirty?.phr).every(
-        (v) => v !== null && v === false
-      );
-      const isDocumentValid = Object.values(this.isDirty?.document).every(
-        (v) => v !== null && v === false
-      );
+      this._touchForms("phr")
+      const isPHRValid = Object.values(this.isDirty?.phr).every(v => v !== null && v === false)
+      const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
 
       if (!isPHRValid || (!isDocumentValid && this.phr.files.length < 1)) {
-        if (!this.phr.files.length) this.fileEmpty = true;
+        if (!this.phr.files.length) this.fileEmpty = true
 
-        return;
+        return
       }
 
-      this.fileEmpty = false;
-      this.clearFile = true;
+      this.fileEmpty = false
+      this.clearFile = true
 
-      await this.finalSubmit();
+      await this.finalSubmit()
     },
 
     resetState() {
-      Object.assign(this.phr, { title: "", category: "", files: [] });
-      Object.assign(this.document, { title: "", description: "", file: null });
-    },
-  },
-};
+      Object.assign(this.phr, { title: "", category: "", files: [] })
+      Object.assign(this.document, { title: "", description: "", file: null })
+    }
+  }
+}
+
 </script>
 
+
+
 <style lang="sass" scoped>
-@import "@/common/styles/mixins.sass"
+  @import "@/common/styles/mixins.sass"
 
-.grant-access-card
-  height: 100%
-  padding: 20px
+  .grant-access-card
+    height: 100%
+    padding: 20px
 
-  &__title
-    @include button-1
+    &__title
+      @include button-1
 
-  &__nav
-    margin-top: 10px
-    @include button-3
+    &__nav      
+      margin-top: 10px
+      @include button-3
+    
+    &__buttons
+      max-width: 140px
+      display: flex
+      float: right
+      justify-content: space-between
+      margin-right: 200px
+      padding-bottom: 6%
 
-  &__buttons
-    max-width: 140px
-    display: flex
-    float: right
-    justify-content: space-between
-    margin-right: 200px
-    padding-bottom: 6%
 
+    &__checkbox
+      margin-top: -5px !important
 
-  &__checkbox
-    margin-top: -5px !important
+    &__subtitle
+      width: 304px
 
-  &__subtitle
-    width: 304px
+    &__document-title,
+    &__document-category,
+    &__file-title,
+    &__file-description
+      max-width: 150px
+      white-space: pre
+      overflow: hidden
+      text-overflow: ellipsis
 
-  &__document-title,
-  &__document-category,
-  &__file-title,
-  &__file-description
-    max-width: 150px
-    white-space: pre
-    overflow: hidden
-    text-overflow: ellipsis
+    &__forms
+      display: flex
+      flex-direction: column
+      gap: 20px
+      margin: 0 auto
+      max-width: 450px
 
-  &__forms
-    display: flex
-    flex-direction: column
-    gap: 20px
-    margin: 0 auto
-    max-width: 450px
+    &__form-title
+      margin-top: -24px
+      text-align: center
+      @include h6
 
-  &__form-title
-    margin-top: -24px
-    text-align: center
-    @include h6
+    &__files
+      margin: 10px 0 20px
 
-  &__files
-    margin: 10px 0 20px
+    &__files-title
+      margin-bottom: 24px
 
-  &__files-title
-    margin-bottom: 24px
+      p:first-of-type
+        @include button-2
 
-    p:first-of-type
-      @include button-2
+      p
+        @include body-text-3-opensans
 
-    p
-      @include body-text-3-opensans
+    &__files-items
+      display: flex
+      flex-direction: column
+      gap: 20px
+      padding-right: .35rem
+      max-height: calc(116px * 3)
+      overflow-y: auto
+      margin-top: -50px !important
 
-  &__files-items
-    display: flex
-    flex-direction: column
-    gap: 20px
-    padding-right: .35rem
-    max-height: calc(116px * 3)
-    overflow-y: auto
-    margin-top: -50px !important
+      &::-webkit-scrollbar-track
+        background-color: #f2f2ff
 
-    &::-webkit-scrollbar-track
-      background-color: #f2f2ff
+      &::-webkit-scrollbar
+        width: 0.25rem
 
-    &::-webkit-scrollbar
-      width: 0.25rem
+      &::-webkit-scrollbar-thumb
+        border-radius: 0.625rem
+        background: #a1a1ff
 
-    &::-webkit-scrollbar-thumb
-      border-radius: 0.625rem
-      background: #a1a1ff
-
-      &__files-loading
-    &::v-deep
-      .ui-debio-modal__card
-        max-width: 600px
-
-  &__file-item
-    padding: 12px 20px
-    border-radius: 4px
-    border-style: dashed
-    border-color: #8AC1FF
-    background: #F9F9FF
-    transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
-
-    &:hover
-      background: #f2f2ff
-      border-color: #a1a1ff
-
-    &--no-file
-      height: 64px
-
-    &--error
-      border-color: #c400a5
-
+        &__files-loading
       &::v-deep
-        .customer-create-phr__file-icon > svg
-          color: #c400a5 !important
+        .ui-debio-modal__card
+          max-width: 600px
 
-      .customer-create-phr__file-name
-        color: #c400a5
+    &__file-item
+      padding: 12px 20px
+      border-radius: 4px
+      border-style: dashed 
+      border-color: #8AC1FF
+      background: #F9F9FF
+      transition: all cubic-bezier(.7, -0.04, .61, 1.14) .3s
 
-  &__file-title-add
-    font-weight: 600
-    overflow: hidden
-    white-space: nowrap
-    text-overflow: ellipsis
-    @include body-text-1
+      &:hover
+        background: #f2f2ff
+        border-color: #a1a1ff
 
-  &__file-name
-    max-width: 320px
-    white-space: nowrap
-    overflow: hidden
-    text-overflow: ellipsis
-    @include body-text-5
+      &--no-file
+        height: 64px
 
-  &__file-description-add
-    margin-top: 10px
-    display: -webkit-box
-    -webkit-line-clamp: 2
-    -webkit-box-orient: vertical
-    overflow: hidden
-    color: #595959
-    @include body-text-4
+      &--error
+        border-color: #c400a5
 
-  &__file-details
-    margin-top: 12px
-    display: flex
-    justify-content: space-between
+        &::v-deep
+          .customer-create-phr__file-icon > svg
+            color: #c400a5 !important
 
-    &--left,
-    &--right
+        .customer-create-phr__file-name
+          color: #c400a5
+
+    &__file-title-add
+      font-weight: 600
+      overflow: hidden
+      white-space: nowrap
+      text-overflow: ellipsis
+      @include body-text-1
+
+    &__file-name
+      max-width: 320px
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+      @include body-text-5
+
+    &__file-description-add
+      margin-top: 10px
+      display: -webkit-box
+      -webkit-line-clamp: 2
+      -webkit-box-orient: vertical
+      overflow: hidden
+      color: #595959
+      @include body-text-4
+
+    &__file-details
+      margin-top: 12px
+      display: flex
+      justify-content: space-between
+
+      &--left,
+      &--right
+        display: flex
+        align-items: center
+        gap: 10px
+
+    &__file-edit,
+    &__file-delete
+      cursor: pointer
+
+    &::v-deep
+
+      .ui-debio-modal__card-title
+        @include h2
+        font-weight: 700
+
+  .modal-confirm
+    &__title
+      width: 212px
+      text-align: center
+
+    &__cta
+      width: 250px
+      margin: 0 auto
+
+  .transaction-weight
+    &__text
+      position: relative
+
+    &__tooltip
+      max-width: 143px
+      padding: 10px
+      position: absolute
+      top: 35px
+      z-index: 10
+      background: #fff
+      border: 1px solid #D3C9D1
+      right: -120px
+      transition: all .3s ease-in-out
+      visibility: hidden
+      opacity: 0
+      @include tiny-reg
+
+
+
+  .modal-files-upload
+    &__files
+      display: flex
+      flex-direction: column
+      gap: 35px
+
+    &__file-details
       display: flex
       align-items: center
-      gap: 10px
+      gap: 115px
+      justify-content: space-between
 
-  &__file-edit,
-  &__file-delete
-    cursor: pointer
+    &__file-name
+      max-width: 360px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+      @include body-text-medium-2
 
-  &::v-deep
+    &__progress
+      display: flex
+      align-items: center
+      justify-content: space-between
+      gap: 15px
+      margin-top: 8px
 
-    .ui-debio-modal__card-title
-      @include h2
-      font-weight: 700
+    &__status
+      display: flex
+      align-items: center
+      gap: 8px
 
-.modal-confirm
-  &__title
-    width: 212px
-    text-align: center
+    &__file-percent,
+    &__error-message
+      @include body-text-5
 
-  &__cta
-    width: 250px
-    margin: 0 auto
+    &__error-message
+      color: #F5222D
 
-.transaction-weight
-  &__text
-    position: relative
+    &__file-percent
+      color: #8C8C8C
 
-  &__tooltip
-    max-width: 143px
-    padding: 10px
-    position: absolute
-    top: 35px
-    z-index: 10
-    background: #fff
-    border: 1px solid #D3C9D1
-    right: -120px
-    transition: all .3s ease-in-out
-    visibility: hidden
-    opacity: 0
-    @include tiny-reg
+    &__progress-check
+      width: 12px
+      height: 12px
+      border-radius: 50%
 
+      &--success
+        background: linear-gradient(225deg, #76DA92 0%, #61FFF6 100%)
 
+      &--cancel
+        background: #757274
 
-.modal-files-upload
-  &__files
-    display: flex
-    flex-direction: column
-    gap: 35px
+      &--failed
+        background: #FF525B
 
-  &__file-details
-    display: flex
-    align-items: center
-    gap: 115px
-    justify-content: space-between
+    &__progressbar
+      width: 100%
+      height: 6px
+      background: #E7E7E7
+      border-radius: 3px
 
-  &__file-name
-    max-width: 360px
-    overflow: hidden
-    text-overflow: ellipsis
-    white-space: nowrap
-    @include body-text-medium-2
+      &--thumb
+        width: 0%
+        height: 100%
+        background: #6FE4AF
+        border-radius: inherit
 
-  &__progress
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: 15px
-    margin-top: 8px
-
-  &__status
-    display: flex
-    align-items: center
-    gap: 8px
-
-  &__file-percent,
-  &__error-message
-    @include body-text-5
-
-  &__error-message
-    color: #F5222D
-
-  &__file-percent
-    color: #8C8C8C
-
-  &__progress-check
-    width: 12px
-    height: 12px
-    border-radius: 50%
-
-    &--success
-      background: linear-gradient(225deg, #76DA92 0%, #61FFF6 100%)
-
-    &--cancel
-      background: #757274
-
-    &--failed
-      background: #FF525B
-
-  &__progressbar
-    width: 100%
-    height: 6px
-    background: #E7E7E7
-    border-radius: 3px
-
-    &--thumb
-      width: 0%
-      height: 100%
-      background: #6FE4AF
-      border-radius: inherit
 </style>
