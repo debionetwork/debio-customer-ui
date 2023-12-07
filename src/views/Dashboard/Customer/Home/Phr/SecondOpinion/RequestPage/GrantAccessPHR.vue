@@ -673,7 +673,7 @@ export default {
       const {
         title: docTitle,
         description: docDescription,
-        file: docFile,
+        file: docFile
       } = this.isDirty?.document;
       if (docTitle || docDescription || docFile) return;
 
