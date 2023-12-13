@@ -17,7 +17,7 @@
         
         template(slot="cta")
           ui-debio-card(
-            :to="{ name: 'customer-add-genetic-data'}"
+            :to="{ name: 'customer-request-test'}"
             title="Add Genetic Data"
             sub-title="Analyze your genetic data"
             tiny-card 
