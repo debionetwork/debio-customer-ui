@@ -188,23 +188,6 @@ export default {
         width: "5%"
       }
     ],
-    banners: [
-      {
-        icon: bookGradient,
-        text: "Request Genetic Analysis",
-        link: "customer-request-analysis"
-      },
-      {
-        icon: cardGradient,
-        text: "Request Genetic Test",
-        link: "customer-request-test"
-      },
-      {
-        icon: partialBookGradient,
-        text: "Upload Health Record",
-        link: "customer-phr-create"
-      }
-    ],
     isLoadingPayments: false,
     isLoadingTest: false,
     showPopupInfo: false
