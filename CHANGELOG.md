@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.6](https://github.com/debionetwork/debio-customer-ui/compare/2.6.5...2.6.6) (2024-04-25)
+
+
+### Bug Fixes
+
+* issue with genetic analysis list not showing properly ([#966](https://github.com/debionetwork/debio-customer-ui/issues/966)) ([c68f5ec](https://github.com/debionetwork/debio-customer-ui/commit/c68f5ec83e01e06ba0c29a5b2bb824eec92b811d))
+* USDT Format issue ([#964](https://github.com/debionetwork/debio-customer-ui/issues/964)) ([5e53121](https://github.com/debionetwork/debio-customer-ui/commit/5e53121cc482073b54ba9e56381ca63c62b87474))
+
 ## [2.6.5](https://github.com/debionetwork/debio-customer-ui/compare/2.6.4...2.6.5) (2024-02-19)
 
 
