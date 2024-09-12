@@ -48,9 +48,9 @@
           v-model="document.file"
           variant="small"
           :rules="$options.rules.document.file"
-          :accept="['.txt', '.vcf', '.gz', '.zip', '.rar', '.7zip']"
+          :accept="['.txt', '.vcf', '.gz', '.zip', '.rar', '.7zip', '.csv']"
           label="Upload File"
-          label-rules="(.vcf.gz, .vcf, .txt - Maximum file size is 200MB)"
+          label-rules="(.vcf.gz, .vcf, .txt, .csv - Maximum file size is 200MB)"
           placeholder="Choose File"
           validate-on-blur
         )
